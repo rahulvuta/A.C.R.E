@@ -5346,6 +5346,11 @@
             "title": "Optional",
             "type": "boolean"
           },
+          "origin": {
+            "default": "verified_source",
+            "title": "Origin",
+            "type": "string"
+          },
           "print": {
             "default": false,
             "title": "Print",
@@ -5366,6 +5371,11 @@
               }
             ],
             "title": "Reference"
+          },
+          "region_key": {
+            "default": "US-NC",
+            "title": "Region Key",
+            "type": "string"
           },
           "rule_id": {
             "title": "Rule Id",
@@ -5646,6 +5656,28 @@
       },
       "RuleSource": {
         "properties": {
+          "evidence_quote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Quote"
+          },
+          "limitations": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limitations"
+          },
           "locator": {
             "anyOf": [
               {
@@ -8586,15 +8618,48 @@
     },
     "/v1/crops": {
       "get": {
+        "description": "The crops of the NC catalog, or of the catalog at ``lat``/``lon`` (B2).",
         "operationId": "get_crops_v1_crops_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "lat",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lat"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lon",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lon"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Get Crops V1 Crops Get",
-                  "type": "object"
+                  "title": "Response Get Crops V1 Crops Get"
                 }
               }
             },
@@ -9330,6 +9395,90 @@
         ]
       }
     },
+    "/v1/plans/future": {
+      "post": {
+        "description": "Body: ``{location?, candidate | plans | plan | plan_id | rotation_id, start_season,\nseasons, edits?, as_of?, inputs?}`` (contract \u00a710).",
+        "operationId": "post_future_v1_plans_future_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Post Future V1 Plans Future Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Post Future",
+        "tags": [
+          "planner"
+        ]
+      }
+    },
+    "/v1/plans/generate": {
+      "post": {
+        "description": "Body: ``{location?, field?, goals?, start_year?}`` (contract \u00a78). Location defaults to the\nUnion County demo point. Generated plans are ordinary ``Plan`` objects (one per season).",
+        "operationId": "post_generate_v1_plans_generate_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Post Generate V1 Plans Generate Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Post Generate",
+        "tags": [
+          "planner"
+        ]
+      }
+    },
     "/v1/plans/note": {
       "post": {
         "description": "Body: ``{plan | plan_id, alternative? | alternative_id?, year?, as_of?, inputs?}``.\n\nFor a ``winter_grain`` (wheat) plan also ``maturity_group?`` and ``compare_to_plan? |\ncompare_to_plan_id?`` (a full-season soybean plan, shown as different-calendar).",
@@ -9666,6 +9815,188 @@
         "summary": "Get Note",
         "tags": [
           "decision-tools"
+        ]
+      }
+    },
+    "/v1/regions/research": {
+      "post": {
+        "description": "Body: ``{region_key | location, crops?, refresh?, wait_s?}``. NC is never researched.",
+        "operationId": "post_research_v1_regions_research_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Post Research V1 Regions Research Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Post Research",
+        "tags": [
+          "field",
+          "research"
+        ]
+      }
+    },
+    "/v1/regions/research/{job_id}": {
+      "get": {
+        "operationId": "get_research_v1_regions_research__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Research V1 Regions Research  Job Id  Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Research",
+        "tags": [
+          "field",
+          "research"
+        ]
+      }
+    },
+    "/v1/regions/{region_key}/profile": {
+      "get": {
+        "description": "Crops, calendars, covers, rotations and rules for a region, each with ``origin``.",
+        "operationId": "get_region_profile_v1_regions__region_key__profile_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "region_key",
+            "required": true,
+            "schema": {
+              "title": "Region Key",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lat",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lat"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lon",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lon"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Region Profile V1 Regions  Region Key  Profile Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Region Profile",
+        "tags": [
+          "field",
+          "regions"
         ]
       }
     },

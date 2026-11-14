@@ -37,6 +37,8 @@
             "reference": null,
             "rule_id": "cr_soil_01",
             "source": {
+              "evidence_quote": null,
+              "limitations": null,
               "locator": "Establishment and Fieldwork",
               "title": "Cereal Rye (SARE Managing Cover Crops Profitably 3rd ed.)",
               "url": "https://www.sare.org/publications/managing-cover-crops-profitably/nonlegume-cover-crops/cereal-rye/",
@@ -80,6 +82,8 @@
             "reference": null,
             "rule_id": "cr_tt_03",
             "source": {
+              "evidence_quote": null,
+              "limitations": null,
               "locator": "Soil Moisture Considerations",
               "title": "NC State Soybean Production Guide: Rotational Considerations",
               "url": "https://content.ces.ncsu.edu/north-carolina-soybean-production-guide/rotational-considerations",
@@ -132,6 +136,8 @@
             },
             "rule_id": "sb_nut_01",
             "source": {
+              "evidence_quote": null,
+              "limitations": null,
               "locator": "Table 2.3 p. 15: Soybean row and nitrogen-units footnote",
               "title": "Crop Fertilization Based on North Carolina Soil Tests; Circular No. 1; February 2014",
               "url": "https://www.ncagr.gov/orange-book-soil-fertility/open",
@@ -161,6 +167,8 @@
             "reference": null,
             "rule_id": "sb_pw_02",
             "source": {
+              "evidence_quote": null,
+              "limitations": null,
               "locator": "Planting before mid-April; Figure 2",
               "title": "Data-Driven Recommendations for NC Soybean Planting Date (NC State Soybeans)",
               "url": "https://soybeans.ces.ncsu.edu/news/data-driven-recommendations-for-nc-soybean-planting-date/",
@@ -190,6 +198,8 @@
             "reference": null,
             "rule_id": "sb_pw_03",
             "source": {
+              "evidence_quote": null,
+              "limitations": null,
               "locator": "Planting past mid-May; Figure 1",
               "title": "Data-Driven Recommendations for NC Soybean Planting Date (NC State Soybeans)",
               "url": "https://soybeans.ces.ncsu.edu/news/data-driven-recommendations-for-nc-soybean-planting-date/",
@@ -219,6 +229,8 @@
             "reference": null,
             "rule_id": "sb_pw_05",
             "source": {
+              "evidence_quote": null,
+              "limitations": null,
               "locator": "Opening paragraphs",
               "title": "Planting Soybeans in a Drought (NC State Soybeans 2026)",
               "url": "https://soybeans.ces.ncsu.edu/news/soybean-planting-decisions-under-drought-conditions-2026/",
@@ -248,6 +260,8 @@
             "reference": null,
             "rule_id": "sb_soil_01",
             "source": {
+              "evidence_quote": null,
+              "limitations": null,
               "locator": "Soils and Topography",
               "title": "10. Water Management in Soybeans (AG-835)",
               "url": "https://content.ces.ncsu.edu/north-carolina-soybean-production-guide/10-water-management-in-soybeans",
@@ -277,6 +291,8 @@
             "reference": null,
             "rule_id": "sb_wt_01",
             "source": {
+              "evidence_quote": null,
+              "limitations": null,
               "locator": "Soybean paragraph",
               "title": "2025 Hertford Corn & Soybean Planting Guidance (NC State Extension)",
               "url": "https://hertford.ces.ncsu.edu/news/2025-hertford-corn-soybean-planting-guidance/",
@@ -319,6 +335,8 @@
             "reason": "12-day termination-to-planting gap does not meet the rule (>= 14 days); applies_when active: dry replay",
             "rule_id": "cr_tt_03",
             "source": {
+              "evidence_quote": null,
+              "limitations": null,
               "locator": "Soil Moisture Considerations",
               "snapshot_hash": null,
               "title": "NC State Soybean Production Guide: Rotational Considerations",

@@ -13,6 +13,8 @@
         "cr_tt_03"
       ],
       "source": {
+        "evidence_quote": null,
+        "limitations": null,
         "locator": "Soil Moisture Considerations",
         "title": "NC State Soybean Production Guide: Rotational Considerations",
         "url": "https://content.ces.ncsu.edu/north-carolina-soybean-production-guide/rotational-considerations",

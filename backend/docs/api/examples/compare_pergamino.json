@@ -3,9 +3,9 @@
   "data_sources": {
     "catalog": {
       "freshness": "unavailable",
-      "reason": "no_regional_catalog",
+      "reason": "sage_only",
       "source": null,
-      "status": "unknown"
+      "status": "partial"
     },
     "soil": null,
     "weather": {
@@ -102,7 +102,7 @@
     }
   },
   "meta": {
-    "catalog_version": "none:2e1cfa82b035",
+    "catalog_version": "v3:AR-B:sage_-33.75_-60.75:3edf141b9da9",
     "plan_version": "32e2becea03e2bff",
     "request_id": "req_example",
     "snapshot_hash": "7c57f2ea32036ecff67ee1c6e7dece00415f16358b0f4bdc4488fb663953abeb"
@@ -123,11 +123,27 @@
         "winter_days": 209
       },
       "catalog": {
-        "origin": null,
-        "reason": "no_regional_catalog",
-        "reason_text": "No regional guidance is loaded for this place yet, so no rule is checked; the weather results still apply.",
-        "region_key": null,
-        "status": "unknown"
+        "catalog_version": "v3:AR-B:sage_-33.75_-60.75",
+        "gaps": [
+          "Barley (spring): SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+          "Cassava: SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+          "Oats (spring): SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+          "Potato: SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+          "Pulses: SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+          "Winter rapeseed (canola): SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+          "Winter rye (grain): SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+          "Sugar beet: SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+          "Sweet potato: SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+          "Spring wheat: SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+          "Yam: SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+          "No regional research has run for this region yet: there are no sourced rules, cover crops, rotations or double crops.",
+          "Crop calendars are SAGE gridded estimates (Sacks et al. 2010), not local guidance."
+        ],
+        "origin": "dataset_estimate",
+        "reason": "sage_only",
+        "reason_text": "Only gridded crop-calendar estimates (SAGE) are available here; there is no verified local guidance, so no rule is checked.",
+        "region_key": "AR-B",
+        "status": "partial"
       },
       "conflicts": [],
       "coverage": {
@@ -367,7 +383,7 @@
       },
       "eras_shared_years": {},
       "hemisphere": "south",
-      "label": "Maize \u2192 Cereal rye cover \u2192 Soybean",
+      "label": "Maize (corn), main season \u2192 Cereal rye cover \u2192 Soybean",
       "label_generated": true,
       "leg": null,
       "other_checks": [],
@@ -1233,7 +1249,7 @@
     ],
     "rotation_ids": []
   },
-  "result_id": "f8491f5102b0aae1",
+  "result_id": "4c2113bb34f31d8e",
   "shared_eligible_years": {
     "full_season": [
       1981,

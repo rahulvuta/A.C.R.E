@@ -235,8 +235,8 @@
   "generation_log": [],
   "hemisphere": "south",
   "meta": {
-    "catalog_version": "none:2e1cfa82b035",
-    "plan_version": "c0b9f6fc83dcb5f0",
+    "catalog_version": "v3:AR-B:sage_-33.75_-60.75:3edf141b9da9",
+    "plan_version": "ff816ea40acb7818",
     "request_id": "req_example",
     "snapshot_hash": "7c57f2ea32036ecff67ee1c6e7dece00415f16358b0f4bdc4488fb663953abeb"
   },
@@ -258,7 +258,7 @@
     }
   },
   "not_comparable": [],
-  "result_id": "c0b9f6fc83dcb5f0",
+  "result_id": "ff816ea40acb7818",
   "shortlist": [
     {
       "candidate_id": "rye_cover",
@@ -641,11 +641,15 @@
         {
           "origin": null,
           "text": "No regional guidance is loaded for this place, so no rule was checked."
+        },
+        {
+          "origin": "dataset_estimate",
+          "text": "The regional guidance comes from a gridded dataset estimate (for example SAGE crop calendars), not local guidance."
         }
       ],
       "why": [
         {
-          "audit_id": "331c1c0b5652",
+          "audit_id": "73be0bb854f2",
           "indicator": "living_cover_days",
           "source": {
             "title": "FAO, Conservation Agriculture (principles)",
@@ -655,7 +659,7 @@
           "value": 172.0
         },
         {
-          "audit_id": "48f61f2e19f2",
+          "audit_id": "136a32896ad8",
           "indicator": "bare_soil_days",
           "source": {
             "title": "FAO, Conservation Agriculture (principles)",
@@ -665,7 +669,7 @@
           "value": 37.0
         },
         {
-          "audit_id": "b92ecbb3f212",
+          "audit_id": "2c3390368b4a",
           "indicator": "rain_on_bare_soil_mm",
           "source": {
             "title": "FAO, Conservation Agriculture (principles)",

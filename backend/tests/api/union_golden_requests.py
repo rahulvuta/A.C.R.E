@@ -76,11 +76,25 @@ def _strip_a2(body: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
+#: Keys B2 added to every rule ``source`` block (catalog v3), stripped wherever they sit.
+B2_SOURCE = ("evidence_quote", "limitations")
+
+
+def _strip_b2(x: Any) -> Any:
+    if isinstance(x, dict):
+        return {k: (_strip_b2({sk: sv for sk, sv in v.items() if sk not in B2_SOURCE})
+                    if k == "source" and isinstance(v, dict) else _strip_b2(v))
+                for k, v in x.items()}  # fmt: skip
+    if isinstance(x, list):
+        return [_strip_b2(v) for v in x]
+    return x
+
+
 def strip_additions(body: Any) -> Any:
     """``body`` without the keys that did not exist before per-location snapshots."""
     if not isinstance(body, dict):
         return body
-    body = _strip_a2(body)
+    body = _strip_a2(_strip_b2(body))
     out = {k: v for k, v in body.items() if k not in ADDED_TOP}
     if isinstance(out.get("thresholds"), dict):
         out["thresholds"] = {k: v for k, v in out["thresholds"].items()

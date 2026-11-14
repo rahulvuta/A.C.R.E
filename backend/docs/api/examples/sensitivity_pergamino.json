@@ -1,11 +1,27 @@
 {
   "base_plan_id": "perg_soy",
   "catalog": {
-    "origin": null,
-    "reason": "no_regional_catalog",
-    "reason_text": "No regional guidance is loaded for this place yet, so no rule is checked; the weather results still apply.",
-    "region_key": null,
-    "status": "unknown"
+    "catalog_version": "v3:AR-B:sage_-33.75_-60.75",
+    "gaps": [
+      "Barley (spring): SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+      "Cassava: SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+      "Oats (spring): SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+      "Potato: SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+      "Pulses: SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+      "Winter rapeseed (canola): SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+      "Winter rye (grain): SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+      "Sugar beet: SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+      "Sweet potato: SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+      "Spring wheat: SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+      "Yam: SAGE's calendar for this cell is extrapolated from neighbouring reports.",
+      "No regional research has run for this region yet: there are no sourced rules, cover crops, rotations or double crops.",
+      "Crop calendars are SAGE gridded estimates (Sacks et al. 2010), not local guidance."
+    ],
+    "origin": "dataset_estimate",
+    "reason": "sage_only",
+    "reason_text": "Only gridded crop-calendar estimates (SAGE) are available here; there is no verified local guidance, so no rule is checked.",
+    "region_key": "AR-B",
+    "status": "partial"
   },
   "check_id": null,
   "denominator": null,
@@ -27,7 +43,7 @@
     "seed": "05-01"
   },
   "meta": {
-    "catalog_version": "none:2e1cfa82b035",
+    "catalog_version": "v3:AR-B:sage_-33.75_-60.75:3edf141b9da9",
     "plan_version": "1d6bbf72de8d3641",
     "request_id": "req_example",
     "snapshot_hash": "7c57f2ea32036ecff67ee1c6e7dece00415f16358b0f4bdc4488fb663953abeb"
