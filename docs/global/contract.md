@@ -236,3 +236,106 @@ Location handling (A2):
 `POST /v1/plans/future` with body `{location, plan | candidate, start_season: "2027", seasons: 2, edits?: [{field, value}]}` gives:
 
 `{meta, status, seasons: [{season: "2027", windows: [{kind, start, end, origin, source?}], cover_schedule, milestones: [{date, label, origin}], decision_deadlines: [{date, decision, switch_condition, next_check_date}], warnings: [], historical_vulnerabilities: [], backup: {}}], diff?: {changes: []}, recommendation_refresh?: {}}`
+
+---
+
+# Scenario Simulator contract (S-cards; see `docs/global/simulator.md`)
+
+Common: every response has `meta`, the 9 status words, `origin` on every value, `null` for blanks, and money as `{value, currency, unit, origin, source?}`. `currency` is the location's currency where a source gives it, else `USD`; area units are `acre | ha` (US default acre, elsewhere ha).
+
+## 11. Simulate and compare scenarios (S1, S2)
+
+`POST /v1/scenarios/simulate`:
+```json
+{"location": {"latitude": 34.98, "longitude": -80.55},
+ "field": {"field_id": "fld_1", "name": "North 40", "area_ha": 16.2, "geometry": null,
+           "equipment": ["planter", "grain_drill", "sprayer", "combine"],
+           "readings": [{"date": "2026-04-02", "kind": "soil_moisture_pct", "value": 23.5, "depth_cm": 10}]},
+ "goals": {"priorities": {"soil_cover": 2, "water_conservation": 2, "weather_resilience": 1, "crop_diversity": 1,
+                          "living_cover_duration": 1, "management_simplicity": 1, "profit": 3}},
+ "economics": {"overrides": {"soybean": {"price": {"value": 11.2, "unit": "USD/bu"}, "yield": {"value": 48, "unit": "bu/acre"}}},
+               "loss_assumptions": {"dry_spring_pct": 15, "heavy_rain_pct": null}},
+ "scenarios": [
+   {"scenario_id": "current", "label": "What I do now", "is_baseline": true,
+    "rotation": [/* 1..4 Plan objects (one per season of the rotation), cycled over the years */]},
+   {"scenario_id": "s2", "label": "Add cereal rye", "rotation": []}],
+ "years": 10, "runs": 200, "seed": 7, "start_season": "2027"}
+```
+Response:
+```json
+{"meta": {}, "status": "complete",
+ "method": {"weather": "historical_resampling", "runs": 200, "seed": 7, "source_years": "1981-2025",
+            "note": "Replays real past weather in new orders; not a forecast."},
+ "scenarios": [{"scenario_id": "current", "label": "What I do now", "status": "complete",
+   "timeline": [{"year": 2027, "season": "2027", "crop_sequence": ["field_corn", "cereal_rye", "soybean"], "plan_id": "…"}],
+   "yearly": [{"year": 2027,
+               "indicators": {"rain_on_bare_soil_mm": {"p10": 40.1, "median": 78.0, "p90": 140.2, "unit": "mm", "origin": "calculation"},
+                              "living_cover_days": {"median": 211, "unit": "days", "origin": "calculation"},
+                              "dry_pre_plant": {"probability": 0.21, "origin": "calculation"}},
+               "money": {"revenue": {"p10": null, "median": 41200, "p90": null, "currency": "USD", "origin": "calculation"},
+                         "costs": {"median": 28100, "currency": "USD", "origin": "calculation"},
+                         "margin": {"p10": 9800, "median": 13100, "p90": 16900, "currency": "USD", "origin": "calculation",
+                                    "includes_assumption": "dry_spring_pct"}}}],
+   "totals": {"margin_10y": {"p10": 98000, "median": 131000, "p90": 165000, "currency": "USD", "origin": "calculation"},
+              "living_cover_days_per_year": {"median": 190}, "rain_on_bare_soil_mm_per_year": {"median": 260.4},
+              "crop_families": 3, "operations_per_year": 6.5},
+   "events": [{"event": "dry_springs_ge_3_in_10y", "probability": 0.34, "text": "3 or more dry springs in 10 years in 34% of replays"}],
+   "money_status": "complete", "money_gaps": [],
+   "readings_context": [{"date": "2026-04-02", "kind": "soil_moisture_pct", "value": 23.5, "origin": "grower",
+                         "modeled_same_day": {"gwettop": 0.41, "origin": "nasa_modeled"}}]}],
+ "comparison": {
+   "baseline": "current",
+   "badges": [{"badge": "best_profit", "scenario_id": "s2", "why": "Highest median 10-year margin: $142,000 vs $131,000."},
+              {"badge": "most_sustainable", "scenario_id": "s2", "why": "…"},
+              {"badge": "lowest_weather_risk", "scenario_id": "current", "why": "…"},
+              {"badge": "best_for_priorities", "scenario_id": "s2", "why": "…"}],
+   "deltas": [{"scenario_id": "s2", "versus": "current", "changes": [{"indicator": "margin_10y", "median_delta": 11000, "currency": "USD", "text": "+$11,000 over 10 years (median)"}]}],
+   "trade_offs": [{"scenario_id": "s2", "text": "More cover days but one more field operation a year."}],
+   "caveat": "Best of the scenarios you compared, given these numbers and past weather. Not a forecast."}}
+```
+- A badge is omitted when it can't be decided fairly. For example, `best_profit` needs money for every scenario; otherwise it is left out and the reason goes in `comparison.not_decided[]`.
+- At most 6 scenarios, 1–10 years and 50–500 runs. Rate class: analysis.
+
+## 12. Economics estimate (S3)
+
+`POST /v1/economics/estimate` with body `{location, crops: ["field_corn", "soybean"], area: {value, unit}, equipment: [], overrides: {}}`:
+
+```json
+{"meta": {}, "currency": "USD", "area_unit": "acre",
+ "crops": [{"crop_id": "soybean",
+   "price": {"low": 9.5, "typical": 11.2, "high": 13.6, "unit": "USD/bu", "origin": "verified_source",
+             "source": {"title": "USDA NASS Agricultural Prices", "url": "…", "years": "2021-2025"}},
+   "yield": {"value": 44, "unit": "bu/acre", "origin": "dataset_estimate", "source": {"title": "USDA NASS county yields", "year": 2024}},
+   "costs": {"items": [{"item": "seed", "value": 62, "unit": "USD/acre", "origin": "verified_source", "source": {}}],
+             "total_per_area": {"value": 410, "unit": "USD/acre"}},
+   "status": "complete"}],
+ "equipment_costs": [{"equipment": "grain_drill", "pass": "drill", "value": 18.5, "unit": "USD/acre", "origin": "verified_source"}],
+ "gaps": []}
+```
+A crop with no source and no override gets `status: "unavailable"`, null values and a `reason_text`.
+
+## 13. Crop library (S4)
+
+- `GET /v1/crops/search?q=okra&region_key=US-NC` returns `{meta, results: [{crop_id, name, family, roles, origin, has_calendar, has_economics, region_note}], can_research: true}`.
+- `POST /v1/crops/research` with body `{name: "okra", region_key: "US-NC"}` returns `{meta, job_id, job_status, crop_id?}`.
+- `GET /v1/crops/research/{job_id}` returns the job, and once ready the `crop`.
+- `GET /v1/crops/{crop_id}?region_key=` returns `{crop_id, name, scientific_name, family, roles, season_length_days, calendars: [{region_key, plant, harvest, origin, source}], economics_refs: [], origin, sources[], cached_at}`.
+
+The library is shared by all users (cached centrally). Every research call goes through the guardrails, research caps and rate limits. The request carries only the crop name and region.
+
+## 14. Field context: equipment and readings (S5)
+
+The field object in §11/§5 gains:
+- `equipment[]`, from the vocabulary `planter, grain_drill, no_till_drill, broadcast_seeder, sprayer, roller_crimper, disk, chisel_plow, field_cultivator, combine, forage_harvester, irrigation_pivot, irrigation_drip, irrigation_none, other:<text>`;
+- `readings[]`: `{date, kind: soil_moisture_pct | soil_moisture_vwc | rainfall_mm | soil_temp_c | note, value, depth_cm?, note?}`.
+
+Both stay in the browser and are sent per request, never stored on the server. `GET /v1/vocab/equipment` and `GET /v1/vocab/readings` return the vocabularies with labels.
+
+## 15. Demo and autofill (S6)
+
+- `GET /v1/demo/farm?scenario=union|pergamino` returns `{meta, farm: Farm (contract §5 shape plus equipment and readings), current_plans, economics_overrides, goals, label: "Demo farm (example values)"}`.
+- `POST /v1/plans/autofill` with body `{location, crops: [{role: "previous|cover|next", crop_id}]}` returns `{meta, plan: Plan, dates: [{field, value, origin, source}], gaps}`.
+
+## 16. Vocabularies
+
+`GET /v1/vocab/priorities` returns the priority list, now including `profit`, with plain labels and one-line explanations for the UI.

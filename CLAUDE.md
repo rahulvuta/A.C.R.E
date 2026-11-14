@@ -40,7 +40,7 @@ Never edit `backend/data/catalogs/v1/` or `v2/` (Perplexity's verbatim files).
 
 ## 3. Science rules (both sides)
 
-- **Historical stress test only.** No forecasts, yields, profit or "safe to plant". Live weather is context, never input to the analysis.
+- **Historical simulation, never a forecast.** 10-year futures replay real past NASA seasons (historical resampling) and are labelled "not a forecast". Money results use the farmer's own numbers or sourced regional references (USDA NASS/ERS, university custom rates, FAOSTAT), never invented ones. Weather is converted into money only through a loss assumption the farmer enters, labelled `assumed`. No yield model, no "safe to plant". Live weather is context, never input. See `docs/global/simulator.md`.
 - **Blank is not zero.** Missing = `null` plus a status. A real 0 stays 0.
 - **Status vocabulary, exact strings:** `complete | partial | unavailable | unknown | inapplicable | unsupported | invalid_input | manual_check | insufficient_data`. Jobs additionally use `pending | ready | failed` in a separate `job_status` field, never in `status`.
 - **Provenance on everything** (`origin` field, exact strings): `nasa_measured`, `nasa_modeled`, `calculation`, `verified_source` (a published source a human or the catalog verified), `source_checked` (AI-found, the quote was found on the cited page by code), `ai_suggested` (AI-found, not confirmed), `grower`, `assumed`, `dataset_estimate` (gridded dataset such as SAGE or SoilGrids). AI output is never `verified_source`.
