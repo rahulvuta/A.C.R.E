@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import * as maplibregl from "maplibre-gl";
 import type { Map as MlMap, MapGeoJSONFeature } from "maplibre-gl";
 import { addHole, addParcel, bbox, checkGeometry, formatArea, type Ring } from "../farm/geometry";
 import { exportFarm, exportFileName, importFarm, MAX_IMPORT_BYTES } from "../farm/geojson";
 import { farmActions, useFarms } from "../farm/hooks";
 import type { Farm, Field } from "../farm/types";
 import { createDrawing, type Drawing } from "./drawing";
-import { ensureFieldLayers, FIELDS_FILL, setFieldData, type FieldState } from "./fieldLayers";
+import { ensureFieldLayers, FIELDS_FILL, setFieldData, STATE_COLOR, type FieldState } from "./fieldLayers";
+import { CELL_LABEL, ensureCellLayers, SHARED_NOTICE, setCellData, type WeatherCellView } from "./weatherCells";
 import type { GeoApi } from "./geoApi";
 import type { Pick } from "./LocationCard";
 import { MapScreen } from "./MapScreen";
@@ -26,8 +28,10 @@ const HINT: Record<Exclude<Tool, "idle">, string> = {
 
 export interface FarmMapProps {
   api: GeoApi;
-  /** Analysis state per field id (C4 colours the map with it). */
+  /** Analysis state per field id (C4 colours the map with it). Fields not listed show as "not analysed". */
   fieldStates?: Record<string, FieldState>;
+  /** The farm analysis' weather cells (C4): each is outlined and its fields are listed. */
+  weatherCells?: WeatherCellView[];
   /** Extra panel content under the field list (C4: legend, weather cells; D: open results). */
   children?: ReactNode;
   onMapReady?: (map: MlMap) => void;
@@ -35,7 +39,7 @@ export interface FarmMapProps {
   pickAction?: (pick: Pick) => ReactNode;
 }
 
-export function FarmMap({ api, fieldStates, children, onMapReady, pickAction }: FarmMapProps) {
+export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, pickAction }: FarmMapProps) {
   const { farms, selectedFarm: farm, selectedFieldId, persistence, notice } = useFarms();
   const [map, setMap] = useState<MlMap | null>(null);
   const drawing = useRef<Drawing | null>(null);
@@ -49,6 +53,7 @@ export function FarmMap({ api, fieldStates, children, onMapReady, pickAction }: 
 
   const ready = useCallback(
     (m: MlMap) => {
+      ensureCellLayers(m);
       ensureFieldLayers(m);
       drawing.current = createDrawing(m);
       setMap(m);
@@ -62,6 +67,27 @@ export function FarmMap({ api, fieldStates, children, onMapReady, pickAction }: 
   useEffect(() => {
     if (map) setFieldData(map, farm, selectedFieldId, fieldStates, tool === "edit" ? selectedFieldId : null);
   }, [map, farm, selectedFieldId, fieldStates, tool]);
+
+  // Weather cells: the outline from the backend's centre and size, and a label on each.
+  const cellMarkers = useRef<maplibregl.Marker[]>([]);
+  useEffect(() => {
+    if (!map) return;
+    const cells = weatherCells ?? [];
+    setCellData(map, cells);
+    for (const mk of cellMarkers.current) mk.remove();
+    cellMarkers.current = cells.map((c) => {
+      const el = document.createElement("div");
+      el.className = "mp-cell-label";
+      el.dataset.cellId = c.cellId;
+      el.textContent = CELL_LABEL;
+      const nw: [number, number] = [c.center.longitude - c.sizeDeg[1] / 2, c.center.latitude + c.sizeDeg[0] / 2];
+      return new maplibregl.Marker({ element: el, anchor: "top-left" }).setLngLat(nw).addTo(map);
+    });
+    return () => {
+      for (const mk of cellMarkers.current) mk.remove();
+      cellMarkers.current = [];
+    };
+  }, [map, weatherCells]);
 
   const stop = useCallback(() => {
     quietUntil.current = Date.now() + 400;
@@ -184,6 +210,7 @@ export function FarmMap({ api, fieldStates, children, onMapReady, pickAction }: 
         onZoom={zoomTo}
         onMessage={setMessage}
       />
+      {farm && farm.fields.length > 0 ? <ResultsLegend farm={farm} states={fieldStates} cells={weatherCells} /> : null}
       {children}
     </MapScreen>
   );
@@ -379,6 +406,45 @@ function FarmPanel({
         />
       </div>
       <p className="mp-fine">{storageNote ?? "Saved in this browser only. Nothing is sent until you run an analysis."}</p>
+    </section>
+  );
+}
+
+const STATE_LABEL: Record<FieldState, string> = {
+  none: "Not analysed yet",
+  pending: "Weather being prepared",
+  ready: "Results ready",
+  flagged: "Has a check to look at",
+  unavailable: "No result here",
+};
+
+/** Legend for the field colours, and which fields share each NASA weather cell (card C4). */
+function ResultsLegend({ farm, states = {}, cells = [] }: { farm: Farm; states?: Record<string, FieldState>; cells?: WeatherCellView[] }) {
+  const used = new Set<FieldState>(farm.fields.map((f) => states[f.field_id] ?? "none"));
+  const name = (id: string) => farm.fields.find((f) => f.field_id === id)?.name ?? "A field not on this farm";
+  return (
+    <section className="mp-results-layer" aria-label="Map key">
+      <ul className="mp-legend" aria-label="Field colours">
+        {(Object.keys(STATE_LABEL) as FieldState[])
+          .filter((k) => used.has(k))
+          .map((k) => (
+            <li key={k} data-state={k}>
+              <span className="mp-swatch" style={{ background: STATE_COLOR[k] }} aria-hidden="true" />
+              {STATE_LABEL[k]}
+            </li>
+          ))}
+      </ul>
+      {cells.length > 0 ? (
+        <ul className="mp-cells" aria-label="Weather cells">
+          {cells.map((c) => (
+            <li key={c.cellId} data-cell-id={c.cellId}>
+              <p className="mp-cell-title">One NASA weather series</p>
+              <p className="mp-quiet">{c.fieldIds.map(name).join(", ")}</p>
+              {c.fieldIds.length >= 2 ? <p className="mp-fine">{c.note || SHARED_NOTICE}</p> : null}
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </section>
   );
 }

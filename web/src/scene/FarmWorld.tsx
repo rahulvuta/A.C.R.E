@@ -5,6 +5,8 @@ import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js
 import type { CardKey } from "../content/strategies";
 import type { StripVM } from "../view/build";
 import { fieldStateAt, type FieldState } from "./growth";
+import type { FieldGeometry } from "../farm/types";
+import { insideStage, slabGeometry, stageShape, type StageShape } from "./polygonShape";
 
 /*
   The 3D farm. Three fields side by side in card order. Everything shown is driven by plan
@@ -263,7 +265,7 @@ function Crop({
   );
 }
 
-function Residue({ amount, color, seed }: { amount: number; color: string; seed: number }) {
+function Residue({ amount, color, seed, shape }: { amount: number; color: string; seed: number; shape?: StageShape | null }) {
   const ref = useRef<THREE.InstancedMesh>(null);
   const count = 320;
   const geo = useMemo(() => {
@@ -279,12 +281,13 @@ function Residue({ amount, color, seed }: { amount: number; color: string; seed:
     for (let i = 0; i < count; i++) {
       tmp.position.set((r() - 0.5) * (FIELD_W - 0.5), 0.03, (r() - 0.5) * (FIELD_D - 0.5));
       tmp.rotation.set(0, r() * Math.PI, (r() - 0.5) * 0.25);
-      tmp.scale.setScalar(0.75 + r() * 0.6);
+      // Straw that would fall outside a drawn outline (or in a hole) is not drawn.
+      tmp.scale.setScalar(shape && !insideStage(shape, tmp.position.x, -tmp.position.z) ? 0 : 0.75 + r() * 0.6);
       tmp.updateMatrix();
       mesh.setMatrixAt(i, tmp.matrix);
     }
     mesh.instanceMatrix.needsUpdate = true;
-  }, [seed, geo]);
+  }, [seed, geo, shape]);
   // Straw thins out or fills in over a moment instead of jumping.
   const shown = useRef(amount);
   const { frameloop, invalidate } = useThree();
@@ -417,8 +420,11 @@ function Field({
   hidden,
   flat,
   onSelect,
+  outline,
 }: {
   strip: StripVM;
+  /** The drawn outline (card C3). Without one the field is the classic square slab. */
+  outline?: FieldGeometry | null;
   state: FieldState | null;
   x: number;
   index: number;
@@ -430,16 +436,29 @@ function Field({
   flat: boolean;
   onSelect: (k: CardKey) => void;
 }) {
-  const geos = useMemo(() => ({ corn: makeCorn(), tuft: makeTuft(7, 0.05, 0.42), wheat: makeWheat(), soy: makeSoy() }), []);
-  const pts = useMemo(
-    () => ({
-      corn: grid(8, 12, 11 + index, 0.06),
-      tuft: grid(22, 22, 21 + index, 0.2),
-      wheat: grid(20, 22, 31 + index, 0.14),
-      soy: grid(9, 20, 41 + index, 0.05),
-    }),
-    [index],
+  const shape = useMemo(() => stageShape(outline, FIELD_W, FIELD_D), [outline]);
+  // Soil layers as slabs cut to the outline: topsoil, subsoil, deep layer, and the pale "not evaluated" slab.
+  const slabs = useMemo(
+    () => (shape ? { top: slabGeometry(shape, 0.35), sub: slabGeometry(shape, 0.55), deep: slabGeometry(shape, 0.7), ghost: slabGeometry(shape, 0.5) } : null),
+    [shape],
   );
+  useEffect(
+    () => () => {
+      if (slabs) for (const g of Object.values(slabs)) g.dispose();
+    },
+    [slabs],
+  );
+  const geos = useMemo(() => ({ corn: makeCorn(), tuft: makeTuft(7, 0.05, 0.42), wheat: makeWheat(), soy: makeSoy() }), []);
+  const pts = useMemo(() => {
+    // Plants only grow inside the drawn outline (stage z points south, so north is -z).
+    const keep = (g: Array<[number, number, number]>) => (shape ? g.filter(([x, z]) => insideStage(shape, x, -z)) : g);
+    return {
+      corn: keep(grid(8, 12, 11 + index, 0.06)),
+      tuft: keep(grid(22, 22, 21 + index, 0.2)),
+      wheat: keep(grid(20, 22, 31 + index, 0.14)),
+      soy: keep(grid(9, 20, 41 + index, 0.05)),
+    };
+  }, [index, shape]);
 
   const w = strip.weather;
   const wet = w.wetness;
@@ -532,11 +551,35 @@ function Field({
         <meshBasicMaterial map={shadow} transparent depthWrite={false} />
       </mesh>
       <group ref={body}>
-        {ghost ? (
+        {ghost && slabs ? (
+          <mesh position={[0, -0.5, 0]} geometry={slabs.ghost} onClick={pick}>
+            <meshPhysicalMaterial color="#BFEFF4" transparent opacity={0.5} roughness={0.15} clearcoat={1} />
+          </mesh>
+        ) : ghost ? (
           <mesh position={[0, -0.25, 0]} onClick={pick}>
             <boxGeometry args={[FIELD_W, 0.5, FIELD_D]} />
             <meshPhysicalMaterial color="#BFEFF4" transparent opacity={0.5} roughness={0.15} clearcoat={1} />
           </mesh>
+        ) : slabs ? (
+          <>
+            {/* The drawn outline as three soil layers. The square's cut-face water line and roots are left out. */}
+            <mesh
+              position={[0, -0.35, 0]}
+              geometry={slabs.top}
+              receiveShadow
+              onClick={pick}
+              onPointerOver={() => (document.body.style.cursor = "pointer")}
+              onPointerOut={() => (document.body.style.cursor = "")}
+            >
+              <meshStandardMaterial ref={topMat} map={grain} roughness={1} />
+            </mesh>
+            <mesh position={[0, -0.9, 0]} geometry={slabs.sub}>
+              <meshStandardMaterial color={SUBSOIL} map={grain} roughness={1} />
+            </mesh>
+            <mesh position={[0, -1.6, 0]} geometry={slabs.deep}>
+              <meshStandardMaterial color={DEEP} map={grain} roughness={1} />
+            </mesh>
+          </>
         ) : (
           <>
             {/* Soil block: grainy topsoil tinted by modeled wetness, then subsoil and a deeper layer on the cut face. */}
@@ -578,7 +621,7 @@ function Field({
 
         {state ? (
           <>
-            <Residue amount={state.residue} color={palette.residue} seed={51 + index} />
+            <Residue amount={state.residue} color={palette.residue} seed={51 + index} shape={shape} />
             <Crop geometry={geos.corn} points={pts.corn} show={state.corn.show} height={state.corn.h} size={2.3} color={state.corn.mature ? palette.corn : palette.cornGreen} sway={0.03} />
             <Crop
               geometry={geos.tuft}
@@ -657,8 +700,15 @@ export default function FarmWorld({
   palette,
   onSelect,
   children,
+  outlines,
 }: {
   strips: StripVM[];
+  /**
+   * Card C3: the drawn outline for each strip, in the same order. A strip with no outline
+   * (and the NC demo, which passes none) keeps the square field. Label the view with
+   * SCENE_SHAPE_LABEL from ./polygonShape when outlines are shown.
+   */
+  outlines?: Array<FieldGeometry | null | undefined>;
   day: number;
   preset: CameraPreset;
   animate: boolean;
@@ -705,6 +755,7 @@ export default function FarmWorld({
           hidden={solo && i !== selectedIndex}
           flat={preset === "cutaway"}
           onSelect={onSelect}
+          outline={outlines?.[i]}
         />
       ))}
       <CameraRig preset={preset} focusX={X[selectedIndex]!} animate={animate} />

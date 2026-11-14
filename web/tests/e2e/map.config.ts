@@ -18,6 +18,8 @@ export default defineConfig({
   },
   webServer: {
     command: "npx vite --port 5174 --strictPort",
+    // The config lives in tests/e2e; Vite must start from web/ to find its config and src/.
+    cwd: "../..",
     port: 5174,
     reuseExistingServer: true,
   },
