@@ -1,0 +1,50 @@
+# Render Blueprint for A.C.R.E: the API (FastAPI) and the web app (static Vite build).
+# Render reads this file from the repo root when you create a Blueprint (New → Blueprint).
+# Both services deploy from `main` and redeploy on every push to it.
+services:
+  - type: web
+    name: acre-api
+    runtime: python
+    plan: free            # sleeps after ~15 min idle; first request then takes ~30-60 s
+    branch: main
+    rootDir: backend
+    autoDeploy: true
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: python -m uvicorn fieldshift.api.app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      # Weather/geocoder/soil/research caches. On the free plan the disk is wiped on each
+      # deploy or restart, so cells are re-fetched from NASA POWER after that (still correct).
+      - key: FIELDSHIFT_CACHE_DIR
+        value: /tmp/acre-cache
+      # Set in the dashboard after the first deploy: the web app's URL, e.g.
+      # https://acre-web.onrender.com (comma-separate several origins).
+      - key: FIELDSHIFT_CORS_ORIGINS
+        sync: false
+      # AI regional research through OpenRouter. Leave blank to run without AI research.
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: FIELDSHIFT_RESEARCH_MODEL
+        value: anthropic/claude-sonnet-4.5
+
+  - type: web
+    name: acre-web
+    runtime: static
+    branch: main
+    rootDir: web
+    autoDeploy: true
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      # Set in the dashboard after the API's first deploy, e.g. https://acre-api.onrender.com
+      # (Vite bakes it in at build time, so redeploy the web app after changing it.)
+      - key: VITE_API_BASE
+        sync: false
+      - key: NODE_VERSION
+        value: "22"
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
