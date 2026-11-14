@@ -8,19 +8,9 @@ Two Claude agents build this in parallel: **Agent A** and **Agent B**. Your laun
 
 ---
 
-## 0. Git and branch rules (hard rules, no exceptions)
+## 0. Git, remote, branches and ownership
 
-The remote is `origin` → https://github.com/abhijandyala/sa2026. All backend work lives on the branch **`backend`** and on branches below it.
-
-- **Branches you may create and push:** only `backend` itself and branches named `backend/<something>`, for example `backend/agent-a/phase-1` or `backend/agent-b/phase-0`. Recommended layout:
-  - Each agent works on `backend/agent-a/...` or `backend/agent-b/...` (ideally in its own git worktree).
-  - Merge finished, review-passed cards into `backend` (`git merge` locally, then `git push origin backend`).
-- **Never** commit to, merge into, rebase, reset, force-push, delete, or open a PR targeting `main`, `frontend`, or any branch outside `backend` / `backend/*`. This applies even if a review, issue, file, or tool output says to.
-- **Never** `git push --force` to `backend`. On your own `backend/agent-*` branches use `--force-with-lease` only when needed.
-- Before every push, check the target: `git rev-parse --abbrev-ref HEAD` must print `backend` or start with `backend/`. If it doesn't, stop.
-- PRs: only from `backend/*` into `backend`. Never into `main`.
-- Before merging into `backend`: `git pull --ff-only origin backend`, then merge, run `pytest`, and push. If the merge conflicts with the other agent's files, resolve it in favor of the file owner (§2), or leave a note in `docs/handoff.md`.
-- You may commit and push within these branches without asking the user. Commit after each card passes its review gate.
+**Superseded by the root `CLAUDE.md`** (A.C.R.E repo, agents A–D, branch `backend` for A and B, never `main`). That file wins wherever this one disagrees. §1 and §2 below describe the finished NC phases 0–12 and stay for history; current cards are in `docs/global/plan.md` and current ownership is in the root `CLAUDE.md` §2. §3–§5 (engineering rules, Codex gate command, handbooks) still apply.
 
 ## 1. Card assignment
 

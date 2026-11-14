@@ -1,6 +1,6 @@
 # Fieldback frontend: working rules
 
-These rules cover everything in `web/`. The root `CLAUDE.md` covers the backend and does not apply here. Abhi owns the frontend; Rahul owns the backend, the data and every calculation.
+These rules cover everything in `web/`. The root `CLAUDE.md` also applies here and wins on git, ownership and the remote: Agents C and D build the frontend on `frontend/dev` (plan: `docs/global/plan.md`). The backend owns the data and every calculation. Geometry measured for display (area, centroid with turf) is allowed; the backend recomputes it for any calculation.
 
 ## What the app is
 
@@ -53,4 +53,4 @@ npm run data         # save real responses; needs the backend running (FIELDSHIF
 
 ## Git
 
-Frontend work goes on `frontend/*` branches and merges into `main`. Never push to or rewrite `backend` or `backend/*`. Commit only when asked.
+See the root `CLAUDE.md` §1: C and D commit only on `frontend/dev` in `/Users/rahulvuta/Desktop/Projects/NSA26-frontend`, stage only their own paths, never touch `main` or `backend`. They may `git merge origin/backend` to pick up new endpoints.
