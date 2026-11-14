@@ -1,0 +1,242 @@
+{
+ "_fixture": "EXAMPLE demo farm in the contract \u00a715 shape (Agent C, U4) until GET /v1/demo/farm ships. Outlines are invented, not a real farm.",
+ "meta": {
+  "request_id": "fx_demo_union"
+ },
+ "label": "Demo farm (example values)",
+ "farm": {
+  "schema": "acre.farm.v1",
+  "farm_id": "farm_demo_union",
+  "name": "Demo farm, Union County NC",
+  "anchor": {
+   "latitude": 34.871,
+   "longitude": -80.439
+  },
+  "fields": [
+   {
+    "field_id": "fld_demo_east",
+    "name": "East field",
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -80.43609,
+        34.87077
+       ],
+       [
+        -80.43124,
+        34.87077
+       ],
+       [
+        -80.43124,
+        34.87343
+       ],
+       [
+        -80.43609,
+        34.87343
+       ],
+       [
+        -80.43609,
+        34.87077
+       ]
+      ],
+      [
+       [
+        -80.4342,
+        34.8718
+       ],
+       [
+        -80.4336,
+        34.8718
+       ],
+       [
+        -80.4336,
+        34.87225
+       ],
+       [
+        -80.4342,
+        34.87225
+       ],
+       [
+        -80.4342,
+        34.8718
+       ]
+      ]
+     ]
+    },
+    "plan": {
+     "plan_id": "cs_none",
+     "label": "Corn, then soybean, bare winter",
+     "region": "NC Piedmont",
+     "previous_crop_id": "field_corn",
+     "prev_harvest": "09-20",
+     "winter": {
+      "kind": "none"
+     },
+     "next_crop_id": "soybean",
+     "next_plant": "05-12"
+    },
+    "equipment": [
+     "planter",
+     "grain_drill",
+     "sprayer",
+     "combine"
+    ],
+    "readings": [
+     {
+      "date": "2026-04-02",
+      "kind": "soil_moisture_pct",
+      "value": 23.5,
+      "depth_cm": 10
+     }
+    ]
+   },
+   {
+    "field_id": "fld_demo_west",
+    "name": "West field",
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -80.44257,
+        34.87144
+       ],
+       [
+        -80.43909,
+        34.87144
+       ],
+       [
+        -80.43909,
+        34.873
+       ],
+       [
+        -80.4403,
+        34.873
+       ],
+       [
+        -80.4403,
+        34.87456
+       ],
+       [
+        -80.44257,
+        34.87456
+       ],
+       [
+        -80.44257,
+        34.87144
+       ]
+      ]
+     ]
+    },
+    "plan": {
+     "plan_id": "sc_none",
+     "label": "Soybean, then corn, bare winter",
+     "region": "NC Piedmont",
+     "previous_crop_id": "soybean",
+     "prev_harvest": "10-25",
+     "winter": {
+      "kind": "none"
+     },
+     "next_crop_id": "field_corn",
+     "next_plant": "04-10"
+    },
+    "equipment": [
+     "planter",
+     "sprayer",
+     "combine"
+    ],
+    "readings": [
+     {
+      "date": "2026-03-18",
+      "kind": "rainfall_mm",
+      "value": 31
+     }
+    ]
+   },
+   {
+    "field_id": "fld_demo_road",
+    "name": "Road piece",
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -80.4458,
+        34.86446
+       ],
+       [
+        -80.44257,
+        34.86446
+       ],
+       [
+        -80.44257,
+        34.86712
+       ],
+       [
+        -80.4458,
+        34.86712
+       ],
+       [
+        -80.4458,
+        34.86446
+       ]
+      ]
+     ]
+    },
+    "plan": {
+     "plan_id": "cs_rye",
+     "label": "Corn, cereal rye, soybean",
+     "region": "NC Piedmont",
+     "previous_crop_id": "field_corn",
+     "prev_harvest": "09-20",
+     "winter": {
+      "kind": "cover",
+      "crop_id": "cereal_rye",
+      "seed": "10-01",
+      "terminate": "04-30"
+     },
+     "next_crop_id": "soybean",
+     "next_plant": "05-12"
+    },
+    "equipment": [
+     "no_till_drill",
+     "sprayer",
+     "roller_crimper"
+    ],
+    "readings": []
+   }
+  ],
+  "created_at": "2026-11-14T00:00:00Z",
+  "updated_at": "2026-11-14T00:00:00Z"
+ },
+ "current_plans": {
+  "fld_demo_east": "cs_none",
+  "fld_demo_west": "sc_none",
+  "fld_demo_road": "cs_rye"
+ },
+ "economics_overrides": {
+  "soybean": {
+   "price": {
+    "value": 11.2,
+    "unit": "USD/bu"
+   },
+   "yield": {
+    "value": 42,
+    "unit": "bu/acre"
+   }
+  }
+ },
+ "goals": {
+  "priorities": {
+   "soil_cover": 2,
+   "water_conservation": 2,
+   "weather_resilience": 1,
+   "crop_diversity": 1,
+   "living_cover_duration": 1,
+   "management_simplicity": 1,
+   "profit": 3
+  }
+ }
+}

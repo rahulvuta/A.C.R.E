@@ -15,6 +15,8 @@ export interface GeoApi {
   search(q: string, signal?: AbortSignal): Promise<GeoResult<GeoSearch>>;
   reverse(lat: number, lon: number, signal?: AbortSignal): Promise<GeoResult<PlaceInfo>>;
   capabilities(lat: number, lon: number, signal?: AbortSignal): Promise<GeoResult<Capabilities>>;
+  /** Contract §15 `GET /v1/demo/farm` (raw body; farm/demo.ts checks it). Optional: the example file is used without it. */
+  demoFarm?(scenario: "union" | "pergamino", signal?: AbortSignal): Promise<GeoResult<unknown>>;
 }
 
 const TIMEOUT_MS = 15000;
@@ -155,6 +157,9 @@ export function createFetchGeoApi(base: string, fetchImpl: Fetch = (...a) => fet
     async capabilities(lat, lon, signal) {
       const r = await getJson(`${root}/v1/locations/capabilities?lat=${lat}&lon=${lon}`, fetchImpl, signal);
       return r.ok ? parseCapabilities(r.data) : r;
+    },
+    async demoFarm(scenario, signal) {
+      return getJson(`${root}/v1/demo/farm?scenario=${scenario}`, fetchImpl, signal);
     },
   };
 }

@@ -1,0 +1,128 @@
+{
+ "_fixture": "EXAMPLE request in the contract \u00a711 shape (Agent C, U4); the rotations give the timeline its dates.",
+ "location": {
+  "latitude": 34.871,
+  "longitude": -80.434
+ },
+ "field": {
+  "field_id": "fld_demo_east",
+  "name": "East field",
+  "area_ha": 12.9,
+  "geometry": null,
+  "equipment": [
+   "planter",
+   "grain_drill",
+   "sprayer",
+   "combine"
+  ],
+  "readings": []
+ },
+ "scenarios": [
+  {
+   "scenario_id": "current",
+   "label": "What I do now",
+   "is_baseline": true,
+   "rotation": [
+    {
+     "plan_id": "cs_none",
+     "label": "Corn, then soybean, bare winter",
+     "region": "NC Piedmont",
+     "previous_crop_id": "field_corn",
+     "prev_harvest": "09-20",
+     "winter": {
+      "kind": "none"
+     },
+     "next_crop_id": "soybean",
+     "next_plant": "05-12"
+    },
+    {
+     "plan_id": "sc_none",
+     "label": "Soybean, then corn, bare winter",
+     "region": "NC Piedmont",
+     "previous_crop_id": "soybean",
+     "prev_harvest": "10-25",
+     "winter": {
+      "kind": "none"
+     },
+     "next_crop_id": "field_corn",
+     "next_plant": "04-10"
+    }
+   ]
+  },
+  {
+   "scenario_id": "s2",
+   "label": "Add cereal rye",
+   "is_baseline": false,
+   "rotation": [
+    {
+     "plan_id": "cs_rye",
+     "label": "Corn, cereal rye, soybean",
+     "region": "NC Piedmont",
+     "previous_crop_id": "field_corn",
+     "prev_harvest": "09-20",
+     "winter": {
+      "kind": "cover",
+      "crop_id": "cereal_rye",
+      "seed": "10-01",
+      "terminate": "04-30"
+     },
+     "next_crop_id": "soybean",
+     "next_plant": "05-12"
+    },
+    {
+     "plan_id": "sc_clover",
+     "label": "Soybean, crimson clover, corn",
+     "region": "NC Piedmont",
+     "previous_crop_id": "soybean",
+     "prev_harvest": "10-25",
+     "winter": {
+      "kind": "cover",
+      "crop_id": "crimson_clover",
+      "seed": "10-30",
+      "terminate": "04-05"
+     },
+     "next_crop_id": "field_corn",
+     "next_plant": "04-15"
+    }
+   ]
+  },
+  {
+   "scenario_id": "s3",
+   "label": "Wheat, double-crop soybean",
+   "is_baseline": false,
+   "rotation": [
+    {
+     "plan_id": "cw_dc",
+     "label": "Corn, wheat, double-crop soybean",
+     "region": "NC Piedmont",
+     "previous_crop_id": "field_corn",
+     "prev_harvest": "09-20",
+     "winter": {
+      "kind": "winter_grain",
+      "crop_id": "wheat",
+      "plant": "10-20",
+      "harvest": "06-10"
+     },
+     "next_crop_id": "soybean",
+     "next_plant": "06-18"
+    },
+    {
+     "plan_id": "sc_none2",
+     "label": "Soybean, then corn, bare winter",
+     "region": "NC Piedmont",
+     "previous_crop_id": "soybean",
+     "prev_harvest": "10-30",
+     "winter": {
+      "kind": "none"
+     },
+     "next_crop_id": "field_corn",
+     "next_plant": "04-10"
+    }
+   ]
+  }
+ ],
+ "years": 10,
+ "runs": 200,
+ "seed": 7,
+ "start_season": "2027"
+}
