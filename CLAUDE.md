@@ -1,6 +1,6 @@
-# A.C.R.E / Field Shift: rules for all agents
+# A.C.R.E / A.C.R.E: rules for all agents
 
-Field Shift is a historical stress test for crop plans: it replays a farmer's plan against decades of NASA weather and the published agricultural guidance for that place. It is going global: any farm, drawn on a map, with fields that each have their own plan. The plan is in `docs/global/plan.md` and is the source of truth. The API contract is `docs/global/contract.md`.
+A.C.R.E is a historical stress test for crop plans: it replays a farmer's plan against decades of NASA weather and the published agricultural guidance for that place. It is going global: any farm, drawn on a map, with fields that each have their own plan. The plan is in `docs/global/plan.md` and is the source of truth. The API contract is `docs/global/contract.md`.
 
 Rahul owns the backend, with Claude Agents A and B. Abhi is back and owns the frontend (all former Agent C and D cards). Your launch prompt says which one you are. If it doesn't, ask before touching code.
 
@@ -28,8 +28,8 @@ Only edit what you own. Need a change elsewhere? Write it in your log (`docs/glo
 
 | Owner | Paths |
 |---|---|
-| A | `backend/fieldshift/{weather,seasons,compare,api,farms}/`, `backend/fieldshift/contracts.py`, `backend/fieldshift/metrics/{winter,spring,thresholds}.py`, `backend/data/snapshots/`, `backend/data/samples/union_plans.json`, `backend/scripts/`, `backend/railway.json`, `backend/docs/api/`, `backend/docs/backend-runbook.md`, `docs/global/contract.md` (after G0) |
-| B | `backend/fieldshift/{geo,catalogs,research,planner,field,tools,report}/`, `backend/fieldshift/metrics/{rules,rule_text}.py`, `backend/data/{catalogs/regions,catalogs/v3,geo}/`, `backend/data/samples/zones.json` |
+| A | `backend/acre/{weather,seasons,compare,api,farms}/`, `backend/acre/contracts.py`, `backend/acre/metrics/{winter,spring,thresholds}.py`, `backend/data/snapshots/`, `backend/data/samples/union_plans.json`, `backend/scripts/`, `backend/railway.json`, `backend/docs/api/`, `backend/docs/backend-runbook.md`, `docs/global/contract.md` (after G0) |
+| B | `backend/acre/{geo,catalogs,research,planner,field,tools,report}/`, `backend/acre/metrics/{rules,rule_text}.py`, `backend/data/{catalogs/regions,catalogs/v3,geo}/`, `backend/data/samples/zones.json` |
 | Abhi (was C) | `web/src/{map,farm,scene}/`, `web/tests/e2e/map*`, `web/tests/e2e/farm*` |
 | Abhi (was D) | `web/src/{api,state,screens,view,content,site,ui,styles,data}/`, `web/src/{App,main,config}.tsx?`, `web/public/data/`, `web/scripts/`, `web/tests/e2e/` (other than C's files) |
 | shared (small `Edit`, re-read right before) | `backend/pyproject.toml`, `backend/Makefile`, `web/package.json`, `web/package-lock.json` (only via `npm install <pkg>@<exact version>`), `web/vite.config.ts` |

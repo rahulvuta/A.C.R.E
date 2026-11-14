@@ -8,9 +8,9 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
-from fieldshift.field.location import in_nc_bounds
-from fieldshift.report.meta import get_index
-from fieldshift.weather import ondemand
+from acre.field.location import in_nc_bounds
+from acre.report.meta import get_index
+from acre.weather import ondemand
 from tests.weather.test_weather_ondemand import FIXTURE, FakePower
 
 PERG = {"latitude": -33.89, "longitude": -60.57}
@@ -25,7 +25,7 @@ PLAN = {
 @pytest.fixture(autouse=True)
 def _cache(tmp_path, monkeypatch):
     monkeypatch.setenv(ondemand.CACHE_ENV, str(tmp_path / "cache"))
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")  # analysis never fetches
+    monkeypatch.setenv("ACRE_OFFLINE", "1")  # analysis never fetches
     ondemand.reset_jobs()
     yield
     ondemand.set_fetch(None)
@@ -36,17 +36,17 @@ def _prepare(body: bytes | None = None, lat: float = PERG["latitude"],
              lon: float = PERG["longitude"]) -> ondemand.WeatherState:  # fmt: skip
     import os
 
-    os.environ.pop("FIELDSHIFT_OFFLINE", None)
+    os.environ.pop("ACRE_OFFLINE", None)
     ondemand.set_fetch(FakePower(body=body))
     st = ondemand.prepare(ondemand.Cell.from_point(lat, lon), wait_s=30)
-    os.environ["FIELDSHIFT_OFFLINE"] = "1"
+    os.environ["ACRE_OFFLINE"] = "1"
     assert st.job_status == "ready"
     return st
 
 
 @pytest.fixture
 def client() -> TestClient:
-    from fieldshift.api.app import create_app
+    from acre.api.app import create_app
 
     return TestClient(create_app())
 
@@ -138,7 +138,7 @@ def test_unprepared_cell_outside_nc_is_unavailable_with_reason(client, monkeypat
     assert p["status"] == "unavailable" and p["reason"].startswith("offline_no_snapshot")
     assert body["weather_location"]["code"] == "offline_no_snapshot"
     assert body["meta"]["snapshot_hash"] is None
-    monkeypatch.delenv("FIELDSHIFT_OFFLINE")
+    monkeypatch.delenv("ACRE_OFFLINE")
     body = _compare(client, PERG)
     assert body["weather_location"]["code"] == "weather_not_prepared"
     assert body["weather_location"]["reason_text"]
@@ -196,8 +196,8 @@ def test_nc_compare_keeps_nc_values_and_adds_labels(client):
 
 
 def test_threshold_set_id_ignores_the_labels():
-    from fieldshift.compare.context import get_context
-    from fieldshift.metrics.thresholds import build_threshold_set
+    from acre.compare.context import get_context
+    from acre.metrics.thresholds import build_threshold_set
 
     ctx = get_context()
     a = build_threshold_set(ctx.series, ctx.snapshot_hash, ["05-12"])

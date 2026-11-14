@@ -43,7 +43,7 @@
           "label": "Harvest field_corn",
           "origin": "assumed",
           "source": {
-            "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
             "url": null
           },
           "field": "prev_harvest"
@@ -55,7 +55,7 @@
           "label": "Seed cereal_rye",
           "origin": "assumed",
           "source": {
-            "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
             "url": null
           },
           "field": "winter.seed"
@@ -67,7 +67,7 @@
           "label": "Terminate cereal_rye",
           "origin": "grower",
           "source": {
-            "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
             "url": null
           },
           "field": "winter.terminate"
@@ -79,7 +79,7 @@
           "label": "Plant soybean",
           "origin": "assumed",
           "source": {
-            "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
             "url": null
           },
           "field": "next_plant"
@@ -608,7 +608,7 @@
           "label": "Harvest soybean",
           "origin": "assumed",
           "source": {
-            "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
             "url": null
           },
           "field": "prev_harvest"
@@ -620,7 +620,7 @@
           "label": "Seed cereal_rye",
           "origin": "assumed",
           "source": {
-            "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
             "url": null
           },
           "field": "winter.seed"
@@ -632,7 +632,7 @@
           "label": "Terminate cereal_rye",
           "origin": "assumed",
           "source": {
-            "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
             "url": null
           },
           "field": "winter.terminate"
@@ -644,7 +644,7 @@
           "label": "Plant field_corn",
           "origin": "assumed",
           "source": {
-            "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
             "url": null
           },
           "field": "next_plant"
@@ -1392,7 +1392,7 @@
         "definition": "Planned field operations per season: previous harvest and next planting, plus cover seed and termination or winter-grain planting and harvest.",
         "rationale": "A plain count used only for the management-simplicity priority; not a cost or labour estimate.",
         "source": {
-          "title": "Field Shift indicator definitions (backend/docs/indicators.md)",
+          "title": "A.C.R.E indicator definitions (backend/docs/indicators.md)",
           "url": null
         },
         "per_leg": [
@@ -1411,7 +1411,7 @@
         "definition": "Share of evaluable seasons whose 30 days before planting were dry (bottom 20% of this cell's own totals for that window).",
         "rationale": "How often this planting window started dry in this cell's history; it describes the window's weather, not the plan's effect on it.",
         "source": {
-          "title": "Field Shift dry pre-plant window: bottom 20% of this cell's own 1981-2025 30-day totals (calculation)",
+          "title": "A.C.R.E dry pre-plant window: bottom 20% of this cell's own 1981-2025 30-day totals (calculation)",
           "url": null
         },
         "per_leg": [
@@ -1438,7 +1438,7 @@
         "definition": "Per leg, the distinct catalog rule checks that flagged in at least one past season plus the rule lines that need a manual check (the winter-wheat path's lines included); mean over legs. Unevaluable rules are listed, not counted. Each rule cites its own source.",
         "rationale": "Published guidance that would have asked for a check or a change.",
         "source": {
-          "title": "Field Shift indicator definitions (backend/docs/indicators.md)",
+          "title": "A.C.R.E indicator definitions (backend/docs/indicators.md)",
           "url": null
         },
         "per_leg": [
@@ -1520,7 +1520,7 @@
         "definition": "Not computed: there is no sourced crop water-need table yet.",
         "rationale": "Listed so the gap is visible; never used for a shortlist.",
         "source": {
-          "title": "Field Shift indicator definitions (backend/docs/indicators.md)",
+          "title": "A.C.R.E indicator definitions (backend/docs/indicators.md)",
           "url": null
         },
         "per_leg": [],

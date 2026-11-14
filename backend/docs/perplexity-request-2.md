@@ -1,4 +1,4 @@
-Follow-up research request: Field Shift catalogs, v2 additions
+Follow-up research request: A.C.R.E catalogs, v2 additions
 
 Context: you supplied crops.csv, crop_rules.csv, and fertilizers.csv (v1) for a North Carolina Piedmont (Union County) crop-rotation planner. We need a small set of additional rows in the SAME schemas. Return only new or corrected rows, as CSV with header rows, in two files: crops_v2_additions.csv and crop_rules_v2_additions.csv.
 

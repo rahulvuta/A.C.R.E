@@ -10,13 +10,13 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from fieldshift.api.app import create_app
-from fieldshift.catalogs import V1_CATALOG_DIR, CatalogIndex, load_catalog
-from fieldshift.compare import engine, text
-from fieldshift.compare.context import get_context
-from fieldshift.compare.years import years_payload
-from fieldshift.contracts import Plan
-from fieldshift.planner.wheat_path import demo_plan
+from acre.api.app import create_app
+from acre.catalogs import V1_CATALOG_DIR, CatalogIndex, load_catalog
+from acre.compare import engine, text
+from acre.compare.context import get_context
+from acre.compare.years import years_payload
+from acre.contracts import Plan
+from acre.planner.wheat_path import demo_plan
 
 ROOT = Path(__file__).resolve().parents[2]
 PLANS = ROOT / "data/samples/union_plans.json"
@@ -25,7 +25,7 @@ PLANS = ROOT / "data/samples/union_plans.json"
 @pytest.fixture(scope="module")
 def client():
     mp = pytest.MonkeyPatch()
-    mp.setenv("FIELDSHIFT_OFFLINE", "1")
+    mp.setenv("ACRE_OFFLINE", "1")
 
     def refuse(*a, **k):
         raise AssertionError("network access attempted")

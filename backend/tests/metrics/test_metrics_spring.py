@@ -5,27 +5,27 @@ from datetime import date
 import pandas as pd
 import pytest
 
-from fieldshift.contracts import Plan, Status, WinterManagement
-from fieldshift.metrics.spring import (
+from acre.contracts import Plan, Status, WinterManagement
+from acre.metrics.spring import (
     SPRING_DRY_PREFIX,
     compute_spring,
     dry_cutoff,
     spring_reference,
     spring_window_for,
 )
-from fieldshift.metrics.thresholds import build_threshold_set
-from fieldshift.metrics.winter import ThresholdMismatchError
-from fieldshift.seasons.align import build_calendar
-from fieldshift.seasons.coverage import season_coverage
-from fieldshift.seasons.facts import build_season_facts
-from fieldshift.weather.series import DailySeries
-from fieldshift.weather.snapshot import load_snapshot
+from acre.metrics.thresholds import build_threshold_set
+from acre.metrics.winter import ThresholdMismatchError
+from acre.seasons.align import build_calendar
+from acre.seasons.coverage import season_coverage
+from acre.seasons.facts import build_season_facts
+from acre.weather.series import DailySeries
+from acre.weather.snapshot import load_snapshot
 
 HASH = "fixture-hash"
 
 
 def plan(terminate="04-30", plant="05-12", concern=None, plan_id="p") -> Plan:
-    from fieldshift.contracts import GrowerInputs
+    from acre.contracts import GrowerInputs
 
     return Plan(
         plan_id=plan_id, previous_crop_id="field_corn", prev_harvest="09-20",
@@ -212,7 +212,7 @@ def years(union):
 
 
 def flagged(index, facts, rule="cr_tt_03"):
-    from fieldshift.metrics.rules import evaluate_season
+    from acre.metrics.rules import evaluate_season
 
     check = evaluate_season(facts, index, rule_ids=[rule]).check(rule)
     return check.flagged, check

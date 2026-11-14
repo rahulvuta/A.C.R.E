@@ -11,9 +11,9 @@ import httpx
 import pytest
 from fastapi.testclient import TestClient
 
-from fieldshift.field import live, openmeteo, soilgrids
-from fieldshift.field import routes as field_routes
-from fieldshift.field.soil import unavailable
+from acre.field import live, openmeteo, soilgrids
+from acre.field import routes as field_routes
+from acre.field.soil import unavailable
 
 PERGAMINO = (-33.89, -60.57)
 UNION = (34.98, -80.55)
@@ -36,8 +36,8 @@ OM_BODY = {"timezone": "America/Argentina/Buenos_Aires",
 
 @pytest.fixture(autouse=True)
 def _isolated(tmp_path, monkeypatch):
-    monkeypatch.setenv("FIELDSHIFT_CACHE_DIR", str(tmp_path / "cache"))
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")  # geocoder: fixtures only
+    monkeypatch.setenv("ACRE_CACHE_DIR", str(tmp_path / "cache"))
+    monkeypatch.setenv("ACRE_OFFLINE", "1")  # geocoder: fixtures only
     live.DEFAULT_CACHE.clear()
     yield
     live.DEFAULT_CACHE.clear()
@@ -114,7 +114,7 @@ def test_open_meteo_is_context_and_never_calls_nws_or_usdm():
 
 @pytest.fixture()
 def client():
-    from fieldshift.api.app import create_app
+    from acre.api.app import create_app
 
     return TestClient(create_app())
 
@@ -135,7 +135,7 @@ def test_non_us_routes_use_soilgrids_and_open_meteo_and_never_nws(client, monkey
 
 
 def test_us_soil_uses_sda_first_and_soilgrids_only_as_fallback(client, monkeypatch):
-    from fieldshift.field.soil import SoilResult
+    from acre.field.soil import SoilResult
 
     monkeypatch.setattr(field_routes, "get_soil", lambda la, lo: SoilResult(status="complete"))
     sg_calls = []

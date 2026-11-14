@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 from fastapi.testclient import TestClient
 
-from fieldshift.tools.routes import AC_PER_HA, KG_PER_LB
+from acre.tools.routes import AC_PER_HA, KG_PER_LB
 
 PER_ACRE_EXACT = 120 / 0.46  # Phase 11: 260.87 lb urea per acre for 120 lb N
 URE = {"targets": {"n_lb_per_acre": 120}, "product": {"fertilizer_id": "urea_46_0_0"}}
@@ -13,9 +13,9 @@ URE = {"targets": {"n_lb_per_acre": 120}, "product": {"fertilizer_id": "urea_46_
 
 @pytest.fixture()
 def client(monkeypatch, tmp_path):
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")
-    monkeypatch.setenv("FIELDSHIFT_CACHE_DIR", str(tmp_path / "cache"))
-    from fieldshift.api.app import create_app
+    monkeypatch.setenv("ACRE_OFFLINE", "1")
+    monkeypatch.setenv("ACRE_CACHE_DIR", str(tmp_path / "cache"))
+    from acre.api.app import create_app
 
     return TestClient(create_app())
 
@@ -56,7 +56,7 @@ def test_metric_is_the_default_outside_the_us(client):
 
 
 def test_field_id_and_farm_use_the_backend_area(client):
-    pytest.importorskip("fieldshift.farms.geometry")
+    pytest.importorskip("acre.farms.geometry")
     # a synthetic ~1 km x 1 km square (fixture, not a real field)
     ring = [[-60.57, -33.89], [-60.5592, -33.89], [-60.5592, -33.881], [-60.57, -33.881],
             [-60.57, -33.89]]  # fmt: skip
@@ -110,7 +110,7 @@ def test_tools_outside_nc_never_use_nc_rules(client):
 
 
 def test_field_id_accepts_the_contract_farm_shape(client):
-    pytest.importorskip("fieldshift.farms.geometry")
+    pytest.importorskip("acre.farms.geometry")
     ring = [[-60.57, -33.89], [-60.5592, -33.89], [-60.5592, -33.881], [-60.57, -33.881],
             [-60.57, -33.89]]  # fmt: skip
     farm = {"farm_id": "f1", "fields": [{"field_id": "fld_1", "geometry": {

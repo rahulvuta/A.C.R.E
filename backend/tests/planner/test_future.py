@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 from fastapi.testclient import TestClient
 
-from fieldshift.catalogs import regional
+from acre.catalogs import regional
 
 UNION = {"latitude": 34.98, "longitude": -80.55}
 PERGAMINO = {"latitude": -33.89, "longitude": -60.57}
@@ -14,8 +14,8 @@ AS_OF = "2026-11-14"
 
 @pytest.fixture(autouse=True)
 def _offline(tmp_path, monkeypatch):
-    monkeypatch.setenv("FIELDSHIFT_CACHE_DIR", str(tmp_path / "cache"))
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")
+    monkeypatch.setenv("ACRE_CACHE_DIR", str(tmp_path / "cache"))
+    monkeypatch.setenv("ACRE_OFFLINE", "1")
     regional.clear_cache()
     yield
     regional.clear_cache()
@@ -23,7 +23,7 @@ def _offline(tmp_path, monkeypatch):
 
 @pytest.fixture(scope="module")
 def client():
-    from fieldshift.api.app import create_app
+    from acre.api.app import create_app
 
     return TestClient(create_app())
 
@@ -143,7 +143,7 @@ def test_rotation_id_lays_out_its_legs(client):
 
 
 def test_the_note_includes_the_future_plan_with_audit_ids(client):
-    from fieldshift.report.audit import verify
+    from acre.report.audit import verify
 
     r = client.post("/v1/plans/note", json={"plan_id": "corn_soy__rye", "year": 2027,
                                             "as_of": AS_OF, "future": {"seasons": 2}})  # fmt: skip
@@ -212,7 +212,7 @@ def test_the_note_keeps_provenance_and_audits_each_season_against_its_own_plan(c
 
 
 def test_historical_vulnerabilities_and_refresh_come_from_p2(client):
-    pytest.importorskip("fieldshift.compare.recommend")
+    pytest.importorskip("acre.compare.recommend")
     j = future(client, plan_id="corn_soy__rye", start_season=2027, seasons=2,
                edits=[{"field": "priorities.soil_cover", "value": 3}])  # fmt: skip
     ref = j["recommendation_refresh"]

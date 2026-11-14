@@ -69,7 +69,7 @@
           "rationale": "How often this planting window started dry in this cell's history; it describes the window's weather, not the plan's effect on it.",
           "reason": null,
           "source": {
-            "title": "Field Shift dry pre-plant window: bottom 20% of this cell's own 1981-2025 30-day totals (calculation)",
+            "title": "A.C.R.E dry pre-plant window: bottom 20% of this cell's own 1981-2025 30-day totals (calculation)",
             "url": null
           },
           "status": "complete",
@@ -103,7 +103,7 @@
           "rationale": "Listed so the gap is visible; never used for a shortlist.",
           "reason": "no sourced crop water-need data",
           "source": {
-            "title": "Field Shift indicator definitions (backend/docs/indicators.md)",
+            "title": "A.C.R.E indicator definitions (backend/docs/indicators.md)",
             "url": null
           },
           "status": "unknown",
@@ -139,7 +139,7 @@
           "rationale": "A plain count used only for the management-simplicity priority; not a cost or labour estimate.",
           "reason": null,
           "source": {
-            "title": "Field Shift indicator definitions (backend/docs/indicators.md)",
+            "title": "A.C.R.E indicator definitions (backend/docs/indicators.md)",
             "url": null
           },
           "status": "complete",
@@ -191,7 +191,7 @@
           "rationale": "Published guidance that would have asked for a check or a change.",
           "reason": "no_regional_catalog",
           "source": {
-            "title": "Field Shift indicator definitions (backend/docs/indicators.md)",
+            "title": "A.C.R.E indicator definitions (backend/docs/indicators.md)",
             "url": null
           },
           "status": "unknown",
@@ -445,7 +445,7 @@
           "rationale": "How often this planting window started dry in this cell's history; it describes the window's weather, not the plan's effect on it.",
           "reason": null,
           "source": {
-            "title": "Field Shift dry pre-plant window: bottom 20% of this cell's own 1981-2025 30-day totals (calculation)",
+            "title": "A.C.R.E dry pre-plant window: bottom 20% of this cell's own 1981-2025 30-day totals (calculation)",
             "url": null
           },
           "status": "complete",
@@ -479,7 +479,7 @@
           "rationale": "Listed so the gap is visible; never used for a shortlist.",
           "reason": "no sourced crop water-need data",
           "source": {
-            "title": "Field Shift indicator definitions (backend/docs/indicators.md)",
+            "title": "A.C.R.E indicator definitions (backend/docs/indicators.md)",
             "url": null
           },
           "status": "unknown",
@@ -515,7 +515,7 @@
           "rationale": "A plain count used only for the management-simplicity priority; not a cost or labour estimate.",
           "reason": null,
           "source": {
-            "title": "Field Shift indicator definitions (backend/docs/indicators.md)",
+            "title": "A.C.R.E indicator definitions (backend/docs/indicators.md)",
             "url": null
           },
           "status": "complete",
@@ -567,7 +567,7 @@
           "rationale": "Published guidance that would have asked for a check or a change.",
           "reason": "no_regional_catalog",
           "source": {
-            "title": "Field Shift indicator definitions (backend/docs/indicators.md)",
+            "title": "A.C.R.E indicator definitions (backend/docs/indicators.md)",
             "url": null
           },
           "status": "unknown",

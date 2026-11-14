@@ -11,8 +11,8 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.routing import Route
 
-from fieldshift.api import security
-from fieldshift.api.security import (
+from acre.api import security
+from acre.api.security import (
     ANALYSIS,
     CHEAP,
     GEO,
@@ -254,7 +254,7 @@ def make_app(monkeypatch):
     def build(**env):
         for k, v in env.items():
             monkeypatch.setenv(k, v)
-        from fieldshift.api.app import create_app
+        from acre.api.app import create_app
 
         return TestClient(create_app())
 
@@ -275,17 +275,17 @@ def test_security_headers_on_every_response(make_app):
 
 
 def test_production_hides_docs_and_adds_hsts(make_app):
-    c = make_app(FIELDSHIFT_ENV="production", FIELDSHIFT_CORS_ORIGINS="https://acre-web.example")
+    c = make_app(ACRE_ENV="production", ACRE_CORS_ORIGINS="https://acre-web.example")
     assert c.get("/docs").status_code == 404
     assert c.get("/redoc").status_code == 404
     assert c.get("/openapi.json").status_code == 200
     assert "max-age" in c.get("/health").headers["strict-transport-security"]
-    dev = make_app(FIELDSHIFT_ENV="development")
+    dev = make_app(ACRE_ENV="development")
     assert dev.get("/docs").status_code == 200
 
 
 def test_production_errors_carry_no_traceback(make_app):
-    c = make_app(FIELDSHIFT_ENV="production", FIELDSHIFT_CORS_ORIGINS="https://acre-web.example")
+    c = make_app(ACRE_ENV="production", ACRE_CORS_ORIGINS="https://acre-web.example")
 
     @c.app.get("/__boom")
     def boom():
@@ -298,14 +298,14 @@ def test_production_errors_carry_no_traceback(make_app):
 
 
 def test_cors_never_allows_a_wildcard_and_production_ignores_dev_defaults(make_app, monkeypatch):
-    from fieldshift.api.app import cors_origins
+    from acre.api.app import cors_origins
 
-    monkeypatch.setenv("FIELDSHIFT_CORS_ORIGINS", "*, https://a.example")
+    monkeypatch.setenv("ACRE_CORS_ORIGINS", "*, https://a.example")
     assert cors_origins() == ["https://a.example"]
-    monkeypatch.delenv("FIELDSHIFT_CORS_ORIGINS")
-    monkeypatch.setenv("FIELDSHIFT_ENV", "production")
+    monkeypatch.delenv("ACRE_CORS_ORIGINS")
+    monkeypatch.setenv("ACRE_ENV", "production")
     assert cors_origins() == []
-    c = make_app(FIELDSHIFT_CORS_ORIGINS="https://a.example")
+    c = make_app(ACRE_CORS_ORIGINS="https://a.example")
     pre = c.options("/v1/plans/compare", headers={
         "Origin": "https://a.example", "Access-Control-Request-Method": "POST",
         "Access-Control-Request-Headers": "X-Admin-Token"})  # fmt: skip
@@ -317,7 +317,7 @@ def test_cors_never_allows_a_wildcard_and_production_ignores_dev_defaults(make_a
 
 
 def test_real_app_429_is_readable_cross_origin(make_app):
-    c = make_app(FIELDSHIFT_RATE_GEO_PER_MIN="1", FIELDSHIFT_CORS_ORIGINS="https://a.example")
+    c = make_app(ACRE_RATE_GEO_PER_MIN="1", ACRE_CORS_ORIGINS="https://a.example")
     h = {"Origin": "https://a.example"}
     c.get("/v1/geo/search?q=-33.89,-60.57", headers=h)
     r = c.get("/v1/geo/search?q=-33.89,-60.57", headers=h)
@@ -327,14 +327,14 @@ def test_real_app_429_is_readable_cross_origin(make_app):
 
 
 def test_real_app_weather_refresh_needs_the_token(make_app):
-    c = make_app(FIELDSHIFT_ADMIN_TOKEN="tok", FIELDSHIFT_OFFLINE="1")
+    c = make_app(ACRE_ADMIN_TOKEN="tok", ACRE_OFFLINE="1")
     body = {"location": {"latitude": -33.89, "longitude": -60.57}, "refresh": True}
     r = c.post("/v1/weather/prepare", json=body)
     assert r.status_code == 403 and r.json()["issues"][0]["code"] == "admin_token_required"
 
 
 def test_real_app_413(make_app):
-    c = make_app(FIELDSHIFT_MAX_BODY_BYTES="2000")
+    c = make_app(ACRE_MAX_BODY_BYTES="2000")
     r = c.post("/v1/farms/analyze", content=json.dumps({"pad": "x" * 5000}),
                headers={"Content-Type": "application/json"})  # fmt: skip
     assert r.status_code == 413 and r.json()["issues"][0]["code"] == "body_too_large"

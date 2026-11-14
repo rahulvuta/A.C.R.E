@@ -1,12 +1,12 @@
 import pytest
 
-from fieldshift.catalogs import CatalogIndex, load_catalog
-from fieldshift.field.regions import REGION_MAP, normalize_field_region, region_match
+from acre.catalogs import CatalogIndex, load_catalog
+from acre.field.regions import REGION_MAP, normalize_field_region, region_match
 
 
 @pytest.mark.parametrize("catalog_dir", ["v1", "v2"])
 def test_every_catalog_region_text_is_in_the_mapping_table(catalog_dir):
-    from fieldshift.catalogs import CATALOGS_ROOT
+    from acre.catalogs import CATALOGS_ROOT
 
     regions = set(CatalogIndex(load_catalog(CATALOGS_ROOT / catalog_dir)).regions())
     assert regions - set(REGION_MAP) == set()
@@ -59,6 +59,6 @@ def test_region_match(rule_region, field, expected):
      ("the moon", "unrecognized")],
 )  # fmt: skip
 def test_region_scope(text, scope):
-    from fieldshift.field.regions import region_scope
+    from acre.field.regions import region_scope
 
     assert region_scope(text) == scope

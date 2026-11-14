@@ -4,10 +4,10 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from fieldshift.api.samples import load_samples
-from fieldshift.compare.context import get_context
-from fieldshift.planner.routes import router
-from fieldshift.planner.wheat_path import (
+from acre.api.samples import load_samples
+from acre.compare.context import get_context
+from acre.planner.routes import router
+from acre.planner.wheat_path import (
     demo_plan,
     evaluate_wheat_double_crop,
     plan_from_dates,
@@ -404,7 +404,7 @@ def test_plan_version_changes_with_the_maturity_group_and_the_comparison_plan(cl
 def test_median_total_uses_the_true_median_for_an_even_number_of_seasons(ctx):
     import statistics
 
-    from fieldshift.compare import engine
+    from acre.compare import engine
 
     p = plan_from_dates(
         prev_harvest="09-20",

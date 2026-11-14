@@ -12,9 +12,9 @@ import httpx
 import pytest
 from fastapi.testclient import TestClient
 
-from fieldshift.catalogs import regional
-from fieldshift.research import client, guardrails, pipeline, prompt, verify
-from fieldshift.research.prompt import RegionQuery
+from acre.catalogs import regional
+from acre.research import client, guardrails, pipeline, prompt, verify
+from acre.research.prompt import RegionQuery
 
 REAL_SEND = httpx.Client.send  # captured before the conftest blocks it
 OK_URL = "https://www.agricultura.gob.ar/guia"
@@ -81,11 +81,11 @@ class Router:
 @pytest.fixture(autouse=True)
 def _isolated(tmp_path, monkeypatch):
     monkeypatch.setattr(httpx.Client, "send", REAL_SEND)  # only MockTransport is ever used
-    monkeypatch.setenv("FIELDSHIFT_CACHE_DIR", str(tmp_path / "cache"))
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")
+    monkeypatch.setenv("ACRE_CACHE_DIR", str(tmp_path / "cache"))
+    monkeypatch.setenv("ACRE_OFFLINE", "1")
     monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-real")
-    monkeypatch.delenv("FIELDSHIFT_RESEARCH_DOMAINS", raising=False)
-    monkeypatch.delenv("FIELDSHIFT_RESEARCH_MODEL", raising=False)
+    monkeypatch.delenv("ACRE_RESEARCH_DOMAINS", raising=False)
+    monkeypatch.delenv("ACRE_RESEARCH_MODEL", raising=False)
     monkeypatch.setattr(verify, "fetch_page", fake_fetch)
     pipeline.reset()
     regional.clear_cache()
@@ -124,7 +124,7 @@ def test_the_request_is_an_openrouter_chat_completion_with_generic_headers():
 
 def test_no_coordinates_in_the_request_body():
     router = mock(answer())
-    api = TestClient(__import__("fieldshift.api.app", fromlist=["create_app"]).create_app())
+    api = TestClient(__import__("acre.api.app", fromlist=["create_app"]).create_app())
     r = api.post("/v1/regions/research", json={"location": {"latitude": -33.89,
                                                             "longitude": -60.57}, "wait_s": 30})  # fmt: skip
     assert r.status_code == 200 and r.json()["job_status"] == "ready", r.json()
@@ -176,7 +176,7 @@ def test_a_disallowed_domain_is_downgraded_to_ai_suggested():
 
 
 def test_a_configured_domain_is_allowed(monkeypatch):
-    monkeypatch.setenv("FIELDSHIFT_RESEARCH_DOMAINS", "farm-tips-blog.com")
+    monkeypatch.setenv("ACRE_RESEARCH_DOMAINS", "farm-tips-blog.com")
     assert guardrails.domain_allowed(BLOG_URL)
     for url in ("https://inta.gob.ar/x", "https://www.fao.org/x", "https://extension.umn.edu/x",
                 "https://icar.org.in/x", "https://www.iari.res.in.ac.in/x",
@@ -237,7 +237,7 @@ def test_a_window_outside_sage_plus_30_days_is_manual_check():
     prof = json.loads((pipeline.out_dir("AR-B") / "profile.json").read_text())
     assert prof["crops"] == [] and prof["flagged_crops"][0]["review"] == "manual_check"
     # the rule engine answers manual_check for the flagged row
-    from fieldshift.catalogs import crop_ids, v3
+    from acre.catalogs import crop_ids, v3
 
     parsed, _ = v3.parse_rules_text((pipeline.out_dir("AR-B") / "crop_rules.csv").read_text(),
                                     set(crop_ids.BY_ID))  # fmt: skip
@@ -323,9 +323,9 @@ def test_a_cache_hit_makes_no_network_call_and_refresh_does():
 def test_the_cache_key_changes_with_model_prompt_and_query(monkeypatch):
     k = pipeline.cache_key(Q)
     assert k == pipeline.cache_key(Q) and len(k) == 64
-    monkeypatch.setenv("FIELDSHIFT_RESEARCH_MODEL", "openai/gpt-5")
+    monkeypatch.setenv("ACRE_RESEARCH_MODEL", "openai/gpt-5")
     assert pipeline.cache_key(Q) != k
-    monkeypatch.delenv("FIELDSHIFT_RESEARCH_MODEL")
+    monkeypatch.delenv("ACRE_RESEARCH_MODEL")
     monkeypatch.setattr(prompt, "PROMPT_VERSION", "p-next")
     assert pipeline.cache_key(Q) != k
     monkeypatch.undo()
@@ -338,8 +338,8 @@ def test_the_cache_key_changes_with_model_prompt_and_query(monkeypatch):
 
 
 def test_ai_rows_never_print_unless_source_checked():
-    from fieldshift.contracts import Plan
-    from fieldshift.planner.checker import check_plan
+    from acre.contracts import Plan
+    from acre.planner.checker import check_plan
 
     mock(answer([row("ar_b_t_001", crop_id="soybean", window_start_mm_dd="10-15",
                      window_end_mm_dd="12-15", evidence_quote=QUOTE_SOY),

@@ -3,8 +3,8 @@ import json
 import httpx
 import pytest
 
-from fieldshift.geo import nominatim
-from fieldshift.geo.nominatim import GeoError, Nominatim
+from acre.geo import nominatim
+from acre.geo.nominatim import GeoError, Nominatim
 
 
 def make(tmp_path, handler, **kw):

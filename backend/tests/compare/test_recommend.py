@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
-from fieldshift.compare.pareto import dominates, pareto
+from acre.compare.pareto import dominates, pareto
 from tests.compare.test_global_analysis import PERG, PLAN, _prepare
 
 D = {"a": "lower_better", "b": "higher_better"}
@@ -54,17 +54,17 @@ def test_weights_reorder_the_shortlist_only():
 def client(tmp_path, monkeypatch) -> TestClient:
     """The P1 stub (NC presets) is pinned here: these tests check P2 on known candidates.
     B's generator (P1) is tested in B's own tests."""
-    import fieldshift.api.recommend_routes as rr
-    import fieldshift.compare.recommend as rec
+    import acre.api.recommend_routes as rr
+    import acre.compare.recommend as rec
 
     def stub(ctx, location, field_ctx, goals):
         return rec.preset_candidates(ctx, goals)
 
     monkeypatch.setattr(rec, "generate", stub)
     monkeypatch.setattr(rr, "generate", stub)
-    monkeypatch.setenv("FIELDSHIFT_CACHE_DIR", str(tmp_path / "cache"))
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")
-    from fieldshift.api.app import create_app
+    monkeypatch.setenv("ACRE_CACHE_DIR", str(tmp_path / "cache"))
+    monkeypatch.setenv("ACRE_OFFLINE", "1")
+    from acre.api.app import create_app
 
     return TestClient(create_app())
 
@@ -224,7 +224,7 @@ def test_result_id_follows_the_plan_contents(client):
 
 
 def test_requested_rule_flags_unknown_outside_nc_make_candidates_not_comparable(client):
-    from fieldshift.compare.engine import has_rules  # noqa: F401 - documents the dependency
+    from acre.compare.engine import has_rules  # noqa: F401 - documents the dependency
 
     _prepare()
     body = _rec(client, {"location": PERG, "goals": {"priorities": {"weather_resilience": 3}},
@@ -249,7 +249,7 @@ def test_border_point_replay_keeps_its_global_scope(client):
 
 
 def test_generator_failure_keeps_its_status_and_reason(client, monkeypatch):
-    import fieldshift.api.recommend_routes as rr
+    import acre.api.recommend_routes as rr
 
     monkeypatch.setattr(rr, "generate", lambda *a: {
         "status": "unavailable", "reason": "candidate_generator_failed", "candidates": [],

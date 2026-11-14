@@ -1,5 +1,5 @@
 {
-  "what": "Responses from the Field Shift backend, saved exactly as returned. wetness.json collects each replay's own wetness block.",
+  "what": "Responses from the A.C.R.E backend, saved exactly as returned. wetness.json collects each replay's own wetness block.",
   "saved_at": "2026-11-14T05:31:55.161Z",
   "api": "http://localhost:8000",
   "snapshot_hash": "5ce131cfcd1f07d3738ecb9afaec6c3ef6a4764b6a3528bdd2b64debe7ba5f4e",

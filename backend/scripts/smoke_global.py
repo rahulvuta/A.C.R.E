@@ -3,8 +3,8 @@
     # 1. seed a cache with the recorded Pergamino POWER response (no network: "mocked POWER")
     python scripts/smoke_global.py seed --cache /tmp/fs-cache
     # 2. start the server offline on that cache
-    FIELDSHIFT_OFFLINE=1 FIELDSHIFT_CACHE_DIR=/tmp/fs-cache \\
-        python -m uvicorn fieldshift.api.app:app --port 8765
+    ACRE_OFFLINE=1 ACRE_CACHE_DIR=/tmp/fs-cache \\
+        python -m uvicorn acre.api.app:app --port 8765
     # 3. run the checks
     python scripts/smoke_global.py run --base http://127.0.0.1:8765
 
@@ -51,11 +51,11 @@ def seed(cache: str) -> int:
     import os
     from datetime import UTC, datetime
 
-    os.environ["FIELDSHIFT_CACHE_DIR"] = cache
-    os.environ.pop("FIELDSHIFT_OFFLINE", None)
+    os.environ["ACRE_CACHE_DIR"] = cache
+    os.environ.pop("ACRE_OFFLINE", None)
     sys.path.insert(0, str(BACKEND))
-    from fieldshift.weather import ondemand
-    from fieldshift.weather.power_client import RawFetch
+    from acre.weather import ondemand
+    from acre.weather.power_client import RawFetch
 
     def recorded(lat: float, lon: float, start: str, end: str, **_: Any) -> RawFetch:
         return RawFetch(body=FIXTURE.read_bytes(), url="recorded-fixture:" + FIXTURE.name,
@@ -121,7 +121,7 @@ def run(base: str, inprocess: bool = False) -> int:
         sys.path.insert(0, str(BACKEND))
         from fastapi.testclient import TestClient
 
-        from fieldshift.api.app import create_app
+        from acre.api.app import create_app
 
         client = TestClient(create_app())
     s = Smoke(base, client)

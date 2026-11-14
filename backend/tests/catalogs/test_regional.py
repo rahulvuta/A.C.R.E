@@ -11,12 +11,12 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from fieldshift.catalogs import crop_ids, regional, sage, v3
-from fieldshift.catalogs.loader import V1_CATALOG_DIR, V2_CATALOG_DIR, load_catalog
-from fieldshift.catalogs.regional import RegionalIndex, catalog_for_location, regional_catalog
-from fieldshift.contracts import Plan
-from fieldshift.planner.checker import check_plan
-from fieldshift.report.meta import get_index
+from acre.catalogs import crop_ids, regional, sage, v3
+from acre.catalogs.loader import V1_CATALOG_DIR, V2_CATALOG_DIR, load_catalog
+from acre.catalogs.regional import RegionalIndex, catalog_for_location, regional_catalog
+from acre.contracts import Plan
+from acre.planner.checker import check_plan
+from acre.report.meta import get_index
 
 PERGAMINO = (-33.89, -60.57)
 UNION = (34.98, -80.55)
@@ -33,8 +33,8 @@ def sample(plan_id: str) -> Plan:
 
 @pytest.fixture(autouse=True)
 def _offline_cache(tmp_path, monkeypatch):
-    monkeypatch.setenv("FIELDSHIFT_CACHE_DIR", str(tmp_path / "cache"))
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")
+    monkeypatch.setenv("ACRE_CACHE_DIR", str(tmp_path / "cache"))
+    monkeypatch.setenv("ACRE_OFFLINE", "1")
     regional.clear_cache()
     yield
     regional.clear_cache()
@@ -42,7 +42,7 @@ def _offline_cache(tmp_path, monkeypatch):
 
 @pytest.fixture()
 def client():
-    from fieldshift.api.app import create_app
+    from acre.api.app import create_app
 
     return TestClient(create_app())
 
@@ -326,7 +326,7 @@ def test_check_and_crops_routes_follow_the_location(client):
 def test_finder_windows_crossing_new_year_resolve_across_years():
     from datetime import date
 
-    from fieldshift.planner.finder import _window_around
+    from acre.planner.finder import _window_around
 
     assert _window_around(date(2026, 10, 20), "11-15", "01-31") == (date(2026, 11, 15),
                                                                    date(2027, 1, 31))  # fmt: skip
@@ -338,7 +338,7 @@ def test_finder_windows_crossing_new_year_resolve_across_years():
 
 
 def test_finder_gives_the_same_options_for_an_alias():
-    from fieldshift.planner.finder import find_plans
+    from acre.planner.finder import find_plans
 
     base = sample("corn_soy__no_cover")
     a = find_plans(base, get_index(), year=YEAR)
@@ -408,7 +408,7 @@ def test_an_invalid_explicit_origin_drops_the_entry_even_with_a_valid_calendar_o
 
 
 def test_finder_uses_regional_rows_outside_nc(tmp_path):
-    from fieldshift.planner.finder import _region_ok
+    from acre.planner.finder import _region_ok
 
     row = v3.parse_rules_text(v3_csv({**V3_ROW, "region": "Some Province"}))[0][0]
     assert _region_ok(row, None) and _region_ok(row, "NC Piedmont")

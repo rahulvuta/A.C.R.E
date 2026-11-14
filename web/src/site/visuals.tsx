@@ -230,7 +230,7 @@ export function ApiPanel({ n }: { n: Numbers }) {
   return (
     <div className={`st-code${seen ? " is-playing" : ""}`} ref={ref} aria-hidden="true">
       <p className="st-code-head">
-        Field Shift API <span>200 OK</span>
+        A.C.R.E API <span>200 OK</span>
       </p>
       <pre>
         {lines.map((l, i) => (

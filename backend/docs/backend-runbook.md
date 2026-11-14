@@ -1,6 +1,6 @@
-# Field Shift backend runbook
+# A.C.R.E backend runbook
 
-> Run every command below from the `backend/` folder (`cd backend`). Hosting: Railway, configured by `railway.json` (service root directory `backend`, start `python -m uvicorn fieldshift.api.app:app --host 0.0.0.0 --port $PORT`, health check `/health`).
+> Run every command below from the `backend/` folder (`cd backend`). Hosting: Railway, configured by `railway.json` (service root directory `backend`, start `python -m uvicorn acre.api.app:app --host 0.0.0.0 --port $PORT`, health check `/health`).
 
 Backend only. The frontend reads the contract in `docs/api/openapi.json` and the generated examples in `docs/api/examples/`.
 
@@ -10,13 +10,13 @@ The core calculations and the sample run from files in the repo; no network, no 
 
 ```bash
 uv sync                      # Python 3.12, FastAPI, pydantic v2, pandas, httpx, pyarrow
-make offline-demo            # FIELDSHIFT_OFFLINE=1 uvicorn fieldshift.api.app:app
+make offline-demo            # ACRE_OFFLINE=1 uvicorn acre.api.app:app
 curl localhost:8000/health
 curl -X POST localhost:8000/v1/plans/compare -H 'content-type: application/json' \
      -d '{"rotation_ids": ["current_practice", "winter_cover"]}'
 ```
 
-With `FIELDSHIFT_OFFLINE=1`, weather comes only from the committed snapshots under `data/snapshots/` (`index.json` lists them: Union plus seven more NC counties) and no live provider (NWS, USDM, USDA SDA, NASA POWER) is called. A provider with a still-valid on-disk cache entry (SDA 30 days, `data/cache/`, not committed, so empty in a fresh clone) is answered from it and labelled `cached(<time>)`; otherwise it is reported `unavailable`; plan comparison, replay, sensitivity and years all still work. A test (`tests/api/test_api_contract.py::test_offline_demo_...`) starts a fresh process that refuses every non-loopback connection and exercises those endpoints.
+With `ACRE_OFFLINE=1`, weather comes only from the committed snapshots under `data/snapshots/` (`index.json` lists them: Union plus seven more NC counties) and no live provider (NWS, USDM, USDA SDA, NASA POWER) is called. A provider with a still-valid on-disk cache entry (SDA 30 days, `data/cache/`, not committed, so empty in a fresh clone) is answered from it and labelled `cached(<time>)`; otherwise it is reported `unavailable`; plan comparison, replay, sensitivity and years all still work. A test (`tests/api/test_api_contract.py::test_offline_demo_...`) starts a fresh process that refuses every non-loopback connection and exercises those endpoints.
 
 Python 3.12 is the target. The code is also 3.11-compatible (no PEP 695 syntax) because the Homebrew 3.12 on one development Mac has a broken `pyexpat`.
 
@@ -25,12 +25,12 @@ Python 3.12 is the target. The code is also 3.11-compatible (no PEP 695 syntax) 
 ```bash
 make test                    # uv run python -m pytest   (offline; live providers are mocked)
 make lint                    # ruff check .
-python -m fieldshift.api.contract --check   # exit 1 if docs/api is stale
-python -m fieldshift.weather verify         # raw/ -> daily.parquet reproduction + hashes
-python -m fieldshift.weather report         # first/last valid date per variable
+python -m acre.api.contract --check   # exit 1 if docs/api is stale
+python -m acre.weather verify         # raw/ -> daily.parquet reproduction + hashes
+python -m acre.weather report         # first/last valid date per variable
 ```
 
-`tests/api/test_api_contract.py` validates every example response against `docs/api/openapi.json`, and fails when the committed contract files drift from the code. Regenerate them with `python -m fieldshift.api.contract` (offline).
+`tests/api/test_api_contract.py` validates every example response against `docs/api/openapi.json`, and fails when the committed contract files drift from the code. Regenerate them with `python -m acre.api.contract` (offline).
 
 Reproduce a replay without the API, from `raw/` alone (standard library only):
 
@@ -54,7 +54,7 @@ python scripts/reproduce_replay.py --raw data/snapshots/union_county/raw/power_d
 
 **Eras.** Earlier 1981-2000, recent 2006-2025; 2001-2005 are in neither (still in the full record and replay). Each era needs >= 15 of 20 evaluable seasons or the result is `insufficient_data`. `|diff| < 10` percentage points is `similar`. Descriptive only; each label ships with fixed text and no trend, cause or forecast claim. Cross-plan comparisons are also given on the years every plan could be evaluated for.
 
-**Rules.** The rule engine (`fieldshift/metrics/rules.py`) evaluates the Perplexity catalogs against one `SeasonFacts` per season. `cr_tt_03` (rye to soybean): flagged when the gap is under 14 days and (the replay is dry or the grower reports a low-moisture concern); clears at 14 days or more. Conflicting rules (`fc_pw_01`/`fc_pw_02`, `sb_pw_01`/`sb_pw_04`) are both surfaced.
+**Rules.** The rule engine (`acre/metrics/rules.py`) evaluates the Perplexity catalogs against one `SeasonFacts` per season. `cr_tt_03` (rye to soybean): flagged when the gap is under 14 days and (the replay is dry or the grower reports a low-moisture concern); clears at 14 days or more. Conflicting rules (`fc_pw_01`/`fc_pw_02`, `sb_pw_01`/`sb_pw_04`) are both surfaced.
 
 **Sensitivity.** Termination dates from the day after seeding through planting; with the fixed 14-day rule the check count is a step function (the dry-year count below 14 days, 0 at or above). A date whose gap crosses Feb 29 reports `gap_days_in_leap_years`.
 
@@ -77,7 +77,7 @@ Other statuses: `complete`, `partial`, `insufficient_data` (era or cutoff has to
 
 | Provider | Used for | Timeout | Cache policy | Offline behaviour |
 |---|---|---|---|---|
-| NASA POWER Daily | weather history (build only) | 120 s, 3 retries (2 s, 4 s, 8 s backoff) | permanent: the committed snapshot in `data/snapshots/` | never called at serve time; `python -m fieldshift.weather build` (Union) and `build-locations` (the counties) are the only fetches |
+| NASA POWER Daily | weather history (build only) | 120 s, 3 retries (2 s, 4 s, 8 s backoff) | permanent: the committed snapshot in `data/snapshots/` | never called at serve time; `python -m acre.weather build` (Union) and `build-locations` (the counties) are the only fetches |
 | USDA SDA | soil | 15 s | 30 days on disk (`data/cache/sda`, gitignored) | `cached(<time>)` if a valid copy exists, else `unavailable` |
 | NWS API | forecast / alerts | 10 s | 15 min / 5 min | `unavailable` |
 | US Drought Monitor | county drought | 10 s | 6 h | `unavailable` |
@@ -92,7 +92,7 @@ The access log records method, path (no query string), status and duration only;
 
 - NASA POWER Daily API and parameter metadata: https://power.larc.nasa.gov/docs/services/api/temporal/daily/
 - Catalogs v1 (`data/catalogs/v1/`, verbatim from Perplexity, each row with `source_url`, `source_locator`, `verified_date`).
-- USDA NRCS Soil Data Access, NWS API, US Drought Monitor (Agent B's `fieldshift/field`).
+- USDA NRCS Soil Data Access, NWS API, US Drought Monitor (Agent B's `acre/field`).
 - Handbooks (`Field-Shift-Backend-Rahul.pdf`, `Field-Shift-Charlotte-Playbook-2.pdf`): the team's original documents, local only (gitignored), reference only. The Union County point and sample plan dates remain labelled assumptions; the heavy-rain rule is the published 76.2 mm definition above.
 
 ## 8. Known gaps
@@ -107,7 +107,7 @@ Winter wheat double-crop and SMAP (Phase 12) are not built; the wheat path retur
 - **Meta.** `meta.snapshot_hash` is the snapshot actually used. `weather_location` says which place answered, its region, grid cell and hash, and where the thresholds come from.
 - **Thresholds.** Each place gets its own frozen `ThresholdSet`: dry-spring cutoffs from its own 1981-2025 baseline, heavy rain the fixed 76.2 mm. Locations are never mixed in a threshold set, era comparison or shared-year set (one request is one place).
 - **No snapshot.** A North Carolina point whose cell has no snapshot returns HTTP 200 `unavailable`, code `no_weather_snapshot`, `reason_text`, `meta.snapshot_hash: null`. A point outside NC stays `unsupported_location`. An unknown `location_id`, or an id and a point that disagree, is HTTP 400 `invalid_input`.
-- **Adding a county.** Add it to `PLACES` in `fieldshift/weather/locations.py`, then `python -m fieldshift.weather build-locations` (needs the network once; refuses under `FIELDSHIFT_OFFLINE=1`; fetches only missing cells; compares a place that shares a cell with the stored history and stops if they differ). `python -m fieldshift.weather verify-locations` checks the index and every snapshot offline. Regenerate the contract afterwards.
+- **Adding a county.** Add it to `PLACES` in `acre/weather/locations.py`, then `python -m acre.weather build-locations` (needs the network once; refuses under `ACRE_OFFLINE=1`; fetches only missing cells; compares a place that shares a cell with the stored history and stops if they differ). `python -m acre.weather verify-locations` checks the index and every snapshot offline. Regenerate the contract afterwards.
 
 ## Global deployment (A4)
 
@@ -115,7 +115,7 @@ Winter wheat double-crop and SMAP (Phase 12) are not built; the wheat path retur
 
 - Root directory `backend`, start command and health check in `railway.json` (`/health`).
 - **Run one process (one uvicorn worker).** Weather fetches are de-duplicated per grid cell inside the process. Two workers could fetch the same cell at once. That is safe (each writes its own temporary folder and renames it into place) but wastes a POWER call.
-- **Attach a Railway volume and point `FIELDSHIFT_CACHE_DIR` at it** (for example mount `/data`, set `FIELDSHIFT_CACHE_DIR=/data/fieldshift`). Without a volume every redeploy starts with an empty cache and re-fetches each cell.
+- **Attach a Railway volume and point `ACRE_CACHE_DIR` at it** (for example mount `/data`, set `ACRE_CACHE_DIR=/data/acre`). Without a volume every redeploy starts with an empty cache and re-fetches each cell.
   - `<cache>/weather/<cell_id>/<snapshot_hash>/`: one NASA POWER snapshot per grid cell (raw response, `daily.parquet`, `manifest.json`), about 1.6 MB raw + 0.4 MB parquet per cell. `current.json` names the served hash. A refresh adds a new hash folder and never rewrites an old one. Delete old hash folders by hand if space matters; nothing else references them.
   - `<cache>/geo/`: geocoder cache (B1). `<cache>/regions/`: research profiles (B3).
   - The cache holds no farm data: weather is fetched for the cell centre, never the farm point, and the backend stores no farm, field or boundary.
@@ -125,13 +125,13 @@ Winter wheat double-crop and SMAP (Phase 12) are not built; the wheat path retur
 
 | Variable | Default | What it does |
 |---|---|---|
-| `FIELDSHIFT_CACHE_DIR` | `backend/data/cache` (gitignored) | Weather, geocoder and research caches. Use the Railway volume. |
-| `FIELDSHIFT_OFFLINE` | unset | `1`: never touch the network. Committed NC snapshots and whatever is already cached are served; anything else answers `unavailable` / `offline_no_snapshot`. |
-| `FIELDSHIFT_POWER_TIMEOUT_S` | `120` | Timeout per NASA POWER request. Each fetch is retried once. |
-| `FIELDSHIFT_CORS_ORIGINS` | GitHub Pages + local Vite ports | Comma-separated allowed origins. Set it to the deployed frontend's origin. |
+| `ACRE_CACHE_DIR` | `backend/data/cache` (gitignored) | Weather, geocoder and research caches. Use the Railway volume. |
+| `ACRE_OFFLINE` | unset | `1`: never touch the network. Committed NC snapshots and whatever is already cached are served; anything else answers `unavailable` / `offline_no_snapshot`. |
+| `ACRE_POWER_TIMEOUT_S` | `120` | Timeout per NASA POWER request. Each fetch is retried once. |
+| `ACRE_CORS_ORIGINS` | GitHub Pages + local Vite ports | Comma-separated allowed origins. Set it to the deployed frontend's origin. |
 | `OPENROUTER_API_KEY` | unset | AI regional research (B3), through OpenRouter. Without it research answers `unavailable` / `research_not_configured` and the SAGE-only profiles are served. Never logged. |
-| `FIELDSHIFT_RESEARCH_MODEL` | `anthropic/claude-sonnet-4.5` | OpenRouter model slug for AI research. Any listed model works; changing it changes the cache key. |
-| `FIELDSHIFT_RESEARCH_DOMAINS` | unset | Comma-separated extra source domains the guardrails accept (besides `.gov`, `.gov.xx`, `.gob.xx`, `.gouv.fr`, `.edu`, `.ac.xx`, FAO, CGIAR, INTA, ICAR, extension and university hosts). |
+| `ACRE_RESEARCH_MODEL` | `anthropic/claude-sonnet-4.5` | OpenRouter model slug for AI research. Any listed model works; changing it changes the cache key. |
+| `ACRE_RESEARCH_DOMAINS` | unset | Comma-separated extra source domains the guardrails accept (besides `.gov`, `.gov.xx`, `.gob.xx`, `.gouv.fr`, `.edu`, `.ac.xx`, FAO, CGIAR, INTA, ICAR, extension and university hosts). |
 
 ### Cost and rate limits
 
@@ -148,9 +148,9 @@ Winter wheat double-crop and SMAP (Phase 12) are not built; the wheat path retur
 
 ```bash
 python scripts/smoke_global.py seed --cache /tmp/fs-cache      # recorded Pergamino POWER response, no network
-FIELDSHIFT_OFFLINE=1 FIELDSHIFT_CACHE_DIR=/tmp/fs-cache python -m uvicorn fieldshift.api.app:app --port 8765
+ACRE_OFFLINE=1 ACRE_CACHE_DIR=/tmp/fs-cache python -m uvicorn acre.api.app:app --port 8765
 python scripts/smoke_global.py run --base http://127.0.0.1:8765
 ```
-Without a server: `FIELDSHIFT_OFFLINE=1 FIELDSHIFT_CACHE_DIR=/tmp/fs-cache python scripts/smoke_global.py run --inprocess` sends the same requests to the app in-process (FastAPI TestClient).
+Without a server: `ACRE_OFFLINE=1 ACRE_CACHE_DIR=/tmp/fs-cache python scripts/smoke_global.py run --inprocess` sends the same requests to the app in-process (FastAPI TestClient).
 
 It walks search → reverse → capabilities → weather prepare and poll → farm analyze → recommend → field note → regional profile for the NC demo (committed snapshot) and Pergamino (the seeded cell), and checks every `status` against the nine status words.

@@ -4,14 +4,14 @@ from __future__ import annotations
 
 import pytest
 
-from fieldshift.geo import nominatim
+from acre.geo import nominatim
 
 
 @pytest.fixture(autouse=True)
 def _isolated_geocoder(tmp_path, monkeypatch):
     """A fresh client per test with an empty cache dir; the network must not be used."""
-    monkeypatch.delenv("FIELDSHIFT_OFFLINE", raising=False)
-    monkeypatch.setenv("FIELDSHIFT_CACHE_DIR", str(tmp_path / "cache"))
+    monkeypatch.delenv("ACRE_OFFLINE", raising=False)
+    monkeypatch.setenv("ACRE_CACHE_DIR", str(tmp_path / "cache"))
 
     def no_network(request):
         raise AssertionError(f"unexpected network call: {request.url.host}")
@@ -24,7 +24,7 @@ def _isolated_geocoder(tmp_path, monkeypatch):
         min_interval=0.0,
     )
     nominatim.set_client(client)
-    from fieldshift.weather import ondemand
+    from acre.weather import ondemand
 
     ondemand.reset_jobs()  # weather jobs from other test modules must not leak into capabilities
     yield client

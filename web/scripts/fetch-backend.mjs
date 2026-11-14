@@ -2,8 +2,8 @@
 // returned them (Phase 12). The site loads these files so it works with no network, and
 // src/api/adapt.ts turns them into what the screens read, the same way it does for live calls.
 //
-// Run the backend first (backend branch):  FIELDSHIFT_OFFLINE=1 uvicorn fieldshift.api.app:app
-// Then:                                      npm run data            (or FIELDSHIFT_API=https://… npm run data)
+// Run the backend first (backend branch):  ACRE_OFFLINE=1 uvicorn acre.api.app:app
+// Then:                                      npm run data            (or ACRE_API=https://… npm run data)
 //
 // Nothing is computed here. The one assembled file, wetness.json, only collects the
 // `wetness` block each season's replay already carries, so the past-springs page can show
@@ -12,7 +12,7 @@ import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const API = (process.env.FIELDSHIFT_API ?? "http://localhost:8000").replace(/\/$/, "");
+const API = (process.env.ACRE_API ?? "http://localhost:8000").replace(/\/$/, "");
 const OUT = join(dirname(fileURLToPath(import.meta.url)), "../public/data/nasa");
 const ROTATIONS = ["current_practice", "winter_cover", "add_grain_crop"];
 
@@ -57,7 +57,7 @@ await save(
   "manifest.json",
   JSON.stringify(
     {
-      what: "Responses from the Field Shift backend, saved exactly as returned. wetness.json collects each replay's own wetness block.",
+      what: "Responses from the A.C.R.E backend, saved exactly as returned. wetness.json collects each replay's own wetness block.",
       saved_at: new Date().toISOString(),
       api: API,
       snapshot_hash: compare.json.meta.snapshot_hash,

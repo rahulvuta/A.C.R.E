@@ -8572,8 +8572,8 @@
     }
   },
   "info": {
-    "description": "Field Shift backend. Labels and values ship together; every response carries meta {plan_version, catalog_version, snapshot_hash, request_id}. Partial results keep per-metric statuses in the body; HTTP 400 is only for invalid input.",
-    "title": "Field Shift backend",
+    "description": "A.C.R.E backend. Labels and values ship together; every response carries meta {plan_version, catalog_version, snapshot_hash, request_id}. Partial results keep per-metric statuses in the body; HTTP 400 is only for invalid input.",
+    "title": "A.C.R.E backend",
     "version": "1.0.0"
   },
   "openapi": "3.1.0",

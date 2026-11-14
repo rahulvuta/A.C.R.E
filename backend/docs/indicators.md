@@ -1,6 +1,6 @@
 # Indicators for plan recommendations (P2)
 
-Owner: Agent A. Code: `fieldshift/compare/indicators.py`, `fieldshift/compare/pareto.py`, `fieldshift/compare/recommend.py`. Endpoint: `POST /v1/plans/recommend` (`docs/global/contract.md` §9).
+Owner: Agent A. Code: `acre/compare/indicators.py`, `acre/compare/pareto.py`, `acre/compare/recommend.py`. Endpoint: `POST /v1/plans/recommend` (`docs/global/contract.md` §9).
 
 ## What an indicator is, and what it is not
 
@@ -21,7 +21,7 @@ An indicator is a named, documented number computed from the existing historical
 | `nrcs_soil_health` | The USDA NRCS soil health principles (minimise disturbance, maximise soil cover, maximise biodiversity, maximise living roots). | USDA NRCS, Soil Health, https://www.nrcs.usda.gov/conservation-basics/natural-resource-concerns/soils/soil-health. **Not re-checked:** the site timed out on 2026-11-14. Cited as a secondary source only; FAO is the primary one. |
 | `etccdi_r95p` | Heavy-rain day outside NC: daily precipitation ≥ the cell's 95th percentile of wet days (≥ 1 mm), base 1981–2010. | Zhang, X. et al. (2011) "Indices for monitoring changes in extremes based on daily temperature and precipitation data", *WIREs Climate Change* 2(6):851–870, doi:10.1002/wcc.147 |
 | `nc_heavy_rain` | Heavy-rain day in NC: ≥ 3 in (76.2 mm) in 24 h. | Catalog v2 row `fc_v2_ref_very_heavy_rain` (NC Climate Science Report: Plain Language Summary, March 2020, PDF p. 4) |
-| `fs_dry_spring` | Dry pre-plant window: the 30 days before planting are in the bottom 20% of this cell's own 1981–2025 totals for that window. | Field Shift method (Phase 4a, `metrics/spring.py`), a calculation, not a published agronomic threshold |
+| `fs_dry_spring` | Dry pre-plant window: the 30 days before planting are in the bottom 20% of this cell's own 1981–2025 totals for that window. | A.C.R.E method (Phase 4a, `metrics/spring.py`), a calculation, not a published agronomic threshold |
 | `power_gwetroot` | Root-zone soil wetness, 0 = dry, 1 = saturated, MERRA-2 model output. | NASA POWER parameter `GWETROOT` (https://power.larc.nasa.gov/api/system/manager/parameters/GWETROOT) |
 | catalog rules | Rule checks (for example `cr_tt_03`, the short rye-to-soybean gap in a dry spring). | Each rule's own `source_title`, `source_url` and `source_locator` in the location's catalog |
 

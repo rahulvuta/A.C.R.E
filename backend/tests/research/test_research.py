@@ -9,11 +9,11 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from fieldshift.catalogs import regional
-from fieldshift.contracts import Plan
-from fieldshift.planner.checker import check_plan
-from fieldshift.research import client, pipeline, prompt, verify
-from fieldshift.research.prompt import RegionQuery
+from acre.catalogs import regional
+from acre.contracts import Plan
+from acre.planner.checker import check_plan
+from acre.research import client, pipeline, prompt, verify
+from acre.research.prompt import RegionQuery
 
 FIX = Path(__file__).resolve().parents[1] / "fixtures" / "research"
 ANSWER = json.loads((FIX / "ar_b_answer.json").read_text())
@@ -30,11 +30,11 @@ def fake_fetch(url: str) -> verify.Page:
 
 @pytest.fixture(autouse=True)
 def _isolated(tmp_path, monkeypatch):
-    monkeypatch.setenv("FIELDSHIFT_CACHE_DIR", str(tmp_path / "cache"))
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")
+    monkeypatch.setenv("ACRE_CACHE_DIR", str(tmp_path / "cache"))
+    monkeypatch.setenv("ACRE_OFFLINE", "1")
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     # the synthetic fixture cites .invalid hosts; allow them so quotes can be source_checked
-    monkeypatch.setenv("FIELDSHIFT_RESEARCH_DOMAINS",
+    monkeypatch.setenv("ACRE_RESEARCH_DOMAINS",
                        "agency-a.invalid,uni-b.invalid,inst-c.invalid,gone.invalid")
     monkeypatch.setattr(verify, "fetch_page", fake_fetch)
     pipeline.reset()
@@ -47,7 +47,7 @@ def _isolated(tmp_path, monkeypatch):
 
 @pytest.fixture()
 def api():
-    from fieldshift.api.app import create_app
+    from acre.api.app import create_app
 
     return TestClient(create_app())
 
@@ -66,7 +66,7 @@ def rows_by_id():
 
 
 def test_rows_parse_into_catalog_v3_and_quotes_decide_the_origin():
-    from fieldshift.catalogs import crop_ids, v3
+    from acre.catalogs import crop_ids, v3
 
     rows = rows_by_id()
     assert rows["ar_b_ai_001"]["origin"] == "source_checked"  # quote is on the page
@@ -150,7 +150,7 @@ def test_request_uses_the_configured_model_and_web_tools(monkeypatch):
     assert rf["type"] == "json_schema" and rf["json_schema"]["strict"] is True
     assert rf["json_schema"]["schema"] is prompt.OUTPUT_SCHEMA
     assert p["temperature"] == 0 and isinstance(p["seed"], int) and p["max_tokens"] > 0
-    monkeypatch.setenv("FIELDSHIFT_RESEARCH_MODEL", "openai/gpt-5")
+    monkeypatch.setenv("ACRE_RESEARCH_MODEL", "openai/gpt-5")
     assert prompt.request_params(Q)["model"] == "openai/gpt-5"
 
 

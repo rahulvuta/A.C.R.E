@@ -2,8 +2,8 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from fieldshift.geo import capabilities_for, describe
-from fieldshift.geo.routes import router
+from acre.geo import capabilities_for, describe
+from acre.geo.routes import router
 
 UNION = (34.98, -80.55)
 PERGAMINO = (-33.89, -60.57)
@@ -50,7 +50,7 @@ def test_mid_ocean_is_unsupported_and_bad_input_is_invalid():
 
 
 def test_geocoder_down_is_partial_with_the_climate_key_only(_isolated_geocoder, monkeypatch):
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")
+    monkeypatch.setenv("ACRE_OFFLINE", "1")
     d = describe(48.0, 11.0)  # Bavaria: not a fixture
     assert d.status == "partial" and d.reason == "geocoder_offline" and d.reason_text
     assert d.region_keys == ["koppen:Dfb"] and d.place["country"] is None
@@ -105,7 +105,7 @@ def test_capabilities_for_pergamino():
 
 
 def test_offline_weather_for_an_unstored_cell_is_unavailable(monkeypatch):
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")
+    monkeypatch.setenv("ACRE_OFFLINE", "1")
     w = capabilities_for(*PERGAMINO)["features"]["weather"]
     assert w["status"] == "unavailable" and w["reason"] == "offline_no_snapshot"
 
@@ -114,7 +114,7 @@ def _fake_power(body: bytes | None = None, error: Exception | None = None):
     from datetime import UTC, datetime
     from pathlib import Path
 
-    from fieldshift.weather.power_client import RawFetch
+    from acre.weather.power_client import RawFetch
 
     fixture = Path(__file__).resolve().parents[1] / "fixtures" / "power" / (
         "pergamino_cell_-34.000_-60.625.json"
@@ -133,7 +133,7 @@ def _fake_power(body: bytes | None = None, error: Exception | None = None):
 
 @pytest.fixture()
 def _weather_jobs():
-    from fieldshift.weather import ondemand
+    from acre.weather import ondemand
 
     ondemand.reset_jobs()
     yield ondemand
@@ -158,7 +158,7 @@ def test_a_cached_cell_counts_as_stored(_weather_jobs):
 
 
 def test_a_failed_fetch_shows_as_failed(_weather_jobs):
-    from fieldshift.weather.power_client import PowerFetchError
+    from acre.weather.power_client import PowerFetchError
 
     ondemand = _weather_jobs
     ondemand.set_fetch(_fake_power(error=PowerFetchError("boom")))
@@ -198,7 +198,7 @@ def test_capabilities_for_water_is_unsupported_not_a_crash():
 
 
 def test_unknown_country_does_not_invent_a_drought_monitor(monkeypatch):
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")
+    monkeypatch.setenv("ACRE_OFFLINE", "1")
     c = capabilities_for(48.0, 11.0)
     assert c["status"] == "partial" and c["region_key"] == "koppen:Dfb"
     assert c["features"]["drought"]["reason"] == "region_unknown"
@@ -232,7 +232,7 @@ def test_search_route_errors_and_a_geocoder_that_is_down(client, monkeypatch):
     coords = client.get("/v1/geo/search", params={"q": "95, 10"})
     assert coords.status_code == 400 and coords.json()["issues"][0]["code"] == "invalid_coordinates"
     assert client.get("/v1/geo/search", params={"q": "y" * 300}).status_code == 400
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")
+    monkeypatch.setenv("ACRE_OFFLINE", "1")
     down = client.get("/v1/geo/search", params={"q": "Springfield"})
     assert down.status_code == 200
     body = down.json()
@@ -286,7 +286,7 @@ def test_mistyped_coordinates_are_rejected_locally_never_sent_to_the_geocoder(cl
 
 
 def test_resolve_rounds_coordinates_to_two_decimals():
-    from fieldshift.field.location import resolve_location
+    from acre.field.location import resolve_location
 
     loc = resolve_location(34.987654, -80.551234)
     assert (loc.latitude, loc.longitude) == (34.99, -80.55)
@@ -297,7 +297,7 @@ def test_resolve_rounds_coordinates_to_two_decimals():
 def test_a_place_query_is_the_only_text_that_reaches_the_geocoder(tmp_path):
     import httpx
 
-    from fieldshift.geo import nominatim
+    from acre.geo import nominatim
 
     seen: list[httpx.URL] = []
 
@@ -325,7 +325,7 @@ def test_a_place_query_is_the_only_text_that_reaches_the_geocoder(tmp_path):
 
 def test_production_app_serves_the_geo_routes():
     """The geo routes reach the production app through the field router."""
-    from fieldshift.api.app import create_app
+    from acre.api.app import create_app
 
     app = create_app()
     assert {"/v1/geo/search", "/v1/geo/reverse", "/v1/locations/capabilities"} <= set(

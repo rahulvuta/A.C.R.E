@@ -9,10 +9,10 @@ import pytest
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
-from fieldshift.catalogs import regional
-from fieldshift.planner.generator import MAX_CANDIDATES, generate_candidates
-from fieldshift.planner.goals import PRIORITY_IDS, Constraints, FieldContext, Goals
-from fieldshift.report.meta import get_index
+from acre.catalogs import regional
+from acre.planner.generator import MAX_CANDIDATES, generate_candidates
+from acre.planner.goals import PRIORITY_IDS, Constraints, FieldContext, Goals
+from acre.report.meta import get_index
 from tests.catalogs.test_regional import V3_ROW, write_profile
 
 UNION = {"latitude": 34.98, "longitude": -80.55}
@@ -25,8 +25,8 @@ SAMPLES = json.loads((Path(__file__).resolve().parents[2] / "data" / "samples" /
 
 @pytest.fixture(autouse=True)
 def _offline(tmp_path, monkeypatch):
-    monkeypatch.setenv("FIELDSHIFT_CACHE_DIR", str(tmp_path / "cache"))
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")
+    monkeypatch.setenv("ACRE_CACHE_DIR", str(tmp_path / "cache"))
+    monkeypatch.setenv("ACRE_OFFLINE", "1")
     regional.clear_cache()
     yield
     regional.clear_cache()
@@ -43,7 +43,7 @@ def legs(c) -> list[str]:
 
 
 def preset_legs(plan_id: str) -> str:
-    from fieldshift.contracts import Plan
+    from acre.contracts import Plan
 
     p = next(s["plan"] for s in SAMPLES["samples"] if s["plan_id"] == plan_id)
     return Plan.model_validate(p).model_dump_json(
@@ -166,7 +166,7 @@ def test_caution_and_manual_check_stay_flagged_and_avoid_never_appears():
     clover = [c for c in r.candidates if "crimson_clover" in c.crops]
     assert clover and any(c.checks_summary["flagged"] for c in clover)
     idx = regional.regional_catalog(UNION["latitude"], UNION["longitude"])
-    from fieldshift.planner.checker import check_plan
+    from acre.planner.checker import check_plan
 
     for c in r.candidates:
         for s in c.seasons:
@@ -204,7 +204,7 @@ def test_there_is_no_score_anywhere():
 
 @pytest.fixture()
 def client():
-    from fieldshift.api.app import create_app
+    from acre.api.app import create_app
 
     return TestClient(create_app())
 
@@ -268,15 +268,15 @@ def test_date_limits_are_read_in_the_year_of_the_date_they_limit():
 
 
 def test_seasons_chain_on_real_dates():
-    from fieldshift.planner.generator import chain_years
-    from fieldshift.seasons.align import build_calendar
+    from acre.planner.generator import chain_years
+    from acre.seasons.align import build_calendar
 
     for loc in (UNION, PERGAMINO):
         for c in gen(loc, goals={"constraints": {"seasons": 3}}).candidates:
             cals = [build_calendar(s.plan, s.year) for s in c.seasons]
             for a, b in zip(cals, cals[1:], strict=False):
                 assert a.plant < b.prev_harvest and (b.prev_harvest - a.plant).days <= 366
-    from fieldshift.contracts import Plan
+    from acre.contracts import Plan
 
     # a crop that would stay in the field for more than a year breaks the chain
     a = Plan(plan_id="a", previous_crop_id="soybean", prev_harvest="10-15",
@@ -293,7 +293,7 @@ def test_allowed_crops_also_limits_covers_and_winter_grains():
 
 
 def test_leap_day_shift():
-    from fieldshift.planner.generator import _shift
+    from acre.planner.generator import _shift
 
     assert _shift("02-29", 1) == "03-01" and _shift("03-01", -1) == "02-28"
     assert _shift("03-01", -14) == "02-15"  # 14 days in a common year
@@ -310,7 +310,7 @@ def test_a_profile_seed_window_that_does_not_fit_keeps_assumed_provenance(tmp_pa
 
 
 def test_unsourced_calendars_do_not_count_as_evidence(monkeypatch):
-    import fieldshift.planner.generator as g
+    import acre.planner.generator as g
 
     real = g.regional_catalog
 
@@ -333,7 +333,7 @@ def test_pergamino_generate_meta_names_the_regional_catalog(client):
 
 
 def test_only_crops_with_sourced_calendars_are_generated(monkeypatch):
-    import fieldshift.planner.generator as g
+    import acre.planner.generator as g
 
     real = g.regional_catalog
 
@@ -350,7 +350,7 @@ def test_only_crops_with_sourced_calendars_are_generated(monkeypatch):
 
 
 def test_cover_seed_dates_take_the_window_provenance_only_inside_it():
-    from fieldshift.planner.generator import _seed_in_window
+    from acre.planner.generator import _seed_in_window
 
     assert _seed_in_window("10-15", "04-15", "09-15", "11-15") == "10-22"  # open: a week later
     assert _seed_in_window("10-20", "05-12", "09-15", "10-15") is None  # closed before harvest

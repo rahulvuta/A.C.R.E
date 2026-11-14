@@ -2,13 +2,13 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from fieldshift.field import routes as field_routes
-from fieldshift.field.evidence import EvidenceBundle, GrowerObservation, SoilTest
-from fieldshift.field.location import approximate_region, in_nc_bounds, resolve_location
-from fieldshift.field.routes import router
-from fieldshift.field.soil import unavailable
-from fieldshift.weather.locations import get_index
-from fieldshift.weather.snapshot import DEFAULT_SNAPSHOT_DIR
+from acre.field import routes as field_routes
+from acre.field.evidence import EvidenceBundle, GrowerObservation, SoilTest
+from acre.field.location import approximate_region, in_nc_bounds, resolve_location
+from acre.field.routes import router
+from acre.field.soil import unavailable
+from acre.weather.locations import get_index
+from acre.weather.snapshot import DEFAULT_SNAPSHOT_DIR
 
 UNION = (34.98, -80.55)
 RAW = DEFAULT_SNAPSHOT_DIR / "raw"
@@ -149,7 +149,7 @@ def test_a_point_in_an_indexed_cell_is_served_by_that_cell():
 
 
 def test_no_index_row_means_unavailable_and_nothing_is_fetched(monkeypatch):
-    from fieldshift.weather import power_client
+    from acre.weather import power_client
 
     monkeypatch.setattr(power_client, "fetch_daily", no_network)
     r = resolve_location(35.4, -79.2, fetch_history=True)  # Hoke/Cumberland area, not indexed
@@ -316,9 +316,9 @@ def test_soil_route_survives_an_sda_failure(client, monkeypatch):
 def test_soil_route_follows_offline_mode_without_touching_the_network(
     client, monkeypatch, tmp_path
 ):
-    from fieldshift.field import soil as soil_mod
+    from acre.field import soil as soil_mod
 
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")
+    monkeypatch.setenv("ACRE_OFFLINE", "1")
     monkeypatch.setattr(soil_mod, "DEFAULT_CACHE_DIR", tmp_path)
     monkeypatch.setattr(
         soil_mod.httpx, "Client", lambda *a, **k: (_ for _ in ()).throw(AssertionError("network"))

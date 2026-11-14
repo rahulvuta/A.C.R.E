@@ -10,8 +10,8 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from fieldshift.farms.geometry import GeometryError, parse_field
-from fieldshift.weather import ondemand
+from acre.farms.geometry import GeometryError, parse_field
+from acre.weather import ondemand
 from tests.compare.test_global_analysis import PLAN as PERG_PLAN
 from tests.weather.test_weather_ondemand import FakePower
 
@@ -32,7 +32,7 @@ def _field(fid: str, poly: str, plan: dict, name: str | None = None) -> dict:
 @pytest.fixture(autouse=True)
 def _env(tmp_path, monkeypatch):
     monkeypatch.setenv(ondemand.CACHE_ENV, str(tmp_path / "cache"))
-    monkeypatch.delenv("FIELDSHIFT_OFFLINE", raising=False)
+    monkeypatch.delenv("ACRE_OFFLINE", raising=False)
     ondemand.reset_jobs()
     ondemand.set_fetch(FakePower())
     yield
@@ -42,7 +42,7 @@ def _env(tmp_path, monkeypatch):
 
 @pytest.fixture
 def client() -> TestClient:
-    from fieldshift.api.app import create_app
+    from acre.api.app import create_app
 
     return TestClient(create_app())
 
@@ -130,7 +130,7 @@ def test_pending_weather_gives_pending_field_and_no_result(client):
 
 
 def test_offline_unprepared_field_is_unavailable(client, monkeypatch):
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")
+    monkeypatch.setenv("ACRE_OFFLINE", "1")
     body = _analyze(client, [_field("a", "pergamino_square", PERG_PLAN)]).json()
     (f,) = body["fields"]
     assert f["job_status"] == "failed" and f["status"] == "unavailable"
@@ -156,7 +156,7 @@ def test_logs_carry_no_coordinates(client, caplog):
 
 
 def test_field_goals_can_carry_a_recommendation(client, monkeypatch):
-    import fieldshift.compare.recommend as rec
+    import acre.compare.recommend as rec
 
     monkeypatch.setattr(rec, "generate", lambda ctx, loc, fc, g: rec.preset_candidates(ctx, g))
     f = _field("nc", "union_parcels", NC_PLAN)
@@ -213,14 +213,14 @@ def test_field_and_group_weather_state_agree(client):
     gate = threading.Event()
     ondemand.set_fetch(FakePower(gate=gate))
     ondemand.prepare(ondemand.Cell.parse("cell_-34.000_-60.625"))  # a fetch is running
-    real_choose = __import__("fieldshift.compare.locations", fromlist=["choose"]).choose
+    real_choose = __import__("acre.compare.locations", fromlist=["choose"]).choose
 
     def finish_then_choose(*a, **k):  # the fetch lands while the batch is being processed
         gate.set()
         ondemand._JOBS["cell_-34.000_-60.625"].future.result(15)
         return real_choose(*a, **k)
 
-    import fieldshift.farms.analyze as fa
+    import acre.farms.analyze as fa
 
     fa.places.choose = finish_then_choose
     try:
@@ -280,7 +280,7 @@ def test_one_snapshot_per_cell_even_if_a_refresh_lands_mid_batch(client, monkeyp
 
 
 def test_farm_recommendation_replay_keeps_a_border_fields_scope(client, monkeypatch):
-    import fieldshift.compare.recommend as rec
+    import acre.compare.recommend as rec
 
     monkeypatch.setattr(rec, "generate", lambda ctx, loc, fc, g: {
         "status": "complete", "generation_log": [], "gaps": [],

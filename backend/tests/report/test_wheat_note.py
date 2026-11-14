@@ -4,15 +4,15 @@ from types import SimpleNamespace
 import pytest
 from fastapi.testclient import TestClient
 
-from fieldshift.api.app import create_app
-from fieldshift.api.samples import load_samples
-from fieldshift.compare.context import get_context
-from fieldshift.planner.backup import build_backup_plan, compare_fixed_plans
-from fieldshift.planner.calendar import add_scenarios, build_action_calendar
-from fieldshift.planner.wheat_path import demo_plan, plan_from_dates
-from fieldshift.report.audit import bare_numbers, verify
-from fieldshift.report.field_note import build_field_note
-from fieldshift.report.models import FieldNote
+from acre.api.app import create_app
+from acre.api.samples import load_samples
+from acre.compare.context import get_context
+from acre.planner.backup import build_backup_plan, compare_fixed_plans
+from acre.planner.calendar import add_scenarios, build_action_calendar
+from acre.planner.wheat_path import demo_plan, plan_from_dates
+from acre.report.audit import bare_numbers, verify
+from acre.report.field_note import build_field_note
+from acre.report.models import FieldNote
 
 YEAR = 2027
 
@@ -241,7 +241,7 @@ def app_client():
 
 @pytest.fixture(scope="module")
 def index_v1_ctx(ctx):
-    from fieldshift.catalogs import V1_CATALOG_DIR, CatalogIndex, load_catalog
+    from acre.catalogs import V1_CATALOG_DIR, CatalogIndex, load_catalog
 
     return SimpleNamespace(
         index=CatalogIndex(load_catalog(V1_CATALOG_DIR)),
@@ -461,7 +461,7 @@ def test_calendar_and_backup_schemas_are_field_level(app_client):
 
 
 def test_backup_and_calendar_responses_validate_for_every_variant(app_client):
-    from fieldshift.report.models import BackupResponse, CalendarResponse
+    from acre.report.models import BackupResponse, CalendarResponse
 
     wheat = demo_plan().model_dump(mode="json")
     for body in ({"plan_id": "corn_soy__rye", "year": YEAR}, {"plan": wheat, "year": YEAR},

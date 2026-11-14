@@ -10,9 +10,9 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from fieldshift.weather import ondemand
-from fieldshift.weather.locations import PLACES, get_index
-from fieldshift.weather.power_client import OfflineError, PowerFetchError, RawFetch, is_offline
+from acre.weather import ondemand
+from acre.weather.locations import PLACES, get_index
+from acre.weather.power_client import OfflineError, PowerFetchError, RawFetch, is_offline
 
 FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "power" / (
     "pergamino_cell_-34.000_-60.625.json"
@@ -50,7 +50,7 @@ class FakePower:
 @pytest.fixture(autouse=True)
 def _isolated(tmp_path, monkeypatch):
     monkeypatch.setenv(ondemand.CACHE_ENV, str(tmp_path / "cache"))
-    monkeypatch.delenv("FIELDSHIFT_OFFLINE", raising=False)
+    monkeypatch.delenv("ACRE_OFFLINE", raising=False)
     ondemand.reset_jobs()
     yield
     ondemand.set_fetch(None)
@@ -201,7 +201,7 @@ def test_write_failure_midway_leaves_no_partial_files(tmp_path, monkeypatch):
 
 
 def test_offline_with_no_cache_is_offline_no_snapshot(monkeypatch):
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")
+    monkeypatch.setenv("ACRE_OFFLINE", "1")
     fake = FakePower()
     ondemand.set_fetch(fake)
     st = ondemand.prepare(_cell(), wait_s=5)
@@ -214,7 +214,7 @@ def test_offline_with_no_cache_is_offline_no_snapshot(monkeypatch):
 def test_offline_serves_a_cached_cell(monkeypatch):
     ondemand.set_fetch(FakePower())
     first = ondemand.prepare(_cell(), wait_s=30)
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")
+    monkeypatch.setenv("ACRE_OFFLINE", "1")
     ondemand.reset_jobs()
     again = ondemand.prepare(_cell(), refresh=True)
     assert again.job_status == "ready" and again.snapshot_hash == first.snapshot_hash
@@ -244,7 +244,7 @@ def test_refresh_writes_a_new_hash_and_keeps_the_old_snapshot(tmp_path):
 
 @pytest.mark.parametrize("place", PLACES, ids=lambda p: p.id)
 def test_the_nc_snapshots_resolve_without_the_cache(place, tmp_path, monkeypatch):
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")
+    monkeypatch.setenv("ACRE_OFFLINE", "1")
     fake = FakePower()
     ondemand.set_fetch(fake)
     st = ondemand.prepare(_cell(place.latitude, place.longitude), refresh=True)
@@ -266,7 +266,7 @@ def test_last_requestable_day_is_yesterday_utc():
 
 @pytest.fixture
 def client():
-    from fieldshift.api.app import create_app
+    from acre.api.app import create_app
 
     return TestClient(create_app())
 
@@ -323,7 +323,7 @@ def test_api_get_bad_cell_id_is_400(client):
 
 
 def test_api_union_county_is_committed_offline(client, monkeypatch):
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")
+    monkeypatch.setenv("ACRE_OFFLINE", "1")
     r = client.post("/v1/weather/prepare", json={"location": {"latitude": 34.98,
                                                               "longitude": -80.55}})  # fmt: skip
     body = r.json()
@@ -361,7 +361,7 @@ def test_real_client_logs_no_coordinates(caplog):
 
     import httpx
 
-    from fieldshift.weather.power_client import fetch_daily
+    from acre.weather.power_client import fetch_daily
 
     body = FIXTURE.read_bytes()
     transport = httpx.MockTransport(lambda r: httpx.Response(200, content=body))

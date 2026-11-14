@@ -134,6 +134,6 @@ def run(client: Any, drop: frozenset[str] = frozenset()) -> dict[str, str]:
 if __name__ == "__main__":
     from fastapi.testclient import TestClient
 
-    from fieldshift.api.app import create_app
+    from acre.api.app import create_app
 
     print(json.dumps(run(TestClient(create_app())), indent=2, sort_keys=True))

@@ -2,7 +2,7 @@
 
 ## Model
 
-- A **plan** is one winter transition: previous cash crop → winter management → next cash crop. It matches `fieldshift.contracts.Plan`, so one plan has one spring window and one set of checks.
+- A **plan** is one winter transition: previous cash crop → winter management → next cash crop. It matches `acre.contracts.Plan`, so one plan has one spring window and one set of checks.
 - A **rotation** (what the frontend calls a preset) is two plans, called legs:
   - Leg 1 is the corn → soybean winter.
   - Leg 2 is the soybean → corn winter.

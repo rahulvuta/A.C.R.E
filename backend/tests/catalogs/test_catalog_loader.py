@@ -1,11 +1,11 @@
-from fieldshift.catalogs import (
+from acre.catalogs import (
     DEFAULT_CATALOG_DIR,
     V1_CATALOG_DIR,
     V2_CATALOG_DIR,
     CatalogIndex,
     load_catalog,
 )
-from fieldshift.catalogs.validate import (
+from acre.catalogs.validate import (
     CROPS_FILE,
     FERTILIZERS_FILE,
     RULES_FILE,

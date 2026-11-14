@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from fieldshift.geo import koppen
+from acre.geo import koppen
 
 
 def test_known_points():

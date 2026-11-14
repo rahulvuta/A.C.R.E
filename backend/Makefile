@@ -1,4 +1,4 @@
-# Field Shift backend. Override PY to use a specific interpreter, e.g. `make test PY=~/.venvs/x/bin/python`.
+# A.C.R.E backend. Override PY to use a specific interpreter, e.g. `make test PY=~/.venvs/x/bin/python`.
 PY ?= uv run python
 
 .PHONY: test lint serve offline-demo
@@ -10,8 +10,8 @@ lint:
 	$(PY) -m ruff check .
 
 serve:
-	$(PY) -m uvicorn fieldshift.api.app:app --reload
+	$(PY) -m uvicorn acre.api.app:app --reload
 
 # Reads only data/snapshots/ (Phase 1+). Network access is not needed.
 offline-demo:
-	FIELDSHIFT_OFFLINE=1 $(PY) -m uvicorn fieldshift.api.app:app
+	ACRE_OFFLINE=1 $(PY) -m uvicorn acre.api.app:app

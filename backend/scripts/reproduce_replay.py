@@ -4,11 +4,11 @@
     python scripts/reproduce_replay.py --raw data/snapshots/union_county/raw/power_daily.json \
         --plans data/samples/union_plans.json --plan corn_soy__rye --year 2008
 
-It does not import ``fieldshift`` and does not use the API. It re-derives, from ``raw/``:
+It does not import ``acre`` and does not use the API. It re-derives, from ``raw/``:
 the heavy-rain threshold (published fixed value: 3 in = 76.2 mm per daily value), the fixed
 bottom-20% spring cutoff (ceil(0.2 n)-th smallest of the complete 30-day windows), the spring
 total and rank, and the winter rain by segment. Missing/fill/negative values are treated
-exactly as in ``fieldshift/weather/normalize.py``. Prints JSON.
+exactly as in ``acre/weather/normalize.py``. Prints JSON.
 """
 
 from __future__ import annotations

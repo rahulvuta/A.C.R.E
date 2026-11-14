@@ -43,7 +43,7 @@
           "label": "Harvest field_corn",
           "origin": "assumed",
           "source": {
-            "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
             "url": null
           },
           "field": "prev_harvest"
@@ -55,7 +55,7 @@
           "label": "Seed cereal_rye",
           "origin": "assumed",
           "source": {
-            "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
             "url": null
           },
           "field": "winter.seed"
@@ -67,7 +67,7 @@
           "label": "Terminate cereal_rye",
           "origin": "assumed",
           "source": {
-            "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
             "url": null
           },
           "field": "winter.terminate"
@@ -79,7 +79,7 @@
           "label": "Plant soybean",
           "origin": "assumed",
           "source": {
-            "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
             "url": null
           },
           "field": "next_plant"
@@ -630,7 +630,7 @@
           "label": "Harvest soybean",
           "origin": "assumed",
           "source": {
-            "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
             "url": null
           },
           "field": "prev_harvest"
@@ -642,7 +642,7 @@
           "label": "Seed cereal_rye",
           "origin": "assumed",
           "source": {
-            "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
             "url": null
           },
           "field": "winter.seed"
@@ -654,7 +654,7 @@
           "label": "Terminate cereal_rye",
           "origin": "assumed",
           "source": {
-            "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
             "url": null
           },
           "field": "winter.terminate"
@@ -666,7 +666,7 @@
           "label": "Plant field_corn",
           "origin": "assumed",
           "source": {
-            "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
             "url": null
           },
           "field": "next_plant"

@@ -5,7 +5,7 @@ from datetime import date
 import pandas as pd
 import pytest
 
-from fieldshift.contracts import (
+from acre.contracts import (
     GrowerInputs,
     Plan,
     Status,
@@ -13,8 +13,8 @@ from fieldshift.contracts import (
     ThresholdSet,
     WinterManagement,
 )
-from fieldshift.metrics.thresholds import HEAVY_RAIN_NAME, build_threshold_set, heavy_rain_threshold
-from fieldshift.metrics.winter import (
+from acre.metrics.thresholds import HEAVY_RAIN_NAME, build_threshold_set, heavy_rain_threshold
+from acre.metrics.winter import (
     AFTER_TERMINATION,
     BEFORE_ESTABLISHMENT,
     LIVING_COVER,
@@ -22,9 +22,9 @@ from fieldshift.metrics.winter import (
     ThresholdMismatchError,
     compute_winter,
 )
-from fieldshift.seasons.align import build_calendar
-from fieldshift.weather.series import DailySeries
-from fieldshift.weather.snapshot import load_snapshot
+from acre.seasons.align import build_calendar
+from acre.weather.series import DailySeries
+from acre.weather.snapshot import load_snapshot
 
 HASH = "fixture-hash"
 
@@ -294,7 +294,7 @@ def test_zero_count_winters_are_valid_complete_results_with_known_rain(union):
 
 
 def test_missing_reference_row_is_a_loud_error_not_a_silent_default(monkeypatch, tmp_path):
-    import fieldshift.metrics.thresholds as th
+    import acre.metrics.thresholds as th
 
     empty = tmp_path / "weather_references.csv"
     empty.write_text("rule_id,operator,unit\n")
@@ -305,7 +305,7 @@ def test_missing_reference_row_is_a_loud_error_not_a_silent_default(monkeypatch,
 
 
 def test_the_old_p95_rule_is_not_part_of_the_default_set_but_remains_an_explicit_option(union):
-    from fieldshift.metrics.thresholds import HeavyRainRule
+    from acre.metrics.thresholds import HeavyRainRule
 
     series, h = union
     assert "p95" not in str(build_threshold_set(series, h).thresholds).lower()
@@ -337,7 +337,7 @@ def test_real_season_totals_are_consistent(union):
 
 
 def test_rain_totals_survive_when_no_heavy_rain_threshold_can_be_computed():
-    from fieldshift.metrics.thresholds import HeavyRainRule
+    from acre.metrics.thresholds import HeavyRainRule
 
     days = pd.date_range("1981-01-01", "2025-06-30", freq="D")
     series = DailySeries(

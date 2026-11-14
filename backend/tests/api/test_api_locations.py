@@ -10,8 +10,8 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from fieldshift.api.app import create_app
-from fieldshift.weather.locations import get_index
+from acre.api.app import create_app
+from acre.weather.locations import get_index
 from tests.api.union_golden_requests import run
 
 GOLDEN = json.loads((Path(__file__).parent / "golden_union.json").read_text())
@@ -24,7 +24,7 @@ RALEIGH = {"latitude": 35.78, "longitude": -78.64}  # in NC; its grid cell has n
 @pytest.fixture(scope="module")
 def client():
     mp = pytest.MonkeyPatch()
-    mp.setenv("FIELDSHIFT_OFFLINE", "1")
+    mp.setenv("ACRE_OFFLINE", "1")
 
     def refuse(*a, **k):
         raise AssertionError("network access attempted")
@@ -100,7 +100,7 @@ def test_dry_cutoff_is_the_bottom_fifth_of_that_places_own_baseline(client):
     """Recompute the cutoff for Pitt from its own snapshot: it must equal the one reported."""
     import pandas as pd
 
-    from fieldshift.weather.locations import load_entry_snapshot
+    from acre.weather.locations import load_entry_snapshot
 
     t = compare(client, "pitt", plan_ids=("corn_soy__rye",))["thresholds"]
     daily = load_entry_snapshot("pitt").daily
@@ -163,7 +163,7 @@ NOT_STORED = {"weather_not_prepared", "offline_no_snapshot"}
 
 @pytest.fixture
 def empty_cache(tmp_path, monkeypatch):
-    monkeypatch.setenv("FIELDSHIFT_CACHE_DIR", str(tmp_path / "cache"))
+    monkeypatch.setenv("ACRE_CACHE_DIR", str(tmp_path / "cache"))
 
 
 def test_outside_nc_without_stored_weather_is_unavailable(client, empty_cache):
@@ -360,8 +360,8 @@ def test_malformed_query_location_is_invalid_input(client):
 
 
 def test_verify_index_rejects_a_place_redirected_to_another_cells_directory(tmp_path):
-    from fieldshift.weather.locations import INDEX_PATH, SNAPSHOT_ROOT, verify_index
-    from fieldshift.weather.snapshot import SnapshotError
+    from acre.weather.locations import INDEX_PATH, SNAPSHOT_ROOT, verify_index
+    from acre.weather.snapshot import SnapshotError
 
     for d in ("union_county", "iredell", "rowan", "johnston", "duplin", "pitt", "robeson"):
         (tmp_path / d).symlink_to(SNAPSHOT_ROOT / d)
@@ -379,7 +379,7 @@ def test_verify_index_rejects_a_place_redirected_to_another_cells_directory(tmp_
 def test_cell_edges_match_what_nasa_power_returned(client):
     """Expected cells written down from live POWER probes around Pitt's cell (identical values
     inside, different values outside), not from the derivation under test."""
-    from fieldshift.weather.locations import cell_id_for
+    from acre.weather.locations import cell_id_for
 
     pitt = "cell_+35.500_-77.500"
     inside = [(35.74, -77.37), (35.26, -77.5), (35.5, -77.78), (35.5, -77.2), (35.59, -77.37)]
