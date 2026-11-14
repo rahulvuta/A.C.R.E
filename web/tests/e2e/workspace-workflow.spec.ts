@@ -46,30 +46,36 @@ async function drawRing(page: Page, pts: [number, number][]) {
   await page.waitForTimeout(300);
 }
 
+const LIVE = Boolean(process.env.E2E_API);
+// Live: Union County (NC profile crops); mocked: Pergamino (AR-B fixture profile).
+const PLACE = LIVE
+  ? { query: "34.97, -80.55", hit: /34\.97/, center: [-80.555, 34.965], prev: "field_corn", crops: ["soybean", "soybean"], dates: { harvest: "09-20", seed: "10-01", terminate: "04-20", plants: ["05-12", "05-25"] } }
+  : { query: "Pergamino", hit: "Pergamino, Buenos Aires, Argentina", center: [-60.575, -33.885], prev: "maize", crops: ["soybean", "wheat"], dates: { harvest: "04-20", seed: "05-01", terminate: "10-20", plants: ["11-15", "06-01"] } };
+
 async function fillPlan(page: Page, id: string, next: { crop: string; plant: string }) {
-  await page.locator(`#pe-prev-${id}`).selectOption("maize");
-  await page.locator(`#pe-harv-${id}`).fill("04-20");
+  await page.locator(`#pe-prev-${id}`).selectOption(PLACE.prev);
+  await page.locator(`#pe-harv-${id}`).fill(PLACE.dates.harvest);
   await page.locator(`#pe-wk-${id}`).selectOption("cover");
   await page.locator(`#pe-cov-${id}`).selectOption("cereal_rye");
-  await page.locator(`#pe-seed-${id}`).fill("05-01");
-  await page.locator(`#pe-term-${id}`).fill("10-20");
+  await page.locator(`#pe-seed-${id}`).fill(PLACE.dates.seed);
+  await page.locator(`#pe-term-${id}`).fill(PLACE.dates.terminate);
   await page.locator(`#pe-next-${id}`).selectOption(next.crop);
   await page.locator(`#pe-plant-${id}`).fill(next.plant);
 }
 
 test("search, draw two fields, plan each, analyse, overview, export, reload", async ({ page }) => {
   await mockTiles(page);
-  const calls = await mockBackend(page);
+  const calls = LIVE ? [] : await mockBackend(page);
   await page.goto("/?view=app");
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   await page.locator(".mp-map[data-ready='true']").waitFor();
 
   // Search and start a farm there.
-  await page.getByPlaceholder("Town, address or coordinates").fill("Pergamino");
+  await page.getByPlaceholder("Town, address or coordinates").fill(PLACE.query);
   await page.getByRole("button", { name: "Search" }).click();
-  await page.getByRole("button", { name: "Pergamino, Buenos Aires, Argentina", exact: true }).click();
-  await page.evaluate(() => (window as unknown as { __map: { jumpTo(o: unknown): void } }).__map.jumpTo({ center: [-60.575, -33.885], zoom: 15 }));
+  await page.getByRole("button", { name: PLACE.hit, exact: typeof PLACE.hit === "string" }).first().click();
+  await page.evaluate((c) => (window as unknown as { __map: { jumpTo(o: unknown): void } }).__map.jumpTo({ center: c, zoom: 15 }), PLACE.center);
   await page.waitForTimeout(300);
 
   await page.getByRole("button", { name: "Start a farm here" }).click();
@@ -87,21 +93,21 @@ test("search, draw two fields, plan each, analyse, overview, export, reload", as
   const switcher = page.getByLabel("Selected field");
   await switcher.selectOption(ids[0]!);
   await page.getByRole("button", { name: "Field plan" }).click();
-  await fillPlan(page, ids[0]!, { crop: "soybean", plant: "11-15" });
+  await fillPlan(page, ids[0]!, { crop: PLACE.crops[0]!, plant: PLACE.dates.plants[0]! });
   await switcher.selectOption(ids[1]!);
   await switcher.selectOption(ids[0]!);
-  await expect(page.locator(`#pe-plant-${ids[0]}`)).toHaveValue("11-15");
-  await expect(page.locator(`#pe-harv-${ids[0]}`)).toHaveValue("04-20");
+  await expect(page.locator(`#pe-plant-${ids[0]}`)).toHaveValue(PLACE.dates.plants[0]!);
+  await expect(page.locator(`#pe-harv-${ids[0]}`)).toHaveValue(PLACE.dates.harvest);
   await page.getByRole("button", { name: "Save plan" }).click();
   await switcher.selectOption(ids[1]!);
-  await fillPlan(page, ids[1]!, { crop: "wheat", plant: "06-01" });
+  await fillPlan(page, ids[1]!, { crop: PLACE.crops[1]!, plant: PLACE.dates.plants[1]! });
   await page.getByRole("button", { name: "Save plan" }).click();
   expect((await store()).farms[0].fields.every((f: { plan: unknown }) => f.plan)).toBe(true);
 
   // Analyse; the two fields show their own results.
   await page.getByRole("button", { name: "Analyse farm" }).click();
   const results = page.getByRole("region", { name: "Results for this field" });
-  await expect(results.locator(".fr-num").first()).toBeVisible();
+  await expect(results.locator(".fr-num").first()).toBeVisible({ timeout: LIVE ? 120_000 : 5_000 });
   const second = await results.locator(".fr-num").allTextContents();
   await switcher.selectOption(ids[0]!);
   await expect(results.locator(".fr-num").first()).toBeVisible();
@@ -109,7 +115,7 @@ test("search, draw two fields, plan each, analyse, overview, export, reload", as
   expect(first).not.toEqual(second);
   await expect(results.getByText(/share one NASA weather series/)).toBeVisible();
   await expect(results.locator(".ob").first()).toBeVisible();
-  expect(calls).toContain("POST /v1/farms/analyze");
+  if (!LIVE) expect(calls).toContain("POST /v1/farms/analyze");
 
   // Overview: area is the only total.
   await page.getByRole("button", { name: "Farm overview" }).click();
@@ -128,5 +134,5 @@ test("search, draw two fields, plan each, analyse, overview, export, reload", as
   await page.locator(".mp-map[data-ready='true']").waitFor();
   await expect(list).toHaveCount(2);
   const saved = await store();
-  expect(saved.farms[0].fields[0].plan.next_plant).toBe("11-15");
+  expect(saved.farms[0].fields[0].plan.next_plant).toBe(PLACE.dates.plants[0]);
 });

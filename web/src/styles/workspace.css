@@ -67,3 +67,4 @@
 .ob-grower { color: var(--action); border-color: var(--action); }
 .ob-nasa, .ob-calc { background: var(--surface-2); }
 .ob-dataset, .ob-assumed { color: var(--ink-muted); }
+.ws-planning { min-width: 0; }

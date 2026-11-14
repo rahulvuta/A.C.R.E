@@ -9,18 +9,20 @@ import { defineConfig, devices } from "@playwright/test";
   Run: npx playwright test -c tests/e2e/workspace.config.ts
 */
 const port = Number(process.env.D_PW_PORT ?? 5177);
+// E2E_API=http://localhost:8000 runs the workflow spec against a real backend instead of mocks.
+const apiBase = process.env.E2E_API ?? "http://api.test";
 
 export default defineConfig({
   testDir: ".",
   testMatch: /workspace[^/]*\.spec\.ts$/,
-  timeout: 45_000,
+  timeout: process.env.E2E_API ? 240_000 : 45_000,
   fullyParallel: true,
   use: {
     baseURL: `http://localhost:${port}`,
     launchOptions: { args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] },
   },
   webServer: {
-    command: `VITE_API_BASE=http://api.test npx vite --port ${port} --strictPort`,
+    command: `VITE_API_BASE=${apiBase} npx vite --port ${port} --strictPort`,
     cwd: fileURLToPath(new URL("../..", import.meta.url)),
     port,
     reuseExistingServer: false,

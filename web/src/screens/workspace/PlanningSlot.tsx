@@ -1,11 +1,11 @@
-import { lazy, Suspense, type ComponentType } from "react";
+import { lazy, Suspense } from "react";
 import type { GlobalClient } from "../../api/client";
 import type { LatLon, RegionProfile } from "../../api/model";
 import type { Field } from "../../farm/types";
 
 /*
-  The planning screens (cards P4–P6, `src/planning/`, built in parallel), loaded lazily so this
-  file builds whether or not they are in the checkout yet. D4 wires the real exports.
+  The planning screens (P4–P6, `src/planning/`) for the selected field, loaded lazily so the
+  map page does not carry them. See FieldPlanning.tsx.
 */
 export type PlanningStep = "goals" | "find" | "future";
 export interface PlanningProps {
@@ -15,32 +15,13 @@ export interface PlanningProps {
   profile: RegionProfile | null;
   onStep: (s: PlanningStep | "plan") => void;
 }
-type Mod = Partial<Record<"GoalsScreen" | "FindPlansScreen" | "FuturePlanScreen", ComponentType<PlanningProps>>>;
 
-const found = import.meta.glob<Mod>("../../planning/index.ts");
-const loader = Object.values(found)[0];
-const NAME: Record<PlanningStep, keyof Mod> = { goals: "GoalsScreen", find: "FindPlansScreen", future: "FuturePlanScreen" };
-const lazies = Object.fromEntries(
-  (Object.keys(NAME) as PlanningStep[]).map((s) => [
-    s,
-    loader ? lazy(() => loader().then((m) => ({ default: m[NAME[s]] ?? (() => <Missing />) }))) : null,
-  ]),
-) as Record<PlanningStep, ComponentType<PlanningProps> | null>;
+const FieldPlanning = lazy(() => import("./FieldPlanning"));
 
-function Missing() {
-  return (
-    <p className="ws-nomap" role="status">
-      This planning step is not part of this build yet.
-    </p>
-  );
-}
-
-export function PlanningSlot({ step, ...props }: PlanningProps & { step: PlanningStep }) {
-  const C = lazies[step];
-  if (!C) return <Missing />;
+export function PlanningSlot(props: PlanningProps & { step: PlanningStep }) {
   return (
     <Suspense fallback={<p role="status">Loading…</p>}>
-      <C {...props} />
+      <FieldPlanning key={props.field.field_id} {...props} />
     </Suspense>
   );
 }
