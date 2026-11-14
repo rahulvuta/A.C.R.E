@@ -211,5 +211,5 @@ def _recommend(m: Measured, ctx: Any) -> dict[str, Any]:
     if not gen["candidates"]:
         return {"status": "insufficient_data", "gaps": gen.get("gaps", []), "shortlist": [],
                 "generation_log": gen.get("generation_log", [])}  # fmt: skip
-    out = recommend(gen["candidates"], ctx, goals.get("priorities") or {})
+    out = recommend(gen["candidates"], ctx, goals.get("priorities") or {}, requested=point)
     return {**out, "generation_log": gen.get("generation_log", []), "gaps": gen.get("gaps", [])}

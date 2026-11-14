@@ -412,3 +412,15 @@ def test_signed_zero_cell_ids_are_one_cell():
     assert a == b and a.cell_id == "cell_+0.000_+0.000"
     assert _cell(0.1, 0.1).cell_id == "cell_+0.000_+0.000"
     assert _cell(-0.1, -0.1).cell_id == "cell_+0.000_+0.000"
+
+
+def test_a_cell_stored_by_another_process_is_not_fetched_again():
+    """A-m1: the fetch runs under a per-cell file lock and re-checks the cache first."""
+    first = FakePower()
+    ondemand.fetch_and_store(_cell(), first)  # "another process" stored it
+    second = FakePower()
+    ondemand.set_fetch(second)
+    s = ondemand._run(_cell())
+    assert second.calls == [] and s.snapshot_hash
+    refreshed_seen = ondemand._run(_cell(), refresh=True, seen="someone-else's-hash")
+    assert second.calls == [] and refreshed_seen.snapshot_hash == s.snapshot_hash

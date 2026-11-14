@@ -277,3 +277,21 @@ def test_one_snapshot_per_cell_even_if_a_refresh_lands_mid_batch(client, monkeyp
                              _field("b", "pergamino_l", PERG_PLAN)]).json()  # fmt: skip
     hashes = {f["snapshot_hash"] for f in body["fields"]} | {body["weather_cells"][0]["snapshot_hash"]}
     assert len(hashes) == 1 and "f" * 64 not in hashes
+
+
+def test_farm_recommendation_replay_keeps_a_border_fields_scope(client, monkeypatch):
+    import fieldshift.compare.recommend as rec
+
+    monkeypatch.setattr(rec, "generate", lambda ctx, loc, fc, g: {
+        "status": "complete", "generation_log": [], "gaps": [],
+        "candidates": [rec.Candidate("rye", [rec.Plan.model_validate(NC_PLAN)], None, "grower")]})
+    sc = {"type": "Polygon", "coordinates": [[[-80.61, 34.79], [-80.59, 34.79], [-80.59, 34.77],
+                                              [-80.61, 34.77], [-80.61, 34.79]]]}  # SC, Union's cell
+    f = {"field_id": "sc", "name": "SC", "geometry": sc, "plan": NC_PLAN,
+         "goals": {"priorities": {"soil_cover": 3}}}
+    body = _analyze(client, [f], recommend=True).json()
+    (fld,) = body["fields"]
+    assert fld["scope"] == "global"
+    hv = fld["recommendation"]["shortlist"][0]["historical_vulnerabilities"][0]["replay"]
+    rep = client.post(hv["path"], json=hv["body"]).json()
+    assert rep["thresholds"]["heavy_rain"]["method"] == "etccdi_r95p"

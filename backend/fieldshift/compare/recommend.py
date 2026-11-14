@@ -388,7 +388,10 @@ def recommend(cands: list[Candidate], ctx: Context, priorities: dict[str, int],
         # unknown value then makes candidates not comparable rather than silently passing
         weights.pop("rule_flags", None)
     directions = {n: SPECS[n].direction for n in weights}
-    vectors = {cid: {n: i.value for n, i in v.items()} for cid, v in inds.items()}
+    # only fully evaluated values take part in dominance: a partial one (e.g. rule flags with
+    # unevaluable rules) makes the candidate not comparable on that indicator, never a number
+    vectors = {cid: {n: (i.value if i.status == "complete" else None) for n, i in v.items()}
+               for cid, v in inds.items()}  # fmt: skip
     res = pareto(vectors, directions, weights)
     by_id = {c.candidate_id: c for c in cands}
     cat = ctx.index.catalog

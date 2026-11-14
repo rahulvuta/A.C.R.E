@@ -257,3 +257,22 @@ def test_generator_failure_keeps_its_status_and_reason(client, monkeypatch):
     body = _rec(client, {"goals": {"priorities": {"soil_cover": 3}}})
     assert body["status"] == "unavailable" and body["reason"] == "candidate_generator_failed"
     assert body["reason_text"]
+
+
+# --------------------------------------------------------------------------- milestone review (A-m1)
+
+
+def test_partial_indicators_never_enter_dominance(client):
+    body = _rec(client, {"goals": {"priorities": {"weather_resilience": 3}}})
+    wheat = next(c for c in _all_cards(body) if c["candidate_id"] == "add_grain_crop")
+    assert wheat["indicators"]["rule_flags"]["status"] == "partial"
+    nc = {c["candidate_id"]: c["missing"] for c in body["not_comparable"]}
+    assert "rule_flags" in nc["add_grain_crop"]
+
+
+def test_unprepared_outside_nc_compare_shows_nothing_of_union(client):
+    r = client.post("/v1/plans/compare", json={"plans": [PLAN], "location": PERG,
+                                               "include_soil": False})  # fmt: skip
+    body = r.json()
+    assert body["thresholds"]["heavy_rain"]["value"] is None
+    assert body["thresholds"]["dry_spring"] == {} and body["meta"]["catalog_version"] is None

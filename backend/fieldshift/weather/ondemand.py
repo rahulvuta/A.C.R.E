@@ -455,9 +455,31 @@ def _from_job(cell: Cell, job: _Job) -> WeatherState:
     return _failed(cell, exc.reason if isinstance(exc, FetchFailed) else "power_unreachable")
 
 
-def _run(cell: Cell) -> Stored:
+@contextmanager
+def _cell_lock(cell: Cell) -> Iterator[None]:
+    """An exclusive file lock per cell, so processes sharing one cache never fetch the same cell
+    at once or race ``current.json`` (the in-process dedupe covers threads)."""
+    import fcntl
+
+    locks = cache_root() / "weather" / ".locks"  # outside the cell folder: no stray files there
+    locks.mkdir(parents=True, exist_ok=True)
+    with open(locks / f"{cell.cell_id}.lock", "w") as fh:
+        fcntl.flock(fh, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(fh, fcntl.LOCK_UN)
+
+
+def _run(cell: Cell, refresh: bool = False, seen: str | None = None) -> Stored:
+    """Fetch under the cell lock. Another process may have stored the cell meanwhile: without
+    ``refresh`` that snapshot is used; with ``refresh`` a snapshot newer than ``seen`` counts."""
     fetch = _FETCH_OVERRIDE[0] if _FETCH_OVERRIDE else None
-    return fetch_and_store(cell, fetch)
+    with _cell_lock(cell):
+        s = _stored(cell)
+        if s is not None and s.source == "cache" and (not refresh or s.snapshot_hash != seen):
+            return s
+        return fetch_and_store(cell, fetch)
 
 
 def prepare(cell: Cell, *, refresh: bool = False, wait_s: float = 0.0) -> WeatherState:
@@ -479,7 +501,7 @@ def prepare(cell: Cell, *, refresh: bool = False, wait_s: float = 0.0) -> Weathe
                                  "network.")  # fmt: skip
                     return _ready(cell, s, "cache", notes)
                 return _failed(cell, "offline_no_snapshot")
-            job = _Job(_EXECUTOR.submit(_run, cell))
+            job = _Job(_EXECUTOR.submit(_run, cell, refresh, s.snapshot_hash if s else None))
             _JOBS[cell.cell_id] = job
     if wait_s > 0:
         try:
