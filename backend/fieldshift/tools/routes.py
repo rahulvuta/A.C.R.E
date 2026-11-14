@@ -46,11 +46,16 @@ def _area(body: dict[str, Any]) -> tuple[dict[str, Any] | None, list[dict[str, s
         ha = float(v) if key == "area_ha" else float(v) / AC_PER_HA
         return {"ha": ha, "acres": ha * AC_PER_HA, "origin": "grower", "basis": key}, []
     fid, farm = body.get("field_id"), body.get("farm")
-    feats = farm.get("features") if isinstance(farm, dict) else None
+    # the contract's Farm ({fields: [{field_id, geometry}]}) or a GeoJSON FeatureCollection
+    feats = None
+    if isinstance(farm, dict):
+        feats = farm.get("fields") if isinstance(farm.get("fields"), list) else farm.get("features")
     if not isinstance(fid, str) or not isinstance(feats, list):
-        return None, [issue("farm", "required", "field_id needs a farm GeoJSON FeatureCollection")]
+        return None, [issue("farm", "required", "field_id needs a farm: {fields: [{field_id, "
+                            "geometry}]} or a GeoJSON FeatureCollection")]  # fmt: skip
     feat = next((f for f in feats if isinstance(f, dict) and (
-        (f.get("properties") or {}).get("field_id") == fid or f.get("id") == fid)), None)  # fmt: skip
+        f.get("field_id") == fid or (f.get("properties") or {}).get("field_id") == fid
+        or f.get("id") == fid)), None)  # fmt: skip
     if feat is None:
         return None, [issue("field_id", "unknown_field", "no feature in farm has this field_id")]
     try:
@@ -63,6 +68,17 @@ def _area(body: dict[str, Any]) -> tuple[dict[str, Any] | None, list[dict[str, s
         return None, [issue("farm", exc.code, str(exc))]
     return {"ha": shape.area_ha, "acres": shape.area_ha * AC_PER_HA, "origin": "calculation",
             "basis": "field geometry (geodesic area computed by the backend)"}, problems  # fmt: skip
+
+
+def _index(body: dict[str, Any]) -> Any:
+    """The catalog for the body's ``location`` (B2): NC's verified one, else the regional one,
+    which never carries NC's irrigation or nitrogen rows."""
+    loc = body.get("location")
+    if not isinstance(loc, dict):
+        return get_index()
+    from fieldshift.catalogs.regional import catalog_for_location
+
+    return catalog_for_location(loc)[0]
 
 
 def _units(body: dict[str, Any]) -> tuple[str | None, list[dict[str, str]]]:
@@ -121,7 +137,7 @@ async def post_fertilizer(request: Request) -> Any:
     except ValueError:
         return invalid([issue("product", "invalid_type", "product fields must be strings")])
     result = calculate(
-        targets, product, get_index(), area_acres=area["acres"] if area else None,
+        targets, product, _index(body), area_acres=area["acres"] if area else None,
         basis=body.get("basis"), crop_id=body.get("crop_id"),
     )  # fmt: skip
     if result.status == "invalid_input":
@@ -168,7 +184,7 @@ async def post_irrigation(request: Request) -> Any:
     if problems or u_problems:
         return invalid(problems + u_problems)
     result = check_irrigation(
-        get_index(), crop_id=crop_id, stage=stage, awc_in=body.get("awc_in"),
+        _index(body), crop_id=crop_id, stage=stage, awc_in=body.get("awc_in"),
         start_storage_in=body.get("start_storage_in"), weather=body.get("weather"),
         irrigation=body.get("irrigation"), water_table_depth_in=body.get("water_table_depth_in"),
     )  # fmt: skip

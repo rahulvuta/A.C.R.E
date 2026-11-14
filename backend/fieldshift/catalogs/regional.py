@@ -298,8 +298,14 @@ def _build(region_keys: tuple[str, ...], in_nc: bool, sage_cell: str, lat_r: flo
     digest = hashlib.sha256(b"\n".join(blobs)).hexdigest()
     base = profile_key or (region_keys[0] if region_keys else "unknown")
     version = f"v3:{base}:{sage_cell}"
+    from fieldshift.report.meta import get_index
+
+    # fertilizer products are grades and analyses, not regional guidance: they travel; NC's
+    # nitrogen-rate rows do not (they are rules, and only this region's rules are loaded)
+    products = list(get_index().catalog.fertilizers)
     catalog = Catalog(version=version, directory=Path("."), crops=list(crops.values()),
-                      rules=rules, fertilizers=[], issues=[], manifest=_manifest(version, digest))  # fmt: skip
+                      rules=rules, fertilizers=products, issues=[],
+                      manifest=_manifest(version, digest))  # fmt: skip
     return RegionalIndex(catalog, region_key=region_keys[0] if region_keys else None,
                          region_keys=list(region_keys), in_nc=False, calendars=calendars,
                          profile=profile, profile_key=profile_key, gaps=list(dict.fromkeys(gaps)))  # fmt: skip

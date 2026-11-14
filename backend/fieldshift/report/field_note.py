@@ -677,12 +677,27 @@ def _future_section(future: dict[str, Any], index: Any, n: _Nums, as_of: date | 
                     ) -> dict[str, Any]:  # fmt: skip
     """The future multi-season plan (card P3) for the note: dates with origins, milestones and
     decision deadlines; its numbers (living-cover days, termination gaps) are audited."""
-    from fieldshift.planner.future import FuturePlanError, build_future_plan, public
+    from fieldshift.planner.future import (
+        FuturePlanError,
+        build_future_plan,
+        check_chain,
+        expand,
+        public,
+    )
+    from fieldshift.report.audit import source_ref
 
+    legs = future["legs"]
+    origins = future.get("origins") or [{} for _ in legs]
     try:
+        chain = check_chain(legs, future["seasons"])
+        if chain:
+            raise FuturePlanError(chain)
+        legs, origins, sources, follow = expand(legs, origins, [{} for _ in legs],
+                                                future["seasons"])  # fmt: skip
         body = public(build_future_plan(
-            future["legs"], index, start_season=future["start_season"], seasons=future["seasons"],
-            basis=future.get("basis", "grower"), as_of=as_of))  # fmt: skip
+            legs, index, start_season=future["start_season"], seasons=future["seasons"],
+            origins=origins, sources=sources, basis=future.get("basis", "grower"), as_of=as_of,
+            follow=follow))  # fmt: skip
     except FuturePlanError as exc:
         return {"status": "invalid_input", "issues": [i.model_dump() for i in exc.issues]}
     seasons = []
@@ -690,12 +705,17 @@ def _future_section(future: dict[str, Any], index: Any, n: _Nums, as_of: date | 
         cover = s.get("cover_schedule")
         if cover is not None:
             what = f"season {s['season']} cover"
+            # audited against this season's own plan and dates, not the note's first plan
+            ref = source_ref("plan_input", s["plan"]["plan_id"], season=s["season"],
+                             dates_basis=cover["origin"]["seed"])  # fmt: skip
+            inputs = {"seed": cover["seed"], "terminate": cover["terminate"]}
             cover = {**cover,
-                     "living_cover_days": n.plan_calc(cover["living_cover_days"], "days",
-                                                      f"{what}: days from seeding to termination"),
-                     "termination_gap_days": n.plan_calc(cover["termination_gap_days"], "days",
-                                                         f"{what}: days from termination to "
-                                                         "planting")}  # fmt: skip
+                     "living_cover_days": n.book.num(
+                         cover["living_cover_days"], "days", "calculation", ref,
+                         {"what": f"{what}: days from seeding to termination", **inputs}),
+                     "termination_gap_days": n.book.num(
+                         cover["termination_gap_days"], "days", "calculation", ref,
+                         {"what": f"{what}: days from termination to planting", **inputs})}  # fmt: skip
         seasons.append({
             "season": s["season"], "status": s["status"], "plan_id": s["plan"]["plan_id"],
             "windows": [{k: v for k, v in w.items() if k != "source"} for w in s["windows"]],

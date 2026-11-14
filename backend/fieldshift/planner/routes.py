@@ -400,7 +400,14 @@ def _future_legs(body: dict[str, Any]) -> tuple[list[Plan], list[dict[str, str]]
                 issues += _validation_issues(exc, f"candidate.seasons[{n}].plan.")
                 continue
             o = s.get("origins") if isinstance(s.get("origins"), dict) else {}
-            origins.append({k: v for k, v in o.items() if isinstance(v, str)})
+            from fieldshift.catalogs.v3 import ORIGINS
+
+            bad = sorted(k for k, v in o.items() if v not in ORIGINS)
+            if bad:
+                issues.append(issue(f"candidate.seasons[{n}].origins.{bad[0]}", "invalid_origin",
+                                    f"origin must be one of {sorted(ORIGINS)}"))  # fmt: skip
+                continue
+            origins.append(dict(o))
             sources.append(s.get("sources") if isinstance(s.get("sources"), dict) else {})
         return legs, origins, sources, "grower", issues
     raw = body.get("plans")
@@ -438,6 +445,46 @@ def _future_legs(body: dict[str, Any]) -> tuple[list[Plan], list[dict[str, str]]
                                             "plan_id or rotation_id")]  # fmt: skip
     legs = [samples[x] for x in rot]
     return legs, [{} for _ in legs], [{} for _ in legs], "assumed", []
+
+
+def _priorities(raw: Any) -> dict[str, int]:
+    from fieldshift.planner.goals import PRIORITY_IDS
+
+    if not isinstance(raw, dict):
+        return {}
+    return {k: v for k, v in raw.items() if k in PRIORITY_IDS and isinstance(v, int)
+            and not isinstance(v, bool) and 0 <= v <= 3}  # fmt: skip
+
+
+def _refresh(legs: list[Plan], priorities: dict[str, int], loc: Any) -> dict[str, Any]:
+    """P2 (A's ``compare.recommend``) for this one plan: its indicators and historical
+    vulnerabilities. Only the edited plan is rerun; ``unavailable`` when P2 or its weather is not
+    there, never a guess."""
+    try:
+        from fieldshift.compare import locations as places
+        from fieldshift.compare.recommend import Candidate, recommend
+    except ImportError:
+        return {"status": "unavailable", "reason": "recommendation_not_available",
+                "reason_text": "The recommendation step (P2) is not installed here."}  # fmt: skip
+    args: dict[str, Any] = {}
+    if isinstance(loc, dict):
+        args = {"latitude": float(loc["latitude"]), "longitude": float(loc["longitude"])}
+    try:
+        choice = places.choose(None, **args)
+        if not choice.ok or choice.ctx is None:
+            return {"status": "unavailable", "reason": choice.reason or "weather_unavailable",
+                    "reason_text": "There is no stored weather for this place yet, so the plan's "
+                    "history was not analysed."}  # fmt: skip
+        res = recommend([Candidate("future_plan", list(legs), "This plan", "grower")], choice.ctx,
+                        priorities or {})  # fmt: skip
+    except Exception:  # noqa: BLE001 - the future plan never fails because P2 did
+        return {"status": "unavailable", "reason": "recommendation_failed",
+                "reason_text": "The recommendation step could not analyse this plan."}  # fmt: skip
+    cards = [*res.get("shortlist", []), *res.get("not_comparable", []), *res.get("dominated", [])]
+    card = cards[0] if cards else {}
+    return {"status": res.get("status"), "result_id": res.get("result_id"),
+            "method": res.get("method"), "indicators": card.get("indicators"),
+            "historical_vulnerabilities": card.get("historical_vulnerabilities") or []}  # fmt: skip
 
 
 @router.post("/plans/future")
@@ -496,26 +543,40 @@ async def post_future(request: Request) -> Any:
     if isinstance(loc, dict):
         calendars = regional_catalog(float(loc["latitude"]), float(loc["longitude"]))
     legs = [map_plan_to_catalog(p, index) for p in legs]
+    from fieldshift.planner.future import check_chain, expand
+
+    chain = check_chain(legs, n)
+    if chain:
+        return invalid([issue(i.field, i.code, i.message) for i in chain])
+    legs, origins, sources, follow = expand(legs, origins, sources, n)
+    common = {"start_season": start, "seasons": n, "sources": sources, "basis": basis,
+              "calendars": calendars, "as_of": as_of, "inputs": body.get("inputs"),
+              "follow": follow}  # fmt: skip
+    priorities = _priorities(body.get("priorities"))
     try:
-        before = build_future_plan(legs, index, start_season=start, seasons=n, origins=origins,
-                                   sources=sources, basis=basis, calendars=calendars,
-                                   as_of=as_of, inputs=body.get("inputs"))  # fmt: skip
+        before = build_future_plan(legs, index, origins=origins, **common)
         out = public(before)
+        final_legs, prios = legs, {}
         if edits:
-            new_legs, new_origins, e_issues, prios = apply_edits(legs, origins, edits)
+            years = [int(x["season"]) for x in before["seasons"]]
+            new_legs, new_origins, e_issues, prios = apply_edits(legs, origins, edits, years)
             if e_issues:
                 return invalid([issue(i.field, i.code, i.message) for i in e_issues])
-            after = build_future_plan(new_legs, index, start_season=start, seasons=n,
-                                      origins=new_origins, sources=sources, basis=basis,
-                                      calendars=calendars, as_of=as_of, inputs=body.get("inputs"))  # fmt: skip
+            after = build_future_plan(new_legs, index, origins=new_origins, **common)
             out = public(after)
             out["diff"] = diff_future(before, after)
-            changed = [p.plan_id for p, q in zip(legs, new_legs, strict=True) if p != q]
+            final_legs = new_legs
+        refresh = _refresh(final_legs, {**priorities, **prios}, loc)
+        for s in out["seasons"]:
+            s["historical_vulnerabilities"] = [
+                v for v in refresh.get("historical_vulnerabilities", [])
+                if v.get("plan_id") == s["plan"]["plan_id"]]  # fmt: skip
+        if edits:
             out["recommendation_refresh"] = {
-                "status": "unavailable", "reason": "recommendation_not_built",
-                "reason_text": "The recommendation step (card P2) is not available yet, so the "
-                "shortlist was not rerun; only the edited plan's calendar changed.",
-                "changed_plan_ids": changed, "priority_edits": prios}  # fmt: skip
+                **{k: v for k, v in refresh.items() if k != "historical_vulnerabilities"},
+                "changed_plan_ids": sorted({p.plan_id for p, q in zip(legs, final_legs,
+                                                                      strict=True) if p != q}),
+                "priority_edits": prios}  # fmt: skip
     except FuturePlanError as exc:
         return invalid([issue(i.field, i.code, i.message) for i in exc.issues])
     regional = getattr(index, "in_nc", True) is False

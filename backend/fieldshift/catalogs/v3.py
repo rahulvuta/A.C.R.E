@@ -18,7 +18,9 @@ from fieldshift.catalogs.loader import _parse_rule, _RowParser
 from fieldshift.catalogs.models import CropRule, ValidationIssue
 
 V3_COLUMNS = ["region_key", "country", "admin1", "koppen", "origin", "evidence_quote",
-              "limitations", "conflicts_with"]  # fmt: skip
+              "limitations", "conflicts_with", "review"]  # fmt: skip
+#: ``review`` may only be blank or ``manual_check`` (a row the code check could not support).
+REVIEW_VALUES = {None, "manual_check"}
 ORIGINS = {"nasa_measured", "nasa_modeled", "calculation", "verified_source", "source_checked",
            "ai_suggested", "grower", "assumed", "dataset_estimate"}  # fmt: skip
 #: Origins a catalog rule row may carry (weather and calculation origins are not rule origins).
@@ -52,6 +54,10 @@ def parse_rules_text(text: str, crop_ids: set[str] | None = None
             issues.append(ValidationIssue(FILE, n, "origin", "error",
                                           f"origin must be one of {sorted(RULE_ORIGINS)}",
                                           "v3_origin_invalid"))  # fmt: skip
+        if extra["review"] not in REVIEW_VALUES:
+            issues.append(ValidationIssue(FILE, n, "review", "error",
+                                          "review must be blank or manual_check",
+                                          "v3_review_invalid"))  # fmt: skip
         quote = extra["evidence_quote"]
         if quote and len(quote.split()) > MAX_QUOTE_WORDS:
             issues.append(ValidationIssue(FILE, n, "evidence_quote", "error",

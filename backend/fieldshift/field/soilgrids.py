@@ -102,7 +102,12 @@ def parse(body: Any) -> list[SoilProperty]:
         ours, unit, label = PROPERTIES[name]
         factor = (layer.get("unit_measure") or {}).get("d_factor") or 1
         by_depth: dict[str, float | None] = {}
-        for d in layer.get("depths") or []:
+        depths = layer.get("depths")
+        if not isinstance(depths, list):
+            raise ValueError("SoilGrids layer has no depth list")
+        for d in depths:
+            if not isinstance(d, dict) or not isinstance(d.get("values") or {}, dict):
+                raise ValueError("SoilGrids depth entry is malformed")
             mean = (d.get("values") or {}).get("mean")
             ok = isinstance(mean, int | float) and not isinstance(mean, bool) and math.isfinite(mean)
             by_depth[d.get("label")] = (mean / factor) if ok else None
@@ -157,6 +162,11 @@ def get_soilgrids(lat: float, lon: float, *, client: httpx.Client | None = None,
 
 
 def _result(props: list[SoilProperty], cell: str, freshness: str, fetched: str) -> SoilGridsResult:
+    # every requested property must be there: a missing one counts as missing values
+    names = {p.name for p in props}
+    props = [*props, *[SoilProperty(name=ours, label=label, unit=unit, values=[
+        SoilValue(depth=dp.replace("cm", " cm"), value=None, unit=unit) for dp in DEPTHS])
+        for ours, unit, label in PROPERTIES.values() if ours not in names]]  # fmt: skip
     values = [v.value for p in props for v in p.values]
     if all(v is None for v in values):
         return SoilGridsResult(status=Status.UNAVAILABLE, reason="no_soil_prediction", cell=cell,

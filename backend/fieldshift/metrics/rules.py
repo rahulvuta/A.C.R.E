@@ -753,6 +753,11 @@ def evaluate_rule(
     match, why = _region(rule, view)
     if match == "no_match":
         return _check(rule, "inapplicable", why, verdict="inapplicable")
+    if rule.review == "manual_check":  # its numbers are not in its quote: a person must check it
+        return _check(rule, "manual_check", "the cited quote does not contain this row's numbers",
+                      verdict="manual_check")
+    if match == "no_match":
+        return _check(rule, "inapplicable", why, verdict="inapplicable")
     if match == "unknown":
         return _check(rule, "unknown", why, verdict="unknown", missing_inputs=["region"])
     sys_issue = _system_applicability(rule, view)

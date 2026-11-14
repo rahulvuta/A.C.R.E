@@ -69,7 +69,9 @@ def _md(d: date) -> str:
 
 
 def _shift(mmdd: str, days: int) -> str:
-    return _md(date(2001, int(mmdd[:2]), int(mmdd[3:])) + timedelta(days=days))
+    from fieldshift.planner.generator import _shift as shift
+
+    return shift(mmdd, days)  # 02-29 is a valid input; see generator._shift
 
 
 def _iso(d: date | None) -> str | None:
@@ -159,11 +161,24 @@ def _windows(leg: Plan, cal: Any, origins: dict[str, str], sources: dict[str, An
 def _milestones(cal: ActionCalendar, index: CatalogIndex, origins: dict[str, str], basis: str
                 ) -> list[dict[str, Any]]:  # fmt: skip
     field_of = {"harvest": "prev_harvest", "plant": "next_plant"}
+    plan_dates: dict[date, str] = {}  # date -> plan field it was copied from
+    for a in cal.actions:
+        if a.kind in ("harvest", "seed", "terminate", "plant"):
+            fld = field_of.get(a.kind) or ("winter.seed" if a.kind == "seed" else "winter.terminate")
+            if a.label.startswith("Plant ") and a.kind == "seed":
+                fld = "winter.plant"
+            if a.label.startswith("Harvest ") and a.kind == "terminate":
+                fld = "winter.harvest"
+            plan_dates.setdefault(a.date, fld)
     out = []
     for a in cal.actions:
+        rule_origin = None
         if a.kind == "check":
             rid = a.evidence[0].rule_id if a.evidence else None
-            origin = _rule_origin(index, rid) if rid else "verified_source"
+            rule_origin = _rule_origin(index, rid) if rid else None
+            # the check's date comes from a plan date (or is computed); the rule has its own origin
+            fld_ = plan_dates.get(a.date)
+            origin = _origin(origins, fld_, basis) if fld_ else "calculation"
         elif a.kind == "window":
             origin = "calculation"
         else:
@@ -175,7 +190,7 @@ def _milestones(cal: ActionCalendar, index: CatalogIndex, origins: dict[str, str
             origin = _origin(origins, fld, basis)
         out.append({"date": a.date.isoformat(), "end_date": _iso(a.end_date), "label": a.label,
                     "kind": a.kind, "action_id": a.action_id, "status": str(a.status),
-                    "flagged": a.flagged, "origin": origin,
+                    "flagged": a.flagged, "origin": origin, "rule_origin": rule_origin,
                     "rule_ids": [e.rule_id for e in a.evidence]})  # fmt: skip
     return out
 
@@ -247,7 +262,23 @@ def _season(i: int, year: int, leg: Plan, index: CatalogIndex, origins: dict[str
 # --------------------------------------------------------------------------- the plan
 
 
-def apply_edits(legs: list[Plan], origins: list[dict[str, str]], edits: list[Edit]
+def _actual(plan: Plan, year: int, field: str) -> date | None:
+    """The real date of a plan field when the plan is laid out on planting year ``year``."""
+    from fieldshift.seasons.align import build_calendar
+
+    try:
+        cal = build_calendar(plan, year)
+    except Exception:  # noqa: BLE001 - an impossible plan has no real dates
+        return None
+    return {"prev_harvest": cal.prev_harvest, "next_plant": cal.plant,
+            "winter.seed": cal.cover.seed if cal.cover else None,
+            "winter.terminate": cal.cover.terminate if cal.cover else None,
+            "winter.plant": cal.grain.plant if cal.grain else None,
+            "winter.harvest": cal.grain.harvest if cal.grain else None}.get(field)  # fmt: skip
+
+
+def apply_edits(legs: list[Plan], origins: list[dict[str, str]], edits: list[Edit],
+                years: list[int] | None = None
                 ) -> tuple[list[Plan], list[dict[str, str]], list[FieldIssue], dict[str, int]]:  # fmt: skip
     """Edited legs and origins (an edited date is ``grower``), issues, and priority edits."""
     legs = list(legs)
@@ -287,7 +318,10 @@ def apply_edits(legs: list[Plan], origins: list[dict[str, str]], edits: list[Edi
                         issues.append(FieldIssue(field=where, code="nothing_to_move",
                                                  message=f"season {t + 1} has no {e.field}"))  # fmt: skip
                         continue
-                    new = _shift(cur, e.shift_days)
+                    real = _actual(legs[t], years[t], e.field) if years else None
+                    # moved in its real year, so 28 Feb + 1 is 29 Feb in a leap year
+                    new = _md(real + timedelta(days=e.shift_days)) if real else _shift(
+                        cur, e.shift_days)
                 else:
                     new = e.value
             else:
@@ -310,7 +344,7 @@ def build_future_plan(legs: list[Plan], index: CatalogIndex, *, start_season: in
                       origins: list[dict[str, str]] | None = None,
                       sources: list[dict[str, Any]] | None = None, basis: str = "grower",
                       calendars: Any = None, as_of: date | None = None,
-                      inputs: dict | None = None) -> dict[str, Any]:  # fmt: skip
+                      inputs: dict | None = None, follow: Plan | None = None) -> dict[str, Any]:  # fmt: skip
     """The future plan body (without ``meta``). Raises :class:`FuturePlanError` on bad input."""
     issues = check_chain(legs, seasons)
     if issues:
@@ -324,6 +358,11 @@ def build_future_plan(legs: list[Plan], index: CatalogIndex, *, start_season: in
     from fieldshift.planner.generator import chain_years
 
     chained = chain_years(plans, start_season)
+    # the season after the last one, if the rotation continues: it holds the last crop's harvest
+    follow = follow or legs[seasons % len(legs)]
+    tail = (chain_years([*plans, follow], start_season)
+            if chained is not None and _same(plans[-1].next_crop_id, follow.previous_crop_id)
+            else None)  # fmt: skip
     if chained is None:
         raise FuturePlanError([FieldIssue(
             field="plans", code="season_chain_dates",
@@ -343,6 +382,10 @@ def build_future_plan(legs: list[Plan], index: CatalogIndex, *, start_season: in
                                                 basis))  # fmt: skip
             except Exception:  # noqa: BLE001 - reported on that season
                 nxt = None
+        elif tail is not None:  # the rotation continues: its next harvest closes this season
+            k = next((j for j, leg in enumerate(legs) if leg is follow), None)
+            nxt = (tail[1][-1].prev_harvest,
+                   _origin(origins[k], "prev_harvest", basis) if k is not None else basis)
         elif calendars is not None:  # the last season: the area's typical harvest, if known
             typ = calendars.calendar(plans[i].next_crop_id)
             h = (typ or {}).get("harvest") or {}
@@ -359,6 +402,11 @@ def build_future_plan(legs: list[Plan], index: CatalogIndex, *, start_season: in
         typical = calendars.calendar(leg.next_crop_id) if calendars is not None else None
         s, cal, backup = _season(i, year, leg, index, origins[i % len(legs)],
                                  sources[i % len(legs)], basis, harvests[i], typical, as_of, inputs)  # fmt: skip
+        if s["status"] == "complete" and harvests[i] is None:
+            s["notes"].append("The harvest date of this season's crop is not known: send the "
+                              "next season's plan or a location for its typical harvest.")
+            s["harvest_known"] = False
+            s["status"] = "partial"
         if s["status"] != "complete":
             status = "partial"
         out_seasons.append(s)
@@ -366,6 +414,16 @@ def build_future_plan(legs: list[Plan], index: CatalogIndex, *, start_season: in
         backups.append(backup)
     return {"status": status, "start_season": str(start_season), "seasons": out_seasons,
             "note": NOT_A_FORECAST, "_cals": cals, "_backups": backups, "_plans": plans}  # fmt: skip
+
+
+def expand(legs: list[Plan], origins: list[dict[str, str]], sources: list[dict[str, Any]],
+           seasons: int) -> tuple[list[Plan], list[dict[str, str]], list[dict[str, Any]], Plan]:
+    """One leg per season (a repeated leg becomes its own copy, so an edit to season 1 never moves
+    season 3), plus the leg that would follow the last season."""
+    n = len(legs)
+    out = [legs[i % n] for i in range(seasons)]
+    return (out, [dict(origins[i % n]) for i in range(seasons)],
+            [dict(sources[i % n]) for i in range(seasons)], legs[seasons % n])
 
 
 def diff_future(before: dict[str, Any], after: dict[str, Any]) -> dict[str, Any]:
@@ -386,9 +444,13 @@ def diff_future(before: dict[str, Any], after: dict[str, Any]) -> dict[str, Any]
             dl = {"before": bd[0]["date"] if bd else None, "after": ad[0]["date"] if ad else None,
                   "next_check_before": bd[0]["next_check_date"] if bd else None,
                   "next_check_after": ad[0]["next_check_date"] if ad else None}  # fmt: skip
-        if not d["unchanged"] or dl:
+        bw = {w["kind"]: (w["start"], w["end"]) for w in before["seasons"][i]["windows"]}
+        aw = {w["kind"]: (w["start"], w["end"]) for w in after["seasons"][i]["windows"]}
+        windows = [{"kind": k, "before": bw.get(k), "after": aw.get(k)}
+                   for k in sorted(set(bw) | set(aw)) if bw.get(k) != aw.get(k)]  # fmt: skip
+        if not d["unchanged"] or dl or windows:
             changes.append({"season": before["seasons"][i]["season"], **d,
-                            "decision_deadline": dl})  # fmt: skip
+                            "decision_deadline": dl, "window_changes": windows})  # fmt: skip
     return {"changes": changes, "unchanged": not changes}
 
 

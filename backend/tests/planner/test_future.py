@@ -64,7 +64,9 @@ def test_union_rye_plan_over_two_seasons_gives_real_dates_with_origins(client):
 def test_rule_milestones_carry_the_rule_origin(client):
     j = future(client, plan_id="corn_soy__rye", start_season=2027, seasons=1)
     checks = [m for m in j["seasons"][0]["milestones"] if m["kind"] == "check"]
-    assert checks and {m["origin"] for m in checks} == {"verified_source"}
+    assert checks and {m["rule_origin"] for m in checks} == {"verified_source"}
+    # a check's date is the plan date it falls on (assumed demo dates), never the rule's origin
+    assert {m["origin"] for m in checks} <= {"assumed", "calculation"}
 
 
 def test_moving_rye_termination_7_days_updates_milestones_deadline_and_diff(client):
@@ -154,3 +156,90 @@ def test_the_note_includes_the_future_plan_with_audit_ids(client):
     assert verify(j) == []
     bad = client.post("/v1/plans/note", json={"plan_id": "corn_soy__rye", "future": {"seasons": 0}})
     assert bad.status_code == 400
+
+
+# --------------------------------------------------------------------------- review fixes (B-m2.md)
+
+
+def test_an_edit_to_one_season_never_moves_a_repeated_leg(client):
+    base = future(client, plan_id="corn_soy__rye", start_season=2027, seasons=3)
+    j = future(client, plan_id="corn_soy__rye", start_season=2027, seasons=3,
+               edits=[{"field": "winter.terminate", "season": 1, "shift_days": -7}])  # fmt: skip
+    assert window(j["seasons"][0], "cover_terminate")["start"] == "2027-04-23"
+    assert window(j["seasons"][2], "cover_terminate") == window(base["seasons"][2],
+                                                                "cover_terminate")  # fmt: skip
+    s3 = future(client, plan_id="corn_soy__rye", start_season=2027, seasons=3,
+                edits=[{"field": "winter.terminate", "season": 3, "shift_days": -7}])  # fmt: skip
+    assert window(s3["seasons"][2], "cover_terminate")["start"] == "2029-04-23"
+
+
+def test_leap_day_dates_can_be_moved(client):
+    plan = client.post("/v1/plans/future", json={"plan_id": "corn_soy__rye"}).json()
+    leg = plan["seasons"][0]["plan"]
+    leg["winter"]["terminate"] = "02-29"
+    r = client.post("/v1/plans/future", json={"plans": [leg], "start_season": 2028, "seasons": 1,
+                                              "edits": [{"field": "winter.terminate",
+                                                         "shift_days": 1}]})  # fmt: skip
+    assert r.status_code == 200, r.text
+    assert window(r.json()["seasons"][0], "cover_terminate")["start"] == "2028-03-01"
+
+
+def test_moving_a_harvest_lists_the_dependent_growing_window(client):
+    j = future(client, plan_id="corn_soy__rye", start_season=2027, seasons=2,
+               edits=[{"field": "prev_harvest", "season": 2, "shift_days": 5}])  # fmt: skip
+    s1 = next(c for c in j["diff"]["changes"] if c["season"] == "2027")
+    grow = next(w for w in s1["window_changes"] if w["kind"] == "growing_season")
+    assert grow["before"][1] == "2027-10-15" and grow["after"][1] == "2027-10-20"
+
+
+def test_the_last_season_harvest_comes_from_the_rotation_without_a_location(client):
+    j = future(client, plan_id="corn_soy__rye", start_season=2027, seasons=2)
+    grow = window(j["seasons"][1], "growing_season")  # corn planted 2028, out in autumn 2028
+    assert grow["start"] == "2028-04-15" and grow["end"] == "2028-09-20"
+    assert grow["origin"] == "assumed"
+
+
+def test_the_note_keeps_provenance_and_audits_each_season_against_its_own_plan(client):
+    leg2 = client.post("/v1/plans/future", json={"plan_id": "soy_corn__rye"}).json()[
+        "seasons"][0]["plan"]
+    leg2["plan_id"] = "my_corn_leg"
+    j = client.post("/v1/plans/note", json={"plan_id": "corn_soy__rye", "year": 2027,
+                                            "future": {"seasons": 2, "plans": [leg2]}}).json()  # fmt: skip
+    s1, s2 = j["future_plan"]["seasons"]
+    assert window(s1, "plant")["origin"] == "assumed" and window(s2, "plant")["origin"] == "grower"
+    a2 = j["audit"]["entries"][s2["cover_schedule"]["living_cover_days"]["audit_id"]]
+    assert a2["source_ref"]["ref"] == "my_corn_leg" and a2["source_ref"]["season"] == "2028"
+
+
+def test_historical_vulnerabilities_and_refresh_come_from_p2(client):
+    pytest.importorskip("fieldshift.compare.recommend")
+    j = future(client, plan_id="corn_soy__rye", start_season=2027, seasons=2,
+               edits=[{"field": "priorities.soil_cover", "value": 3}])  # fmt: skip
+    ref = j["recommendation_refresh"]
+    assert ref["status"] in ("complete", "partial", "insufficient_data", "unavailable")
+    if ref["status"] != "unavailable":
+        assert ref["method"]["shortlist"] == "pareto_non_dominated"
+        vulns = [v for s in j["seasons"] for v in s["historical_vulnerabilities"]]
+        assert all(v["year"] and v["indicator"] for v in vulns)
+
+
+def test_feb_28_plus_one_is_feb_29_in_a_leap_year_and_bad_origins_are_rejected(client):
+    leg = client.post("/v1/plans/future", json={"plan_id": "corn_soy__rye"}).json()[
+        "seasons"][0]["plan"]
+    leg["winter"]["terminate"] = "02-28"
+    r = client.post("/v1/plans/future", json={"plans": [leg], "start_season": 2028, "seasons": 1,
+                                              "edits": [{"field": "winter.terminate",
+                                                         "shift_days": 1}]})  # fmt: skip
+    assert window(r.json()["seasons"][0], "cover_terminate")["start"] == "2028-02-29"
+    cand = {"seasons": [{"plan": leg, "origins": {"next_plant": "made_up"}}]}
+    bad = client.post("/v1/plans/future", json={"candidate": cand, "seasons": 1})
+    assert bad.status_code == 400 and bad.json()["issues"][0]["code"] == "invalid_origin"
+
+
+def test_an_unknown_final_harvest_makes_the_season_and_plan_partial(client):
+    leg = client.post("/v1/plans/future", json={"plan_id": "corn_soy__rye"}).json()[
+        "seasons"][0]["plan"]
+    j = client.post("/v1/plans/future", json={"plans": [leg], "start_season": 2027,
+                                              "seasons": 1}).json()  # fmt: skip
+    assert j["seasons"][0]["status"] == "partial" and j["seasons"][0]["harvest_known"] is False
+    assert j["status"] == "partial"

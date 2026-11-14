@@ -146,3 +146,26 @@ def test_us_soil_uses_sda_first_and_soilgrids_only_as_fallback(client, monkeypat
     monkeypatch.setattr(field_routes, "get_soil", lambda la, lo: unavailable("SDA timed out"))
     j = client.get("/v1/soil", params={"lat": UNION[0], "lon": UNION[1]}).json()
     assert j["provider"] == "soilgrids" and j["soil"]["status"] == "unavailable" and sg_calls
+
+
+@pytest.mark.parametrize("body", [
+    {"properties": {"layers": [{"name": "clay", "depths": [None]}]}},
+    {"properties": {"layers": [{"name": "clay", "depths": "x"}]}},
+])  # fmt: skip
+def test_malformed_soilgrids_is_unavailable_not_a_crash(body):
+    rec = Recorder({"rest.isric.org": (200, body)})
+    r = soilgrids.get_soilgrids(*PERGAMINO, client=rec.client(), offline=False)
+    assert r.status == "unavailable"
+
+
+def test_soilgrids_with_only_some_properties_is_partial():
+    only_clay = {"properties": {"layers": [SG_BODY["properties"]["layers"][0]]}}
+    rec = Recorder({"rest.isric.org": (200, only_clay)})
+    r = soilgrids.get_soilgrids(*PERGAMINO, client=rec.client(), offline=False)
+    assert r.status == "partial" and {p.name for p in r.properties} >= {"sand", "ph_water"}
+
+
+def test_an_empty_open_meteo_answer_is_unavailable():
+    rec = Recorder({"api.open-meteo.com": (200, {"daily": {}})})
+    out = openmeteo.get_open_meteo(*PERGAMINO, client=rec.client(), offline=False)
+    assert out["forecast"]["status"] == "unavailable" and out["status"] == "unavailable"

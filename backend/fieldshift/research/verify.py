@@ -77,8 +77,14 @@ def _num_forms(x: float) -> set[str]:
 
 
 def numbers_in(text: str) -> set[str]:
-    return {m.replace(",", ".") if "," in m and len(m.split(",")[1]) != 3 else m
-            for m in _NUM.findall(text or "")}  # fmt: skip
+    """Numbers as written, signs kept (a decimal comma becomes a point; 1,000 stays a thousands
+    separator)."""
+    out = set()
+    for m in _NUM.findall(text or ""):
+        if "," in m:
+            m = m.replace(",", "") if len(m.split(",")[1]) == 3 else m.replace(",", ".")
+        out.add(f"{float(m):g}")
+    return out
 
 
 def _date_forms(mmdd: str) -> list[str]:
@@ -88,19 +94,33 @@ def _date_forms(mmdd: str) -> list[str]:
             f"{m}/{d}", mmdd]  # fmt: skip
 
 
-def unsupported_numbers(row: dict[str, Any]) -> list[str]:
-    """Numbers (and window dates) of a row that its quote does not contain."""
+def _date_in(quote: str, mmdd: str) -> bool:
+    """The whole date is in the quote ("october 15" never supports "october 1")."""
+    return any(re.search(rf"(?<![\w/]){re.escape(f)}(?![\w/])", quote) for f in _date_forms(mmdd))
+
+
+def unsupported_numbers(row: dict[str, Any], numbers: tuple[str, ...] = ("value_min", "value_max"),
+                        dates: tuple[str, ...] = ("window_start_mm_dd", "window_end_mm_dd"),
+                        ) -> list[str]:  # fmt: skip
+    """Numbers (and dates) of an item that its quote does not contain; dotted keys reach into
+    nested windows (``plant.start``)."""
     quote = normalise(row.get("evidence_quote") or "")
-    nums = {n.lstrip("-") for n in numbers_in(quote)}
+    nums = numbers_in(quote)
+
+    def get(k: str) -> Any:
+        cur: Any = row
+        for part in k.split("."):
+            cur = cur.get(part) if isinstance(cur, dict) else None
+        return cur
+
     missing: list[str] = []
-    for k in ("value_min", "value_max"):
-        v = row.get(k)
-        if isinstance(v, int | float) and not isinstance(v, bool):
-            if not ({f.lstrip("-") for f in _num_forms(float(v))} & nums):
-                missing.append(f"{k}={v:g}")
-    for k in ("window_start_mm_dd", "window_end_mm_dd"):
-        v = row.get(k)
-        if isinstance(v, str) and len(v) == 5 and not any(f in quote for f in _date_forms(v)):
+    for k in numbers:
+        v = get(k)
+        if isinstance(v, int | float) and not isinstance(v, bool) and f"{float(v):g}" not in nums:
+            missing.append(f"{k}={v:g}")
+    for k in dates:
+        v = get(k)
+        if isinstance(v, str) and len(v) == 5 and not _date_in(quote, v):
             missing.append(f"{k}={v}")
     return missing
 
@@ -187,6 +207,12 @@ def check_answer(answer: dict[str, Any], region: dict[str, Any],
         row = {**r, "crop_id": cid, "origin": origin, "region_key": key,
                "country": region.get("country"), "admin1": region.get("admin1"),
                "koppen": region.get("koppen")}  # fmt: skip
+        unresolved = [f for f in ("previous_crop_id", "next_crop_id")
+                      if row.get(f) and crop_ids.canonical(row[f]) is None]  # fmt: skip
+        if unresolved:  # a dropped neighbour would silently widen where the rule applies
+            log.dropped.append({"item": rid, "reason": f"unknown crop id in {unresolved[0]}"})
+            seen.discard(rid)
+            continue
         for f in ("previous_crop_id", "next_crop_id"):
             if row.get(f):
                 row[f] = crop_ids.canonical(row[f])
@@ -197,7 +223,8 @@ def check_answer(answer: dict[str, Any], region: dict[str, Any],
             row["limitations"] = "; ".join(x for x in (row.get("limitations"), note) if x)
             for f in ("condition_key", "operator", "window_start_mm_dd", "window_end_mm_dd",
                       "suitability"):  # fmt: skip
-                row[f] = None  # the engine can only return manual_check for this row now
+                row[f] = None
+            row["review"] = "manual_check"  # the rule engine answers manual_check for this row
         rows.append(row)
     mark_conflicts(rows)
     for row in rows:
@@ -221,9 +248,28 @@ def check_answer(answer: dict[str, Any], region: dict[str, Any],
                         "origin": origin, "sources": [src]})  # fmt: skip
         return out
 
+    def strip_unsupported(section: str, item: dict[str, Any], numbers: tuple[str, ...],
+                          dates: tuple[str, ...], quote: str) -> dict[str, Any]:  # fmt: skip
+        """Remove every number or date of a profile entry that its quote does not contain."""
+        miss = unsupported_numbers({**item, "evidence_quote": quote}, numbers, dates)
+        if not miss:
+            return item
+        log.downgraded.append({"item": f"{section}:{item.get('crop_id') or item.get('label')}",
+                               "numbers_not_in_quote": miss})  # fmt: skip
+        out = {k: (dict(v) if isinstance(v, dict) else v) for k, v in item.items()}
+        for m in miss:
+            path = m.split("=")[0].split(".")
+            if len(path) == 2 and isinstance(out.get(path[0]), dict):
+                out[path[0]] = None  # a window with an unsupported end is no window
+            else:
+                out[path[0]] = None
+        return out
+
     crops = []
     for c in entries("crops", "crop_id"):
         cid = crop_ids.canonical(c["crop_id"])
+        c = strip_unsupported("crops", c, (), ("plant.start", "plant.end", "harvest.start",
+                                                "harvest.end"), c["sources"][0]["evidence_quote"])  # fmt: skip
         if not (isinstance(c.get("plant"), dict) and c["plant"].get("start")):
             continue
         crops.append({"crop_id": cid, "name": crop_ids.info(cid).name,  # type: ignore[union-attr]
@@ -232,8 +278,9 @@ def check_answer(answer: dict[str, Any], region: dict[str, Any],
                                    "origin": c["origin"], "source": c["sources"][0]}})  # fmt: skip
     profile = {
         "crops": crops,
-        "cover_crops": [{**c, "crop_id": crop_ids.canonical(c["crop_id"])}
-                        for c in entries("cover_crops", "crop_id")],
+        "cover_crops": [strip_unsupported("cover_crops", {**c, "crop_id": crop_ids.canonical(
+            c["crop_id"])}, ("gap_days",), ("seed.start", "seed.end"),
+            c["sources"][0]["evidence_quote"]) for c in entries("cover_crops", "crop_id")],
         "rotations": [{**r, "sequence": [crop_ids.canonical(x) or x for x in r.get("sequence")
                                          or []]} for r in entries("rotations", None)],
         "double_crops": entries("double_crops", "winter_crop"),

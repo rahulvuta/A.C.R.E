@@ -335,9 +335,12 @@ def _future_input(body: dict[str, Any], plan: Any, year: int, assumed: bool
     from fieldshift.planner.generator import _preset_rotations
 
     legs = [plan]
+    first = "assumed" if assumed else "grower"
+    bases = [first]  # provenance of each leg's dates: the note's own plan, then each added leg
     if isinstance(f.get("plans"), list):
         try:
             legs = [plan, *[_Plan.model_validate(p) for p in f["plans"]]]
+            bases += ["grower"] * len(f["plans"])
         except Exception:  # noqa: BLE001 - pydantic detail is not needed here
             problems.append(issue("future.plans", "invalid_plan", "future.plans must be plans"))
     elif plan.plan_id in {x for _, legs_ in _preset_rotations() for x in legs_}:
@@ -346,11 +349,16 @@ def _future_input(body: dict[str, Any], plan: Any, year: int, assumed: bool
         rot = next(legs_ for _, legs_ in _preset_rotations() if plan.plan_id in legs_)
         k = rot.index(plan.plan_id)
         by_id = {x["plan"]["plan_id"]: _Plan.model_validate(x["plan"]) for x in _presets()}
-        legs = [plan, *[by_id[x] for x in (*rot[k + 1:], *rot[:k])]]
+        added = [by_id[x] for x in (*rot[k + 1:], *rot[:k])]
+        legs = [plan, *added]
+        bases += ["assumed"] * len(added)  # the rotation's other legs are demo presets
     if problems:
         return None, problems
-    return {"legs": legs, "start_season": start, "seasons": n,
-            "basis": "assumed" if assumed else "grower"}, []
+    from fieldshift.planner.future import DATE_FIELDS
+
+    origins = [{f_: b for f_ in DATE_FIELDS} for b in bases]
+    return {"legs": legs, "origins": origins, "start_season": start, "seasons": n,
+            "basis": first}, []
 
 
 @router.post("/plans/note", response_model=FieldNote)

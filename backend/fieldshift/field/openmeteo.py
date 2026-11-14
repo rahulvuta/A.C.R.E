@@ -39,6 +39,10 @@ def parse(body: Any) -> dict[str, Any]:
 
     days = [{"date": day, **{k: at(k, i) for k in DAILY}}
             for i, day in enumerate(daily.get("time") or [])]
+    if not days or all(all(d.get(k) is None for k in DAILY) for d in days):
+        raise ValueError("Open-Meteo returned no usable outlook")
+    if not any(cur.get(k) is not None for k in CURRENT):
+        raise ValueError("Open-Meteo returned no current conditions")
     return {
         "current": {k: cur.get(k) for k in CURRENT} | {"time": cur.get("time")},
         "current_units": {k: units.get(k) for k in CURRENT},

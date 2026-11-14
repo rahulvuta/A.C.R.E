@@ -96,3 +96,24 @@ def test_irrigation_field_total_from_the_unmet_demand(client):
     assert us["field_total"]["value"] == pytest.approx(need * 10 * AC_PER_HA, abs=0.01)
     plain = client.post("/v1/irrigation/check", json=body).json()
     assert plain["field_total"] is None and plain["per_area"]["unit"] == "in"
+
+
+def test_tools_outside_nc_never_use_nc_rules(client):
+    j = fert(client, location={"latitude": -33.89, "longitude": -60.57})
+    assert j["result"]["n_reference"] is None  # NC's fc_nut_01 range is not shown in Argentina
+    body = {"crop_id": "maize", "stage": "pollination", "awc_in": 2.0, "start_storage_in": 1.0,
+            "irrigation": [], "weather": [{"date": "2025-01-01", "precip_mm": 0.0}],
+            "location": {"latitude": -33.89, "longitude": -60.57}}  # fmt: skip
+    r = client.post("/v1/irrigation/check", json=body).json()["result"]
+    assert r["status"] in ("insufficient_data", "unsupported") and r["water_balance"] is None
+    assert not r.get("stage_checks")
+
+
+def test_field_id_accepts_the_contract_farm_shape(client):
+    pytest.importorskip("fieldshift.farms.geometry")
+    ring = [[-60.57, -33.89], [-60.5592, -33.89], [-60.5592, -33.881], [-60.57, -33.881],
+            [-60.57, -33.89]]  # fmt: skip
+    farm = {"farm_id": "f1", "fields": [{"field_id": "fld_1", "geometry": {
+        "type": "Polygon", "coordinates": [ring]}}]}  # fmt: skip
+    j = fert(client, field_id="fld_1", farm=farm, units="metric")
+    assert j["area"]["origin"] == "calculation" and 90 < j["area"]["value"] < 110

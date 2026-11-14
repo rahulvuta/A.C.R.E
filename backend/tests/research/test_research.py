@@ -80,7 +80,8 @@ def test_a_number_not_in_its_quote_downgrades_the_row_to_manual_check():
     r = rows_by_id()["ar_b_ai_003"]
     assert r["condition_key"] is None and r["suitability"] is None
     assert "value_min=21" in r["limitations"]
-    assert log.downgraded == [{"rule_id": "ar_b_ai_003", "numbers_not_in_quote": ["value_min=21"]}]
+    assert {"rule_id": "ar_b_ai_003", "numbers_not_in_quote": ["value_min=21"]} in log.downgraded
+    assert r["review"] == "manual_check"
     assert rows_by_id()["ar_b_ai_001"]["suitability"] == "preferred"  # dates are in its quote
 
 
@@ -229,3 +230,41 @@ def test_nc_is_never_researched_and_bad_input_is_typed(api):
         r = api.post("/v1/regions/research", json=body)
         assert r.status_code == 400 and r.json()["issues"][0]["field"] == field, body
     assert api.get("/v1/regions/research/nope").status_code == 400
+
+
+# --------------------------------------------------------------------------- review fixes (B-m1.md)
+
+
+def test_a_downgraded_row_is_evaluated_as_manual_check(api):
+    client.set_caller(lambda params: ANSWER)
+    pipeline.start(Q, wait_s=30)
+    idx, _ = regional.catalog_for_location(PERGAMINO)
+    soy = Plan(plan_id="t", previous_crop_id="soybean", prev_harvest="04-15",
+               next_crop_id="soybean", next_plant="11-20")  # fmt: skip
+    chk = check_plan(soy, idx, year=2027).rule("ar_b_ai_003")
+    assert chk is not None and chk.status == "manual_check" and not chk.flagged
+
+
+def test_profile_numbers_are_checked_against_their_quotes():
+    out, log = checked()
+    soy = next(c for c in out["profile"]["crops"] if c["crop_id"] == "soybean")
+    assert soy["calendar"]["plant"] == {"start": "10-15", "end": "12-15"}  # in the quote
+    assert soy["calendar"]["harvest"] is None  # 03-20..05-15 is not in its quote
+    rye = out["profile"]["cover_crops"][0]
+    assert rye["gap_days"] == 30 and rye["seed"] is None
+
+
+@pytest.mark.parametrize("quote, row, missing", [
+    ("sow from october 15", {"window_start_mm_dd": "10-01"}, ["window_start_mm_dd=10-01"]),
+    ("keep above -2 degrees", {"value_min": 2}, ["value_min=2"]),
+    ("keep above -2 degrees", {"value_min": -2}, []),
+    ("about 1,000 seeds", {"value_min": 1000}, []),
+])  # fmt: skip
+def test_numbers_keep_their_sign_and_dates_their_whole_token(quote, row, missing):
+    assert verify.unsupported_numbers({**row, "evidence_quote": quote}) == missing
+
+
+def test_a_row_naming_an_unknown_neighbour_crop_is_dropped():
+    bad = {**ANSWER["rows"][0], "rule_id": "ar_b_ai_099", "previous_crop_id": "quinoa_x"}
+    out, log = verify.check_answer({"rows": [bad]}, {"region_key": "AR-B"}, fake_fetch)
+    assert out["rows"] == [] and log.dropped[0]["reason"].startswith("unknown crop id")

@@ -102,6 +102,7 @@ class CropRule(_Frozen):
     evidence_quote: str | None = None
     limitations: str | None = None
     conflicts_with: str | None = None  # ``;``-separated rule ids
+    review: str | None = None  # ``manual_check``: the evidence check could not support the row
 
 
 class Fertilizer(_Frozen):
