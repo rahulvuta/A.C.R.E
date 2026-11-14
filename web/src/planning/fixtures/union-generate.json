@@ -1,0 +1,261 @@
+{
+  "meta": {
+    "plan_version": "b38745e3c6a556a2",
+    "catalog_version": "v2:8eeb5bf961eb",
+    "snapshot_hash": "5ce131cfcd1f07d3738ecb9afaec6c3ef6a4764b6a3528bdd2b64debe7ba5f4e",
+    "request_id": "5cbd32ced2dd4fb8811b2d497544f63d"
+  },
+  "status": "complete",
+  "reason": null,
+  "reason_text": null,
+  "region_key": "US-NC",
+  "catalog": {
+    "status": "complete",
+    "origin": "verified_source",
+    "region_key": "US-NC",
+    "reason": null,
+    "reason_text": null,
+    "catalog_version": "v2"
+  },
+  "start_year": 2027,
+  "generation_log": [
+    {
+      "kind": "note",
+      "name": "nc_dates",
+      "pruned": 0,
+      "reason_text": "North Carolina dates are the demo presets' typical Piedmont dates (assumed); edit them to this field's dates.",
+      "examples": []
+    },
+    {
+      "kind": "rule",
+      "name": "chronology",
+      "pruned": 8,
+      "reason_text": "Dates out of order (e.g. seeding before harvest) dropped the sequence.",
+      "examples": [
+        "maize > soybean > crimson_clover > maize",
+        "maize > cereal_rye > soybean > crimson_clover > maize",
+        "maize > crimson_clover > soybean > crimson_clover > maize"
+      ]
+    }
+  ],
+  "gaps": [],
+  "total_generated": 45,
+  "candidates": [
+    {
+      "plan_id": "c_d306ccf54e_s1",
+      "label": "Field corn \u2192 Cereal rye \u2192 Soybean \u2192 Cereal rye \u2192 Field corn",
+      "previous_crop_id": "field_corn",
+      "prev_harvest": "09-20",
+      "winter": {
+        "kind": "cover",
+        "crop_id": "cereal_rye",
+        "seed": "10-01",
+        "terminate": "04-30",
+        "plant": null,
+        "harvest": null
+      },
+      "next_crop_id": "soybean",
+      "next_plant": "05-12",
+      "region": "NC Piedmont",
+      "production_system": null,
+      "grower": {
+        "low_moisture_concern": null,
+        "residue_report": null,
+        "observations": []
+      },
+      "candidate_id": "c_d306ccf54e",
+      "crops": [
+        "maize",
+        "cereal_rye",
+        "soybean",
+        "cereal_rye",
+        "maize"
+      ],
+      "seasons": [
+        {
+          "season": 1,
+          "year": 2027,
+          "plan": {
+            "plan_id": "c_d306ccf54e_s1",
+            "label": "Season 1: Field corn, Cereal rye cover, then Soybean",
+            "previous_crop_id": "field_corn",
+            "prev_harvest": "09-20",
+            "winter": {
+              "kind": "cover",
+              "crop_id": "cereal_rye",
+              "seed": "10-01",
+              "terminate": "04-30",
+              "plant": null,
+              "harvest": null
+            },
+            "next_crop_id": "soybean",
+            "next_plant": "05-12",
+            "region": "NC Piedmont",
+            "production_system": null,
+            "grower": {
+              "low_moisture_concern": null,
+              "residue_report": null,
+              "observations": []
+            }
+          },
+          "origins": {
+            "prev_harvest": "assumed",
+            "next_plant": "assumed",
+            "winter.seed": "assumed",
+            "winter.terminate": "assumed"
+          },
+          "sources": {
+            "prev_harvest": {
+              "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+              "url": null
+            },
+            "next_plant": {
+              "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+              "url": null
+            },
+            "winter.seed": {
+              "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+              "url": null
+            },
+            "winter.terminate": {
+              "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+              "url": null
+            }
+          },
+          "flagged": [],
+          "manual_check": [
+            "sb_pw_02",
+            "sb_pw_03",
+            "sb_pw_05",
+            "sb_wt_01",
+            "sb_wt_02",
+            "sb_wd_01",
+            "sb_soil_01",
+            "sb_soil_02",
+            "sb_soil_03",
+            "sb_nut_01",
+            "cr_wt_01",
+            "cr_soil_01",
+            "cr_tt_05",
+            "cr_trait_01",
+            "cr_trait_02"
+          ],
+          "unknown": [
+            "sb_wd_07",
+            "cr_tt_03"
+          ]
+        },
+        {
+          "season": 2,
+          "year": 2028,
+          "plan": {
+            "plan_id": "c_d306ccf54e_s2",
+            "label": "Season 2: Soybean, Cereal rye cover, then Field corn",
+            "previous_crop_id": "soybean",
+            "prev_harvest": "10-15",
+            "winter": {
+              "kind": "cover",
+              "crop_id": "cereal_rye",
+              "seed": "10-20",
+              "terminate": "04-05",
+              "plant": null,
+              "harvest": null
+            },
+            "next_crop_id": "field_corn",
+            "next_plant": "04-15",
+            "region": "NC Piedmont",
+            "production_system": null,
+            "grower": {
+              "low_moisture_concern": null,
+              "residue_report": null,
+              "observations": []
+            }
+          },
+          "origins": {
+            "prev_harvest": "assumed",
+            "next_plant": "assumed",
+            "winter.seed": "assumed",
+            "winter.terminate": "assumed"
+          },
+          "sources": {
+            "prev_harvest": {
+              "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+              "url": null
+            },
+            "next_plant": {
+              "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+              "url": null
+            },
+            "winter.seed": {
+              "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+              "url": null
+            },
+            "winter.terminate": {
+              "title": "Field Shift NC demo presets (typical Piedmont dates, assumed)",
+              "url": null
+            }
+          },
+          "flagged": [
+            "cr_pw_01"
+          ],
+          "manual_check": [
+            "fc_wt_02",
+            "fc_pw_06",
+            "fc_soil_01",
+            "fc_nut_01",
+            "cr_wt_01",
+            "cr_soil_01",
+            "cr_nut_01",
+            "cr_trait_01",
+            "cr_trait_02"
+          ],
+          "unknown": [
+            "fc_pw_01",
+            "fc_pw_02",
+            "fc_pw_03",
+            "fc_pw_04",
+            "fc_pw_05",
+            "fc_wt_01",
+            "fc_pw_07",
+            "fc_nut_02",
+            "cr_tt_01"
+          ]
+        }
+      ],
+      "origins": [
+        "assumed",
+        "verified_source"
+      ],
+      "checks_summary": {
+        "flagged": [
+          "cr_pw_01"
+        ],
+        "manual_check": [
+          "cr_nut_01",
+          "cr_soil_01",
+          "cr_trait_01",
+          "cr_trait_02",
+          "cr_tt_05",
+          "cr_wt_01",
+          "fc_nut_01",
+          "fc_pw_06",
+          "fc_soil_01",
+          "fc_wt_02",
+          "sb_nut_01",
+          "sb_pw_02",
+          "sb_pw_03",
+          "sb_pw_05",
+          "sb_soil_01",
+          "sb_soil_02",
+          "sb_soil_03",
+          "sb_wd_01",
+          "sb_wt_01",
+          "sb_wt_02"
+        ],
+        "unknown": 11,
+        "rules_checked": 196
+      },
+      "matches_rotation": "winter_cover"
+    }
+  ]
+}
