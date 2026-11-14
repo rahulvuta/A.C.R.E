@@ -1,7 +1,12 @@
-"""The one call to Claude (card B3). Tests replace :func:`set_caller` with a recorded response.
+"""The one model call of AI research, through OpenRouter's chat completions API (plain httpx).
 
-Credentials come from the environment (``ANTHROPIC_API_KEY`` or ``ANTHROPIC_AUTH_TOKEN``); without
-one, research is ``unavailable`` / ``research_not_configured`` and nothing is sent.
+Credentials come from ``OPENROUTER_API_KEY``; without it research is ``unavailable`` /
+``research_not_configured`` and nothing is sent. The model is ``FIELDSHIFT_RESEARCH_MODEL``
+(any OpenRouter slug). Tests either replace the whole call with :func:`set_caller` or route the
+HTTP request through :func:`set_transport` (an ``httpx.MockTransport``).
+
+The request carries only the prompt built from a region query (see ``prompt.py``) and generic
+headers; no farm, location or person data.
 """
 
 from __future__ import annotations
@@ -9,9 +14,15 @@ from __future__ import annotations
 import json
 import os
 from collections.abc import Callable
+from dataclasses import dataclass
 from typing import Any
 
-MAX_CONTINUATIONS = 4  # server tools can pause a long turn; resume at most this often
+import httpx
+
+URL = "https://openrouter.ai/api/v1/chat/completions"
+KEY_ENV = "OPENROUTER_API_KEY"
+REFERER = "http://localhost"  # generic app attribution for OpenRouter
+TITLE = "A.C.R.E"
 TIMEOUT_S = 600.0
 
 
@@ -21,47 +32,69 @@ class ResearchError(RuntimeError):
         self.code = code
 
 
+@dataclass
+class Reply:
+    """The model's answer text and the raw provider response (stored with the cached profile)."""
+
+    text: str
+    raw: dict[str, Any] | None = None
+
+
 def configured() -> bool:
-    return bool(os.environ.get("ANTHROPIC_API_KEY", "").strip()
-                or os.environ.get("ANTHROPIC_AUTH_TOKEN", "").strip())  # fmt: skip
+    return bool(os.environ.get(KEY_ENV, "").strip())
 
 
-def _live(params: dict[str, Any]) -> dict[str, Any]:
-    """Run the request with the Anthropic SDK and return the parsed JSON answer."""
+_TRANSPORT: list[httpx.BaseTransport] = []
+
+
+def set_transport(t: httpx.BaseTransport | None) -> None:
+    """Route the live request through ``t`` (tests: ``httpx.MockTransport``). ``None`` resets."""
+    _TRANSPORT.clear()
+    if t is not None:
+        _TRANSPORT.append(t)
+
+
+def _live(body: dict[str, Any]) -> Reply:
+    headers = {"Authorization": f"Bearer {os.environ.get(KEY_ENV, '').strip()}",
+               "HTTP-Referer": REFERER, "X-Title": TITLE,
+               "Content-Type": "application/json"}  # fmt: skip
+    kw: dict[str, Any] = {"timeout": httpx.Timeout(TIMEOUT_S, connect=20.0)}
+    if _TRANSPORT:
+        kw["transport"] = _TRANSPORT[0]
     try:
-        import anthropic
-    except ImportError as exc:
-        raise ResearchError("research_sdk_missing", "the anthropic package is not installed") from exc
-    client = anthropic.Anthropic(timeout=TIMEOUT_S, max_retries=2)
-    messages = list(params["messages"])
-    kwargs = {k: v for k, v in params.items() if k != "messages"}
+        with httpx.Client(**kw) as c:
+            r = c.post(URL, headers=headers, json=body)
+    except httpx.TimeoutException as exc:
+        raise ResearchError("research_timeout") from exc
+    except httpx.HTTPError as exc:
+        raise ResearchError("provider_error", "the research service could not be reached") from exc
+    if r.status_code == 429:
+        raise ResearchError("rate_limited")
+    if r.status_code in (408, 504):
+        raise ResearchError("research_timeout", f"HTTP {r.status_code}")
+    if r.status_code >= 400:
+        raise ResearchError("provider_error", f"HTTP {r.status_code}")
     try:
-        for _ in range(MAX_CONTINUATIONS + 1):
-            with client.beta.messages.stream(messages=messages, **kwargs) as stream:
-                msg = stream.get_final_message()
-            if msg.stop_reason == "pause_turn":  # resume the paused server-tool turn
-                messages = [*messages, {"role": "assistant", "content": msg.content}]
-                continue
-            break
-        else:
-            raise ResearchError("research_too_long", "the research turn did not finish")
-    except anthropic.RateLimitError as exc:
-        raise ResearchError("research_rate_limited") from exc
-    except anthropic.APIStatusError as exc:
-        raise ResearchError("research_api_error", f"HTTP {exc.status_code}") from exc
-    except anthropic.APIConnectionError as exc:
-        raise ResearchError("research_unreachable") from exc
-    if msg.stop_reason == "refusal":
-        raise ResearchError("research_refused")
-    if msg.stop_reason == "max_tokens":
+        raw = r.json()
+        choice = raw["choices"][0]
+        text = choice["message"].get("content") or ""
+    except (ValueError, KeyError, IndexError, TypeError, AttributeError) as exc:
+        raise ResearchError("provider_error", "unexpected response shape") from exc
+    if isinstance(raw.get("error"), dict):
+        raise ResearchError("provider_error", str(raw["error"].get("code") or "error"))
+    if choice.get("finish_reason") == "length":
         raise ResearchError("research_truncated")
-    text = "".join(b.text for b in msg.content if getattr(b, "type", None) == "text")
-    return parse_answer(text)
+    if isinstance(text, list):  # some providers return content parts
+        text = "".join(p.get("text", "") for p in text if isinstance(p, dict))
+    return Reply(str(text), raw)
 
 
 def parse_answer(text: str) -> dict[str, Any]:
+    t = (text or "").strip()
+    if t.startswith("```"):  # tolerate a fenced answer
+        t = t.strip("`").removeprefix("json").strip()
     try:
-        doc = json.loads(text)
+        doc = json.loads(t)
     except ValueError as exc:
         raise ResearchError("research_bad_output", "the answer was not JSON") from exc
     if not isinstance(doc, dict):
@@ -69,19 +102,22 @@ def parse_answer(text: str) -> dict[str, Any]:
     return doc
 
 
-_CALLER: list[Callable[[dict[str, Any]], dict[str, Any]]] = []
+_CALLER: list[Callable[[dict[str, Any]], Any]] = []
 
 
-def set_caller(fn: Callable[[dict[str, Any]], dict[str, Any]] | None) -> None:
-    """Replace the live call (tests: a recorded answer). ``None`` restores the SDK call."""
+def set_caller(fn: Callable[[dict[str, Any]], Any] | None) -> None:
+    """Replace the live call (tests: a recorded answer, as a dict or text). ``None`` restores it."""
     _CALLER.clear()
     if fn is not None:
         _CALLER.append(fn)
 
 
-def call(params: dict[str, Any]) -> dict[str, Any]:
+def call(body: dict[str, Any]) -> Reply:
     if _CALLER:
-        return _CALLER[0](params)
+        out = _CALLER[0](body)
+        if isinstance(out, Reply):
+            return out
+        return Reply(out if isinstance(out, str) else json.dumps(out), None)
     if not configured():
         raise ResearchError("research_not_configured")
-    return _live(params)
+    return _live(body)

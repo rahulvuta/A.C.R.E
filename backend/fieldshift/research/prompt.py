@@ -1,4 +1,7 @@
-"""What the research step sends to Claude (card B3), and the JSON shape it must answer in.
+"""What the research step sends to the model (card B3), and the JSON shape it must answer in.
+
+The frame is fixed and versioned (:data:`PROMPT_VERSION`); a change to the wording, the schema or
+the request settings must bump it, which also changes every research cache key.
 
 Privacy: the request is built only from a :class:`RegionQuery` (country, admin1, climate class and
 a crop list). It has no field for coordinates, a farm, a boundary or a grower, so none can be sent.
@@ -13,11 +16,12 @@ from typing import Any
 
 from fieldshift.catalogs import crop_ids, validate
 
-DEFAULT_MODEL = "claude-sonnet-5-5"
+PROMPT_VERSION = "p2-openrouter"
+DEFAULT_MODEL = "anthropic/claude-sonnet-4.5"  # an OpenRouter slug; any listed model works
 MODEL_ENV = "FIELDSHIFT_RESEARCH_MODEL"
 MAX_TOKENS = 32000
-MAX_SEARCHES = 8
-MAX_FETCHES = 12
+MAX_SEARCH_RESULTS = 8
+SEED = 20261114
 QUOTE_WORDS = 30
 SOURCE_POLICY = ("government agencies and ministries of agriculture, FAO and other UN bodies, "
                  "universities and their extension services, national agricultural research "
@@ -39,6 +43,9 @@ class RegionQuery:
     country_name: str | None
     koppen: str | None
     crops: tuple[str, ...] = field(default_factory=tuple)
+    #: SAGE calendars of the cell (crop_id -> {plant, harvest}) for the guardrails only. Never sent
+    #: to the model and not part of :meth:`as_dict`.
+    sage: dict[str, Any] = field(default_factory=dict, compare=False, hash=False, repr=False)
 
     def as_dict(self) -> dict[str, Any]:
         return {"region_key": self.region_key, "country": self.country,
@@ -132,19 +139,25 @@ def user_prompt(q: RegionQuery) -> str:
 
 
 def request_params(q: RegionQuery) -> dict[str, Any]:
-    """The Messages API request (kwargs for ``client.beta.messages.stream``)."""
+    """The OpenRouter chat-completions body: fixed frame, web plugin, strict JSON schema."""
     return {
         "model": model(),
+        "messages": [{"role": "system", "content": SYSTEM},
+                     {"role": "user", "content": user_prompt(q)}],
+        "plugins": [{"id": "web", "max_results": MAX_SEARCH_RESULTS}],
+        "response_format": {"type": "json_schema",
+                            "json_schema": {"name": "region_research", "strict": True,
+                                            "schema": OUTPUT_SCHEMA}},
+        "temperature": 0,
+        "seed": SEED,
         "max_tokens": MAX_TOKENS,
-        "system": SYSTEM,
-        "messages": [{"role": "user", "content": user_prompt(q)}],
-        "tools": [
-            {"type": "web_search_20260209", "name": "web_search", "max_uses": MAX_SEARCHES},
-            {"type": "web_fetch_20260209", "name": "web_fetch", "max_uses": MAX_FETCHES},
-        ],
-        "output_config": {"effort": "high",
-                          "format": {"type": "json_schema", "schema": OUTPUT_SCHEMA}},
-        # a policy decline is retried on a fallback model chosen by the API
-        "betas": ["server-side-fallback-2026-07-01"],
-        "fallbacks": "default",
     }  # fmt: skip
+
+
+def retry_params(params: dict[str, Any], bad_text: str, errors: list[str]) -> dict[str, Any]:
+    """The one retry after an invalid answer: the same request plus the validation errors."""
+    note = ("Your answer did not validate against the required JSON schema. Errors:\n- "
+            + "\n- ".join(errors[:20]) + "\nReturn the corrected JSON object only.")  # fmt: skip
+    return {**params, "messages": [*params["messages"],
+                                   {"role": "assistant", "content": bad_text[:20000]},
+                                   {"role": "user", "content": note}]}  # fmt: skip

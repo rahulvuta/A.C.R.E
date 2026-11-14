@@ -129,14 +129,19 @@ Winter wheat double-crop and SMAP (Phase 12) are not built; the wheat path retur
 | `FIELDSHIFT_OFFLINE` | unset | `1`: never touch the network. Committed NC snapshots and whatever is already cached are served; anything else answers `unavailable` / `offline_no_snapshot`. |
 | `FIELDSHIFT_POWER_TIMEOUT_S` | `120` | Timeout per NASA POWER request. Each fetch is retried once. |
 | `FIELDSHIFT_CORS_ORIGINS` | GitHub Pages + local Vite ports | Comma-separated allowed origins. Set it to the deployed frontend's origin. |
-| `ANTHROPIC_API_KEY` | unset | AI regional research (B3). Without it research answers `unavailable` / `research_not_configured` and the SAGE-only profiles are served. Never logged. |
-| `FIELDSHIFT_RESEARCH_MODEL` | `claude-sonnet-5-5` | Model for AI research (B3). |
+| `OPENROUTER_API_KEY` | unset | AI regional research (B3), through OpenRouter. Without it research answers `unavailable` / `research_not_configured` and the SAGE-only profiles are served. Never logged. |
+| `FIELDSHIFT_RESEARCH_MODEL` | `anthropic/claude-sonnet-4.5` | OpenRouter model slug for AI research. Any listed model works; changing it changes the cache key. |
+| `FIELDSHIFT_RESEARCH_DOMAINS` | unset | Comma-separated extra source domains the guardrails accept (besides `.gov`, `.gov.xx`, `.gob.xx`, `.gouv.fr`, `.edu`, `.ac.xx`, FAO, CGIAR, INTA, ICAR, extension and university hosts). |
 
 ### Cost and rate limits
 
 - **NASA POWER** is free and needs no key. One fetch per grid cell (1981-01-01 to yesterday, 6 parameters, about 15 s and 1.6 MB). It is fetched once and then served from the cache. Only `refresh: true` re-fetches. POWER asks clients not to flood it: the one-fetch-per-cell rule and the two background fetch threads keep the load low.
 - **Nominatim (OSM)**: at most 1 request per second, a generic User-Agent, results cached (B1). Coordinate input is parsed locally and never sent.
-- **Claude API (B3)**: billed per token. Research is cached per region key, with one job per key at a time and token and time limits per job (see B3). The prompt gets only the country, admin1, climate class and crop list, never coordinates or farm data.
+- **AI research via OpenRouter (B3)**: billed per token. `POST https://openrouter.ai/api/v1/chat/completions` with the `web` plugin (8 results), a strict JSON schema, temperature 0 and a fixed seed. One job per region key at a time. The prompt (versioned `PROMPT_VERSION`) gets only the country, admin1, Köppen class and SAGE crop list, never coordinates, farm data or SAGE windows.
+  - **Pipeline:** AI → schema check (one retry with the errors appended, then `job_status: failed`, `research_bad_output`) → guardrails (`research/guardrails.py`) → quote check against the fetched page → cache.
+  - **Guardrails:** off-vocabulary crop ids, condition keys, units, operators or rule types drop the row. A missing URL drops it, and an off-allowlist domain caps it at `ai_suggested`. Out-of-range numbers and invalid MM-DD drop it. A planting or harvest window outside SAGE ± 30 days is `manual_check` ("disagrees with gridded crop calendar"). Quotes are ≤ 30 words; rows are capped at 60 and sorted. If more than half the items are dropped, the profile gets the gap "AI output failed guardrails".
+  - **Cache:** the key is sha256(prompt version + model + region query + vocabulary version). The same key is served from `<cache>/regions/<key>/` unless `refresh: true`. That folder holds `profile.json` (with `generation: {model, prompt_version, cache_key, guardrail_version}`), `crop_rules.csv`, `raw_response.json` and `guardrails.json` (every drop, downgrade and flag with its reason).
+  - **Errors:** `research_not_configured`, `rate_limited`, `provider_error`, `research_timeout` (plus `research_truncated`, `research_bad_output`).
 - **SoilGrids / Open-Meteo / USDA SDA / NWS / USDM**: free; cached per provider (B4).
 
 ### Smoke test

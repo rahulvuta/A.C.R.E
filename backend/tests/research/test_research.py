@@ -1,4 +1,4 @@
-"""B3: AI regional research with a recorded (synthetic) Claude answer. Never calls Claude or the web."""
+"""B3: AI regional research with a recorded (synthetic) model answer. Never calls a model or the web."""
 
 from __future__ import annotations
 
@@ -32,8 +32,10 @@ def fake_fetch(url: str) -> verify.Page:
 def _isolated(tmp_path, monkeypatch):
     monkeypatch.setenv("FIELDSHIFT_CACHE_DIR", str(tmp_path / "cache"))
     monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")
-    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
-    monkeypatch.delenv("ANTHROPIC_AUTH_TOKEN", raising=False)
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    # the synthetic fixture cites .invalid hosts; allow them so quotes can be source_checked
+    monkeypatch.setenv("FIELDSHIFT_RESEARCH_DOMAINS",
+                       "agency-a.invalid,uni-b.invalid,inst-c.invalid,gone.invalid")
     monkeypatch.setattr(verify, "fetch_page", fake_fetch)
     pipeline.reset()
     regional.clear_cache()
@@ -129,9 +131,9 @@ def test_the_prompt_payload_contains_no_coordinates(api):
     blob = json.dumps(seen[0])
     assert not _COORD.search(blob.replace("2026", "")), _COORD.findall(blob)
     for v in ("-33.89", "-60.57", "-33.9", "-60.6", "latitude", "longitude", "lat", "lon"):
-        assert f'"{v}"' not in blob and f" {v} " not in blob and v not in seen[0]["messages"][0][
+        assert f'"{v}"' not in blob and f" {v} " not in blob and v not in seen[0]["messages"][1][
             "content"].split("data:")[1]  # fmt: skip
-    assert set(json.loads(seen[0]["messages"][0]["content"].split("data:\n")[1])) == {
+    assert set(json.loads(seen[0]["messages"][1]["content"].split("data:\n")[1])) == {
         "region_key", "country", "country_name", "admin1", "admin1_name", "koppen", "crops"}
 
 
@@ -142,11 +144,14 @@ def test_region_query_has_no_coordinate_fields():
 
 def test_request_uses_the_configured_model_and_web_tools(monkeypatch):
     p = prompt.request_params(Q)
-    assert p["model"] == "claude-sonnet-5-5"
-    assert {t["type"] for t in p["tools"]} == {"web_search_20260209", "web_fetch_20260209"}
-    assert p["output_config"]["format"]["type"] == "json_schema" and p["max_tokens"] > 0
-    monkeypatch.setenv("FIELDSHIFT_RESEARCH_MODEL", "claude-opus-5-5")
-    assert prompt.request_params(Q)["model"] == "claude-opus-5-5"
+    assert p["model"] == prompt.DEFAULT_MODEL == "anthropic/claude-sonnet-4.5"
+    assert p["plugins"] == [{"id": "web", "max_results": 8}]
+    rf = p["response_format"]
+    assert rf["type"] == "json_schema" and rf["json_schema"]["strict"] is True
+    assert rf["json_schema"]["schema"] is prompt.OUTPUT_SCHEMA
+    assert p["temperature"] == 0 and isinstance(p["seed"], int) and p["max_tokens"] > 0
+    monkeypatch.setenv("FIELDSHIFT_RESEARCH_MODEL", "openai/gpt-5")
+    assert prompt.request_params(Q)["model"] == "openai/gpt-5"
 
 
 # --------------------------------------------------------------------------- jobs and catalog
@@ -185,7 +190,7 @@ def test_a_finished_job_is_cached_and_the_rule_engine_reads_ai_rows_with_origin(
     assert not any(c.print for c in res.rules if c.origin == "ai_suggested")
 
     prof = api.get("/v1/regions/AR-B/profile").json()
-    assert prof["research"]["model"] == "claude-sonnet-5-5" and prof["disclaimer"]
+    assert prof["research"]["model"] == prompt.DEFAULT_MODEL and prof["disclaimer"]
     assert {x["origin"] for x in prof["rules"]} <= {"source_checked", "ai_suggested"}
 
 
