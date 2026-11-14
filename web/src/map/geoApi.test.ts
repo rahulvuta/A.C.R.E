@@ -75,6 +75,10 @@ describe("status words", () => {
     expect(tools({ irrigation: "complete", fertilizer: "complete" })).toBe("complete");
     expect(tools({ irrigation: "complete", fertilizer: "unavailable" })).toBe("partial");
     expect(tools({ irrigation: "unavailable" })).toBe("unavailable");
+    // Mixed but none usable: never "partial".
+    expect(tools({ irrigation: "unavailable", fertilizer: "unknown" })).toBe("unavailable");
+    expect(tools({ irrigation: "unsupported", fertilizer: "inapplicable" })).toBe("unsupported");
+    expect(tools({ irrigation: "partial", fertilizer: "unsupported" })).toBe("partial");
   });
 });
 

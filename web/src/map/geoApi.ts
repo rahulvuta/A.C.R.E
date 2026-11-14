@@ -102,6 +102,12 @@ export function parseReverse(body: unknown): GeoResult<PlaceInfo> {
   };
 }
 
+/** Order from "nothing can be done here" to "not known yet", used when mixed tools are all unusable. */
+const UNUSABLE_ORDER: StatusWord[] = ["unsupported", "inapplicable", "invalid_input", "unavailable", "insufficient_data", "manual_check", "unknown"];
+function worstUnusable(words: Set<StatusWord>): StatusWord {
+  return UNUSABLE_ORDER.find((w) => words.has(w)) ?? "unknown";
+}
+
 const KEYS: CapabilityKey[] = ["weather", "catalog", "soil", "live_weather", "drought", "tools"];
 
 export function parseCapabilities(body: unknown): GeoResult<Capabilities> {
@@ -112,9 +118,12 @@ export function parseCapabilities(body: unknown): GeoResult<Capabilities> {
     const v = obj(f[key]);
     if (key === "tools") {
       const parts = v ? Object.entries(v).map(([k, s]) => ({ key: k, status: status(s) })) : [];
-      // One word for the group only when every tool agrees; otherwise "partial", or "unknown" if none.
+      // One word for the group only when every tool agrees. Mixed answers are "partial" only when at
+      // least one tool is usable; otherwise the group takes the least hopeful of the unusable words.
       const words = new Set(parts.map((p) => p.status));
-      const overall: StatusWord = parts.length === 0 ? "unknown" : words.size === 1 ? parts[0]!.status : "partial";
+      const usable = parts.some((p) => p.status === "complete" || p.status === "partial");
+      const overall: StatusWord =
+        parts.length === 0 ? "unknown" : words.size === 1 ? parts[0]!.status : usable ? "partial" : worstUnusable(words);
       return { key, status: overall, jobStatus: null, origin: null, provider: null, resolutionM: null, reasonText: null, parts };
     }
     const job = v?.job_status;

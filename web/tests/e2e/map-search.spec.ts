@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { fixture, geoHandlers, mapCenter, mockApi, openMap } from "./map-mocks";
+import { API, fixture, geoHandlers, mapCenter, mockApi, openMap } from "./map-mocks";
 
 // Card C1: map, search and picking a point (all routes mocked).
 
@@ -82,20 +82,37 @@ test("a failed search says so", async ({ page }) => {
 });
 
 test("a map click wins over a slower search still in flight", async ({ page }) => {
-  await page.unroute("http://api.test/**");
   let release!: () => void;
   const gate = new Promise<void>((r) => (release = r));
-  await page.route("http://api.test/v1/geo/search**", async (route) => {
+  // Routes registered later are tried first, so this gated search route overrides the default mock.
+  await page.route(`${API}/v1/geo/search**`, async (route) => {
     await gate;
     await route.fulfill({ contentType: "application/json", body: JSON.stringify(fixture("geo-search-coordinates")), headers: { "access-control-allow-origin": "*" } });
   });
-  await mockApi(page, geoHandlers);
+  const searched = page.waitForRequest((r) => r.url().includes("/v1/geo/search"));
   await page.getByLabel("Find your farm").fill("35.1, -80.5");
   await page.getByLabel("Find your farm").press("Enter");
+  await searched;
+  await expect(page.getByRole("status")).toContainText("Searching");
   await page.locator(".mp-map canvas").click({ position: { x: 300, y: 300 } });
+  await expect(page.getByRole("img", { name: "Picked point" })).toBeVisible();
   const clicked = await page.locator(".mp-pin").boundingBox();
+  const center = await mapCenter(page);
   release();
-  await page.waitForTimeout(800);
+  await page.waitForTimeout(1500);
   // The late coordinate answer did not move the pin or the map.
   expect(await page.locator(".mp-pin").boundingBox()).toEqual(clicked);
+  expect(await mapCenter(page)).toEqual(center);
+});
+
+test("a click on a repeated world copy sends a longitude inside ±180", async ({ page }) => {
+  // Look across the antimeridian so the copy east of 180° is on screen.
+  await page.evaluate(() => (window as unknown as { __map: { jumpTo(o: unknown): void } }).__map.jumpTo({ center: [178, 10], zoom: 4 }));
+  const pt = await page.evaluate(() => (window as unknown as { __map: { project(p: [number, number]): { x: number; y: number } } }).__map.project([185, 10]));
+  const reverse = page.waitForRequest((r) => r.url().includes("/v1/geo/reverse"));
+  await page.locator(".mp-map canvas").click({ position: { x: pt.x, y: pt.y } });
+  const lon = Number(new URL((await reverse).url()).searchParams.get("lon"));
+  expect(lon).toBeGreaterThanOrEqual(-180);
+  expect(lon).toBeLessThanOrEqual(180);
+  expect(lon).toBeCloseTo(-175, 0);
 });
