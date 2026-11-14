@@ -161,7 +161,11 @@ export function Workspace({ api: given }: { api?: GlobalApi }) {
           ) : null}
           {page === "map" ? (
             <div className="ws-map">
-              <FarmMap api={api.geo} fieldStates={fieldStates}>
+              <FarmMap
+                api={api.geo}
+                fieldStates={fieldStates}
+                weatherCells={(ready?.data.weatherCells ?? []).flatMap((c) => (c.center && c.sizeDeg ? [{ cellId: c.cellId, center: c.center, sizeDeg: c.sizeDeg, fieldIds: c.fieldIds, note: c.note }] : []))}
+              >
                 {field ? (
                   <div className="ws-open">
                     <button type="button" className="btn btn-primary" onClick={() => setPage("plan")}>

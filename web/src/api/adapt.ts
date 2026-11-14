@@ -707,7 +707,18 @@ export const BackendFarmAnalysis = z
     meta: GlobalMeta,
     status: LooseStatus,
     fields: z.array(BackendField).default([]),
-    weather_cells: z.array(z.object({ cell_id: z.string(), field_ids: z.array(z.string()), note: z.string().optional() }).passthrough()).default([]),
+    weather_cells: z
+      .array(
+        z
+          .object({
+            cell_id: z.string(),
+            field_ids: z.array(z.string()),
+            note: z.string().optional(),
+            cell: z.object({ center: BackendPoint.nullable().optional(), size_deg: z.tuple([z.number(), z.number()]).nullable().optional() }).passthrough().nullable().optional(),
+          })
+          .passthrough(),
+      )
+      .default([]),
     totals: z.object({ area_ha: num, area_ac: num }).passthrough().nullable().optional(),
   })
   .passthrough();
@@ -767,7 +778,13 @@ export function adaptFarmAnalysis(r: z.infer<typeof BackendFarmAnalysis>): FarmA
       capabilities: f.capabilities ? features(f.capabilities) : null,
       result: fieldResult(f.result),
     })),
-    weatherCells: r.weather_cells.map((c) => ({ cellId: c.cell_id, fieldIds: c.field_ids, note: c.note ?? SHARED_CELL_NOTE })),
+    weatherCells: r.weather_cells.map((c) => ({
+      cellId: c.cell_id,
+      fieldIds: c.field_ids,
+      note: c.note ?? SHARED_CELL_NOTE,
+      center: c.cell?.center ? { latitude: c.cell.center.latitude, longitude: c.cell.center.longitude } : null,
+      sizeDeg: c.cell?.size_deg ?? null,
+    })),
     totals: { areaHa: nn(r.totals?.area_ha), areaAc: nn(r.totals?.area_ac) },
   };
 }

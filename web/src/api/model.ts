@@ -176,6 +176,9 @@ export interface SharedCell {
   cellId: string;
   fieldIds: string[];
   note: string;
+  /** The cell's centre and size (degrees, [lat, lon]) as the backend gives them, for the map outline. */
+  center: LatLon | null;
+  sizeDeg: [number, number] | null;
 }
 
 export interface FarmAnalysis {
