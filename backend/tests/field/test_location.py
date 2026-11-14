@@ -307,7 +307,7 @@ def test_soil_route_survives_an_sda_failure(client, monkeypatch):
     r = client.get("/v1/soil", params={"lat": UNION[0], "lon": UNION[1]})
     assert r.status_code == 200
     assert r.json()["soil"]["status"] == "unavailable" and "timed out" in r.json()["soil"]["reason"]
-    out = client.get("/v1/soil", params={"lat": 40.7, "lon": -74.0})
+    out = client.get("/v1/soil", params={"lat": 0.0, "lon": -30.0})  # mid-Atlantic (B4: worldwide)
     assert out.json()["status"] == "unsupported" and out.json()["code"] == "unsupported_location"
     bad = client.get("/v1/soil", params={"lat": "abc", "lon": "1"})
     assert bad.status_code == 400 and bad.json()["issues"][0]["field"] == "lat"

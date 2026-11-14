@@ -24,5 +24,10 @@ def _isolated_geocoder(tmp_path, monkeypatch):
         min_interval=0.0,
     )
     nominatim.set_client(client)
+    from fieldshift.weather import ondemand
+
+    ondemand.reset_jobs()  # weather jobs from other test modules must not leak into capabilities
     yield client
     nominatim.set_client(None)
+    ondemand.set_fetch(None)
+    ondemand.reset_jobs()

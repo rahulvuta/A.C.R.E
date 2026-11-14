@@ -42,9 +42,22 @@ def _coord(value: Any, name: str, lo: float, hi: float) -> tuple[float | None, d
     return x, None
 
 
-def _outside_nc(loc: Any) -> bool:
-    """Soil and live data are North Carolina only until the global soil/live card (B4) lands."""
-    return loc.status == Status.UNSUPPORTED or (loc.bounds is not None and not loc.bounds.in_nc)
+def _country(la: float, lo: float) -> tuple[str | None, bool]:
+    """``(ISO2 country, over_water)``. NC needs no geocoder; elsewhere the geocoder (cached, 1 req/s)
+    decides. An unknown country uses the worldwide providers (SoilGrids, Open-Meteo), never the
+    U.S. ones."""
+    from fieldshift.geo.config import is_offline
+    from fieldshift.geo.locate import describe
+
+    d = describe(la, lo, allow_network=not is_offline())
+    if d.status == "unsupported":
+        return None, True
+    return ("US" if d.in_nc else d.country), False
+
+
+def _water() -> dict[str, Any]:
+    return {"meta": response_meta(), "status": "unsupported", "code": "unsupported_location",
+            "reason": "the point is over water", "reason_text": "This point is over water."}  # fmt: skip
 
 
 @router.post("/locations/resolve")
@@ -85,18 +98,27 @@ def get_soil_route(lat: str | None = None, lon: str | None = None) -> Any:
     if point is None:
         return invalid(problems)
     la, lo_ = point
-    loc = resolve_location(la, lo_)
-    if _outside_nc(loc):
-        return {
-            "meta": response_meta(),
-            "status": "unsupported",
-            "code": loc.code or "unsupported_location",
-            "reason": loc.reason
-            or "soil and live data cover North Carolina only for now (global data is card B4)",
-            "soil": unavailable("outside North Carolina").model_dump(mode="json"),
-        }
-    soil = get_soil(la, lo_)  # follows FIELDSHIFT_OFFLINE; never raises
-    return {"meta": response_meta(), "status": "complete", "soil": soil.model_dump(mode="json")}
+    country, water = _country(la, lo_)
+    if water:
+        return {**_water(), "soil": unavailable("over water").model_dump(mode="json")}
+    from fieldshift.field.soilgrids import REASONS, get_soilgrids
+
+    sda = None
+    if country == "US":  # USDA SDA first; SoilGrids only when SDA has nothing
+        sda = get_soil(la, lo_)  # follows FIELDSHIFT_OFFLINE; never raises
+        if sda.status != Status.UNAVAILABLE:
+            return {"meta": response_meta(), "status": "complete", "provider": "usda_sda",
+                    "soil": sda.model_dump(mode="json"), "soilgrids": None}  # fmt: skip
+    sg = get_soilgrids(la, lo_)  # never raises; an outage is "unavailable"
+    out = sg.model_dump(mode="json")
+    out["reason_text"] = REASONS.get(sg.reason) if sg.reason else None
+    return {
+        "meta": response_meta(), "status": "complete",
+        "provider": "soilgrids" if sg.status != Status.UNAVAILABLE else None,
+        "soil": (sda or unavailable("USDA Soil Data Access covers the U.S. only")).model_dump(
+            mode="json"),
+        "soilgrids": out,
+    }  # fmt: skip
 
 
 def _lat_lon(
@@ -129,16 +151,16 @@ def get_live_route(lat: str | None = None, lon: str | None = None) -> Any:
     point, problems = _lat_lon(lat, lon)
     if point is None:
         return invalid(problems)
-    loc = resolve_location(*point)
-    if _outside_nc(loc):
-        return {
-            "meta": response_meta(),
-            "status": "unsupported",
-            "code": loc.code or "unsupported_location",
-            "reason": loc.reason
-            or "soil and live data cover North Carolina only for now (global data is card B4)",
-        }
+    country, water = _country(*point)
+    if water:
+        return _water()
+    if country != "US":  # NWS and the Drought Monitor are U.S. services: never called elsewhere
+        from fieldshift.field.openmeteo import get_open_meteo
+
+        return {"meta": response_meta(), "status": "complete", "provider": "open_meteo",
+                "live": get_open_meteo(*point)}  # fmt: skip
     return {
+        "provider": "nws",
         "meta": response_meta(),
         "status": "complete",
         "live": get_live(*point).model_dump(mode="json"),
@@ -190,3 +212,13 @@ async def post_zones_analyze(request: Request) -> Any:
 from fieldshift.geo.routes import router as _geo_router  # noqa: E402
 
 router.include_router(_geo_router)
+
+# Card B2: regional profiles.
+from fieldshift.catalogs.routes import router as _regions_router  # noqa: E402
+
+router.include_router(_regions_router)
+
+# Card B3: AI regional research jobs.
+from fieldshift.research.routes import router as _research_router  # noqa: E402
+
+router.include_router(_research_router)

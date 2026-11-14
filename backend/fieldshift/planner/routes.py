@@ -18,7 +18,12 @@ from pydantic import ValidationError
 
 from fieldshift.compare.context import Context, get_context
 from fieldshift.contracts import FieldIssue, Plan
-from fieldshift.planner.checker import check_plan, default_planting_year, plan_version
+from fieldshift.planner.checker import (
+    check_plan,
+    default_planting_year,
+    map_plan_to_catalog,
+    plan_version,
+)
 from fieldshift.planner.crops import list_crops
 from fieldshift.planner.finder import PRIORITIES, find_plans
 from fieldshift.planner.wheat_path import demo_plan, evaluate_wheat_double_crop, plan_from_dates
@@ -88,6 +93,34 @@ def _parse_common(body: dict[str, Any]) -> tuple[dict[str, Any] | None, list[dic
     return {"plan": plan, "year": year, "inputs": inputs}, []
 
 
+def _index_for(body: dict[str, Any]) -> tuple[Any, dict[str, Any] | None, list[dict[str, str]]]:
+    """The catalog for the body's optional ``location`` (B2). Without one: the NC catalog."""
+    loc = body.get("location")
+    if loc is None:
+        return get_index(), None, []
+    from fieldshift.catalogs.regional import catalog_for_location
+
+    if not isinstance(loc, dict):
+        return None, None, [issue("location", "invalid_location", "location must be an object")]
+    index, state = catalog_for_location(loc)
+    if state is not None and state.get("reason") == "invalid_location":
+        return None, None, [issue("location", "invalid_location",
+                                  "location needs latitude and longitude within range, or a "
+                                  "cell_id")]  # fmt: skip
+    return index, state, []
+
+
+def _with_catalog(out: dict[str, Any], state: dict[str, Any] | None,
+                  index: Any = None) -> dict[str, Any]:  # fmt: skip
+    """Add the catalog state; a non-NC answer's meta names its own catalog and no snapshot."""
+    if state is not None:
+        out["catalog"] = state
+        if index is not None and getattr(index, "in_nc", True) is False:
+            pv = out.get("meta", {}).get("plan_version")
+            out["meta"] = response_meta(pv, index=index, weather=False)
+    return out
+
+
 @router.post("/plans/check")
 async def post_check(request: Request) -> Any:
     """Body: ``{"plan": Plan, "year": int?, "inputs": {soil_temp_f: ..., ...}?}``."""
@@ -98,14 +131,17 @@ async def post_check(request: Request) -> Any:
     if parsed is None:
         return invalid(issues)
     plan, inputs = parsed["plan"], parsed["inputs"]
+    index, state, loc_issues = _index_for(body)  # type: ignore[arg-type]
+    if loc_issues:
+        return invalid(loc_issues)
     year = parsed["year"] or default_planting_year()
-    result = check_plan(plan, get_index(), year=year, inputs=inputs)
+    result = check_plan(plan, index, year=year, inputs=inputs)
     if result.status == "invalid_input":
         return invalid([_prefixed(i) for i in result.issues])
-    return {
+    return _with_catalog({
         "meta": response_meta(plan_version(plan, result.year, inputs)),
         "result": result.model_dump(mode="json"),
-    }
+    }, state, index)  # fmt: skip
 
 
 @router.post("/plans/find")
@@ -128,21 +164,31 @@ async def post_find(request: Request) -> Any:
     if parsed is None or issues:
         return invalid(issues)
     plan, inputs = parsed["plan"], parsed["inputs"]
+    index, state, loc_issues = _index_for(body)  # type: ignore[arg-type]
+    if loc_issues:
+        return invalid(loc_issues)
     year = parsed["year"] or default_planting_year()
-    result = find_plans(plan, get_index(), priorities=priorities, year=year, inputs=inputs)
+    result = find_plans(plan, index, priorities=priorities, year=year, inputs=inputs)
     if result.status == "invalid_input" and result.check is not None:
         return invalid([_prefixed(i) for i in result.check.issues])
     # plan_version excludes priorities on purpose: they only reorder the same facts.
-    return {
+    return _with_catalog({
         "meta": response_meta(plan_version(plan, result.year, inputs)),
         "result": result.model_dump(mode="json"),
-    }
+    }, state, index)  # fmt: skip
 
 
 @router.get("/crops")
-def get_crops() -> dict[str, Any]:
-    out = list_crops(get_index())
-    return {"meta": response_meta(), **out.model_dump(mode="json")}
+def get_crops(lat: str | None = None, lon: str | None = None) -> Any:
+    """The crops of the NC catalog, or of the catalog at ``lat``/``lon`` (B2)."""
+    if lat is None and lon is None:
+        out = list_crops(get_index())
+        return {"meta": response_meta(), **out.model_dump(mode="json")}
+    index, state, problems = _index_for({"location": {"latitude": lat, "longitude": lon}})
+    if problems:
+        return invalid(problems)
+    out = list_crops(index)
+    return _with_catalog({"meta": response_meta(), **out.model_dump(mode="json")}, state, index)
 
 
 # --------------------------------------------------------------------------- wheat double-crop
@@ -252,3 +298,229 @@ async def post_wheat(request: Request, ctx: Annotated[Context, Depends(get_conte
     effective, _ = _effective_inputs(body.get("maturity_group"), inputs)
     versioned = {**effective, "_compare_to_plan": full.model_dump(mode="json") if full else None}
     return {"meta": response_meta(plan_version(plan, result["year"], versioned)), "result": result}
+
+
+# --------------------------------------------------------------------------- generation (P1)
+
+UNION_DEFAULT = {"latitude": 34.98, "longitude": -80.55}  # the NC demo point
+
+
+def candidate_body(c: Any) -> dict[str, Any]:
+    """Contract §8: the first season's ``Plan`` fields plus the candidate's own fields."""
+    seasons = [s.model_dump(mode="json") for s in c.seasons]
+    return {**seasons[0]["plan"], "candidate_id": c.candidate_id, "label": c.label,
+            "crops": c.crops, "seasons": seasons, "origins": c.origins,
+            "checks_summary": c.checks_summary, "matches_rotation": c.matches_rotation}  # fmt: skip
+
+
+@router.post("/plans/generate")
+async def post_generate(request: Request) -> Any:
+    """Body: ``{location?, field?, goals?, start_year?}`` (contract §8). Location defaults to the
+    Union County demo point. Generated plans are ordinary ``Plan`` objects (one per season)."""
+    from fieldshift.planner.generator import generate_candidates
+    from fieldshift.planner.goals import FieldContext, Goals
+
+    body, err = await read_object(request)
+    if err is not None:
+        return err
+    issues: list[dict[str, str]] = []
+    loc = body.get("location", UNION_DEFAULT)  # type: ignore[union-attr]
+    point = None
+    if isinstance(loc, dict):
+        try:
+            la, lo = float(loc.get("latitude")), float(loc.get("longitude"))  # type: ignore[arg-type]
+            if -90 <= la <= 90 and -180 <= lo <= 180:
+                point = {"latitude": la, "longitude": lo}
+        except (TypeError, ValueError):
+            point = None
+    if point is None:
+        issues.append(issue("location", "invalid_location",
+                            "location needs latitude and longitude within range"))  # fmt: skip
+    fc = goals = None
+    try:
+        fc = FieldContext.model_validate(body.get("field") or {})  # type: ignore[union-attr]
+    except ValidationError as exc:
+        issues += _validation_issues(exc, "field.")
+    try:
+        goals = Goals.model_validate(body.get("goals") or {})  # type: ignore[union-attr]
+    except ValidationError as exc:
+        issues += _validation_issues(exc, "goals.")
+    start = body.get("start_year")  # type: ignore[union-attr]
+    if start is not None and (isinstance(start, bool) or not isinstance(start, int)
+                              or not MIN_YEAR <= start <= MAX_YEAR):  # fmt: skip
+        issues.append(issue("start_year", "invalid_year",
+                            f"start_year must be an integer in {MIN_YEAR}-{MAX_YEAR}"))  # fmt: skip
+    if issues:
+        return invalid(issues)
+    from fieldshift.geo.locate import describe
+
+    if describe(point["latitude"], point["longitude"], allow_network=False).status == (  # type: ignore[index]
+            "unsupported"):  # fmt: skip
+        return {"meta": response_meta(), "status": "unsupported", "code": "unsupported_location",
+                "reason": "over_water", "reason_text": "This point is over water.",
+                "candidates": [], "generation_log": [], "gaps": []}  # fmt: skip
+    res = generate_candidates(point, fc, goals, start_year=start)
+    out = res.model_dump(mode="json", exclude={"candidates"})
+    out["candidates"] = [candidate_body(c) for c in res.candidates]
+    import hashlib
+    import json
+
+    pv = hashlib.sha256(json.dumps(
+        {"goals": goals.model_dump(mode="json"), "start_year": res.start_year,  # type: ignore[union-attr]
+         "catalog": res.catalog.get("catalog_version"),
+         "history": fc.crop_history},  # type: ignore[union-attr]
+        sort_keys=True).encode()).hexdigest()[:16]  # fmt: skip
+    from fieldshift.catalogs.regional import regional_catalog
+
+    idx = regional_catalog(point["latitude"], point["longitude"])  # type: ignore[index]
+    meta = response_meta(pv) if idx.in_nc else response_meta(pv, index=idx, weather=False)
+    return {"meta": meta, **out}
+
+
+# --------------------------------------------------------------------------- future plan (P3)
+
+
+def _future_legs(body: dict[str, Any]) -> tuple[list[Plan], list[dict[str, str]],
+                                                 list[dict[str, Any]], str, list[dict[str, str]]]:  # fmt: skip
+    """``(legs, origins, sources, basis, issues)`` from ``candidate | plans | plan | plan_id |
+    rotation_id``. Sample plans and rotations are demo presets (``assumed`` dates)."""
+    from fieldshift.planner.generator import _preset_rotations, _presets
+
+    issues: list[dict[str, str]] = []
+    if isinstance(body.get("candidate"), dict):
+        seasons = body["candidate"].get("seasons")
+        if not isinstance(seasons, list) or not seasons:
+            return [], [], [], "grower", [issue("candidate.seasons", "required",
+                                                "a candidate needs its seasons")]  # fmt: skip
+        legs, origins, sources = [], [], []
+        for n, s in enumerate(seasons):
+            try:
+                legs.append(Plan.model_validate((s or {}).get("plan")))
+            except ValidationError as exc:
+                issues += _validation_issues(exc, f"candidate.seasons[{n}].plan.")
+                continue
+            o = s.get("origins") if isinstance(s.get("origins"), dict) else {}
+            origins.append({k: v for k, v in o.items() if isinstance(v, str)})
+            sources.append(s.get("sources") if isinstance(s.get("sources"), dict) else {})
+        return legs, origins, sources, "grower", issues
+    raw = body.get("plans")
+    if raw is None and body.get("plan") is not None:
+        raw = [body["plan"]]
+    if raw is not None:
+        if not isinstance(raw, list) or not raw:
+            return [], [], [], "grower", [issue("plans", "invalid", "plans must be a list")]
+        legs = []
+        for n, p in enumerate(raw):
+            try:
+                legs.append(Plan.model_validate(p))
+            except ValidationError as exc:
+                issues += _validation_issues(exc, f"plans[{n}].")
+        return legs, [{} for _ in legs], [{} for _ in legs], "grower", issues
+    samples = {x["plan"]["plan_id"]: Plan.model_validate(x["plan"]) for x in _presets()}
+    rid = body.get("rotation_id")
+    pid = body.get("plan_id")
+    rot = None
+    if isinstance(rid, str):
+        rot = next((legs for r, legs in _preset_rotations() if r == rid), None)
+        if rot is None:
+            return [], [], [], "assumed", [issue("rotation_id", "unknown_rotation",
+                                                 f"unknown rotation '{rid}'")]  # fmt: skip
+    elif isinstance(pid, str):
+        if pid not in samples:
+            return [], [], [], "assumed", [issue("plan_id", "unknown_plan",
+                                                 f"unknown sample plan '{pid}'")]  # fmt: skip
+        # a sample leg is laid out with its rotation's other leg, starting from this one
+        rot = next((legs for _, legs in _preset_rotations() if pid in legs), (pid,))
+        k = rot.index(pid)
+        rot = (*rot[k:], *rot[:k])
+    else:
+        return [], [], [], "grower", [issue("plan", "required", "send candidate, plans, plan, "
+                                            "plan_id or rotation_id")]  # fmt: skip
+    legs = [samples[x] for x in rot]
+    return legs, [{} for _ in legs], [{} for _ in legs], "assumed", []
+
+
+@router.post("/plans/future")
+async def post_future(request: Request) -> Any:
+    """Body: ``{location?, candidate | plans | plan | plan_id | rotation_id, start_season,
+    seasons, edits?, as_of?, inputs?}`` (contract §10)."""
+    from datetime import date as _date
+
+    from fieldshift.catalogs.regional import regional_catalog
+    from fieldshift.planner.future import (
+        Edit,
+        FuturePlanError,
+        apply_edits,
+        build_future_plan,
+        diff_future,
+        public,
+    )
+
+    body, err = await read_object(request)
+    if err is not None:
+        return err
+    assert body is not None
+    issues: list[dict[str, str]] = []
+    index, state, loc_issues = _index_for(body)
+    issues += loc_issues
+    legs, origins, sources, basis, leg_issues = _future_legs(body)
+    issues += leg_issues
+    start = body.get("start_season", default_planting_year())
+    if isinstance(start, str) and start.isdigit():
+        start = int(start)
+    if isinstance(start, bool) or not isinstance(start, int) or not MIN_YEAR <= start <= MAX_YEAR:
+        issues.append(issue("start_season", "invalid_year", "start_season is a year like 2027"))
+    n = body.get("seasons", len(legs) or 1)
+    if isinstance(n, bool) or not isinstance(n, int) or not 1 <= n <= 4:
+        issues.append(issue("seasons", "invalid_seasons", "seasons must be a whole number 1-4"))
+    as_of = None
+    if body.get("as_of") is not None:
+        try:
+            as_of = _date.fromisoformat(str(body["as_of"]))
+        except ValueError:
+            issues.append(issue("as_of", "invalid_date", "as_of must be YYYY-MM-DD"))
+    edits: list[Edit] = []
+    raw_edits = body.get("edits") or []
+    if not isinstance(raw_edits, list):
+        issues.append(issue("edits", "invalid", "edits must be a list"))
+    else:
+        for k, e in enumerate(raw_edits):
+            try:
+                edits.append(Edit.model_validate(e))
+            except ValidationError as exc:
+                issues += _validation_issues(exc, f"edits[{k}].")
+    if issues:
+        return invalid(issues)
+    loc = body.get("location")
+    calendars = None
+    if isinstance(loc, dict):
+        calendars = regional_catalog(float(loc["latitude"]), float(loc["longitude"]))
+    legs = [map_plan_to_catalog(p, index) for p in legs]
+    try:
+        before = build_future_plan(legs, index, start_season=start, seasons=n, origins=origins,
+                                   sources=sources, basis=basis, calendars=calendars,
+                                   as_of=as_of, inputs=body.get("inputs"))  # fmt: skip
+        out = public(before)
+        if edits:
+            new_legs, new_origins, e_issues, prios = apply_edits(legs, origins, edits)
+            if e_issues:
+                return invalid([issue(i.field, i.code, i.message) for i in e_issues])
+            after = build_future_plan(new_legs, index, start_season=start, seasons=n,
+                                      origins=new_origins, sources=sources, basis=basis,
+                                      calendars=calendars, as_of=as_of, inputs=body.get("inputs"))  # fmt: skip
+            out = public(after)
+            out["diff"] = diff_future(before, after)
+            changed = [p.plan_id for p, q in zip(legs, new_legs, strict=True) if p != q]
+            out["recommendation_refresh"] = {
+                "status": "unavailable", "reason": "recommendation_not_built",
+                "reason_text": "The recommendation step (card P2) is not available yet, so the "
+                "shortlist was not rerun; only the edited plan's calendar changed.",
+                "changed_plan_ids": changed, "priority_edits": prios}  # fmt: skip
+    except FuturePlanError as exc:
+        return invalid([issue(i.field, i.code, i.message) for i in exc.issues])
+    regional = getattr(index, "in_nc", True) is False
+    meta = response_meta(None, index=index, weather=False) if regional else response_meta()
+    if state is not None:
+        out["catalog"] = state
+    out["dates_basis"] = basis
+    return {"meta": meta, **out}

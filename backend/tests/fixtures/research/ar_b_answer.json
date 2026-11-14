@@ -1,0 +1,69 @@
+{
+  "rows": [
+    {"rule_id": "ar_b_ai_001", "crop_id": "soybean", "rule_type": "planting_window", "growth_stage": "planting",
+     "management_action": "plant", "production_system": null, "previous_crop_id": null, "next_crop_id": null,
+     "window_start_mm_dd": "10-15", "window_end_mm_dd": "12-15", "condition_key": null, "operator": null,
+     "value_min": null, "value_max": null, "unit": null, "suitability": "preferred",
+     "applies_when": "Soybean sowing date", "guidance": "Sow soybean between October 15 and December 15.",
+     "limitations": null, "source_title": "Synthetic agency page A", "source_url": "https://agency-a.invalid/soja",
+     "source_locator": "Section 2", "evidence_quote": "sow soybean between October 15 and December 15"},
+    {"rule_id": "ar_b_ai_002", "crop_id": "maize", "rule_type": "planting_window", "growth_stage": "planting",
+     "management_action": "plant", "production_system": null, "previous_crop_id": null, "next_crop_id": null,
+     "window_start_mm_dd": "09-20", "window_end_mm_dd": "10-31", "condition_key": null, "operator": null,
+     "value_min": null, "value_max": null, "unit": null, "suitability": "preferred",
+     "applies_when": "Maize sowing date", "guidance": "Sow maize from September 20 to October 31.",
+     "limitations": null, "source_title": "Synthetic agency page A", "source_url": "https://agency-a.invalid/soja",
+     "source_locator": "Section 3", "evidence_quote": "maize is sown from September 20 to October 31"},
+    {"rule_id": "ar_b_ai_003", "crop_id": "soybean", "rule_type": "rotation_compatibility", "growth_stage": "season",
+     "management_action": "rotate", "production_system": null, "previous_crop_id": "soybean", "next_crop_id": null,
+     "window_start_mm_dd": null, "window_end_mm_dd": null, "condition_key": "days_between_termination_and_planting",
+     "operator": "gte", "value_min": 21, "value_max": null, "unit": "days", "suitability": "caution",
+     "applies_when": "Soybean after soybean", "guidance": "Leave 21 days.", "limitations": null,
+     "source_title": "Synthetic university page B", "source_url": "https://uni-b.invalid/rotacion",
+     "source_locator": "Table 1", "evidence_quote": "avoid soybean after soybean in the same field"},
+    {"rule_id": "ar_b_ai_004", "crop_id": "cereal_rye", "rule_type": "termination_timing", "growth_stage": "termination",
+     "management_action": "terminate", "production_system": null, "previous_crop_id": null, "next_crop_id": "soybean",
+     "window_start_mm_dd": null, "window_end_mm_dd": null, "condition_key": "days_between_termination_and_planting",
+     "operator": "gte", "value_min": 30, "value_max": null, "unit": "days", "suitability": "preferred",
+     "applies_when": "Ending a rye cover before soybean", "guidance": "End rye 30 days before soybean.",
+     "limitations": null, "source_title": "Synthetic university page B", "source_url": "https://uni-b.invalid/rotacion",
+     "source_locator": "Section 4", "evidence_quote": "end the rye cover 30 days before sowing soybean"},
+    {"rule_id": "ar_b_ai_005", "crop_id": "cereal_rye", "rule_type": "termination_timing", "growth_stage": "termination",
+     "management_action": "terminate", "production_system": null, "previous_crop_id": null, "next_crop_id": "soybean",
+     "window_start_mm_dd": null, "window_end_mm_dd": null, "condition_key": "days_between_termination_and_planting",
+     "operator": "gte", "value_min": 15, "value_max": null, "unit": "days", "suitability": "preferred",
+     "applies_when": "Ending a rye cover before soybean", "guidance": "End rye 15 days before soybean.",
+     "limitations": null, "source_title": "Synthetic institute page C", "source_url": "https://inst-c.invalid/cultivos",
+     "source_locator": "p. 3", "evidence_quote": "the cover can be ended 15 days before the soybean is sown"},
+    {"rule_id": "ar_b_ai_006", "crop_id": "maize", "rule_type": "planting_window", "growth_stage": "planting",
+     "management_action": "plant", "production_system": null, "previous_crop_id": null, "next_crop_id": null,
+     "window_start_mm_dd": "12-01", "window_end_mm_dd": "12-31", "condition_key": null, "operator": null,
+     "value_min": null, "value_max": null, "unit": null, "suitability": "acceptable",
+     "applies_when": "Late maize", "guidance": "Late maize in December.", "limitations": null,
+     "source_title": "Dead page", "source_url": "https://gone.invalid/maiz-tardio",
+     "source_locator": "p. 1", "evidence_quote": "late maize is sown in December"}
+  ],
+  "crops": [
+    {"crop_id": "soybean", "plant": {"start": "10-15", "end": "12-15"}, "harvest": {"start": "03-20", "end": "05-15"},
+     "source_title": "Synthetic agency page A", "source_url": "https://agency-a.invalid/soja", "source_locator": "Section 2",
+     "evidence_quote": "sow soybean between October 15 and December 15"},
+    {"crop_id": "quinoa_x", "plant": {"start": "10-01", "end": "10-31"}, "harvest": null,
+     "source_title": "x", "source_url": "https://agency-a.invalid/soja", "source_locator": "x", "evidence_quote": "x"}
+  ],
+  "cover_crops": [
+    {"crop_id": "cereal_rye", "seed": {"start": "04-15", "end": "05-31"}, "gap_days": 30,
+     "source_title": "Synthetic university page B", "source_url": "https://uni-b.invalid/rotacion",
+     "source_locator": "Section 4", "evidence_quote": "end the rye cover 30 days before sowing soybean"}
+  ],
+  "rotations": [
+    {"label": "Maize, then soybean", "sequence": ["maize", "soybean"], "source_title": "Synthetic university page B",
+     "source_url": "https://uni-b.invalid/rotacion", "source_locator": "Section 1",
+     "evidence_quote": "rotating maize and soybean is the most common sequence"}
+  ],
+  "double_crops": [
+    {"winter_crop": "winter_wheat", "next_crop": "soybean", "source_title": "Synthetic agency page A",
+     "source_url": "https://agency-a.invalid/soja", "source_locator": "Section 5",
+     "evidence_quote": "second-crop soybean is sown right after the wheat harvest"}
+  ],
+  "gaps": ["No source found for cover termination timing before maize."]
+}

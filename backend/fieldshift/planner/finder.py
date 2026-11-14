@@ -67,6 +67,8 @@ def _md(d: date) -> str:
 
 
 def _region_ok(rule: CropRule, region: str | None) -> bool:
+    if rule.region_key != "US-NC":  # a regional (v3) row: it is in this index for this place
+        return True
     return region_match(rule.region, region)[0] != "no_match"
 
 
@@ -97,6 +99,26 @@ def _gaps(index: CatalogIndex, crop_id: str, next_crop: str, region: str | None)
                 if v is not None and v > 0:
                     gaps.add(int(v))
     return sorted(gaps) or [FALLBACK_GAP_DAYS]
+
+
+def _window_around(harvest: date, start_md: str, end_md: str) -> tuple[date, date]:
+    """The seeding window that is open at, or next opens after, ``harvest``.
+
+    A window can cross New Year (``11-15`` to ``01-31``): its end is then in the following year,
+    and the window that began the year before may still be open at a January harvest.
+    """
+    sm, sd, em, ed = int(start_md[:2]), int(start_md[3:]), int(end_md[:2]), int(end_md[3:])
+    wraps = (em, ed) < (sm, sd)
+
+    def window(y: int) -> tuple[date, date]:
+        start = date(y, sm, min(sd, 28) if sm == 2 else sd)
+        return start, date(y + 1 if wraps else y, em, min(ed, 28) if em == 2 else ed)
+
+    if wraps:
+        prev = window(harvest.year - 1)
+        if harvest <= prev[1]:
+            return prev  # a January harvest inside last year's Nov-Jan window
+    return window(harvest.year)  # may end before harvest: the caller notes that
 
 
 def _summarise(option_id: str, label: str, winter: WinterManagement, res: CheckResult) -> Option:
@@ -142,8 +164,11 @@ def find_plans(
     inputs: dict | None = None,
 ) -> FindResult:
     """Enumerate and rank winter options for ``base``'s cash-crop pair. ``base.winter`` is ignored."""
+    from fieldshift.planner.checker import map_plan_to_catalog
+
     year = year or default_planting_year()
     prios = list(priorities) if priorities else list(DEFAULT_PRIORITIES)
+    base = map_plan_to_catalog(base, index)  # aliases: field_corn and maize find the same rules
     bare = base.model_copy(update={"winter": WinterManagement(kind="none")})
     base_check = check_plan(bare, index, year=year, inputs=inputs)
     if base_check.status != Status.COMPLETE:
@@ -165,10 +190,7 @@ def find_plans(
                 f"catalog has no preferred seeding window for {crop.crop_id}; seeding at harvest"
             )
         else:
-            start = date(
-                harvest.year, int(win.window_start_mm_dd[:2]), int(win.window_start_mm_dd[3:])
-            )
-            end = date(harvest.year, int(win.window_end_mm_dd[:2]), int(win.window_end_mm_dd[3:]))
+            start, end = _window_around(harvest, win.window_start_mm_dd, win.window_end_mm_dd)
             if harvest > end:
                 notes.append(
                     f"harvest {harvest} is after the preferred seeding window end ({win.window_end_mm_dd}); "

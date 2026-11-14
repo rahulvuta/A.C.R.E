@@ -56,6 +56,8 @@ class Crop(_Frozen):
     source_url: str | None = None
     source_locator: str | None = None
     verified_date: date | None = None
+    origin: str = "verified_source"  # v3: dataset_estimate for SAGE crops, ai_suggested, ...
+    family: str | None = None
 
 
 class CropRule(_Frozen):
@@ -90,6 +92,16 @@ class CropRule(_Frozen):
     source_url: str | None = None
     source_locator: str | None = None
     verified_date: date | None = None
+    # catalog v3 (card B2). v1/v2 rows are North Carolina guidance checked by a person, so the
+    # defaults are ``verified_source`` / ``US-NC``; a v3 file must state both on every row.
+    region_key: str = "US-NC"
+    country: str | None = None
+    admin1: str | None = None
+    koppen: str | None = None
+    origin: str = "verified_source"
+    evidence_quote: str | None = None
+    limitations: str | None = None
+    conflicts_with: str | None = None  # ``;``-separated rule ids
 
 
 class Fertilizer(_Frozen):

@@ -592,6 +592,7 @@ def build_field_note(
     alt_dates_assumed: bool | None = None,
     maturity_group: Any = None,
     compare_to_plan: Plan | None = None,
+    future: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build the field note JSON for ``plan`` (and one fixed ``alternative``).
 
@@ -662,12 +663,49 @@ def build_field_note(
         else:
             alts.append(_alternative_section(alternative, acal, backup, results[1], base, an, ts))
     note["alternatives"] = alts
+    if future is not None:
+        note["future_plan"] = _future_section(future, index, n, as_of)
     note["sources"] = _collect_sources(note, ctx)
     note["adviser_note"] = _adviser()
     note["limits"] = _limits(dates_assumed, alts)
     note = finalize(note, book)
     note["audit"] = book.as_dict()
     return note
+
+
+def _future_section(future: dict[str, Any], index: Any, n: _Nums, as_of: date | None
+                    ) -> dict[str, Any]:  # fmt: skip
+    """The future multi-season plan (card P3) for the note: dates with origins, milestones and
+    decision deadlines; its numbers (living-cover days, termination gaps) are audited."""
+    from fieldshift.planner.future import FuturePlanError, build_future_plan, public
+
+    try:
+        body = public(build_future_plan(
+            future["legs"], index, start_season=future["start_season"], seasons=future["seasons"],
+            basis=future.get("basis", "grower"), as_of=as_of))  # fmt: skip
+    except FuturePlanError as exc:
+        return {"status": "invalid_input", "issues": [i.model_dump() for i in exc.issues]}
+    seasons = []
+    for s in body["seasons"]:
+        cover = s.get("cover_schedule")
+        if cover is not None:
+            what = f"season {s['season']} cover"
+            cover = {**cover,
+                     "living_cover_days": n.plan_calc(cover["living_cover_days"], "days",
+                                                      f"{what}: days from seeding to termination"),
+                     "termination_gap_days": n.plan_calc(cover["termination_gap_days"], "days",
+                                                         f"{what}: days from termination to "
+                                                         "planting")}  # fmt: skip
+        seasons.append({
+            "season": s["season"], "status": s["status"], "plan_id": s["plan"]["plan_id"],
+            "windows": [{k: v for k, v in w.items() if k != "source"} for w in s["windows"]],
+            "cover_schedule": cover, "milestones": s["milestones"],
+            "decision_deadlines": [{k: v for k, v in d.items() if k != "assumptions"}
+                                   for d in s["decision_deadlines"]],
+            "warnings": s["warnings"],
+        })  # fmt: skip
+    return {"status": body["status"], "start_season": body["start_season"], "seasons": seasons,
+            "note": body["note"]}  # fmt: skip
 
 
 def _adviser() -> dict[str, Any]:
