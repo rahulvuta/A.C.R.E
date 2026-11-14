@@ -250,8 +250,9 @@ export function PrivacyPage() {
     >
       <Section id="p-keep" title="What A.C.R.E keeps">
         <p>
-          Nothing about you. There are no accounts, no cookies, no analytics and no browser storage. Your farm dates live only in
-          this page while it is open; closing the tab clears them.
+          Nothing about you on any server. There are no accounts, no cookies and no analytics. Farms you draw (their boundaries,
+          field names, plans and goals) are saved only in this browser's local storage, and you can export or delete them at any
+          time. The Union County demo keeps nothing.
         </p>
       </Section>
       <Section id="p-send" title="What is sent, and where">
@@ -261,7 +262,13 @@ export function PrivacyPage() {
             When the live service is connected, applying dates sends your plan dates to it so it can replay them against past
             springs. Choosing another place sends that place's coordinates so it can find the NASA POWER grid cell.
           </li>
+          <li>
+            Analysing a farm sends its field boundaries and plans to the A.C.R.E service, which measures them and answers. The
+            service does not store or log boundaries or coordinates.
+          </li>
+          <li>Searching or clicking the map sends the place name or point to the service to find where it is.</li>
           <li>The service asks NASA for the grid cell's center, not your exact point.</li>
+          <li>AI research on regional guidance receives only the region (country, state or province, climate class), never your fields or coordinates.</li>
           <li>Shared links hold view choices only (plan, year, winter, priorities, listed place). Never your dates or typed coordinates.</li>
         </ul>
       </Section>
