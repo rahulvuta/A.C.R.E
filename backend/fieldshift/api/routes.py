@@ -304,6 +304,10 @@ def compare(body: CompareRequest) -> Any:
     input_hash = engine.canonical_hash(hashed)
     meta = _meta(input_hash[:16], ctx.snapshot_hash if choice.ok else None,
                  ctx if choice.ok else None)  # fmt: skip
+    # outside NC with no stored weather: nothing of Union County's (thresholds, catalog) is shown
+    outside_none = not choice.ok and choice.kind == "no_snapshot" and choice.code != places.NO_SNAPSHOT
+    if outside_none:
+        meta = meta.model_copy(update={"catalog_version": None})
     result_id = engine.canonical_hash(
         [input_hash, ctx.snapshot_hash, meta.catalog_version, ts.threshold_set_id]
     )[:16]
@@ -313,7 +317,8 @@ def compare(body: CompareRequest) -> Any:
         result_id=result_id,
         input_hash=input_hash,
         request_echo=echo,
-        thresholds=engine.thresholds_view(ts, ctx if choice.ok else None),
+        thresholds=(engine.thresholds_view(ts, ctx if choice.ok else None) if not outside_none
+                    else _no_thresholds()),
         shared_eligible_years=shared,
         plans=results,
         soil=soil,
@@ -322,6 +327,21 @@ def compare(body: CompareRequest) -> Any:
         eras=engine.eras_block(),
         data_sources=_data_sources(ctx, soil, choice),
     )
+
+
+def _no_thresholds() -> Any:
+    """The thresholds block when no weather was used outside NC: no values, never Union's."""
+    from fieldshift.compare.models import ThresholdsView
+    from fieldshift.contracts import Threshold
+    from fieldshift.metrics.thresholds import HEAVY_RAIN_NAME
+
+    return ThresholdsView(
+        threshold_set_id="none", dry_spring={},
+        heavy_rain=Threshold(name=HEAVY_RAIN_NAME, method="none", value=None, unit="mm/day",
+                             reference_span="none", n_reference=0, status=Status.UNAVAILABLE,
+                             note="No weather is stored for this place, so no threshold was "
+                                  "computed."),
+    )  # fmt: skip
 
 
 def _location_block(choice: places.Choice, lat: float, lon: float) -> dict[str, Any] | None:

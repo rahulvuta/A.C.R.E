@@ -104,7 +104,7 @@
     }
   },
   "meta": {
-    "catalog_version": "v2:8eeb5bf961eb",
+    "catalog_version": null,
     "plan_version": "5d42070186205711",
     "request_id": "req_example",
     "snapshot_hash": null
@@ -176,7 +176,7 @@
     ],
     "rotation_ids": []
   },
-  "result_id": "5cc3fbf0f9ce81eb",
+  "result_id": "7798e405a52f94e4",
   "shared_eligible_years": {
     "full_season": [],
     "note": "offline_no_snapshot: no stored weather for grid cell cell_+40.500_-73.750; prepare it with POST /v1/weather/prepare",
@@ -202,107 +202,24 @@
   },
   "thresholds": {
     "baseline": null,
-    "dry_spring": {
-      "05-12": {
-        "location": "cell_+35.000_-80.625",
-        "method": "bottom_20pct_order_statistic",
-        "n_reference": 45,
-        "name": "spring_dry_mm@05-12",
-        "note": null,
-        "origin": "calculation",
-        "parameters": {
-          "eligible_years": [
-            1981,
-            1982,
-            1983,
-            1984,
-            1985,
-            1986,
-            1987,
-            1988,
-            1989,
-            1990,
-            1991,
-            1992,
-            1993,
-            1994,
-            1995,
-            1996,
-            1997,
-            1998,
-            1999,
-            2000,
-            2001,
-            2002,
-            2003,
-            2004,
-            2005,
-            2006,
-            2007,
-            2008,
-            2009,
-            2010,
-            2011,
-            2012,
-            2013,
-            2014,
-            2015,
-            2016,
-            2017,
-            2018,
-            2019,
-            2020,
-            2021,
-            2022,
-            2023,
-            2024,
-            2025
-          ],
-          "excluded_years": [],
-          "fraction": 0.2,
-          "k": 9,
-          "plant_md": "05-12",
-          "tie_rule": "total <= cutoff counts as dry",
-          "window_days": 30
-        },
-        "reference_span": "1981..2025",
-        "source": null,
-        "status": "complete",
-        "unit": "mm",
-        "value": 64.18
-      }
-    },
+    "dry_spring": {},
     "heavy_rain": {
-      "location": "cell_+35.000_-80.625",
-      "method": "published_fixed",
-      "n_reference": 16252,
+      "location": null,
+      "method": "none",
+      "n_reference": 0,
       "name": "heavy_rain_mm",
-      "note": "Applied to NASA POWER daily values, which are Local Solar Time days (time_standard=LST), not a rolling 24-hour window; a storm split across two solar days can fall below the value on each day. Rainfall-depth weather metric only: not erosion, runoff or soil loss. Zero-count winters are valid results.",
-      "origin": "verified_source",
-      "parameters": {
-        "assumed": false,
-        "comparison": "daily precip_mm >= value",
-        "daily_value_basis": "NASA POWER PRECTOTCORR, time_standard=LST (solar day)",
-        "depth_in": 3.0,
-        "inclusive": true,
-        "reference_duration_h": 24.0,
-        "scope": "rainfall depth only; not erosion or soil loss"
-      },
-      "reference_span": "1981-01-01..2025-06-30",
-      "source": {
-        "locator": "PDF p. 4, precipitation discussion",
-        "rule_id": "fc_v2_ref_very_heavy_rain",
-        "title": "North Carolina Climate Science Report: Plain Language Summary; March 2020",
-        "url": "https://files.nc.gov/ncdeq/climate-change/climate-scinece-report/NC-Climate-Science-Report_Plain_Language_Summary.pdf",
-        "verified_date": "2026-11-13"
-      },
-      "status": "complete",
+      "note": "No weather is stored for this place, so no threshold was computed.",
+      "origin": null,
+      "parameters": {},
+      "reference_span": "none",
+      "source": null,
+      "status": "unavailable",
       "unit": "mm/day",
-      "value": 76.2
+      "value": null
     },
     "location_id": null,
     "location_name": null,
-    "threshold_set_id": "d00101e09f5cae7e"
+    "threshold_set_id": "none"
   },
   "weather_location": {
     "cell_id": "cell_+40.500_-73.750",
