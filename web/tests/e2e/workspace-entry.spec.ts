@@ -17,7 +17,7 @@ test("a picked point shows the capabilities from the fixtures", async ({ page })
   await page.goto("/?view=app");
   await page.getByPlaceholder("Town, address or coordinates").fill("Pergamino");
   await page.getByRole("button", { name: "Search" }).click();
-  await page.getByRole("button", { name: "Pergamino, Buenos Aires, Argentina" }).click();
+  await page.getByRole("button", { name: "Pergamino, Buenos Aires, Argentina", exact: true }).click();
   const caps = page.getByRole("list", { name: "Capabilities" });
   await expect(caps).toBeVisible();
   await expect(caps.locator('[data-capability="catalog"]')).toHaveAttribute("data-status", "partial");

@@ -45,6 +45,11 @@ export function SourceBanner({ source }: { source: GlobalApi["source"] }) {
   return null;
 }
 
+/** Dev builds only: the Playwright workflow spec moves the map with `window.__map`. */
+const exposeMapForTests = (m: unknown) => {
+  if (import.meta.env.DEV) (window as unknown as { __map: unknown }).__map = m;
+};
+
 type Page = "map" | "overview" | "plan" | PlanningStep;
 const PAGES: Array<{ id: Page; label: string; icon: string; needsField?: boolean }> = [
   { id: "map", label: "Farm map", icon: "M9 16s5-4.500 5-8.500a5 5 0 0 0-10 0C4 11.500 9 16 9 16zM9 9.500a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" },
@@ -164,6 +169,7 @@ export function Workspace({ api: given }: { api?: GlobalApi }) {
               <FarmMap
                 api={api.geo}
                 fieldStates={fieldStates}
+                onMapReady={exposeMapForTests}
                 weatherCells={(ready?.data.weatherCells ?? []).flatMap((c) => (c.center && c.sizeDeg ? [{ cellId: c.cellId, center: c.center, sizeDeg: c.sizeDeg, fieldIds: c.fieldIds, note: c.note }] : []))}
               >
                 {field ? (

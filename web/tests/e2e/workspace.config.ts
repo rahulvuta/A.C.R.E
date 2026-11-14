@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig, devices } from "@playwright/test";
 
 /*
@@ -20,6 +21,7 @@ export default defineConfig({
   },
   webServer: {
     command: `VITE_API_BASE=http://api.test npx vite --port ${port} --strictPort`,
+    cwd: fileURLToPath(new URL("../..", import.meta.url)),
     port,
     reuseExistingServer: false,
   },
