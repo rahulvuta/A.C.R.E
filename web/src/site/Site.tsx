@@ -4,12 +4,7 @@ import { buildView } from "../view/build";
 import { Roll } from "../ui/Roll";
 import type { SiteData } from "./useSiteData";
 
-/*
-  Shared pieces of the marketing site (Nov 13). Its structure and motion follow the
-  tabs.com pages Abhi recorded: announcement bar, slim nav with menus, two-line headings
-  with a grey second line, hairline grids, a dark closing band and a dark footer.
-  The words, numbers and pictures are Fieldback's own; nothing of theirs is reused.
-*/
+/* Shared marketing shell. Planner links keep their existing hash-based demo routing. */
 
 export type SiteView = "home" | "product" | "growers" | "evidence" | "resources" | "about";
 export const to = (view: SiteView) => (view === "home" ? "./" : `?view=${view}`);
@@ -17,7 +12,7 @@ export const to = (view: SiteView) => (view === "home" ? "./" : `?view=${view}`)
 export const app = (hash = "") => `?view=app${hash ? `#${hash}` : ""}`;
 
 export const APP_PAGES: Array<{ pg: string; name: string; line: string }> = [
-  { pg: "pg=overview", name: "Overview", line: "The three plans and your field in 3D" },
+  { pg: "pg=overview", name: "Overview", line: "The NC example's plans and field in 3D" },
   { pg: "pg=springs", name: "Past springs", line: "Replay any spring since 1981" },
   { pg: "pg=compare", name: "Compare plans", line: "Both winters, side by side" },
   { pg: "s=cover&pg=plan", name: "Plan detail", line: "One plan, looked at closely" },
@@ -55,8 +50,8 @@ export function Watch({ href, dark = false }: { href: string; dark?: boolean }) 
         </span>
       </span>
       <span>
-        <strong>Compare. Replay. Decide what to ask.</strong>
-        <span>Watch the planner at work</span>
+        <strong>Explore the Union County example</strong>
+        <span>A recording of the real planner</span>
       </span>
     </a>
   );
@@ -209,8 +204,7 @@ export function SiteNav({ current }: { current: SiteView }) {
   return (
     <div className={`st-head${away ? " is-away" : ""}`}>
       <a className="st-announce" href={to("evidence")}>
-        <span className="st-announce-dot" aria-hidden="true" />
-        Now running on NASA POWER records for Union County, North Carolina
+        Plan from anywhere. Explore the evidence in our Union County worked example.
         <Chevron />
       </a>
       <header className={`st-nav${stuck ? " is-stuck" : ""}`}>
@@ -222,18 +216,24 @@ export function SiteNav({ current }: { current: SiteView }) {
           <Menu label="Product" href={to("product")} current={current === "product"}>
             <div className="st-menu-cols">
               <ul>
-                {APP_PAGES.map((p) => (
-                  <li key={p.name}>
-                    <a href={app(p.pg)}>
-                      <strong>{p.name}</strong>
-                      <span>{p.line}</span>
+                {[
+                  { name: "Find your farm", line: "Locate your farm and draw fields", href: app() },
+                  { name: "Goals & constraints", line: "Start with what matters on your field", href: `${to("product")}#planning-workflow` },
+                  { name: "Rotation shortlist", line: "Understand the indicators and trade-offs", href: `${to("product")}#shortlist` },
+                  { name: "Seasons ahead", line: "Carry your rotation into a future plan", href: `${to("product")}#future-plan` },
+                  { name: "Union County demo", line: "Explore the saved NC worked example", href: "?view=demo" },
+                ].map((item) => (
+                  <li key={item.name}>
+                    <a href={item.href}>
+                      <strong>{item.name}</strong>
+                      <span>{item.line}</span>
                     </a>
                   </li>
                 ))}
               </ul>
               <a className="st-menu-card" href={to("product")}>
-                <span className="st-menu-card-tag">Tour</span>
-                <strong>See every page of the planner in one place</strong>
+                <span className="st-menu-card-tag">Field to future plan</span>
+                <strong>Your location, your priorities and the reasons behind each rotation</strong>
                 <span className="st-link">
                   Product overview <Chevron />
                 </span>
@@ -275,11 +275,22 @@ export function SiteNav({ current }: { current: SiteView }) {
           {link("about", "About")}
         </nav>
         <div className="st-nav-actions">
+          <details className="st-mobile-menu">
+            <summary>Menu</summary>
+            <nav aria-label="Site menu">
+              <a href={to("product")}>Product</a>
+              <a href={to("growers")}>Who it's for</a>
+              <a href={to("evidence")}>Evidence</a>
+              <a href={to("resources")}>Resources</a>
+              <a href={to("about")}>About</a>
+              <a href="?view=demo">Union County demo</a>
+            </nav>
+          </details>
           <a className="st-nav-link" href={app("v=summary")}>
             Sample summary
           </a>
           <a className="btn btn-primary btn-small" href={app()}>
-            Open the planner
+            Find your farm
           </a>
         </div>
       </header>
@@ -295,10 +306,10 @@ export function SiteFooter() {
           <p>
             <span className="fb-mark st-foot-mark" aria-hidden="true" /> {APP_NAME}
           </p>
-          <p className="st-foot-note">A replay of past weather for planning talks. Not a forecast, and not a field measurement.</p>
+          <p className="st-foot-note">Crop rotations shaped by your field, your goals and the evidence. Historical weather is context, not a forecast.</p>
         </div>
         <div>
-          <h3>Product</h3>
+          <h3>Worked example</h3>
           <ul>
             {APP_PAGES.map((p) => (
               <li key={p.name}>
@@ -347,32 +358,30 @@ export function SiteFooter() {
       </div>
       <div className="st-wrap st-foot-base">
         <span>{CHALLENGE_LABEL} · Charlotte</span>
-        <span>Past weather from NASA POWER. Guidance from NC State Extension.</span>
+        <span>NASA POWER weather history · NC example with NC State Extension guidance</span>
       </div>
     </footer>
   );
 }
 
-/** The dark closing band above the footer, the same on every page. */
+/** Shared invitation to begin planning, with a link to the existing worked example. */
 export function SiteClose({ springs }: { springs: number | null }) {
   return (
     <section className="st-close">
-      <div className="st-wrap">
+      <div className="st-wrap st-close-inner">
         <Reveal>
+          <p className="st-eyebrow">Start with your farm</p>
           <h2>
-            See your winter plan
-            <br />
-            against {springs ? `${springs} real springs` : "every real spring"}.
+            Put your next rotation<span>on the map.</span>
           </h2>
           <a className="btn btn-primary" href={app()}>
-            Open the planner
+            Find your farm
           </a>
         </Reveal>
-      </div>
-      <div className="st-dotband">
-        <div className="st-dots" aria-hidden="true" />
-        <div className="st-wrap st-close-watch">
-          <Watch href="./#watch" dark />
+        <div className="st-close-example">
+          <p>Want to explore a record first?</p>
+          <a className="st-link" href="?view=demo">Open the Union County demo <Chevron /></a>
+          {springs != null ? <p className="st-small">{springs} past springs in the saved NC example.</p> : null}
         </div>
       </div>
     </section>
@@ -383,15 +392,18 @@ export function SiteShell({ current, title, children, springs }: { current: Site
   useEffect(() => {
     const before = document.title;
     document.title = title;
-    window.scrollTo(0, 0);
+    const anchor = document.getElementById(window.location.hash.slice(1));
+    if (anchor) anchor.scrollIntoView({ block: "start" });
+    else window.scrollTo(0, 0);
     return () => {
       document.title = before;
     };
   }, [title]);
   return (
     <div className="st">
+      <a className="st-skip" href="#site-content">Skip to content</a>
       <SiteNav current={current} />
-      <main>{children}</main>
+      <main id="site-content">{children}</main>
       <SiteClose springs={springs} />
       <SiteFooter />
     </div>

@@ -1,0 +1,1721 @@
+{
+  "_fixture": "Synthetic fixture built from docs/global/contract.md (Agent D). Not real backend output; geometry is invented.",
+  "meta": {
+    "plan_version": "fixture",
+    "catalog_version": "v3:fixture",
+    "snapshot_hash": "fixture-0000",
+    "request_id": "fx_farm_2f1c"
+  },
+  "status": "complete",
+  "fields": [
+    {
+      "field_id": "fld_1",
+      "name": "North 40",
+      "area_ha": 102.87,
+      "area_ac": 254.21,
+      "centroid": {
+        "latitude": -33.89,
+        "longitude": -60.58
+      },
+      "cell_id": "lat-34.00_lon-60.625",
+      "job_status": "ready",
+      "capabilities": {
+        "weather": {
+          "status": "complete",
+          "job_status": "ready",
+          "cell_id": "lat-34.00_lon-60.625",
+          "origin": "nasa_measured"
+        },
+        "catalog": {
+          "status": "partial",
+          "origin": "ai_suggested",
+          "region_key": "AR-B",
+          "reason_text": "Suggestions found by AI research; check them with a local adviser."
+        },
+        "soil": {
+          "status": "complete",
+          "provider": "soilgrids",
+          "resolution_m": 250,
+          "origin": "dataset_estimate"
+        },
+        "live_weather": {
+          "status": "complete",
+          "provider": "open_meteo"
+        },
+        "drought": {
+          "status": "unavailable",
+          "provider": null,
+          "reason": "no_provider_for_region",
+          "reason_text": "No drought monitor is connected for this country."
+        },
+        "tools": {
+          "irrigation": "complete",
+          "fertilizer": "partial"
+        }
+      },
+      "result": {
+        "plan_id": "fld_1_plan",
+        "label": "Maize, cereal rye cover, soybean",
+        "status": "complete",
+        "reason": null,
+        "reason_text": null,
+        "dates_assumed": false,
+        "editable": [
+          "prev_harvest",
+          "next_plant",
+          "winter"
+        ],
+        "hemisphere": "south",
+        "season_label": "Off-season (May–Oct)",
+        "plan": {
+          "plan_id": "fld_1_plan",
+          "previous_crop_id": "maize",
+          "next_crop_id": "soybean",
+          "prev_harvest": "04-20",
+          "winter": {
+            "kind": "cover",
+            "crop_id": "cereal_rye",
+            "seed": "05-01",
+            "terminate": "10-20"
+          },
+          "next_plant": "11-15",
+          "grower": {
+            "low_moisture_concern": null
+          }
+        },
+        "calendar": {
+          "reference_year": 2025,
+          "winter_days": 209,
+          "living_cover_days_planned": 172,
+          "days_without_planned_cover": 37,
+          "termination_gap_days": 26,
+          "establishment": "complete",
+          "spring_window": {
+            "start": "10-16",
+            "end": "11-14"
+          }
+        },
+        "winter": {
+          "status": "complete",
+          "season_label": "Off-season (May–Oct)",
+          "seasons": 45,
+          "eligible_seasons": 45,
+          "per_season_median": {
+            "rain_mm_outside_cover": 103.31,
+            "heavy_rain_days_outside_cover": 0
+          },
+          "segments": [
+            "fallow_before_cover",
+            "cover",
+            "gap_before_plant"
+          ]
+        },
+        "spring": {
+          "status": "complete",
+          "season_label": "30 days before planting",
+          "window_days": 30,
+          "cutoff_mm": 60.86,
+          "eligible_seasons": 45,
+          "dry_seasons": 9,
+          "dry_years": [
+            1988,
+            1989,
+            1999,
+            2009,
+            2011,
+            2013,
+            2015,
+            2017,
+            2024
+          ],
+          "median_total_mm": 112.46,
+          "shortcuts": {
+            "typical": 2001,
+            "dry": 1988,
+            "wet": 2010,
+            "basis": "own_window_baseline"
+          }
+        },
+        "thresholds": {
+          "heavy_rain": {
+            "value": 41.7,
+            "unit": "mm/day",
+            "method": "etccdi_r95p",
+            "status": "complete",
+            "reference_span": "1981-01-01..2010-12-31",
+            "origin": "calculation",
+            "location": {
+              "cell_id": "lat-34.00_lon-60.625"
+            }
+          },
+          "dry_spring": {
+            "11-15": {
+              "value": 60.86,
+              "unit": "mm",
+              "method": "bottom_20pct_order_statistic",
+              "status": "complete",
+              "origin": "calculation",
+              "location": {
+                "cell_id": "lat-34.00_lon-60.625"
+              }
+            }
+          }
+        },
+        "spring_checks": [],
+        "other_checks": [
+          {
+            "rule_id": "ar_b_ai_007",
+            "status": "manual_check",
+            "verdict": "manual_check",
+            "reason": "AI-found suggestion; check with a local adviser",
+            "text": "End the cover crop about three weeks before soybean planting so it can dry down.",
+            "print": false,
+            "origin": "source_checked",
+            "source": {
+              "title": "INTA cover crop guide (fixture)",
+              "url": "https://example.org/fixture/inta-cover-crops",
+              "locator": "p. 4"
+            }
+          },
+          {
+            "rule_id": "ar_b_ai_012",
+            "status": "unknown",
+            "verdict": "unknown",
+            "reason": "AI-found suggestion; quote not found on the cited page",
+            "text": "Soybean after maize is commonly planted from mid-November in this region.",
+            "print": false,
+            "origin": "ai_suggested",
+            "source": {
+              "title": "Regional extension note (fixture)",
+              "url": "https://example.org/fixture/soy-dates",
+              "locator": null
+            }
+          }
+        ],
+        "eras": {
+          "dry_spring": {
+            "indicator": "dry_spring",
+            "status": "complete",
+            "result": "more_frequent_recent",
+            "earlier": {
+              "start": 1981,
+              "end": 2000,
+              "seasons": 20,
+              "evaluable": 20,
+              "events": 3,
+              "pct": 15,
+              "not_evaluable": []
+            },
+            "recent": {
+              "start": 2006,
+              "end": 2025,
+              "seasons": 20,
+              "evaluable": 20,
+              "events": 6,
+              "pct": 30,
+              "not_evaluable": []
+            },
+            "diff_pp": 15,
+            "min_evaluable_per_era": 15,
+            "caveat": "Descriptive comparison of two periods only; not a trend, cause, or forecast."
+          }
+        },
+        "coverage": {
+          "available_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "seasons": [
+          {
+            "year": 1981,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 131.39,
+            "spring_rank": 29,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 79.76,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.66,
+            "gwetroot_window_mean": 0.48
+          },
+          {
+            "year": 1982,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 139.56,
+            "spring_rank": 35,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 99.14,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.69,
+            "gwetroot_window_mean": 0.52
+          },
+          {
+            "year": 1983,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 150.31,
+            "spring_rank": 41,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 76.15,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.52,
+            "gwetroot_window_mean": 0.65
+          },
+          {
+            "year": 1984,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 140.78,
+            "spring_rank": 37,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 138.44,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.52,
+            "gwetroot_window_mean": 0.72
+          },
+          {
+            "year": 1985,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 137.12,
+            "spring_rank": 32,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 103.15,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.59,
+            "gwetroot_window_mean": 0.52
+          },
+          {
+            "year": 1986,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 158.08,
+            "spring_rank": 43,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 110.96,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.63,
+            "gwetroot_window_mean": 0.48
+          },
+          {
+            "year": 1987,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 104.75,
+            "spring_rank": 19,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 84.7,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.49,
+            "gwetroot_window_mean": 0.67
+          },
+          {
+            "year": 1988,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 52.54,
+            "spring_rank": 6,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 142.05,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.67,
+            "gwetroot_window_mean": 0.65
+          },
+          {
+            "year": 1989,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 54.39,
+            "spring_rank": 8,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 117.91,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.4,
+            "gwetroot_window_mean": 0.55
+          },
+          {
+            "year": 1990,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 112.46,
+            "spring_rank": 23,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 118.19,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.52,
+            "gwetroot_window_mean": 0.5
+          },
+          {
+            "year": 1991,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 112.7,
+            "spring_rank": 24,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 103.31,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.5,
+            "gwetroot_window_mean": 0.62
+          },
+          {
+            "year": 1992,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 138.72,
+            "spring_rank": 33,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 76.85,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.46,
+            "gwetroot_window_mean": 0.75
+          },
+          {
+            "year": 1993,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 149.57,
+            "spring_rank": 40,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 116.21,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.43,
+            "gwetroot_window_mean": 0.51
+          },
+          {
+            "year": 1994,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 109.78,
+            "spring_rank": 21,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 115.65,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.56,
+            "gwetroot_window_mean": 0.64
+          },
+          {
+            "year": 1995,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 91.29,
+            "spring_rank": 13,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 70.18,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.44,
+            "gwetroot_window_mean": 0.61
+          },
+          {
+            "year": 1996,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 82.9,
+            "spring_rank": 11,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 71.76,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.51,
+            "gwetroot_window_mean": 0.51
+          },
+          {
+            "year": 1997,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 100.65,
+            "spring_rank": 17,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 82.42,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.5,
+            "gwetroot_window_mean": 0.65
+          },
+          {
+            "year": 1998,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 100.39,
+            "spring_rank": 15,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 105.43,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.52,
+            "gwetroot_window_mean": 0.74
+          },
+          {
+            "year": 1999,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 48.84,
+            "spring_rank": 5,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 97.49,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.46,
+            "gwetroot_window_mean": 0.46
+          },
+          {
+            "year": 2000,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 104.25,
+            "spring_rank": 18,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 84.98,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.53,
+            "gwetroot_window_mean": 0.68
+          },
+          {
+            "year": 2001,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 139.51,
+            "spring_rank": 34,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 69.03,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.49,
+            "gwetroot_window_mean": 0.53
+          },
+          {
+            "year": 2002,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 115.27,
+            "spring_rank": 26,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 131.77,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.43,
+            "gwetroot_window_mean": 0.55
+          },
+          {
+            "year": 2003,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 105.16,
+            "spring_rank": 20,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 136,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.67,
+            "gwetroot_window_mean": 0.55
+          },
+          {
+            "year": 2004,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 134.5,
+            "spring_rank": 30,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 128.45,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.63,
+            "gwetroot_window_mean": 0.48
+          },
+          {
+            "year": 2005,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 88.94,
+            "spring_rank": 12,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 105.23,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.69,
+            "gwetroot_window_mean": 0.47
+          },
+          {
+            "year": 2006,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 100.56,
+            "spring_rank": 16,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 116,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.66,
+            "gwetroot_window_mean": 0.62
+          },
+          {
+            "year": 2007,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 150.45,
+            "spring_rank": 42,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 94.1,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.5,
+            "gwetroot_window_mean": 0.65
+          },
+          {
+            "year": 2008,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 91.7,
+            "spring_rank": 14,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 133.02,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.59,
+            "gwetroot_window_mean": 0.67
+          },
+          {
+            "year": 2009,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 47.09,
+            "spring_rank": 3,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 106.78,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.46,
+            "gwetroot_window_mean": 0.59
+          },
+          {
+            "year": 2010,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 159.85,
+            "spring_rank": 45,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 101.55,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.56,
+            "gwetroot_window_mean": 0.64
+          },
+          {
+            "year": 2011,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 45.12,
+            "spring_rank": 2,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 72.5,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.48,
+            "gwetroot_window_mean": 0.62
+          },
+          {
+            "year": 2012,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 136.17,
+            "spring_rank": 31,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 126.44,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.65,
+            "gwetroot_window_mean": 0.61
+          },
+          {
+            "year": 2013,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 60.86,
+            "spring_rank": 9,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 107.37,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.41,
+            "gwetroot_window_mean": 0.65
+          },
+          {
+            "year": 2014,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 76.76,
+            "spring_rank": 10,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 61.39,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.44,
+            "gwetroot_window_mean": 0.66
+          },
+          {
+            "year": 2015,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 47.46,
+            "spring_rank": 4,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 146.11,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.63,
+            "gwetroot_window_mean": 0.5
+          },
+          {
+            "year": 2016,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 114.41,
+            "spring_rank": 25,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 66.02,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.61,
+            "gwetroot_window_mean": 0.5
+          },
+          {
+            "year": 2017,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 41.12,
+            "spring_rank": 1,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 123.41,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.46,
+            "gwetroot_window_mean": 0.56
+          },
+          {
+            "year": 2018,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 111.28,
+            "spring_rank": 22,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 81.12,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.42,
+            "gwetroot_window_mean": 0.57
+          },
+          {
+            "year": 2019,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 159.26,
+            "spring_rank": 44,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 70.25,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.48,
+            "gwetroot_window_mean": 0.66
+          },
+          {
+            "year": 2020,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 127.47,
+            "spring_rank": 27,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 144,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.4,
+            "gwetroot_window_mean": 0.48
+          },
+          {
+            "year": 2021,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 129.41,
+            "spring_rank": 28,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 113.67,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.49,
+            "gwetroot_window_mean": 0.67
+          },
+          {
+            "year": 2022,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 146.38,
+            "spring_rank": 39,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 84.59,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.66,
+            "gwetroot_window_mean": 0.62
+          },
+          {
+            "year": 2023,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 142.27,
+            "spring_rank": 38,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 97.06,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.66,
+            "gwetroot_window_mean": 0.69
+          },
+          {
+            "year": 2024,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 54.08,
+            "spring_rank": 7,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 148.44,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.55,
+            "gwetroot_window_mean": 0.55
+          },
+          {
+            "year": 2025,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 139.61,
+            "spring_rank": 36,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 78.54,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.69,
+            "gwetroot_window_mean": 0.46
+          }
+        ]
+      }
+    },
+    {
+      "field_id": "fld_2",
+      "name": "South L",
+      "area_ha": 138.85,
+      "area_ac": 343.09,
+      "centroid": {
+        "latitude": -33.91,
+        "longitude": -60.6
+      },
+      "cell_id": "lat-34.00_lon-60.625",
+      "job_status": "ready",
+      "capabilities": {
+        "weather": {
+          "status": "complete",
+          "job_status": "ready",
+          "cell_id": "lat-34.00_lon-60.625",
+          "origin": "nasa_measured"
+        },
+        "catalog": {
+          "status": "partial",
+          "origin": "ai_suggested",
+          "region_key": "AR-B",
+          "reason_text": "Suggestions found by AI research; check them with a local adviser."
+        },
+        "soil": {
+          "status": "complete",
+          "provider": "soilgrids",
+          "resolution_m": 250,
+          "origin": "dataset_estimate"
+        },
+        "live_weather": {
+          "status": "complete",
+          "provider": "open_meteo"
+        },
+        "drought": {
+          "status": "unavailable",
+          "provider": null,
+          "reason": "no_provider_for_region",
+          "reason_text": "No drought monitor is connected for this country."
+        },
+        "tools": {
+          "irrigation": "complete",
+          "fertilizer": "partial"
+        }
+      },
+      "result": {
+        "plan_id": "fld_2_plan",
+        "label": "Soybean, no cover, maize",
+        "status": "complete",
+        "reason": null,
+        "reason_text": null,
+        "dates_assumed": false,
+        "editable": [
+          "prev_harvest",
+          "next_plant",
+          "winter"
+        ],
+        "hemisphere": "south",
+        "season_label": "Off-season (May–Oct)",
+        "plan": {
+          "plan_id": "fld_2_plan",
+          "previous_crop_id": "soybean",
+          "next_crop_id": "maize",
+          "prev_harvest": "05-10",
+          "winter": {
+            "kind": "none"
+          },
+          "next_plant": "09-25",
+          "grower": {
+            "low_moisture_concern": null
+          }
+        },
+        "calendar": {
+          "reference_year": 2025,
+          "winter_days": 209,
+          "living_cover_days_planned": 0,
+          "days_without_planned_cover": 209,
+          "termination_gap_days": null,
+          "establishment": "inapplicable",
+          "spring_window": {
+            "start": "08-26",
+            "end": "09-24"
+          }
+        },
+        "winter": {
+          "status": "complete",
+          "season_label": "Off-season (May–Oct)",
+          "seasons": 45,
+          "eligible_seasons": 45,
+          "per_season_median": {
+            "rain_mm_outside_cover": 225.65,
+            "heavy_rain_days_outside_cover": 0
+          },
+          "segments": [
+            "no_planned_cover"
+          ]
+        },
+        "spring": {
+          "status": "complete",
+          "season_label": "30 days before planting",
+          "window_days": 30,
+          "cutoff_mm": 52.58,
+          "eligible_seasons": 45,
+          "dry_seasons": 9,
+          "dry_years": [
+            1986,
+            1992,
+            1993,
+            2004,
+            2008,
+            2010,
+            2011,
+            2018,
+            2020
+          ],
+          "median_total_mm": 84.86,
+          "shortcuts": {
+            "typical": 2001,
+            "dry": 1986,
+            "wet": 1983,
+            "basis": "own_window_baseline"
+          }
+        },
+        "thresholds": {
+          "heavy_rain": {
+            "value": 41.7,
+            "unit": "mm/day",
+            "method": "etccdi_r95p",
+            "status": "complete",
+            "reference_span": "1981-01-01..2010-12-31",
+            "origin": "calculation",
+            "location": {
+              "cell_id": "lat-34.00_lon-60.625"
+            }
+          },
+          "dry_spring": {
+            "09-25": {
+              "value": 52.58,
+              "unit": "mm",
+              "method": "bottom_20pct_order_statistic",
+              "status": "complete",
+              "origin": "calculation",
+              "location": {
+                "cell_id": "lat-34.00_lon-60.625"
+              }
+            }
+          }
+        },
+        "spring_checks": [],
+        "other_checks": [
+          {
+            "rule_id": "ar_b_ai_007",
+            "status": "manual_check",
+            "verdict": "manual_check",
+            "reason": "AI-found suggestion; check with a local adviser",
+            "text": "End the cover crop about three weeks before soybean planting so it can dry down.",
+            "print": false,
+            "origin": "source_checked",
+            "source": {
+              "title": "INTA cover crop guide (fixture)",
+              "url": "https://example.org/fixture/inta-cover-crops",
+              "locator": "p. 4"
+            }
+          },
+          {
+            "rule_id": "ar_b_ai_012",
+            "status": "unknown",
+            "verdict": "unknown",
+            "reason": "AI-found suggestion; quote not found on the cited page",
+            "text": "Soybean after maize is commonly planted from mid-November in this region.",
+            "print": false,
+            "origin": "ai_suggested",
+            "source": {
+              "title": "Regional extension note (fixture)",
+              "url": "https://example.org/fixture/soy-dates",
+              "locator": null
+            }
+          }
+        ],
+        "eras": {
+          "dry_spring": {
+            "indicator": "dry_spring",
+            "status": "complete",
+            "result": "similar",
+            "earlier": {
+              "start": 1981,
+              "end": 2000,
+              "seasons": 20,
+              "evaluable": 20,
+              "events": 3,
+              "pct": 15,
+              "not_evaluable": []
+            },
+            "recent": {
+              "start": 2006,
+              "end": 2025,
+              "seasons": 20,
+              "evaluable": 20,
+              "events": 5,
+              "pct": 25,
+              "not_evaluable": []
+            },
+            "diff_pp": 10,
+            "min_evaluable_per_era": 15,
+            "caveat": "Descriptive comparison of two periods only; not a trend, cause, or forecast."
+          }
+        },
+        "coverage": {
+          "available_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "seasons": [
+          {
+            "year": 1981,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 117.64,
+            "spring_rank": 28,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 244.85,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.45,
+            "gwetroot_window_mean": 0.49
+          },
+          {
+            "year": 1982,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 96.34,
+            "spring_rank": 26,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 212.08,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.67,
+            "gwetroot_window_mean": 0.45
+          },
+          {
+            "year": 1983,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 159.83,
+            "spring_rank": 45,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 221.14,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.58,
+            "gwetroot_window_mean": 0.75
+          },
+          {
+            "year": 1984,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 84.86,
+            "spring_rank": 23,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 190.09,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.41,
+            "gwetroot_window_mean": 0.45
+          },
+          {
+            "year": 1985,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 78.3,
+            "spring_rank": 22,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 191.09,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.6,
+            "gwetroot_window_mean": 0.48
+          },
+          {
+            "year": 1986,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 51.38,
+            "spring_rank": 8,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 256.01,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.46,
+            "gwetroot_window_mean": 0.72
+          },
+          {
+            "year": 1987,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 120.89,
+            "spring_rank": 32,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 193.24,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.48,
+            "gwetroot_window_mean": 0.69
+          },
+          {
+            "year": 1988,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 75.83,
+            "spring_rank": 21,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 228.18,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.65,
+            "gwetroot_window_mean": 0.63
+          },
+          {
+            "year": 1989,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 61.95,
+            "spring_rank": 13,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 197.72,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.53,
+            "gwetroot_window_mean": 0.5
+          },
+          {
+            "year": 1990,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 154.1,
+            "spring_rank": 41,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 190.19,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.61,
+            "gwetroot_window_mean": 0.48
+          },
+          {
+            "year": 1991,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 133.18,
+            "spring_rank": 36,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 223.52,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.67,
+            "gwetroot_window_mean": 0.57
+          },
+          {
+            "year": 1992,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 46.7,
+            "spring_rank": 5,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 217.66,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.51,
+            "gwetroot_window_mean": 0.59
+          },
+          {
+            "year": 1993,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 49.09,
+            "spring_rank": 6,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 267.42,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.45,
+            "gwetroot_window_mean": 0.45
+          },
+          {
+            "year": 1994,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 152.81,
+            "spring_rank": 39,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 201.38,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.46,
+            "gwetroot_window_mean": 0.59
+          },
+          {
+            "year": 1995,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 69.36,
+            "spring_rank": 16,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 236.89,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.68,
+            "gwetroot_window_mean": 0.59
+          },
+          {
+            "year": 1996,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 69.96,
+            "spring_rank": 17,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 203.57,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.53,
+            "gwetroot_window_mean": 0.61
+          },
+          {
+            "year": 1997,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 59.56,
+            "spring_rank": 10,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 217.69,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.54,
+            "gwetroot_window_mean": 0.69
+          },
+          {
+            "year": 1998,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 126.31,
+            "spring_rank": 34,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 234.56,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.58,
+            "gwetroot_window_mean": 0.71
+          },
+          {
+            "year": 1999,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 74.32,
+            "spring_rank": 20,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 225.65,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.5,
+            "gwetroot_window_mean": 0.68
+          },
+          {
+            "year": 2000,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 88.89,
+            "spring_rank": 24,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 206.09,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.6,
+            "gwetroot_window_mean": 0.65
+          },
+          {
+            "year": 2001,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 134.13,
+            "spring_rank": 37,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 220.16,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.53,
+            "gwetroot_window_mean": 0.51
+          },
+          {
+            "year": 2002,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 125.36,
+            "spring_rank": 33,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 266.41,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.52,
+            "gwetroot_window_mean": 0.51
+          },
+          {
+            "year": 2003,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 131.87,
+            "spring_rank": 35,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 249.62,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.61,
+            "gwetroot_window_mean": 0.48
+          },
+          {
+            "year": 2004,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 52.58,
+            "spring_rank": 9,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 261.28,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.64,
+            "gwetroot_window_mean": 0.61
+          },
+          {
+            "year": 2005,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 61.44,
+            "spring_rank": 12,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 193.89,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.54,
+            "gwetroot_window_mean": 0.6
+          },
+          {
+            "year": 2006,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 71.66,
+            "spring_rank": 19,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 197.99,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.59,
+            "gwetroot_window_mean": 0.57
+          },
+          {
+            "year": 2007,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 119.01,
+            "spring_rank": 31,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 243.98,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.46,
+            "gwetroot_window_mean": 0.52
+          },
+          {
+            "year": 2008,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 46.31,
+            "spring_rank": 4,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 215.6,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.55,
+            "gwetroot_window_mean": 0.51
+          },
+          {
+            "year": 2009,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 70.51,
+            "spring_rank": 18,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 263.56,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.46,
+            "gwetroot_window_mean": 0.72
+          },
+          {
+            "year": 2010,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 44.73,
+            "spring_rank": 2,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 257.37,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.53,
+            "gwetroot_window_mean": 0.61
+          },
+          {
+            "year": 2011,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 45.56,
+            "spring_rank": 3,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 195.8,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.66,
+            "gwetroot_window_mean": 0.71
+          },
+          {
+            "year": 2012,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 155.94,
+            "spring_rank": 42,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 236.98,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.46,
+            "gwetroot_window_mean": 0.74
+          },
+          {
+            "year": 2013,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 156.6,
+            "spring_rank": 43,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 212.88,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.57,
+            "gwetroot_window_mean": 0.59
+          },
+          {
+            "year": 2014,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 138.62,
+            "spring_rank": 38,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 211.22,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.55,
+            "gwetroot_window_mean": 0.72
+          },
+          {
+            "year": 2015,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 117.66,
+            "spring_rank": 29,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 241.63,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.51,
+            "gwetroot_window_mean": 0.59
+          },
+          {
+            "year": 2016,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 91.27,
+            "spring_rank": 25,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 258.18,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.48,
+            "gwetroot_window_mean": 0.55
+          },
+          {
+            "year": 2017,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 118.24,
+            "spring_rank": 30,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 256.44,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.65,
+            "gwetroot_window_mean": 0.73
+          },
+          {
+            "year": 2018,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 49.71,
+            "spring_rank": 7,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 255.93,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.45,
+            "gwetroot_window_mean": 0.55
+          },
+          {
+            "year": 2019,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 154.06,
+            "spring_rank": 40,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 230.48,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.6,
+            "gwetroot_window_mean": 0.63
+          },
+          {
+            "year": 2020,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 44.19,
+            "spring_rank": 1,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 201.32,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.45,
+            "gwetroot_window_mean": 0.54
+          },
+          {
+            "year": 2021,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 157.62,
+            "spring_rank": 44,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 230.78,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.53,
+            "gwetroot_window_mean": 0.66
+          },
+          {
+            "year": 2022,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 98.91,
+            "spring_rank": 27,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 262.03,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.53,
+            "gwetroot_window_mean": 0.48
+          },
+          {
+            "year": 2023,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 60,
+            "spring_rank": 11,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 211.08,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.64,
+            "gwetroot_window_mean": 0.74
+          },
+          {
+            "year": 2024,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 66.52,
+            "spring_rank": 14,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 258.17,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.67,
+            "gwetroot_window_mean": 0.54
+          },
+          {
+            "year": 2025,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 67.37,
+            "spring_rank": 15,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 231.64,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.5,
+            "gwetroot_window_mean": 0.51
+          }
+        ]
+      }
+    }
+  ],
+  "weather_cells": [
+    {
+      "cell_id": "lat-34.00_lon-60.625",
+      "field_ids": [
+        "fld_1",
+        "fld_2"
+      ],
+      "note": "These fields share one NASA weather series; differences between them come from their plans, not their weather."
+    }
+  ],
+  "totals": {
+    "area_ha": 241.72,
+    "area_ac": 597.3
+  }
+}

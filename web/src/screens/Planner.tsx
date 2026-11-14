@@ -71,7 +71,7 @@ export function Planner({
   const exportJson = () => {
     const payload = {
       exported_by: APP_NAME,
-      note: "Responses exactly as this page received them. Fieldback computes none of these values.",
+      note: "Responses exactly as this page received them. A.C.R.E computes none of these values.",
       origin: data.origin,
       place: { name: place.place.name, latitude: place.place.latitude, longitude: place.place.longitude, status: place.kind },
       view: { plan: state.card, winter: state.leg, spring: view.selectedYear?.year ?? null, rye_end: state.ryeEnd, priorities: state.priorities },
@@ -82,7 +82,7 @@ export function Planner({
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `fieldback-results-${data.compare.meta.request_id}.json`;
+    a.download = `acre-results-${data.compare.meta.request_id}.json`;
     a.click();
     URL.revokeObjectURL(a.href);
   };

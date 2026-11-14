@@ -6,11 +6,13 @@ import { Banner, Button } from "./ui/components";
 import { APP_NAME } from "./config";
 import { Landing } from "./site/Landing";
 import { AboutPage, EvidencePage, GrowersPage, ProductPage, ResourcesPage } from "./site/pages";
+import { Workspace } from "./screens/workspace/Workspace";
 
 /*
-  Routes (query `view`): the marketing site is the front door; `?view=app` is the planner.
-  A link that carries planner state in its hash (older shared links have no `view`) still
-  opens the planner, so nothing shared before the site existed breaks.
+  Routes (query `view`): the marketing site is the front door; `?view=app` opens the map
+  (find your farm, card D1); `?view=demo` is the Union County demo planner, loaded offline
+  from the saved record. A link that carries planner state in its hash (older shared links,
+  including `?view=app#s=…`) still opens the demo, so nothing shared before the map breaks.
 */
 export function App() {
   const view = new URLSearchParams(window.location.search).get("view");
@@ -24,7 +26,8 @@ export function App() {
   if (view === "resources") return <ResourcesPage />;
   if (view === "about") return <AboutPage />;
   const plannerHash = /(^|[#&])(s|pg|y|l|r|p|e|v|loc)=/.test(window.location.hash);
-  if (view === "app" || plannerHash) return <PlannerRoute />;
+  if (view === "demo" || plannerHash) return <PlannerRoute />;
+  if (view === "app") return <Workspace />;
   return <Landing />;
 }
 

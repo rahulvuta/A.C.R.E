@@ -1,0 +1,159 @@
+{
+  "_fixture": "Synthetic fixture built from docs/global/contract.md (Agent D). Not real backend output; geometry is invented.",
+  "meta": {
+    "plan_version": "fixture",
+    "catalog_version": "v3:fixture",
+    "snapshot_hash": "fixture-0000",
+    "request_id": "fx_profile_arb"
+  },
+  "region_key": "AR-B",
+  "status": "partial",
+  "research": {
+    "job_status": "ready",
+    "generated_at": "2026-11-14T10:00:00Z",
+    "model": "claude-sonnet-5-5"
+  },
+  "crops": [
+    {
+      "crop_id": "soybean",
+      "name": "Soybean",
+      "roles": [
+        "cash"
+      ],
+      "calendar": {
+        "plant": {
+          "start": "10-15",
+          "end": "12-31"
+        },
+        "harvest": {
+          "start": "03-15",
+          "end": "05-31"
+        },
+        "origin": "dataset_estimate",
+        "source": {
+          "title": "Sacks et al. 2010 crop calendar",
+          "url": "https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/"
+        }
+      }
+    },
+    {
+      "crop_id": "maize",
+      "name": "Maize",
+      "roles": [
+        "cash"
+      ],
+      "calendar": {
+        "plant": {
+          "start": "09-15",
+          "end": "12-15"
+        },
+        "harvest": {
+          "start": "03-01",
+          "end": "07-15"
+        },
+        "origin": "dataset_estimate",
+        "source": {
+          "title": "Sacks et al. 2010 crop calendar",
+          "url": "https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/"
+        }
+      }
+    },
+    {
+      "crop_id": "wheat",
+      "name": "Wheat",
+      "roles": [
+        "cash",
+        "winter_grain"
+      ],
+      "calendar": {
+        "plant": {
+          "start": "05-15",
+          "end": "07-15"
+        },
+        "harvest": {
+          "start": "11-15",
+          "end": "12-31"
+        },
+        "origin": "dataset_estimate",
+        "source": {
+          "title": "Sacks et al. 2010 crop calendar",
+          "url": "https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/"
+        }
+      }
+    }
+  ],
+  "cover_crops": [
+    {
+      "crop_id": "cereal_rye",
+      "name": "Cereal rye",
+      "origin": "ai_suggested",
+      "sources": []
+    },
+    {
+      "crop_id": "oats",
+      "name": "Oats",
+      "origin": "source_checked",
+      "sources": [
+        {
+          "title": "INTA cover crop guide (fixture)",
+          "url": "https://example.org/fixture/inta-cover-crops",
+          "locator": "p. 2"
+        }
+      ]
+    }
+  ],
+  "rotations": [
+    {
+      "label": "Maize → winter cover → soybean",
+      "origin": "source_checked",
+      "sources": [
+        {
+          "title": "INTA cover crop guide (fixture)",
+          "url": "https://example.org/fixture/inta-cover-crops",
+          "locator": "p. 3"
+        }
+      ]
+    },
+    {
+      "label": "Wheat / double-crop soybean",
+      "origin": "ai_suggested",
+      "sources": []
+    }
+  ],
+  "rules": [
+    {
+      "rule_id": "ar_b_ai_007",
+      "text": "End the cover crop about three weeks before soybean planting so it can dry down.",
+      "origin": "source_checked",
+      "evidence_quote": "terminar el cultivo de cobertura unas tres semanas antes de la siembra",
+      "source": {
+        "title": "INTA cover crop guide (fixture)",
+        "url": "https://example.org/fixture/inta-cover-crops",
+        "locator": "p. 4"
+      },
+      "conflicts_with": [
+        "ar_b_ai_009"
+      ],
+      "limitations": "Written for the core Pampas region; drier western areas may differ."
+    },
+    {
+      "rule_id": "ar_b_ai_009",
+      "text": "End the cover crop at least 45 days before soybean planting in dry years.",
+      "origin": "ai_suggested",
+      "evidence_quote": "al menos 45 días antes de la siembra en años secos",
+      "source": {
+        "title": "Regional extension note (fixture)",
+        "url": "https://example.org/fixture/soy-dates",
+        "locator": null
+      },
+      "conflicts_with": [
+        "ar_b_ai_007"
+      ],
+      "limitations": null
+    }
+  ],
+  "gaps": [
+    "No local source found for cover termination timing before soybean."
+  ],
+  "disclaimer": "AI-found suggestions to check with a local adviser; not verified advice."
+}

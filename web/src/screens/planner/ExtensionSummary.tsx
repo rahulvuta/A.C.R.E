@@ -19,7 +19,7 @@ import { Button } from "../../ui/components";
   plain text by copying them or opening an email draft. Printing shows what was typed and ticked.
 */
 
-const QUESTIONS_KEY = "fieldback.summary.questions";
+const QUESTIONS_KEY = "acre.summary.questions";
 const readQuestions = () => {
   try {
     return window.sessionStorage.getItem(QUESTIONS_KEY) ?? "";

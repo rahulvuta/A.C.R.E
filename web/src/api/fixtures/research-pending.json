@@ -1,0 +1,12 @@
+{
+  "_fixture": "Synthetic fixture built from docs/global/contract.md (Agent D). Not real backend output; geometry is invented.",
+  "meta": {
+    "plan_version": "fixture",
+    "catalog_version": "v3:fixture",
+    "snapshot_hash": "fixture-0000",
+    "request_id": "fx_research_pending"
+  },
+  "job_id": "rj_fixture_1",
+  "job_status": "pending",
+  "region_key": "AR-B"
+}

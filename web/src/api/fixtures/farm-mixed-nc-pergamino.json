@@ -1,0 +1,3178 @@
+{
+  "_fixture": "Synthetic fixture built from docs/global/contract.md (Agent D). Not real backend output; geometry is invented.",
+  "meta": {
+    "plan_version": "fixture",
+    "catalog_version": "v3:fixture",
+    "snapshot_hash": "fixture-0000",
+    "request_id": "fx_farm_mixed"
+  },
+  "status": "complete",
+  "fields": [
+    {
+      "field_id": "fld_nc",
+      "name": "Home place",
+      "area_ha": 69.04,
+      "area_ac": 170.61,
+      "centroid": {
+        "latitude": 34.98,
+        "longitude": -80.55
+      },
+      "cell_id": "lat35.00_lon-80.625",
+      "job_status": "ready",
+      "capabilities": {
+        "weather": {
+          "status": "complete",
+          "job_status": "ready",
+          "cell_id": "lat35.00_lon-80.625",
+          "origin": "nasa_measured"
+        },
+        "catalog": {
+          "status": "complete",
+          "origin": "verified_source",
+          "region_key": "US-NC",
+          "reason_text": null
+        },
+        "soil": {
+          "status": "complete",
+          "provider": "usda_sda",
+          "resolution_m": null,
+          "origin": "verified_source"
+        },
+        "live_weather": {
+          "status": "complete",
+          "provider": "nws"
+        },
+        "drought": {
+          "status": "complete",
+          "provider": "usdm"
+        },
+        "tools": {
+          "irrigation": "complete",
+          "fertilizer": "complete"
+        }
+      },
+      "result": {
+        "plan_id": "fld_nc_plan",
+        "label": "Cereal rye before corn",
+        "label_generated": false,
+        "status": "complete",
+        "reason": null,
+        "reason_text": null,
+        "rotation_id": "winter_cover",
+        "rotation_ids": [
+          "winter_cover"
+        ],
+        "leg": 2,
+        "dates_assumed": true,
+        "dates_basis": "assumed",
+        "editable": [
+          "prev_harvest",
+          "winter.seed",
+          "winter.terminate",
+          "next_plant"
+        ],
+        "plan": {
+          "plan_id": "fld_nc_plan",
+          "label": "Cereal rye before corn",
+          "previous_crop_id": "soybean",
+          "prev_harvest": "10-15",
+          "winter": {
+            "kind": "cover",
+            "crop_id": "cereal_rye",
+            "seed": "10-20",
+            "terminate": "04-05",
+            "plant": null,
+            "harvest": null
+          },
+          "next_crop_id": "field_corn",
+          "next_plant": "04-15",
+          "region": "NC Piedmont",
+          "production_system": null,
+          "grower": {
+            "low_moisture_concern": null,
+            "residue_report": null,
+            "observations": []
+          }
+        },
+        "calendar": {
+          "reference_year": 2025,
+          "winter_days": 182,
+          "living_cover_days_planned": 167,
+          "days_without_planned_cover": 15,
+          "termination_gap_days": 10,
+          "establishment": "uncertain",
+          "living_cover_kind": "cover_crop",
+          "spring_window": {
+            "start": "03-16",
+            "end": "04-14"
+          }
+        },
+        "winter": {
+          "status": "partial",
+          "seasons": 45,
+          "eligible_seasons": 44,
+          "per_season_median": {
+            "rain_mm_outside_cover": 35.015,
+            "heavy_rain_days_outside_cover": 0
+          },
+          "seasons_with_heavy_rain_outside_cover": 0,
+          "segments": [
+            "living_cover",
+            "before_establishment",
+            "after_termination",
+            "no_planned_cover"
+          ],
+          "reasons": [
+            "1 season(s) not complete: record_starts_after_window_start"
+          ],
+          "season_label": "Winter"
+        },
+        "spring": {
+          "status": "complete",
+          "window_days": 30,
+          "cutoff_mm": 53.51,
+          "eligible_seasons": 45,
+          "dry_seasons": 9,
+          "dry_years": [
+            1982,
+            1985,
+            1986,
+            1995,
+            1999,
+            2006,
+            2007,
+            2015,
+            2018
+          ],
+          "excluded_years": [],
+          "median_total_mm": 84.74,
+          "shortcuts": {
+            "typical": 1996,
+            "dry": 1995,
+            "wet": 2003,
+            "basis": "own_window_baseline"
+          },
+          "season_label": "30 days before planting"
+        },
+        "spring_checks": [
+          {
+            "check_id": "cr_tt_01",
+            "rule_ids": [
+              "cr_tt_01"
+            ],
+            "label": "Rule cr_tt_01 would have flagged this season",
+            "fires_when": "Small grain cover before corn; dry spring concern",
+            "optional": false,
+            "count": 0,
+            "denominator": 0,
+            "pct": null,
+            "qualifying_years": [],
+            "clear_years": [],
+            "skipped_years": [
+              {
+                "year": 1981,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 1982,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 1983,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 1984,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 1985,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 1986,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 1987,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 1988,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 1989,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 1990,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 1991,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 1992,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 1993,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 1994,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 1995,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 1996,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 1997,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 1998,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 1999,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2000,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2001,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2002,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2003,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2004,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2005,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2006,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2007,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2008,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2009,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2010,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2011,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2012,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2013,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2014,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2015,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2016,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2017,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2018,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2019,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2020,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2021,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2022,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2023,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2024,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              },
+              {
+                "year": 2025,
+                "status": "unknown",
+                "reason": "rule needs production system 'no-till'; the plan's system was not given"
+              }
+            ],
+            "source": {
+              "title": "Winter Annual Cover Crops (NC State Extension AG-439-58)",
+              "url": "https://content.ces.ncsu.edu/winter-annual-cover-crops",
+              "locator": "Small Grain Cover Crop Management, soil moisture discussion",
+              "verified_date": "2026-11-12"
+            }
+          }
+        ],
+        "other_checks": [
+          {
+            "rule_id": "cr_pw_01",
+            "status": "complete",
+            "verdict": "caution",
+            "flagged": true,
+            "reason": "seed date 2024-10-20 is outside 09-15 to 10-15",
+            "text": "Heads-up: your seeding date is outside the preferred window (Sep 15 to Oct 15).",
+            "print": true,
+            "conflict": false,
+            "conflicts_with": [],
+            "source": {
+              "title": "Winter Annual Cover Crops (NC State Extension AG-439-58)",
+              "url": "https://content.ces.ncsu.edu/winter-annual-cover-crops",
+              "locator": "Table 4",
+              "verified_date": "2026-11-12"
+            },
+            "reference": null,
+            "origin": "verified_source"
+          },
+          {
+            "rule_id": "cr_nut_01",
+            "status": "manual_check",
+            "verdict": "manual_check",
+            "flagged": false,
+            "reason": "qualitative rule: Corn 70 bu at 0 N vs 126 bu at 180 N after rye",
+            "text": "Ask your adviser about fertilizer when you set the nitrogen plan: rye reduced corn yields unless enough N fertilizer was applied (N immobilization).",
+            "print": false,
+            "conflict": false,
+            "conflicts_with": [],
+            "source": {
+              "title": "Winter Annual Cover Crops (NC State Extension AG-439-58)",
+              "url": "https://content.ces.ncsu.edu/winter-annual-cover-crops",
+              "locator": "Figure 2; Table 6",
+              "verified_date": "2026-11-12"
+            },
+            "reference": null,
+            "origin": "verified_source"
+          },
+          {
+            "rule_id": "cr_pw_02",
+            "status": "complete",
+            "verdict": "acceptable",
+            "flagged": false,
+            "reason": "seed date 2024-10-20 is inside 09-15 to 11-15",
+            "text": "No action needed: your seeding date is inside the window (Sep 15 to Nov 15).",
+            "print": false,
+            "conflict": false,
+            "conflicts_with": [],
+            "source": {
+              "title": "Winter Annual Cover Crops (NC State Extension AG-439-58)",
+              "url": "https://content.ces.ncsu.edu/winter-annual-cover-crops",
+              "locator": "Table 4; small grain paragraph",
+              "verified_date": "2026-11-12"
+            },
+            "reference": null,
+            "origin": "verified_source"
+          },
+          {
+            "rule_id": "cr_rc_01",
+            "status": "complete",
+            "verdict": "manual_check",
+            "flagged": false,
+            "reason": "seed date 2024-10-20 is inside 09-15 to 11-15",
+            "text": "No action needed: your seeding date is inside the window (Sep 15 to Nov 15).",
+            "print": false,
+            "conflict": false,
+            "conflicts_with": [],
+            "source": {
+              "title": "Winter Annual Cover Crops (NC State Extension AG-439-58)",
+              "url": "https://content.ces.ncsu.edu/winter-annual-cover-crops",
+              "locator": "Small grains and Table 4",
+              "verified_date": "2026-11-12"
+            },
+            "reference": null,
+            "origin": "verified_source"
+          },
+          {
+            "rule_id": "cr_soil_01",
+            "status": "manual_check",
+            "verdict": "manual_check",
+            "flagged": false,
+            "reason": "no evaluator for condition 'drainage_class'",
+            "text": "Ask your adviser about drainage: prefers light loams or sands; tolerant of poor drainage.",
+            "print": false,
+            "conflict": false,
+            "conflicts_with": [],
+            "source": {
+              "title": "Cereal Rye (SARE Managing Cover Crops Profitably 3rd ed.)",
+              "url": "https://www.sare.org/publications/managing-cover-crops-profitably/nonlegume-cover-crops/cereal-rye/",
+              "locator": "Establishment and Fieldwork",
+              "verified_date": "2026-11-12"
+            },
+            "reference": null,
+            "origin": "verified_source"
+          },
+          {
+            "rule_id": "cr_trait_01",
+            "status": "manual_check",
+            "verdict": "manual_check",
+            "flagged": false,
+            "reason": "published reference value 25-50 lb_N_per_acre; not measured on this field",
+            "text": "For reference, the guide gives 25 to 50 lb N/acre for the nitrogen the cover scavenges.",
+            "print": false,
+            "conflict": false,
+            "conflicts_with": [],
+            "source": {
+              "title": "Cereal Rye (SARE Managing Cover Crops Profitably 3rd ed.)",
+              "url": "https://www.sare.org/publications/managing-cover-crops-profitably/nonlegume-cover-crops/cereal-rye/",
+              "locator": "Nutrient catch crop",
+              "verified_date": "2026-11-12"
+            },
+            "reference": {
+              "kind": "published_reference",
+              "condition_key": "n_scavenged",
+              "operator": "between",
+              "value_min": 25,
+              "value_max": 50,
+              "unit": "lb_N_per_acre",
+              "value_text": "Up to 100 lb N/A",
+              "is_grower_target": false,
+              "source_url": "https://www.sare.org/publications/managing-cover-crops-profitably/nonlegume-cover-crops/cereal-rye/",
+              "verified_date": "2026-11-12"
+            },
+            "origin": "verified_source"
+          },
+          {
+            "rule_id": "cr_trait_02",
+            "status": "manual_check",
+            "verdict": "manual_check",
+            "flagged": false,
+            "reason": "qualitative rule: Maximum fall-winter erosion protection; suppresses large-seeded broadleaf weeds",
+            "text": "For reference: rapid growth gives erosion control; allelopathic residue aids weed control.",
+            "print": false,
+            "conflict": false,
+            "conflicts_with": [],
+            "source": {
+              "title": "Winter Annual Cover Crops (NC State Extension AG-439-58)",
+              "url": "https://content.ces.ncsu.edu/winter-annual-cover-crops",
+              "locator": "Erosion paragraph; weed control paragraph",
+              "verified_date": "2026-11-12"
+            },
+            "reference": null,
+            "origin": "verified_source"
+          },
+          {
+            "rule_id": "cr_wt_01",
+            "status": "manual_check",
+            "verdict": "manual_check",
+            "flagged": false,
+            "reason": "published reference value 34 degF; not measured on this field",
+            "text": "Check temperature at germination: the guide says at least 34 °F, before seeding.",
+            "print": false,
+            "conflict": false,
+            "conflicts_with": [],
+            "source": {
+              "title": "Cereal Rye (SARE Managing Cover Crops Profitably 3rd ed.)",
+              "url": "https://www.sare.org/publications/managing-cover-crops-profitably/nonlegume-cover-crops/cereal-rye/",
+              "locator": "Establishment and Fieldwork",
+              "verified_date": "2026-11-12"
+            },
+            "reference": {
+              "kind": "published_reference",
+              "condition_key": "germination_temperature_unspecified",
+              "operator": "gte",
+              "value_min": 34,
+              "value_max": null,
+              "unit": "degF",
+              "value_text": "Source does not specify soil vs air",
+              "is_grower_target": false,
+              "source_url": "https://www.sare.org/publications/managing-cover-crops-profitably/nonlegume-cover-crops/cereal-rye/",
+              "verified_date": "2026-11-12"
+            },
+            "origin": "verified_source"
+          },
+          {
+            "rule_id": "fc_nut_01",
+            "status": "manual_check",
+            "verdict": "manual_check",
+            "flagged": false,
+            "reason": "sourced reference N rate 120-160 lb_N_per_acre (Crop Fertilization Based on North Carolina Soil Tests; Circular No. 1; February 2014); it is not the grower's target: the target comes from the soil test",
+            "text": "For reference, the published nitrogen rate is 120 to 160 lb N/acre; your soil test sets your own target.",
+            "print": false,
+            "conflict": false,
+            "conflicts_with": [],
+            "source": {
+              "title": "Crop Fertilization Based on North Carolina Soil Tests; Circular No. 1; February 2014",
+              "url": "https://www.ncagr.gov/orange-book-soil-fertility/open",
+              "locator": "Table 2.3 p. 14: Corn, grain; p. 15 nitrogen-units footnote",
+              "verified_date": "2026-11-13"
+            },
+            "reference": {
+              "kind": "published_reference",
+              "condition_key": "n_rate",
+              "operator": "between",
+              "value_min": 120,
+              "value_max": 160,
+              "unit": "lb_N_per_acre",
+              "value_text": null,
+              "is_grower_target": false,
+              "source_url": "https://www.ncagr.gov/orange-book-soil-fertility/open",
+              "verified_date": "2026-11-13"
+            },
+            "origin": "verified_source"
+          },
+          {
+            "rule_id": "fc_nut_02",
+            "status": "unknown",
+            "verdict": "unknown",
+            "flagged": false,
+            "reason": "rule needs production system 'no-till into cover crop'; the plan's system was not given",
+            "text": "Add your production system (conventional, organic, no-till, ...) so we can tell whether this applies.",
+            "print": false,
+            "conflict": false,
+            "conflicts_with": [],
+            "source": {
+              "title": "Winter Annual Cover Crops (NC State Extension AG-439-58)",
+              "url": "https://content.ces.ncsu.edu/winter-annual-cover-crops",
+              "locator": "No-till planting section",
+              "verified_date": "2026-11-12"
+            },
+            "reference": null,
+            "origin": "verified_source"
+          },
+          {
+            "rule_id": "fc_pw_01",
+            "status": "unknown",
+            "verdict": "unknown",
+            "flagged": false,
+            "reason": "input 'soil_temp_f' is not available",
+            "text": "Enter your soil temperature (°F) so this can be checked: the guide says at least 55 °F; the sources disagree here (see fc_pw_02) and neither is chosen.",
+            "print": true,
+            "conflict": true,
+            "conflicts_with": [
+              "fc_pw_02"
+            ],
+            "source": {
+              "title": "How Late Can I Plant Corn? (NC State Extension)",
+              "url": "https://craven.ces.ncsu.edu/wp-content/uploads/2014/04/Planting-Corn-Late-in-2014-11.pdf",
+              "locator": "Page 1, paragraphs 1-2",
+              "verified_date": "2026-11-12"
+            },
+            "reference": null,
+            "origin": "verified_source"
+          },
+          {
+            "rule_id": "fc_pw_02",
+            "status": "unknown",
+            "verdict": "unknown",
+            "flagged": false,
+            "reason": "input 'soil_temp_f' is not available",
+            "text": "Enter your soil temperature (°F) so this can be checked: the guide warns about less than 50 °F (soil temperature below 50 F at planting); the sources disagree here (see fc_pw_01) and neither is chosen.",
+            "print": true,
+            "conflict": true,
+            "conflicts_with": [
+              "fc_pw_01"
+            ],
+            "source": {
+              "title": "What Are the Optimal Planting Conditions for Corn? (NC State Corn)",
+              "url": "https://corn.ces.ncsu.edu/news/what-are-the-optimal-planting-conditions-for-corn/",
+              "locator": "Item 1 Soil Temperature",
+              "verified_date": "2026-11-12"
+            },
+            "reference": null,
+            "origin": "verified_source"
+          },
+          {
+            "rule_id": "fc_pw_03",
+            "status": "unknown",
+            "verdict": "unknown",
+            "flagged": false,
+            "reason": "rule needs production system 'organic'; the plan's system was not given",
+            "text": "Add your production system (conventional, organic, no-till, ...) so we can tell whether this applies.",
+            "print": false,
+            "conflict": false,
+            "conflicts_with": [],
+            "source": {
+              "title": "Chapter 3: Crop Production Management - Corn (NC Organic Commodities Production Guide)",
+              "url": "https://content.ces.ncsu.edu/north-carolina-organic-commodities-production-guide/chapter-3-crop-production-management-corn",
+              "locator": "Planting date section",
+              "verified_date": "2026-11-12"
+            },
+            "reference": null,
+            "origin": "verified_source"
+          },
+          {
+            "rule_id": "fc_pw_04",
+            "status": "unknown",
+            "verdict": "unknown",
+            "flagged": false,
+            "reason": "rule needs production system 'organic'; the plan's system was not given",
+            "text": "Add your production system (conventional, organic, no-till, ...) so we can tell whether this applies.",
+            "print": false,
+            "conflict": false,
+            "conflicts_with": [],
+            "source": {
+              "title": "Chapter 3: Crop Production Management - Corn (NC Organic Commodities Production Guide)",
+              "url": "https://content.ces.ncsu.edu/north-carolina-organic-commodities-production-guide/chapter-3-crop-production-management-corn",
+              "locator": "Planting date section",
+              "verified_date": "2026-11-12"
+            },
+            "reference": null,
+            "origin": "verified_source"
+          },
+          {
+            "rule_id": "fc_pw_05",
+            "status": "unknown",
+            "verdict": "unknown",
+            "flagged": false,
+            "reason": "input 'gdd_after_planting_f' is not available",
+            "text": "Enter the warmth forecast after planting so this can be checked: the guide says 40 to 50 growing degree days over 4 days.",
+            "print": false,
+            "conflict": false,
+            "conflicts_with": [],
+            "source": {
+              "title": "Bertie Corn Planting Guidance April 10-15 2023 (NC State Extension)",
+              "url": "https://bertie.ces.ncsu.edu/news/2023-corn-planting-guidance-april-10-through-april-15/",
+              "locator": "GDU formula paragraph",
+              "verified_date": "2026-11-12"
+            },
+            "reference": null,
+            "origin": "verified_source"
+          },
+          {
+            "rule_id": "fc_pw_06",
+            "status": "manual_check",
+            "verdict": "manual_check",
+            "flagged": false,
+            "reason": "published reference value 1.5-2.5 in; not measured on this field",
+            "text": "Check seeding depth: the guide says 1.5 to 2.5 in, before planting.",
+            "print": false,
+            "conflict": false,
+            "conflicts_with": [],
+            "source": {
+              "title": "What Are the Optimal Planting Conditions for Corn? (NC State Corn)",
+              "url": "https://corn.ces.ncsu.edu/news/what-are-the-optimal-planting-conditions-for-corn/",
+              "locator": "Item 3 Planting Depth",
+              "verified_date": "2026-11-12"
+            },
+            "reference": {
+              "kind": "published_reference",
+              "condition_key": "seeding_depth",
+              "operator": "between",
+              "value_min": 1.5,
+              "value_max": 2.5,
+              "unit": "in",
+              "value_text": null,
+              "is_grower_target": false,
+              "source_url": "https://corn.ces.ncsu.edu/news/what-are-the-optimal-planting-conditions-for-corn/",
+              "verified_date": "2026-11-12"
+            },
+            "origin": "verified_source"
+          },
+          {
+            "rule_id": "fc_pw_07",
+            "status": "unknown",
+            "verdict": "unknown",
+            "flagged": false,
+            "reason": "rule needs production system 'late planting'; the plan's system was not given",
+            "text": "Add your production system (conventional, organic, no-till, ...) so we can tell whether this applies.",
+            "print": false,
+            "conflict": false,
+            "conflicts_with": [],
+            "source": {
+              "title": "Management for Late Planted Corn (NC State Corn)",
+              "url": "https://corn.ces.ncsu.edu/corn-production-information/management-for-late-planted-corn/",
+              "locator": "Paragraphs on Piedmont Research Station study",
+              "verified_date": "2026-11-12"
+            },
+            "reference": null,
+            "origin": "verified_source"
+          },
+          {
+            "rule_id": "fc_soil_01",
+            "status": "manual_check",
+            "verdict": "manual_check",
+            "flagged": false,
+            "reason": "published reference value 6 pH; not measured on this field",
+            "text": "Check soil pH: the guide's target is 6.0 (mineral soil class), before planting.",
+            "print": false,
+            "conflict": false,
+            "conflicts_with": [],
+            "source": {
+              "title": "Soil Acidity and Liming for Agricultural Soils (NC State Extension)",
+              "url": "https://content.ces.ncsu.edu/soil-acidity-and-liming-for-agricultural-soils",
+              "locator": "Table 2 Field crops",
+              "verified_date": "2026-11-12"
+            },
+            "reference": {
+              "kind": "published_reference",
+              "condition_key": "soil_ph_target",
+              "operator": "eq",
+              "value_min": 6,
+              "value_max": null,
+              "unit": "pH",
+              "value_text": "Mineral soils; 5.5 mineral-organic; 5.0 organic",
+              "is_grower_target": false,
+              "source_url": "https://content.ces.ncsu.edu/soil-acidity-and-liming-for-agricultural-soils",
+              "verified_date": "2026-11-12"
+            },
+            "origin": "verified_source"
+          },
+          {
+            "rule_id": "fc_wt_01",
+            "status": "unknown",
+            "verdict": "unknown",
+            "flagged": false,
+            "reason": "input 'forecast_precip_in' is not available",
+            "text": "Enter the rain forecast (inches) so this can be checked: the guide warns about more than 2 in over 7 days.",
+            "print": false,
+            "conflict": false,
+            "conflicts_with": [],
+            "source": {
+              "title": "Bertie Corn Planting Guidance April 10-15 2023 (NC State Extension)",
+              "url": "https://bertie.ces.ncsu.edu/news/2023-corn-planting-guidance-april-10-through-april-15/",
+              "locator": "Planting questions list item 2 paragraph",
+              "verified_date": "2026-11-12"
+            },
+            "reference": null,
+            "origin": "verified_source"
+          },
+          {
+            "rule_id": "fc_wt_02",
+            "status": "manual_check",
+            "verdict": "manual_check",
+            "flagged": false,
+            "reason": "no evaluator for condition 'seedbed_moisture'",
+            "text": "Ask your adviser about seedbed moisture before planting: too wet raises disease risk and reduces stands; too dry causes spotty emergence.",
+            "print": false,
+            "conflict": false,
+            "conflicts_with": [],
+            "source": {
+              "title": "What Are the Optimal Planting Conditions for Corn? (NC State Corn)",
+              "url": "https://corn.ces.ncsu.edu/news/what-are-the-optimal-planting-conditions-for-corn/",
+              "locator": "Item 2 Soil Moisture",
+              "verified_date": "2026-11-12"
+            },
+            "reference": null,
+            "origin": "verified_source"
+          }
+        ],
+        "conflicts": [
+          [
+            "fc_pw_01",
+            "fc_pw_02"
+          ]
+        ],
+        "path_notes": [],
+        "eras": {
+          "dry_spring": {
+            "indicator": "dry_spring",
+            "status": "complete",
+            "result": "similar",
+            "earlier": {
+              "start": 1981,
+              "end": 2000,
+              "seasons": 20,
+              "evaluable": 20,
+              "events": 5,
+              "pct": 25,
+              "not_evaluable": [],
+              "threshold_value": 53.51
+            },
+            "recent": {
+              "start": 2006,
+              "end": 2025,
+              "seasons": 20,
+              "evaluable": 20,
+              "events": 4,
+              "pct": 20,
+              "not_evaluable": [],
+              "threshold_value": 53.51
+            },
+            "diff_pp": -5,
+            "similarity_band_pp": 10,
+            "min_evaluable_per_era": 15,
+            "threshold_set_id": "0823af244148ab8e",
+            "thresholds": {
+              "spring_dry_mm@04-15": 53.51
+            },
+            "basis": "own_evaluable_seasons",
+            "excluded_from_eras": [
+              2001,
+              2002,
+              2003,
+              2004,
+              2005
+            ],
+            "caveat": "The share of seasons is similar in 1981-2000 and 2006-2025 (within 10 percentage points). Descriptive comparison of two periods only; not a trend, cause, or forecast."
+          },
+          "winter_heavy_rain_outside_cover": {
+            "indicator": "winter_heavy_rain_outside_cover",
+            "status": "complete",
+            "result": "similar",
+            "earlier": {
+              "start": 1981,
+              "end": 2000,
+              "seasons": 20,
+              "evaluable": 19,
+              "events": 0,
+              "pct": 0,
+              "not_evaluable": [
+                {
+                  "year": 1981,
+                  "reason": "record_starts_after_window_start"
+                }
+              ],
+              "threshold_value": 76.2
+            },
+            "recent": {
+              "start": 2006,
+              "end": 2025,
+              "seasons": 20,
+              "evaluable": 20,
+              "events": 0,
+              "pct": 0,
+              "not_evaluable": [],
+              "threshold_value": 76.2
+            },
+            "diff_pp": 0,
+            "similarity_band_pp": 10,
+            "min_evaluable_per_era": 15,
+            "threshold_set_id": "0823af244148ab8e",
+            "thresholds": {
+              "heavy_rain_mm": 76.2
+            },
+            "basis": "own_evaluable_seasons",
+            "excluded_from_eras": [
+              2001,
+              2002,
+              2003,
+              2004,
+              2005
+            ],
+            "caveat": "The share of seasons is similar in 1981-2000 and 2006-2025 (within 10 percentage points). Descriptive comparison of two periods only; not a trend, cause, or forecast."
+          },
+          "cr_tt_01": {
+            "indicator": "cr_tt_01",
+            "status": "insufficient_data",
+            "result": "insufficient_data",
+            "earlier": {
+              "start": 1981,
+              "end": 2000,
+              "seasons": 20,
+              "evaluable": 0,
+              "events": 0,
+              "pct": null,
+              "not_evaluable": [
+                {
+                  "year": 1981,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 1982,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 1983,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 1984,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 1985,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 1986,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 1987,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 1988,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 1989,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 1990,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 1991,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 1992,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 1993,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 1994,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 1995,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 1996,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 1997,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 1998,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 1999,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2000,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                }
+              ],
+              "threshold_value": 53.51
+            },
+            "recent": {
+              "start": 2006,
+              "end": 2025,
+              "seasons": 20,
+              "evaluable": 0,
+              "events": 0,
+              "pct": null,
+              "not_evaluable": [
+                {
+                  "year": 2006,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2007,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2008,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2009,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2010,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2011,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2012,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2013,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2014,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2015,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2016,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2017,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2018,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2019,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2020,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2021,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2022,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2023,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2024,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                },
+                {
+                  "year": 2025,
+                  "reason": "unknown: rule needs production system 'no-till'; the plan's system was not given"
+                }
+              ],
+              "threshold_value": 53.51
+            },
+            "diff_pp": null,
+            "similarity_band_pp": 10,
+            "min_evaluable_per_era": 15,
+            "threshold_set_id": "0823af244148ab8e",
+            "thresholds": {
+              "spring_dry_mm@04-15": 53.51
+            },
+            "basis": "own_evaluable_seasons",
+            "excluded_from_eras": [
+              2001,
+              2002,
+              2003,
+              2004,
+              2005
+            ],
+            "caveat": "At least 15 evaluable seasons are needed in each period; one or both periods have fewer, so no comparison is made."
+          }
+        },
+        "eras_shared_years": {
+          "dry_spring": {
+            "indicator": "dry_spring",
+            "status": "complete",
+            "result": "similar",
+            "earlier": {
+              "start": 1981,
+              "end": 2000,
+              "seasons": 20,
+              "evaluable": 20,
+              "events": 5,
+              "pct": 25,
+              "not_evaluable": [],
+              "threshold_value": 53.51
+            },
+            "recent": {
+              "start": 2006,
+              "end": 2025,
+              "seasons": 20,
+              "evaluable": 20,
+              "events": 4,
+              "pct": 20,
+              "not_evaluable": [],
+              "threshold_value": 53.51
+            },
+            "diff_pp": -5,
+            "similarity_band_pp": 10,
+            "min_evaluable_per_era": 15,
+            "threshold_set_id": "0823af244148ab8e",
+            "thresholds": {
+              "spring_dry_mm@04-15": 53.51
+            },
+            "basis": "shared_evaluable_seasons",
+            "excluded_from_eras": [
+              2001,
+              2002,
+              2003,
+              2004,
+              2005
+            ],
+            "caveat": "The share of seasons is similar in 1981-2000 and 2006-2025 (within 10 percentage points). Descriptive comparison of two periods only; not a trend, cause, or forecast."
+          },
+          "winter_heavy_rain_outside_cover": {
+            "indicator": "winter_heavy_rain_outside_cover",
+            "status": "complete",
+            "result": "similar",
+            "earlier": {
+              "start": 1981,
+              "end": 2000,
+              "seasons": 20,
+              "evaluable": 19,
+              "events": 0,
+              "pct": 0,
+              "not_evaluable": [
+                {
+                  "year": 1981,
+                  "reason": "not_evaluable_for_every_compared_plan"
+                }
+              ],
+              "threshold_value": 76.2
+            },
+            "recent": {
+              "start": 2006,
+              "end": 2025,
+              "seasons": 20,
+              "evaluable": 20,
+              "events": 0,
+              "pct": 0,
+              "not_evaluable": [],
+              "threshold_value": 76.2
+            },
+            "diff_pp": 0,
+            "similarity_band_pp": 10,
+            "min_evaluable_per_era": 15,
+            "threshold_set_id": "0823af244148ab8e",
+            "thresholds": {
+              "heavy_rain_mm": 76.2
+            },
+            "basis": "shared_evaluable_seasons",
+            "excluded_from_eras": [
+              2001,
+              2002,
+              2003,
+              2004,
+              2005
+            ],
+            "caveat": "The share of seasons is similar in 1981-2000 and 2006-2025 (within 10 percentage points). Descriptive comparison of two periods only; not a trend, cause, or forecast."
+          }
+        },
+        "seasons": [
+          {
+            "year": 1981,
+            "winter_status": "partial",
+            "spring_status": "complete",
+            "full_season_status": "partial",
+            "spring_total_mm": 67.62,
+            "spring_rank": 13,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": null,
+            "heavy_rain_days_outside_cover": null,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.637,
+            "gwettop_window_mean": 0.6567,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 1982,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 43.03,
+            "spring_rank": 7,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 30.47,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.8767,
+            "gwettop_window_mean": 0.8643,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 1983,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 211.51,
+            "spring_rank": 44,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 56.58,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.952,
+            "gwettop_window_mean": 0.9123,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 1984,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 145.89,
+            "spring_rank": 41,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 46.4,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.94,
+            "gwettop_window_mean": 0.9023,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 1985,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 39.62,
+            "spring_rank": 4,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 19.59,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.6767,
+            "gwettop_window_mean": 0.706,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 1986,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 31.52,
+            "spring_rank": 2,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 5.92,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.7087,
+            "gwettop_window_mean": 0.7383,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 1987,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 92.78,
+            "spring_rank": 24,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 8.28,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.9297,
+            "gwettop_window_mean": 0.8957,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 1988,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 71.05,
+            "spring_rank": 15,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 35.43,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.729,
+            "gwettop_window_mean": 0.7663,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 1989,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 138.3,
+            "spring_rank": 39,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 44.4,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.8177,
+            "gwettop_window_mean": 0.8363,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 1990,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 97.51,
+            "spring_rank": 30,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 46.6,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.8783,
+            "gwettop_window_mean": 0.869,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 1991,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 131.38,
+            "spring_rank": 38,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 63.7,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.929,
+            "gwettop_window_mean": 0.8957,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 1992,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 72.09,
+            "spring_rank": 16,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 10.55,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.7883,
+            "gwettop_window_mean": 0.813,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 1993,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 160.95,
+            "spring_rank": 43,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 52.92,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.982,
+            "gwettop_window_mean": 0.9373,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 1994,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 93.73,
+            "spring_rank": 25,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 19.77,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.819,
+            "gwettop_window_mean": 0.8347,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 1995,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 14.54,
+            "spring_rank": 1,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 9.4,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.8257,
+            "gwettop_window_mean": 0.8333,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 1996,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 84.74,
+            "spring_rank": 23,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 12.76,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.8753,
+            "gwettop_window_mean": 0.8667,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 1997,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 74.73,
+            "spring_rank": 18,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 36.39,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.815,
+            "gwettop_window_mean": 0.8297,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 1998,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 119.01,
+            "spring_rank": 35,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 78.91,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.9393,
+            "gwettop_window_mean": 0.9017,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 1999,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 41.26,
+            "spring_rank": 5,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 1.38,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.677,
+            "gwettop_window_mean": 0.7073,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2000,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 127.5,
+            "spring_rank": 36,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 45.35,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.6917,
+            "gwettop_window_mean": 0.7327,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2001,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 97.37,
+            "spring_rank": 29,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 3.2,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.6907,
+            "gwettop_window_mean": 0.733,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2002,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 76.38,
+            "spring_rank": 19,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 15.55,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.6753,
+            "gwettop_window_mean": 0.7133,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2003,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 246.11,
+            "spring_rank": 45,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 165.94,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.9453,
+            "gwettop_window_mean": 0.9133,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2004,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 68.25,
+            "spring_rank": 14,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 36.91,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.6183,
+            "gwettop_window_mean": 0.6313,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2005,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 158.26,
+            "spring_rank": 42,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 57,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.752,
+            "gwettop_window_mean": 0.7903,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2006,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 35.11,
+            "spring_rank": 3,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 3.84,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.6353,
+            "gwettop_window_mean": 0.651,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2007,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 45.11,
+            "spring_rank": 8,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 55.84,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.767,
+            "gwettop_window_mean": 0.7957,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2008,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 73.28,
+            "spring_rank": 17,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 34.6,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.7007,
+            "gwettop_window_mean": 0.7437,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2009,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 115.48,
+            "spring_rank": 34,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 58,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.7867,
+            "gwettop_window_mean": 0.815,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2010,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 60.25,
+            "spring_rank": 11,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 24.39,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.897,
+            "gwettop_window_mean": 0.8747,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2011,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 94.24,
+            "spring_rank": 26,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 32.28,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.6597,
+            "gwettop_window_mean": 0.6957,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2012,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 65.37,
+            "spring_rank": 12,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 56.34,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.645,
+            "gwettop_window_mean": 0.67,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2013,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 96,
+            "spring_rank": 27,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 28.72,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.7597,
+            "gwettop_window_mean": 0.7933,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2014,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 104.33,
+            "spring_rank": 32,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 48.66,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.8363,
+            "gwettop_window_mean": 0.8447,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2015,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 43.01,
+            "spring_rank": 6,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 26.35,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.7077,
+            "gwettop_window_mean": 0.746,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2016,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 53.74,
+            "spring_rank": 10,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 11.62,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.832,
+            "gwettop_window_mean": 0.839,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2017,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 80.09,
+            "spring_rank": 20,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 27.13,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.6223,
+            "gwettop_window_mean": 0.643,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2018,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 53.51,
+            "spring_rank": 9,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 19.01,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.6873,
+            "gwettop_window_mean": 0.7213,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2019,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 113.08,
+            "spring_rank": 33,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 92.05,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.925,
+            "gwettop_window_mean": 0.893,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2020,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 100.52,
+            "spring_rank": 31,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 90.8,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.8783,
+            "gwettop_window_mean": 0.867,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2021,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 96.05,
+            "spring_rank": 28,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 16.53,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.8517,
+            "gwettop_window_mean": 0.853,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2022,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 139.03,
+            "spring_rank": 40,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 75.58,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.6997,
+            "gwettop_window_mean": 0.742,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2023,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 130.84,
+            "spring_rank": 37,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 77.92,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.794,
+            "gwettop_window_mean": 0.82,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2024,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 81.19,
+            "spring_rank": 21,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 13.76,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.8383,
+            "gwettop_window_mean": 0.8453,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          },
+          {
+            "year": 2025,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 84.5,
+            "spring_rank": 22,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 45.02,
+            "heavy_rain_days_outside_cover": 0,
+            "termination_gap_days": 10,
+            "flagged_rule_ids": [],
+            "gwetroot_window_mean": 0.648,
+            "gwettop_window_mean": 0.673,
+            "wetness_status": "complete",
+            "wetness_label": "modeled"
+          }
+        ],
+        "residue_context": [
+          {
+            "kind": "cover_residue",
+            "note": "Terminated cover residue may remain after termination. Context only: it does not extend the living-cover interval.",
+            "changes_living_cover_indicator": false
+          }
+        ],
+        "double_crop": null,
+        "hemisphere": "north",
+        "season_label": "Winter",
+        "coverage": {
+          "available_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "thresholds": {
+          "heavy_rain": {
+            "name": "heavy_rain_mm",
+            "method": "fixed_published",
+            "value": 76.2,
+            "unit": "mm/day",
+            "parameters": {
+              "assumed": false,
+              "inclusive": true,
+              "comparison": "daily precip_mm >= value",
+              "depth_in": 3,
+              "reference_duration_h": 24,
+              "daily_value_basis": "NASA POWER PRECTOTCORR, time_standard=LST (solar day)",
+              "scope": "rainfall depth only; not erosion or soil loss"
+            },
+            "reference_span": "1981-01-01..2025-06-30",
+            "n_reference": 16252,
+            "status": "complete",
+            "note": "Applied to NASA POWER daily values, which are Local Solar Time days (time_standard=LST), not a rolling 24-hour window; a storm split across two solar days can fall below the value on each day. Rainfall-depth weather metric only: not erosion, runoff or soil loss. Zero-count winters are valid results.",
+            "source": {
+              "rule_id": "fc_v2_ref_very_heavy_rain",
+              "title": "North Carolina Climate Science Report: Plain Language Summary; March 2020",
+              "url": "https://files.nc.gov/ncdeq/climate-change/climate-scinece-report/NC-Climate-Science-Report_Plain_Language_Summary.pdf",
+              "locator": "PDF p. 4, precipitation discussion",
+              "verified_date": "2026-11-13"
+            },
+            "origin": "verified_source",
+            "location": {
+              "cell_id": "lat35.00_lon-80.625"
+            }
+          },
+          "dry_spring": {
+            "04-15": {
+              "name": "spring_dry_mm@04-15",
+              "method": "bottom_20pct_order_statistic",
+              "value": 53.51,
+              "unit": "mm",
+              "parameters": {
+                "fraction": 0.2,
+                "k": 9,
+                "tie_rule": "total <= cutoff counts as dry",
+                "window_days": 30,
+                "plant_md": "04-15",
+                "eligible_years": [
+                  1981,
+                  1982,
+                  1983,
+                  1984,
+                  1985,
+                  1986,
+                  1987,
+                  1988,
+                  1989,
+                  1990,
+                  1991,
+                  1992,
+                  1993,
+                  1994,
+                  1995,
+                  1996,
+                  1997,
+                  1998,
+                  1999,
+                  2000,
+                  2001,
+                  2002,
+                  2003,
+                  2004,
+                  2005,
+                  2006,
+                  2007,
+                  2008,
+                  2009,
+                  2010,
+                  2011,
+                  2012,
+                  2013,
+                  2014,
+                  2015,
+                  2016,
+                  2017,
+                  2018,
+                  2019,
+                  2020,
+                  2021,
+                  2022,
+                  2023,
+                  2024,
+                  2025
+                ],
+                "excluded_years": []
+              },
+              "reference_span": "1981..2025",
+              "n_reference": 45,
+              "status": "complete",
+              "note": null,
+              "source": null,
+              "origin": "calculation",
+              "location": {
+                "cell_id": "lat35.00_lon-80.625"
+              }
+            },
+            "05-12": {
+              "name": "spring_dry_mm@05-12",
+              "method": "bottom_20pct_order_statistic",
+              "value": 64.18,
+              "unit": "mm",
+              "parameters": {
+                "fraction": 0.2,
+                "k": 9,
+                "tie_rule": "total <= cutoff counts as dry",
+                "window_days": 30,
+                "plant_md": "05-12",
+                "eligible_years": [
+                  1981,
+                  1982,
+                  1983,
+                  1984,
+                  1985,
+                  1986,
+                  1987,
+                  1988,
+                  1989,
+                  1990,
+                  1991,
+                  1992,
+                  1993,
+                  1994,
+                  1995,
+                  1996,
+                  1997,
+                  1998,
+                  1999,
+                  2000,
+                  2001,
+                  2002,
+                  2003,
+                  2004,
+                  2005,
+                  2006,
+                  2007,
+                  2008,
+                  2009,
+                  2010,
+                  2011,
+                  2012,
+                  2013,
+                  2014,
+                  2015,
+                  2016,
+                  2017,
+                  2018,
+                  2019,
+                  2020,
+                  2021,
+                  2022,
+                  2023,
+                  2024,
+                  2025
+                ],
+                "excluded_years": []
+              },
+              "reference_span": "1981..2025",
+              "n_reference": 45,
+              "status": "complete",
+              "note": null,
+              "source": null,
+              "origin": "calculation",
+              "location": {
+                "cell_id": "lat35.00_lon-80.625"
+              }
+            },
+            "06-12": {
+              "name": "spring_dry_mm@06-12",
+              "method": "bottom_20pct_order_statistic",
+              "value": 58.06,
+              "unit": "mm",
+              "parameters": {
+                "fraction": 0.2,
+                "k": 9,
+                "tie_rule": "total <= cutoff counts as dry",
+                "window_days": 30,
+                "plant_md": "06-12",
+                "eligible_years": [
+                  1981,
+                  1982,
+                  1983,
+                  1984,
+                  1985,
+                  1986,
+                  1987,
+                  1988,
+                  1989,
+                  1990,
+                  1991,
+                  1992,
+                  1993,
+                  1994,
+                  1995,
+                  1996,
+                  1997,
+                  1998,
+                  1999,
+                  2000,
+                  2001,
+                  2002,
+                  2003,
+                  2004,
+                  2005,
+                  2006,
+                  2007,
+                  2008,
+                  2009,
+                  2010,
+                  2011,
+                  2012,
+                  2013,
+                  2014,
+                  2015,
+                  2016,
+                  2017,
+                  2018,
+                  2019,
+                  2020,
+                  2021,
+                  2022,
+                  2023,
+                  2024,
+                  2025
+                ],
+                "excluded_years": []
+              },
+              "reference_span": "1981..2025",
+              "n_reference": 45,
+              "status": "complete",
+              "note": null,
+              "source": null,
+              "origin": "calculation",
+              "location": {
+                "cell_id": "lat35.00_lon-80.625"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "field_id": "fld_1",
+      "name": "North 40",
+      "area_ha": 102.87,
+      "area_ac": 254.21,
+      "centroid": {
+        "latitude": -33.89,
+        "longitude": -60.58
+      },
+      "cell_id": "lat-34.00_lon-60.625",
+      "job_status": "ready",
+      "capabilities": {
+        "weather": {
+          "status": "complete",
+          "job_status": "ready",
+          "cell_id": "lat-34.00_lon-60.625",
+          "origin": "nasa_measured"
+        },
+        "catalog": {
+          "status": "partial",
+          "origin": "ai_suggested",
+          "region_key": "AR-B",
+          "reason_text": "Suggestions found by AI research; check them with a local adviser."
+        },
+        "soil": {
+          "status": "complete",
+          "provider": "soilgrids",
+          "resolution_m": 250,
+          "origin": "dataset_estimate"
+        },
+        "live_weather": {
+          "status": "complete",
+          "provider": "open_meteo"
+        },
+        "drought": {
+          "status": "unavailable",
+          "provider": null,
+          "reason": "no_provider_for_region",
+          "reason_text": "No drought monitor is connected for this country."
+        },
+        "tools": {
+          "irrigation": "complete",
+          "fertilizer": "partial"
+        }
+      },
+      "result": {
+        "plan_id": "fld_1_plan",
+        "label": "Maize, cereal rye cover, soybean",
+        "status": "complete",
+        "reason": null,
+        "reason_text": null,
+        "dates_assumed": false,
+        "editable": [
+          "prev_harvest",
+          "next_plant",
+          "winter"
+        ],
+        "hemisphere": "south",
+        "season_label": "Off-season (May–Oct)",
+        "plan": {
+          "plan_id": "fld_1_plan",
+          "previous_crop_id": "maize",
+          "next_crop_id": "soybean",
+          "prev_harvest": "04-20",
+          "winter": {
+            "kind": "cover",
+            "crop_id": "cereal_rye",
+            "seed": "05-01",
+            "terminate": "10-20"
+          },
+          "next_plant": "11-15",
+          "grower": {
+            "low_moisture_concern": null
+          }
+        },
+        "calendar": {
+          "reference_year": 2025,
+          "winter_days": 209,
+          "living_cover_days_planned": 172,
+          "days_without_planned_cover": 37,
+          "termination_gap_days": 26,
+          "establishment": "complete",
+          "spring_window": {
+            "start": "10-16",
+            "end": "11-14"
+          }
+        },
+        "winter": {
+          "status": "complete",
+          "season_label": "Off-season (May–Oct)",
+          "seasons": 45,
+          "eligible_seasons": 45,
+          "per_season_median": {
+            "rain_mm_outside_cover": 103.31,
+            "heavy_rain_days_outside_cover": 0
+          },
+          "segments": [
+            "fallow_before_cover",
+            "cover",
+            "gap_before_plant"
+          ]
+        },
+        "spring": {
+          "status": "complete",
+          "season_label": "30 days before planting",
+          "window_days": 30,
+          "cutoff_mm": 60.86,
+          "eligible_seasons": 45,
+          "dry_seasons": 9,
+          "dry_years": [
+            1988,
+            1989,
+            1999,
+            2009,
+            2011,
+            2013,
+            2015,
+            2017,
+            2024
+          ],
+          "median_total_mm": 112.46,
+          "shortcuts": {
+            "typical": 2001,
+            "dry": 1988,
+            "wet": 2010,
+            "basis": "own_window_baseline"
+          }
+        },
+        "thresholds": {
+          "heavy_rain": {
+            "value": 41.7,
+            "unit": "mm/day",
+            "method": "etccdi_r95p",
+            "status": "complete",
+            "reference_span": "1981-01-01..2010-12-31",
+            "origin": "calculation",
+            "location": {
+              "cell_id": "lat-34.00_lon-60.625"
+            }
+          },
+          "dry_spring": {
+            "11-15": {
+              "value": 60.86,
+              "unit": "mm",
+              "method": "bottom_20pct_order_statistic",
+              "status": "complete",
+              "origin": "calculation",
+              "location": {
+                "cell_id": "lat-34.00_lon-60.625"
+              }
+            }
+          }
+        },
+        "spring_checks": [],
+        "other_checks": [
+          {
+            "rule_id": "ar_b_ai_007",
+            "status": "manual_check",
+            "verdict": "manual_check",
+            "reason": "AI-found suggestion; check with a local adviser",
+            "text": "End the cover crop about three weeks before soybean planting so it can dry down.",
+            "print": false,
+            "origin": "source_checked",
+            "source": {
+              "title": "INTA cover crop guide (fixture)",
+              "url": "https://example.org/fixture/inta-cover-crops",
+              "locator": "p. 4"
+            }
+          },
+          {
+            "rule_id": "ar_b_ai_012",
+            "status": "unknown",
+            "verdict": "unknown",
+            "reason": "AI-found suggestion; quote not found on the cited page",
+            "text": "Soybean after maize is commonly planted from mid-November in this region.",
+            "print": false,
+            "origin": "ai_suggested",
+            "source": {
+              "title": "Regional extension note (fixture)",
+              "url": "https://example.org/fixture/soy-dates",
+              "locator": null
+            }
+          }
+        ],
+        "eras": {
+          "dry_spring": {
+            "indicator": "dry_spring",
+            "status": "complete",
+            "result": "more_frequent_recent",
+            "earlier": {
+              "start": 1981,
+              "end": 2000,
+              "seasons": 20,
+              "evaluable": 20,
+              "events": 3,
+              "pct": 15,
+              "not_evaluable": []
+            },
+            "recent": {
+              "start": 2006,
+              "end": 2025,
+              "seasons": 20,
+              "evaluable": 20,
+              "events": 6,
+              "pct": 30,
+              "not_evaluable": []
+            },
+            "diff_pp": 15,
+            "min_evaluable_per_era": 15,
+            "caveat": "Descriptive comparison of two periods only; not a trend, cause, or forecast."
+          }
+        },
+        "coverage": {
+          "available_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        },
+        "seasons": [
+          {
+            "year": 1981,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 131.39,
+            "spring_rank": 29,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 79.76,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.66,
+            "gwetroot_window_mean": 0.48
+          },
+          {
+            "year": 1982,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 139.56,
+            "spring_rank": 35,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 99.14,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.69,
+            "gwetroot_window_mean": 0.52
+          },
+          {
+            "year": 1983,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 150.31,
+            "spring_rank": 41,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 76.15,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.52,
+            "gwetroot_window_mean": 0.65
+          },
+          {
+            "year": 1984,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 140.78,
+            "spring_rank": 37,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 138.44,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.52,
+            "gwetroot_window_mean": 0.72
+          },
+          {
+            "year": 1985,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 137.12,
+            "spring_rank": 32,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 103.15,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.59,
+            "gwetroot_window_mean": 0.52
+          },
+          {
+            "year": 1986,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 158.08,
+            "spring_rank": 43,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 110.96,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.63,
+            "gwetroot_window_mean": 0.48
+          },
+          {
+            "year": 1987,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 104.75,
+            "spring_rank": 19,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 84.7,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.49,
+            "gwetroot_window_mean": 0.67
+          },
+          {
+            "year": 1988,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 52.54,
+            "spring_rank": 6,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 142.05,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.67,
+            "gwetroot_window_mean": 0.65
+          },
+          {
+            "year": 1989,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 54.39,
+            "spring_rank": 8,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 117.91,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.4,
+            "gwetroot_window_mean": 0.55
+          },
+          {
+            "year": 1990,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 112.46,
+            "spring_rank": 23,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 118.19,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.52,
+            "gwetroot_window_mean": 0.5
+          },
+          {
+            "year": 1991,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 112.7,
+            "spring_rank": 24,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 103.31,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.5,
+            "gwetroot_window_mean": 0.62
+          },
+          {
+            "year": 1992,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 138.72,
+            "spring_rank": 33,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 76.85,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.46,
+            "gwetroot_window_mean": 0.75
+          },
+          {
+            "year": 1993,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 149.57,
+            "spring_rank": 40,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 116.21,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.43,
+            "gwetroot_window_mean": 0.51
+          },
+          {
+            "year": 1994,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 109.78,
+            "spring_rank": 21,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 115.65,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.56,
+            "gwetroot_window_mean": 0.64
+          },
+          {
+            "year": 1995,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 91.29,
+            "spring_rank": 13,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 70.18,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.44,
+            "gwetroot_window_mean": 0.61
+          },
+          {
+            "year": 1996,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 82.9,
+            "spring_rank": 11,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 71.76,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.51,
+            "gwetroot_window_mean": 0.51
+          },
+          {
+            "year": 1997,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 100.65,
+            "spring_rank": 17,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 82.42,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.5,
+            "gwetroot_window_mean": 0.65
+          },
+          {
+            "year": 1998,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 100.39,
+            "spring_rank": 15,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 105.43,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.52,
+            "gwetroot_window_mean": 0.74
+          },
+          {
+            "year": 1999,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 48.84,
+            "spring_rank": 5,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 97.49,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.46,
+            "gwetroot_window_mean": 0.46
+          },
+          {
+            "year": 2000,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 104.25,
+            "spring_rank": 18,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 84.98,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.53,
+            "gwetroot_window_mean": 0.68
+          },
+          {
+            "year": 2001,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 139.51,
+            "spring_rank": 34,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 69.03,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.49,
+            "gwetroot_window_mean": 0.53
+          },
+          {
+            "year": 2002,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 115.27,
+            "spring_rank": 26,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 131.77,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.43,
+            "gwetroot_window_mean": 0.55
+          },
+          {
+            "year": 2003,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 105.16,
+            "spring_rank": 20,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 136,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.67,
+            "gwetroot_window_mean": 0.55
+          },
+          {
+            "year": 2004,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 134.5,
+            "spring_rank": 30,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 128.45,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.63,
+            "gwetroot_window_mean": 0.48
+          },
+          {
+            "year": 2005,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 88.94,
+            "spring_rank": 12,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 105.23,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.69,
+            "gwetroot_window_mean": 0.47
+          },
+          {
+            "year": 2006,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 100.56,
+            "spring_rank": 16,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 116,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.66,
+            "gwetroot_window_mean": 0.62
+          },
+          {
+            "year": 2007,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 150.45,
+            "spring_rank": 42,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 94.1,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.5,
+            "gwetroot_window_mean": 0.65
+          },
+          {
+            "year": 2008,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 91.7,
+            "spring_rank": 14,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 133.02,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.59,
+            "gwetroot_window_mean": 0.67
+          },
+          {
+            "year": 2009,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 47.09,
+            "spring_rank": 3,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 106.78,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.46,
+            "gwetroot_window_mean": 0.59
+          },
+          {
+            "year": 2010,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 159.85,
+            "spring_rank": 45,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 101.55,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.56,
+            "gwetroot_window_mean": 0.64
+          },
+          {
+            "year": 2011,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 45.12,
+            "spring_rank": 2,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 72.5,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.48,
+            "gwetroot_window_mean": 0.62
+          },
+          {
+            "year": 2012,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 136.17,
+            "spring_rank": 31,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 126.44,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.65,
+            "gwetroot_window_mean": 0.61
+          },
+          {
+            "year": 2013,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 60.86,
+            "spring_rank": 9,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 107.37,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.41,
+            "gwetroot_window_mean": 0.65
+          },
+          {
+            "year": 2014,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 76.76,
+            "spring_rank": 10,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 61.39,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.44,
+            "gwetroot_window_mean": 0.66
+          },
+          {
+            "year": 2015,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 47.46,
+            "spring_rank": 4,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 146.11,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.63,
+            "gwetroot_window_mean": 0.5
+          },
+          {
+            "year": 2016,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 114.41,
+            "spring_rank": 25,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 66.02,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.61,
+            "gwetroot_window_mean": 0.5
+          },
+          {
+            "year": 2017,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 41.12,
+            "spring_rank": 1,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 123.41,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.46,
+            "gwetroot_window_mean": 0.56
+          },
+          {
+            "year": 2018,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 111.28,
+            "spring_rank": 22,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 81.12,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.42,
+            "gwetroot_window_mean": 0.57
+          },
+          {
+            "year": 2019,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 159.26,
+            "spring_rank": 44,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 70.25,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.48,
+            "gwetroot_window_mean": 0.66
+          },
+          {
+            "year": 2020,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 127.47,
+            "spring_rank": 27,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 144,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.4,
+            "gwetroot_window_mean": 0.48
+          },
+          {
+            "year": 2021,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 129.41,
+            "spring_rank": 28,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 113.67,
+            "heavy_rain_days_outside_cover": 1,
+            "gwettop_window_mean": 0.49,
+            "gwetroot_window_mean": 0.67
+          },
+          {
+            "year": 2022,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 146.38,
+            "spring_rank": 39,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 84.59,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.66,
+            "gwetroot_window_mean": 0.62
+          },
+          {
+            "year": 2023,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 142.27,
+            "spring_rank": 38,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 97.06,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.66,
+            "gwetroot_window_mean": 0.69
+          },
+          {
+            "year": 2024,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 54.08,
+            "spring_rank": 7,
+            "spring_is_dry": true,
+            "rain_outside_cover_mm": 148.44,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.55,
+            "gwetroot_window_mean": 0.55
+          },
+          {
+            "year": 2025,
+            "winter_status": "complete",
+            "spring_status": "complete",
+            "full_season_status": "complete",
+            "spring_total_mm": 139.61,
+            "spring_rank": 36,
+            "spring_is_dry": false,
+            "rain_outside_cover_mm": 78.54,
+            "heavy_rain_days_outside_cover": 0,
+            "gwettop_window_mean": 0.69,
+            "gwetroot_window_mean": 0.46
+          }
+        ]
+      }
+    }
+  ],
+  "weather_cells": [
+    {
+      "cell_id": "lat35.00_lon-80.625",
+      "field_ids": [
+        "fld_nc"
+      ],
+      "note": "These fields share one NASA weather series; differences between them come from their plans, not their weather."
+    },
+    {
+      "cell_id": "lat-34.00_lon-60.625",
+      "field_ids": [
+        "fld_1"
+      ],
+      "note": "These fields share one NASA weather series; differences between them come from their plans, not their weather."
+    }
+  ],
+  "totals": {
+    "area_ha": 171.91,
+    "area_ac": 424.82
+  }
+}

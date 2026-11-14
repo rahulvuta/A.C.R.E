@@ -1,0 +1,44 @@
+{
+  "_fixture": "Synthetic fixture built from docs/global/contract.md (Agent D). Not real backend output; geometry is invented.",
+  "meta": {
+    "plan_version": "fixture",
+    "catalog_version": "v3:fixture",
+    "snapshot_hash": "fixture-0000",
+    "request_id": "fx_cap_perg"
+  },
+  "region_key": "AR-B",
+  "features": {
+    "weather": {
+      "status": "complete",
+      "job_status": "ready",
+      "cell_id": "lat-34.00_lon-60.625",
+      "origin": "nasa_measured"
+    },
+    "catalog": {
+      "status": "partial",
+      "origin": "ai_suggested",
+      "region_key": "AR-B",
+      "reason_text": "Suggestions found by AI research; check them with a local adviser."
+    },
+    "soil": {
+      "status": "complete",
+      "provider": "soilgrids",
+      "resolution_m": 250,
+      "origin": "dataset_estimate"
+    },
+    "live_weather": {
+      "status": "complete",
+      "provider": "open_meteo"
+    },
+    "drought": {
+      "status": "unavailable",
+      "provider": null,
+      "reason": "no_provider_for_region",
+      "reason_text": "No drought monitor is connected for this country."
+    },
+    "tools": {
+      "irrigation": "complete",
+      "fertilizer": "partial"
+    }
+  }
+}

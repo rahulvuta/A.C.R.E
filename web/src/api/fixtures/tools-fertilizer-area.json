@@ -1,0 +1,21 @@
+{
+  "_fixture": "Synthetic fixture built from docs/global/contract.md (Agent D). Not real backend output; geometry is invented.",
+  "meta": {
+    "plan_version": "fixture",
+    "catalog_version": "v3:fixture",
+    "snapshot_hash": "fixture-0000",
+    "request_id": "fx_tools_fert"
+  },
+  "status": "complete",
+  "units": "metric",
+  "per_area": {
+    "value": 134.5,
+    "unit": "kg N/ha",
+    "origin": "calculation"
+  },
+  "field_total": {
+    "value": 1345,
+    "unit": "kg N",
+    "origin": "calculation"
+  }
+}
