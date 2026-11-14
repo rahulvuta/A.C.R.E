@@ -692,14 +692,19 @@ const BackendField = z
     centroid: BackendPoint.nullable().optional(),
     cell_id: str,
     job_status: str,
+    status: LooseStatus,
+    reason_text: str,
+    scope: str,
     poll: str,
     capabilities: z.record(z.unknown()).nullable().optional(),
     result: z.unknown().optional(),
   })
   .passthrough();
+/** Global responses: a farm or plan can span several snapshots, so `snapshot_hash` may be null. */
+const GlobalMeta = z.object({ request_id: z.string().default(""), snapshot_hash: z.string().nullable().optional() }).passthrough();
 export const BackendFarmAnalysis = z
   .object({
-    meta: Meta,
+    meta: GlobalMeta,
     status: LooseStatus,
     fields: z.array(BackendField).default([]),
     weather_cells: z.array(z.object({ cell_id: z.string(), field_ids: z.array(z.string()), note: z.string().optional() }).passthrough()).default([]),
@@ -755,6 +760,9 @@ export function adaptFarmAnalysis(r: z.infer<typeof BackendFarmAnalysis>): FarmA
       centroid: f.centroid ? { latitude: f.centroid.latitude, longitude: f.centroid.longitude } : null,
       cellId: nn(f.cell_id),
       jobStatus: asJob(f.job_status, f.result ? "ready" : "pending"),
+      status: asStatus(f.status),
+      reasonText: nn(f.reason_text),
+      scope: nn(f.scope),
       poll: nn(f.poll),
       capabilities: f.capabilities ? features(f.capabilities) : null,
       result: fieldResult(f.result),
@@ -896,7 +904,7 @@ const BackendCandidate = z
   })
   .passthrough();
 export const BackendGeneration = z
-  .object({ meta: Meta.optional(), status: LooseStatus, reason_text: str, region_key: str, candidates: z.array(BackendCandidate).default([]), generation_log: BackendLog, gaps: z.array(z.string()).default([]) })
+  .object({ meta: GlobalMeta.optional(), status: LooseStatus, reason_text: str, region_key: str, candidates: z.array(BackendCandidate).default([]), generation_log: BackendLog, gaps: z.array(z.string()).default([]) })
   .passthrough();
 export function adaptGeneration(r: z.infer<typeof BackendGeneration>): Generation {
   return {
@@ -969,7 +977,7 @@ const BackendOption = z
   .passthrough();
 export const BackendRecommendation = z
   .object({
-    meta: Meta.optional(),
+    meta: GlobalMeta.optional(),
     status: LooseStatus,
     result_id: str,
     hemisphere: z.enum(["north", "south"]).nullable().optional(),
@@ -1068,7 +1076,7 @@ const BackendFutureSeason = z
   .passthrough();
 export const BackendFuture = z
   .object({
-    meta: Meta.optional(),
+    meta: GlobalMeta.optional(),
     status: LooseStatus,
     start_season: z.union([z.string(), z.number()]).nullable().optional(),
     seasons: z.array(BackendFutureSeason).default([]),

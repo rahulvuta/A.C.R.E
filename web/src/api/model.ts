@@ -162,6 +162,11 @@ export interface FieldAnalysis {
   centroid: LatLon | null;
   cellId: string | null;
   jobStatus: JobStatus;
+  /** The field's own status and reason (e.g. no weather yet), from the backend. */
+  status: Status;
+  reasonText: string | null;
+  /** `nc` (NC rules apply) or `global`. */
+  scope: string | null;
   poll: string | null;
   capabilities: Capability[] | null;
   result: FieldPlanResult | null;
