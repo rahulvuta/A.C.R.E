@@ -150,3 +150,46 @@ Fields added to compare output (A2):
 ## 7. Tools with area (B4)
 
 `POST /v1/tools/fertilizer` and `POST /v1/tools/irrigation` accept an optional `area_ha` or `field_id` plus `farm`. They add `field_total {value, unit, origin: calculation}` and `units: "us|metric"`.
+
+## 8. Goals, constraints, generation (P1)
+
+`POST /v1/plans/generate`:
+```json
+{"location": {"latitude": 34.98, "longitude": -80.55},
+ "field": {"field_id": "fld_1", "area_ha": 40.0, "crop_history": ["field_corn"], "soil": null},
+ "goals": {"priorities": {"soil_cover": 3, "water_conservation": 2, "weather_resilience": 1, "crop_diversity": 0,
+                          "living_cover_duration": 2, "management_simplicity": 1},
+           "constraints": {"allowed_crops": null, "excluded_crops": ["winter_wheat"], "must_include": [],
+                           "irrigation": "unknown", "equipment": ["no_roller_crimper"],
+                           "latest_planting": "06-15", "earliest_harvest": null, "seasons": 2},
+           "preferences": {"liked_crops": ["soybean"], "disliked_crops": []}}}
+```
+→ `{meta, status, candidates: [Plan + {candidate_id, seasons[], origins, checks_summary}], generation_log: [{rule|constraint, pruned, reason_text}], gaps: []}`
+
+## 9. Recommendation (P2)
+
+`POST /v1/plans/recommend`: the same body as §8 plus an optional `candidates` (farmer-edited), giving:
+
+```json
+{"meta": {}, "status": "complete",
+ "method": {"shortlist": "pareto_non_dominated", "ordering": "weighted_rank_positions",
+            "indicators_used": ["rain_on_bare_soil_mm", "living_cover_days", "dry_pre_plant_frequency"],
+            "note": "Not universally optimal: depends on these priorities and this weather history."},
+ "shortlist": [{"candidate_id": "c3", "plan": {},
+   "indicators": {"rain_on_bare_soil_mm": {"value": 78.0, "unit": "mm", "direction": "lower_better", "origin": "calculation",
+                                           "definition": "…", "source": {"title": "…", "url": "…"}}},
+   "wins": ["rain_on_bare_soil_mm", "living_cover_days"], "loses": ["dry_pre_plant_frequency"],
+   "why": [{"text": "…", "indicator": "rain_on_bare_soil_mm", "audit_id": "…"}],
+   "trade_offs": [{"text": "…", "versus": "c1"}],
+   "uncertainties": [{"text": "…", "origin": "nasa_modeled"}],
+   "historical_vulnerabilities": [{"year": "2007", "indicator": "dry_pre_plant_frequency", "text": "…", "replay": "/v1/seasons/2007/replay?plan=…"}]}],
+ "not_comparable": [{"candidate_id": "c9", "status": "partial", "missing": ["modeled_root_zone_wetness_at_planting"]}],
+ "dominated": [{"candidate_id": "c2", "dominated_by": ["c3"]}]}
+```
+There is no score field anywhere.
+
+## 10. Future farm plan (P3)
+
+`POST /v1/plans/future` with body `{location, plan | candidate, start_season: "2027", seasons: 2, edits?: [{field, value}]}` gives:
+
+`{meta, status, seasons: [{season: "2027", windows: [{kind, start, end, origin, source?}], cover_schedule, milestones: [{date, label, origin}], decision_deadlines: [{date, decision, switch_condition, next_check_date}], warnings: [], historical_vulnerabilities: [], backup: {}}], diff?: {changes: []}, recommendation_refresh?: {}}`
