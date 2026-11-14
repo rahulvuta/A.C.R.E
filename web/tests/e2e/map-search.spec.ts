@@ -82,20 +82,54 @@ test("a failed search says so", async ({ page }) => {
 });
 
 test("a map click wins over a slower search still in flight", async ({ page }) => {
-  await page.unroute("http://api.test/**");
+  // Registered after the default mocks from beforeEach: the newest route answers first, so
+  // this is the one the search request reaches, and it holds the answer until released.
   let release!: () => void;
+  let held = 0;
   const gate = new Promise<void>((r) => (release = r));
   await page.route("http://api.test/v1/geo/search**", async (route) => {
+    held++;
     await gate;
-    await route.fulfill({ contentType: "application/json", body: JSON.stringify(fixture("geo-search-coordinates")), headers: { "access-control-allow-origin": "*" } });
+    // By now the page has dropped the request, so there may be nothing left to answer.
+    await route
+      .fulfill({ contentType: "application/json", body: JSON.stringify(fixture("geo-search-coordinates")), headers: { "access-control-allow-origin": "*" } })
+      .catch(() => undefined);
   });
-  await mockApi(page, geoHandlers);
+  const asked = page.waitForRequest((r) => r.url().includes("/v1/geo/search"));
+  const dropped = page.waitForEvent("requestfailed", (r) => r.url().includes("/v1/geo/search"));
+
   await page.getByLabel("Find your farm").fill("35.1, -80.5");
   await page.getByLabel("Find your farm").press("Enter");
+  await asked; // the search has left the browser and is being held
+  expect(held).toBe(1);
+
   await page.locator(".mp-map canvas").click({ position: { x: 300, y: 300 } });
+  await expect(page.getByRole("img", { name: "Picked point" })).toBeVisible();
   const clicked = await page.locator(".mp-pin").boundingBox();
+  const centre = await mapCenter(page);
+  await dropped; // the click cancelled the search that was still out
+
   release();
   await page.waitForTimeout(800);
-  // The late coordinate answer did not move the pin or the map.
+  // The late coordinate answer did not move the pin, the map or the list.
   expect(await page.locator(".mp-pin").boundingBox()).toEqual(clicked);
+  expect(await mapCenter(page)).toEqual(centre);
+  await expect(page.getByRole("list", { name: "Search results" })).toHaveCount(0);
+});
+
+test("a click on a repeated copy of the world asks about a real longitude", async ({ page }) => {
+  // Zoomed out near the date line, the map draws the world more than once.
+  await page.evaluate(() => (window as unknown as { __map: { jumpTo: (o: object) => void } }).__map.jumpTo({ center: [179, 0], zoom: 1 }));
+  await expect.poll(async () => (await mapCenter(page))[1]).toBeCloseTo(179, 0);
+  const box = (await page.locator(".mp-map canvas").boundingBox())!;
+  const reverse = page.waitForRequest((r) => r.url().includes("/v1/geo/reverse"));
+  // At zoom 1 the world is 1024 px wide, so 300 px right of centre is about 105 degrees further
+  // east: 284 degrees on the copy, which is 76 degrees west on the real one.
+  await page.locator(".mp-map canvas").click({ position: { x: box.width / 2 + 300, y: box.height / 2 } });
+  const lon = Number(new URL((await reverse).url()).searchParams.get("lon"));
+  expect(lon).toBeGreaterThanOrEqual(-180);
+  expect(lon).toBeLessThanOrEqual(180);
+  expect(lon).toBeLessThan(-60);
+  expect(lon).toBeGreaterThan(-90);
+  await expect(page.getByRole("img", { name: "Picked point" })).toBeVisible();
 });

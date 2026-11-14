@@ -102,6 +102,21 @@ export function parseReverse(body: unknown): GeoResult<PlaceInfo> {
   };
 }
 
+/**
+ * One word for the group of field tools. The service reports each tool on its own; this only
+ * picks the label for the row, and each tool's own word is still listed beside it.
+ * - every tool agrees: that word;
+ * - they differ and at least one can be used (complete or partial): "partial";
+ * - they differ and none can be used: never "partial". "unknown" if any tool was not reported
+ *   (an unreported tool is not a missing one), otherwise "unavailable".
+ */
+export function toolsStatus(words: StatusWord[]): StatusWord {
+  if (words.length === 0) return "unknown";
+  if (words.every((w) => w === words[0])) return words[0]!;
+  if (words.some((w) => w === "complete" || w === "partial")) return "partial";
+  return words.includes("unknown") ? "unknown" : "unavailable";
+}
+
 const KEYS: CapabilityKey[] = ["weather", "catalog", "soil", "live_weather", "drought", "tools"];
 
 export function parseCapabilities(body: unknown): GeoResult<Capabilities> {
@@ -112,9 +127,7 @@ export function parseCapabilities(body: unknown): GeoResult<Capabilities> {
     const v = obj(f[key]);
     if (key === "tools") {
       const parts = v ? Object.entries(v).map(([k, s]) => ({ key: k, status: status(s) })) : [];
-      // One word for the group only when every tool agrees; otherwise "partial", or "unknown" if none.
-      const words = new Set(parts.map((p) => p.status));
-      const overall: StatusWord = parts.length === 0 ? "unknown" : words.size === 1 ? parts[0]!.status : "partial";
+      const overall = toolsStatus(parts.map((p) => p.status));
       return { key, status: overall, jobStatus: null, origin: null, provider: null, resolutionM: null, reasonText: null, parts };
     }
     const job = v?.job_status;

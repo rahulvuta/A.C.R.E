@@ -11,8 +11,8 @@
     {
       "field_id": "fld_nc",
       "name": "Home place",
-      "area_ha": 69.04,
-      "area_ac": 170.61,
+      "area_ha": 68.88,
+      "area_ac": 170.21,
       "centroid": {
         "latitude": 34.98,
         "longitude": -80.55
@@ -2307,8 +2307,8 @@
     {
       "field_id": "fld_1",
       "name": "North 40",
-      "area_ha": 102.87,
-      "area_ac": 254.21,
+      "area_ha": 102.61,
+      "area_ac": 253.55,
       "centroid": {
         "latitude": -33.89,
         "longitude": -60.58
@@ -3172,7 +3172,7 @@
     }
   ],
   "totals": {
-    "area_ha": 171.91,
-    "area_ac": 424.82
+    "area_ha": 171.49,
+    "area_ac": 423.76
   }
 }
