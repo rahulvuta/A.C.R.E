@@ -50,10 +50,12 @@ Never edit `backend/data/catalogs/v1/` or `v2/` (Perplexity's verbatim files).
 - **Privacy:** farm boundaries, coordinates and grower inputs are never logged, never committed (fixtures are synthetic and labelled), never sent to the AI research step (it gets only the region: country, admin1, climate class). The frontend stores farms in the browser only.
 - **Frontend computes no agronomy.** It may measure geometry for display (area, centroid) with turf; the backend recomputes area for any calculation.
 
-## 4. Review gate (every card)
+## 4. Review gate (one review per milestone, not per card)
 
-After each card, run the Codex review from `backend/CLAUDE.md` §4 (same command; frontend agents run it from `web/` with `-C "$PWD"` and save to `../docs/global/reviews/<card>.md`, backend agents save to `../docs/global/reviews/<card>.md` from `backend/`). Use `model_reasoning_effort="high"` for A1–A3 and B2–B3, `"medium"` for every other card. Run it in the background and **start the next card while it runs**; fix high and medium findings when it lands, one re-run at most (`<card>-r2.md`). If Codex fails, write `review skipped: <reason>` in your log and continue.
+- **No Codex review per card.** While building, run only the tests for the area you are changing; run the full suite plus ruff (or `npm test` and typecheck) once before each push.
+- **One Codex review per milestone**, covering all of that agent's cards in it, at `model_reasoning_effort="high"`. Milestones: **A:** after A2+P2, then after A3+A4. **B:** after B2+P1, then after P3. **Abhi:** his choice. Same command as `backend/CLAUDE.md` §4. Give the reviewer the card ids and `git diff <milestone-start>..HEAD --stat`, and save to `docs/global/reviews/<agent>-m<N>.md`.
+- Run it in the background and keep building. When it lands, fix every high and medium finding in one pass. **No second review run**; reply to anything you skip in one line at the bottom of the review file. If Codex fails or hangs for more than 15 minutes, kill it, write `review skipped: <reason>` in your log, and continue.
 
 ## 5. Done means
 
-The card's acceptance checks pass in tests (`pytest` + `ruff` for backend; `npm test`, `npm run typecheck`, and the card's Playwright spec for frontend), the review gate ran, and a status line is in your log: `YYYY-MM-DD <card>: done | what is left`. Then commit and push.
+The card's acceptance checks pass in tests (`pytest` + `ruff` for backend; `npm test`, `npm run typecheck`, and the card's Playwright spec for frontend), a status line is in your log: `YYYY-MM-DD <card>: done | what is left`. Then commit and push.
