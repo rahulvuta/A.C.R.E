@@ -222,3 +222,25 @@ router.include_router(_regions_router)
 from acre.research.routes import router as _research_router  # noqa: E402
 
 router.include_router(_research_router)
+
+
+# --------------------------------------------------------------------------- S5 vocabularies
+
+
+@router.get("/vocab/equipment")
+def get_vocab_equipment() -> Any:
+    """Contract §14: the equipment vocabulary with labels (plus ``other:<text>``)."""
+    from acre.field.equipment import vocab_equipment
+
+    return {"meta": response_meta(weather=False), "equipment": vocab_equipment(),
+            "note": "An empty list means 'not given', never 'no equipment'."}  # fmt: skip
+
+
+@router.get("/vocab/readings")
+def get_vocab_readings() -> Any:
+    """Contract §14: reading kinds with labels, units and plausible bounds."""
+    from acre.field.equipment import vocab_readings
+
+    return {"meta": response_meta(weather=False), "readings": vocab_readings(),
+            "note": "Readings are yours (origin: grower); they are shown beside modeled values "
+            "and never mixed into NASA numbers."}  # fmt: skip

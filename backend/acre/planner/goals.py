@@ -16,6 +16,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from acre.catalogs import crop_ids
+from acre.field.equipment import Reading, check_equipment, check_readings
 
 PRIORITY_IDS: tuple[str, ...] = (
     "soil_cover", "water_conservation", "weather_resilience", "crop_diversity",
@@ -125,6 +126,20 @@ class FieldContext(_Strict):
     area_ha: float | None = Field(default=None, gt=0)
     crop_history: list[str] = Field(default_factory=list, max_length=3)  # oldest first
     soil: dict | None = None  # context only; never turned into a benefit
+    name: str | None = Field(default=None, max_length=120)
+    geometry: dict | None = None  # display only; the backend recomputes any area it needs
+    equipment: list[str] = Field(default_factory=list)  # S5 vocabulary; empty = not given
+    readings: list[Reading] = Field(default_factory=list)  # grower readings; context only
+
+    @field_validator("equipment")
+    @classmethod
+    def _equipment(cls, v: list[str]) -> list[str]:
+        return check_equipment(v)
+
+    @field_validator("readings")
+    @classmethod
+    def _readings(cls, v: list[Reading]) -> list[Reading]:
+        return check_readings(v)
 
     @field_validator("crop_history")
     @classmethod
