@@ -17,6 +17,18 @@ services:
         value: 3.12.7
       # Weather/geocoder/soil/research caches. On the free plan the disk is wiped on each
       # deploy or restart, so cells are re-fetched from NASA POWER after that (still correct).
+      # Security (rate limits, headers, hidden /docs, no tracebacks). Render sits behind one proxy.
+      - key: FIELDSHIFT_ENV
+        value: production
+      - key: FIELDSHIFT_TRUST_PROXY
+        value: "1"
+      # Secret for forcing a weather/research refresh (X-Admin-Token header). Generate with
+      # `openssl rand -hex 24`. Leave blank to disable refresh entirely.
+      - key: FIELDSHIFT_ADMIN_TOKEN
+        sync: false
+      # New AI research jobs per UTC day across all users (cache hits are free).
+      - key: FIELDSHIFT_RESEARCH_DAILY_LIMIT
+        value: "20"
       - key: FIELDSHIFT_CACHE_DIR
         value: /tmp/acre-cache
       # Set in the dashboard after the first deploy: the web app's URL, e.g.
