@@ -74,7 +74,10 @@ test("search, draw two fields, plan each, analyse, overview, export, reload", as
   // Search and start a farm there.
   await page.getByPlaceholder("Town, address or coordinates").fill(PLACE.query);
   await page.getByRole("button", { name: "Search" }).click();
-  await page.getByRole("button", { name: PLACE.hit, exact: typeof PLACE.hit === "string" }).first().click();
+  // A place name lists results to choose from; typed coordinates may pick the point at once.
+  const hit = page.getByRole("button", { name: PLACE.hit, exact: typeof PLACE.hit === "string" }).first();
+  if (LIVE) await hit.click({ timeout: 3000 }).catch(() => undefined);
+  else await hit.click();
   await page.evaluate((c) => (window as unknown as { __map: { jumpTo(o: unknown): void } }).__map.jumpTo({ center: c, zoom: 15 }), PLACE.center);
   await page.waitForTimeout(300);
 
