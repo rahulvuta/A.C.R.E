@@ -90,6 +90,8 @@ class WinterSummary(_M):
     seasons_with_heavy_rain_outside_cover: int | None
     segments: list[str]
     reasons: list[str] = Field(default_factory=list)
+    # A2: "Winter" in NC; "Off-season (Apr–Nov)" elsewhere (field names stay "winter")
+    season_label: str | None = None
 
 
 class SpringShortcuts(_M):
@@ -112,6 +114,7 @@ class SpringSummary(_M):
     excluded_years: list[dict[str, Any]]
     median_total_mm: float | None
     shortcuts: SpringShortcuts | None = None
+    season_label: str | None = None  # A2: "30 days before planting"
 
 
 class CheckSummaryOut(_M):
@@ -141,6 +144,7 @@ class RuleLine(_M):
     conflicts_with: list[str] = Field(default_factory=list)
     source: dict[str, Any] | None = None
     reference: dict[str, Any] | None = None  # sourced published number; never a grower target
+    origin: str | None = None  # the rule row's provenance (catalog v3; P2 uncertainties)
 
 
 class SeasonRow(_M):
@@ -161,6 +165,17 @@ class SeasonRow(_M):
     gwettop_window_mean: float | None = None
     wetness_status: Status = Status.UNAVAILABLE
     wetness_label: Literal["modeled"] = "modeled"
+
+
+class PlanCoverage(_M):
+    """A2: the planting years this plan's own windows can use at its weather cell."""
+
+    first_date: str
+    last_date: str
+    available_years: list[int]  # full season (previous harvest to planting) complete
+    spring_available_years: list[int]
+    off_season_available_years: list[int]
+    cell_id: str | None = None
 
 
 class PlanComparison(_M):
@@ -195,6 +210,11 @@ class PlanComparison(_M):
     # folded into the shared-year or era comparisons; the full-season comparison inside it is
     # labelled ``different-calendar`` and shows raw totals only.
     double_crop: dict[str, Any] | None = None
+    # A2 (added fields): hemisphere of the weather point, this plan's usable years at the cell,
+    # and, outside NC, the regional catalog's state (None in NC: the verified catalog)
+    hemisphere: Literal["north", "south"] | None = None
+    coverage: PlanCoverage | None = None
+    catalog: dict[str, Any] | None = None
 
 
 class SharedYears(_M):
@@ -284,6 +304,7 @@ class ReplayResponse(_M):
     key_rain_days: list[KeyRainDay]
     daily: list[ReplayDay]
     weather_location: WeatherLocation | None = None
+    hemisphere: Literal["north", "south"] | None = None  # A2
 
 
 # --------------------------------------------------------------------------- sensitivity
@@ -295,8 +316,9 @@ class SensitivityPoint(_M):
     living_cover_days_planned: int
     rain_outside_cover_mm_median: float | None
     heavy_rain_days_outside_cover_median: float | None
-    checks_count: int
-    denominator: int
+    # None (not 0) when no rule can be checked here (no regional catalog outside NC)
+    checks_count: int | None
+    denominator: int | None
     # the seasons this end date would have flagged (same meaning as the comparison check's
     # qualifying_years); len == checks_count, empty when 0
     qualifying_years: list[int] = Field(default_factory=list)
@@ -309,15 +331,18 @@ class SensitivityResponse(_M):
     base_plan_id: str
     varied: Literal["terminate"]
     fixed: dict[str, Any]
-    check_id: str
+    check_id: str | None
     rule_ids: list[str]
-    denominator: int
+    denominator: int | None
     dry_years: list[int]
     reference_year: int
     points: list[SensitivityPoint]
     thresholds: ThresholdsView
     note: str
     weather_location: WeatherLocation | None = None
+    # A2: outside NC with no regional catalog the sweep reports weather only (no rule check)
+    catalog: dict[str, Any] | None = None
+    season_label: str | None = None
 
 
 # --------------------------------------------------------------------------- years

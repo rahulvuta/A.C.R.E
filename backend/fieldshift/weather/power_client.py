@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import time
 from collections.abc import Callable
@@ -18,6 +19,34 @@ from fieldshift.weather.sources import (
 )
 
 OFFLINE_ENV = "FIELDSHIFT_OFFLINE"
+
+
+class _UrlQueryStripFilter(logging.Filter):
+    """httpx logs every request URL at INFO; a POWER URL carries coordinates in its query string.
+    Any URL-like argument (or message) loses its query string before it reaches a handler."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        def strip(v: object) -> object:
+            text = str(v)
+            if "://" in text and "?" in text:
+                return text.split("?", 1)[0] + "?[query removed]"
+            return v
+
+        if isinstance(record.args, tuple):
+            record.args = tuple(strip(a) for a in record.args)
+        elif isinstance(record.msg, str):
+            record.msg = strip(record.msg)  # type: ignore[assignment]
+        return True
+
+
+def install_url_filter() -> None:
+    for name in ("httpx", "httpcore"):
+        logger = logging.getLogger(name)
+        if not any(isinstance(f, _UrlQueryStripFilter) for f in logger.filters):
+            logger.addFilter(_UrlQueryStripFilter())
+
+
+install_url_filter()
 RETRYABLE_STATUS = {429, 500, 502, 503, 504}
 
 

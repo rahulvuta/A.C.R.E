@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
+from fieldshift.catalogs.crop_ids import family_of
 from fieldshift.catalogs.index import CatalogIndex
 from fieldshift.contracts import Status
 from fieldshift.planner.wheat import wheat_catalog_state
@@ -37,6 +38,8 @@ class CropInfo(BaseModel):
     paths: list[PathAvailability]
     # Sourced N reference (fc_nut_01 / sb_nut_01): a published number, never the grower's target.
     nitrogen_reference: dict | None = None
+    origin: str = "verified_source"  # B2: dataset_estimate for SAGE crops, ai_suggested, ...
+    family: str | None = None
 
 
 class CropsResponse(BaseModel):
@@ -88,6 +91,8 @@ def list_crops(index: CatalogIndex) -> CropsResponse:
                 crop_role=crop.crop_role,
                 summary=crop.summary,
                 source_url=crop.source_url,
+                origin=crop.origin,
+                family=crop.family or family_of(crop.crop_id),
                 rule_count=len(rules),
                 rule_types=dict(sorted(types.items())),
                 paths=paths,

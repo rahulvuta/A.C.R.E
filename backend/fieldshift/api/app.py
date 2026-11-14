@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from typing import Any
 
 from fastapi import FastAPI, Request
@@ -16,7 +17,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from fieldshift.api.farm_routes import router as farm_router
 from fieldshift.api.logs import AccessLogMiddleware, ErrorEnvelopeMiddleware, install_scrub_filter
+from fieldshift.api.recommend_routes import router as recommend_router
 from fieldshift.api.routes import router as core_router
 from fieldshift.api.schemas import (
     HealthResponse,
@@ -24,6 +27,7 @@ from fieldshift.api.schemas import (
     ServerErrorResponse,
     WeatherUnavailableResponse,
 )
+from fieldshift.api.weather_routes import router as weather_router
 from fieldshift.compare import locations as places
 from fieldshift.compare.context import Context, get_context
 from fieldshift.compare.text import reason_text
@@ -122,6 +126,21 @@ async def _meta_for_request(request: Request) -> dict[str, Any]:
     return {**meta, "snapshot_hash": choice.ctx.snapshot_hash if choice.ok and choice.ctx else None}
 
 
+def _nc_only(choice: places.Choice) -> places.Choice:
+    """The routes behind ``get_context`` (planner, report, field note, tools: Agent B's) still
+    serve North Carolina only, until B generalises them (B2/B4). A point outside NC is
+    ``unsupported_location`` there, exactly as before A2, so NC rules never reach it."""
+    outside = (choice.ok and choice.ctx is not None and not choice.ctx.is_nc) or (
+        choice.kind == "no_snapshot" and choice.code != places.NO_SNAPSHOT)
+    if not outside:
+        return choice
+    return places.Choice(
+        "unsupported", requested=choice.requested, code=places.UNSUPPORTED, cell_id=choice.cell_id,
+        reason=f"{places.UNSUPPORTED}: the point is outside North Carolina; this endpoint covers "
+        "NC only so far (compare, replay, sensitivity and years work anywhere)",
+    )  # fmt: skip
+
+
 async def request_context(request: Request) -> Context:
     """The weather context of this request: the snapshot of the place it names, else the Union
     County default. Installed over ``get_context`` so every route (including the planner, report
@@ -133,13 +152,59 @@ async def request_context(request: Request) -> Context:
         raise LocationProblem(places.Choice("invalid", issues=[issue(
             "location", "invalid_location",
             "location_id must be a string and latitude and longitude numbers")]))  # fmt: skip
-    choice = places.choose(loc_id, lat, lon)
+    choice = _nc_only(places.choose(loc_id, lat, lon))
     if not choice.ok:
         raise LocationProblem(choice)
     assert choice.ctx is not None
     if choice.entry is not None:
         set_active_snapshot_dir(choice.entry.directory)  # response meta follows the snapshot
     return choice.ctx
+
+
+_SAFE_KEY = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,63}$")
+_DECIMAL = re.compile(r"-?\d+\.\d+")
+
+
+def _allowed_keys(app: FastAPI) -> frozenset[str]:
+    """Every field name the API's own schemas declare (plus the goal priority names). Only these
+    may appear in a validation path; a client's own key is never echoed."""
+    cached = getattr(app.state, "allowed_keys", None)
+    if cached is None:
+        from fieldshift.compare.indicators import PRIORITIES
+
+        names: set[str] = set(PRIORITIES)
+
+        def walk(node: Any) -> None:
+            if isinstance(node, dict):
+                props = node.get("properties")
+                if isinstance(props, dict):
+                    names.update(props)
+                for v in node.values():
+                    walk(v)
+            elif isinstance(node, list):
+                for v in node:
+                    walk(v)
+
+        walk(app.openapi())
+        names.update(p["name"] for op in app.openapi().get("paths", {}).values()
+                     for m in op.values() if isinstance(m, dict)
+                     for p in m.get("parameters", []))  # fmt: skip
+        cached = frozenset(n for n in names if _SAFE_KEY.match(n))
+        app.state.allowed_keys = cached
+    return cached
+
+
+def _safe_loc(part: Any, allowed: frozenset[str] = frozenset()) -> str:
+    """A validation path element: list indexes and the API's own field names are kept; any other
+    key (free text a client sent, which may hold coordinates) is replaced."""
+    if isinstance(part, int) or (isinstance(part, str) and part in allowed):
+        return str(part)
+    return "<key>"
+
+
+def _safe_msg(msg: str) -> str:
+    """Validation messages can quote input; decimal numbers (coordinates) are masked."""
+    return _DECIMAL.sub("<number>", str(msg))
 
 
 def create_app() -> FastAPI:
@@ -157,9 +222,11 @@ def create_app() -> FastAPI:
     @app.exception_handler(RequestValidationError)
     async def _invalid_input(_: Request, exc: RequestValidationError) -> JSONResponse:
         """Typed bodies/queries report ``invalid_input`` (HTTP 400) like the hand-parsed routes."""
+        allowed = _allowed_keys(_.app)
         issues = [
-            issue(".".join(str(p) for p in e["loc"] if p not in ("body", "query", "path"))
-                  or "body", e["type"], e["msg"])
+            issue(".".join(_safe_loc(p, allowed) for p in e["loc"]
+                           if p not in ("body", "query", "path")) or "body",
+                  e["type"], _safe_msg(e["msg"]))
             for e in exc.errors()
         ]
         return JSONResponse(
@@ -209,7 +276,8 @@ def create_app() -> FastAPI:
                         headers=getattr(exc, "headers", None))
 
     error_docs = {400: {"model": InvalidInputResponse}, 500: {"model": ServerErrorResponse}}
-    for r in (core_router, planner_router, report_router, field_router, tools_router):
+    for r in (core_router, planner_router, report_router, field_router, tools_router,
+              weather_router, recommend_router, farm_router):
         app.include_router(r, responses=error_docs)
     # Routes that depend on ``get_context`` follow the request's place (location_id / point).
     app.dependency_overrides[get_context] = request_context

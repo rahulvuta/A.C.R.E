@@ -48,9 +48,18 @@ FIRST_YEAR, LAST_YEAR = engine.YEARS[0], engine.YEARS[-1]
 
 
 class LocationIn(BaseModel):
+    """A point, or (A2) a POWER grid ``cell_id`` standing for the cell centre."""
+
     model_config = ConfigDict(extra="forbid")
-    latitude: float = Field(ge=-90, le=90)
-    longitude: float = Field(ge=-180, le=180)
+    latitude: float | None = Field(default=None, ge=-90, le=90)
+    longitude: float | None = Field(default=None, ge=-180, le=180)
+    cell_id: str | None = None
+
+
+def _loc_args(loc: LocationIn | None) -> dict[str, Any]:
+    if loc is None:
+        return {"latitude": None, "longitude": None, "cell_id": None}
+    return {"latitude": loc.latitude, "longitude": loc.longitude, "cell_id": loc.cell_id}
 
 
 class CompareRequest(BaseModel):
@@ -92,12 +101,18 @@ class ReplayRequest(BaseModel):
     location_id: str | None = None
 
 
-def _meta(version: str | None, snapshot_hash: str | None | bool = True) -> Meta:
+def _meta(
+    version: str | None, snapshot_hash: str | None | bool = True, ctx: Context | None = None
+) -> Meta:
     """Response metadata. ``snapshot_hash`` is the snapshot actually used: pass the context's hash,
-    or ``None`` when no snapshot was used. ``True`` keeps what the request's active snapshot says."""
+    or ``None`` when no snapshot was used. ``True`` keeps what the request's active snapshot says.
+    Outside NC (``ctx``) ``catalog_version`` is the regional catalog's, never NC's."""
     meta = response_meta(version)
     if snapshot_hash is not True:
         meta["snapshot_hash"] = snapshot_hash
+    if ctx is not None and not ctx.is_nc:
+        cat = ctx.index.catalog
+        meta["catalog_version"] = f"{cat.version}:{cat.manifest.content_hash[:12]}"
     return Meta.model_validate(meta)
 
 
@@ -157,8 +172,7 @@ def _unavailable(sp: SamplePlan) -> PlanComparison:
 def compare(body: CompareRequest) -> Any:
     issues: list[dict[str, str]] = []
     loc = body.location
-    choice = places.choose(body.location_id, loc.latitude if loc else None,
-                           loc.longitude if loc else None)  # fmt: skip
+    choice = places.choose(body.location_id, **_loc_args(loc))
     _follow(choice)
     wanted: dict[str, tuple[Plan | None, dict[str, Any]]] = {}  # insertion-ordered
     samples = load_samples()
@@ -221,12 +235,14 @@ def compare(body: CompareRequest) -> Any:
     ctx = choice.ctx or get_context()  # a problem place keeps the default only for the shape
     place = choice.entry
     if place is not None:  # a named place: its county point stands in for a missing point
-        lat = loc.latitude if loc else place.latitude
-        lon = loc.longitude if loc else place.longitude
+        lat = loc.latitude if loc and loc.latitude is not None else place.latitude
+        lon = loc.longitude if loc and loc.longitude is not None else place.longitude
     else:
         ref_pt = ctx.manifest["reference_point"]
-        lat = loc.latitude if loc else ref_pt["requested_latitude"]
-        lon = loc.longitude if loc else ref_pt["requested_longitude"]
+        lat = loc.latitude if loc and loc.latitude is not None else ref_pt["requested_latitude"]
+        lon = loc.longitude if loc and loc.longitude is not None else ref_pt["requested_longitude"]
+        if loc is not None and loc.cell_id and choice.cell_id:  # a cell id: its centre
+            lat, lon = (float(x) for x in choice.cell_id.removeprefix("cell_").split("_"))
     named = loc is not None or body.location_id is not None
     location_block = _location_block(choice, lat, lon) if named else None
     location_problem = None if choice.ok else choice.reason
@@ -263,7 +279,7 @@ def compare(body: CompareRequest) -> Any:
         res.rotation_id = res.rotation_ids[0] if res.rotation_ids else None
         results.append(res)
     text.finalize(results, {pid: p for pid, (p, _m) in wanted.items()}, ctx.index)
-    if choice.ok and place is not None:
+    if choice.ok and place is not None and ctx.is_nc and place.id != place.cell_id:
         places.add_region_notes(results, place, samples.plans)
 
     if place is not None:
@@ -286,7 +302,12 @@ def compare(body: CompareRequest) -> Any:
     if place is not None:
         hashed["location_id"] = place.id
     input_hash = engine.canonical_hash(hashed)
-    meta = _meta(input_hash[:16], ctx.snapshot_hash if choice.ok else None)
+    meta = _meta(input_hash[:16], ctx.snapshot_hash if choice.ok else None,
+                 ctx if choice.ok else None)  # fmt: skip
+    # outside NC with no stored weather: nothing of Union County's (thresholds, catalog) is shown
+    outside_none = not choice.ok and choice.kind == "no_snapshot" and choice.code != places.NO_SNAPSHOT
+    if outside_none:
+        meta = meta.model_copy(update={"catalog_version": None})
     result_id = engine.canonical_hash(
         [input_hash, ctx.snapshot_hash, meta.catalog_version, ts.threshold_set_id]
     )[:16]
@@ -296,7 +317,8 @@ def compare(body: CompareRequest) -> Any:
         result_id=result_id,
         input_hash=input_hash,
         request_echo=echo,
-        thresholds=engine.thresholds_view(ts, ctx if choice.ok else None),
+        thresholds=(engine.thresholds_view(ts, ctx if choice.ok else None) if not outside_none
+                    else _no_thresholds()),
         shared_eligible_years=shared,
         plans=results,
         soil=soil,
@@ -305,6 +327,21 @@ def compare(body: CompareRequest) -> Any:
         eras=engine.eras_block(),
         data_sources=_data_sources(ctx, soil, choice),
     )
+
+
+def _no_thresholds() -> Any:
+    """The thresholds block when no weather was used outside NC: no values, never Union's."""
+    from fieldshift.compare.models import ThresholdsView
+    from fieldshift.contracts import Threshold
+    from fieldshift.metrics.thresholds import HEAVY_RAIN_NAME
+
+    return ThresholdsView(
+        threshold_set_id="none", dry_spring={},
+        heavy_rain=Threshold(name=HEAVY_RAIN_NAME, method="none", value=None, unit="mm/day",
+                             reference_span="none", n_reference=0, status=Status.UNAVAILABLE,
+                             note="No weather is stored for this place, so no threshold was "
+                                  "computed."),
+    )  # fmt: skip
 
 
 def _location_block(choice: places.Choice, lat: float, lon: float) -> dict[str, Any] | None:
@@ -355,6 +392,17 @@ def _data_sources(
             "last_date": cov["last_date"],
             "retrieved_at": ctx.manifest["retrieval"]["retrieved_at"],
         }
+    catalog: dict[str, Any] = {"source": "Perplexity catalogs v1 (verbatim)",
+                               "freshness": "snapshot"}  # fmt: skip
+    if choice is not None and choice.ok and not ctx.is_nc:
+        state = ctx.catalog_state or {}
+        catalog = {"source": "regional catalog" if ctx.index.catalog.rules else None,
+                   "freshness": "snapshot" if ctx.index.catalog.rules else "unavailable",
+                   "status": state.get("status"), "reason": state.get("reason")}  # fmt: skip
+    if choice is not None and choice.ok and weather["snapshot_hash"] is not None:
+        weather["source"] = ("NASA POWER daily (offline snapshot)" if ctx.is_nc
+                             and ctx.place is not None and ctx.place.id != ctx.place.cell_id
+                             else "NASA POWER daily (stored per grid cell)")  # fmt: skip
     return {
         "weather": weather,
         "soil": None
@@ -363,7 +411,7 @@ def _data_sources(
             "source": "USDA NRCS Soil Data Access",
             "freshness": soil_fresh or "unavailable",
         },
-        "catalog": {"source": "Perplexity catalogs v1 (verbatim)", "freshness": "snapshot"},
+        "catalog": catalog,
     }
 
 
@@ -395,13 +443,15 @@ def _unsupported(plan: Plan, ctx: Context, year: int | None = None) -> Unsupport
     """Same support rule as the comparison: unknown crops are ``unsupported``, not empty results."""
     from fieldshift.planner.checker import check_plan
 
+    if not engine.has_rules(ctx):  # no regional catalog: any crop id, nothing to check
+        return None
     try:
         res = check_plan(plan, ctx.index, year=year or engine.REFERENCE_YEAR)
     except InvalidPlanError:
         return None  # reported as typed invalid_input by the caller
     if res.status == Status.UNSUPPORTED:
         return UnsupportedResponse(
-            meta=_meta(plan_version(plan, year), ctx.snapshot_hash),
+            meta=_meta(plan_version(plan, year), ctx.snapshot_hash, ctx),
             status=Status.UNSUPPORTED,
             plan_id=plan.plan_id,
             reason="; ".join(res.unsupported) or "unsupported",
@@ -411,12 +461,13 @@ def _unsupported(plan: Plan, ctx: Context, year: int | None = None) -> Unsupport
 
 
 def _place(
-    location_id: str | None, latitude: float | None, longitude: float | None
+    location_id: str | None, latitude: float | None, longitude: float | None,
+    cell_id: str | None = None,
 ) -> tuple[places.Choice, Any]:
     """Resolve the place first, so every response of the request (errors included) carries the
     right ``snapshot_hash``. Returns ``(choice, invalid_response_or_None)``; a bad ``location_id``
     is ``invalid_input``."""
-    choice = places.choose(location_id, latitude, longitude)
+    choice = places.choose(location_id, latitude, longitude, cell_id)
     _follow(choice)
     if choice.kind == "invalid":
         return choice, _invalid_for(choice.issues, choice)
@@ -459,7 +510,7 @@ def _replay(plan: Plan, year: int, choice: places.Choice) -> Any:
     except InvalidPlanError as exc:
         return invalid(_issues_from_plan_error(exc, "plan"))
     return ReplayResponse(
-        meta=_meta(plan_version(plan, year), ctx.snapshot_hash), weather_location=_wl(choice),
+        meta=_meta(plan_version(plan, year), ctx.snapshot_hash, ctx), weather_location=_wl(choice),
         **payload,
     )
 
@@ -471,8 +522,11 @@ def replay_get(
     location_id: Annotated[str | None, Query(description="place id from the snapshot index")] = None,
     latitude: Annotated[float | None, Query(ge=-90, le=90)] = None,
     longitude: Annotated[float | None, Query(ge=-180, le=180)] = None,
+    lat: Annotated[float | None, Query(ge=-90, le=90, description="alias of latitude")] = None,
+    lon: Annotated[float | None, Query(ge=-180, le=180, description="alias of longitude")] = None,
+    cell_id: Annotated[str | None, Query(description="a POWER grid cell id")] = None,
 ) -> Any:
-    choice, bad = _place(location_id, latitude, longitude)
+    choice, bad = _place(location_id, _first(latitude, lat), _first(longitude, lon), cell_id)
     if bad is not None:
         return bad
     sp, err = _sample(plan, "plan")
@@ -495,9 +549,7 @@ def replay_get(
 @router.post("/seasons/{year}/replay", response_model=ReplayResponse | UnsupportedResponse)
 def replay_post(year: int, body: ReplayRequest) -> Any:
     """Replay an edited plan (same payload as the GET)."""
-    loc = body.location
-    choice, bad = _place(body.location_id, loc.latitude if loc else None,
-                         loc.longitude if loc else None)  # fmt: skip
+    choice, bad = _place(body.location_id, **_loc_args(body.location))
     if bad is not None:
         return bad
     return _no_weather(choice, body.plan.plan_id) or _replay(body.plan, year, choice)
@@ -505,9 +557,7 @@ def replay_post(year: int, body: ReplayRequest) -> Any:
 
 @router.post("/plans/sensitivity", response_model=SensitivityResponse | UnsupportedResponse)
 def sensitivity(body: SensitivityRequest) -> Any:
-    loc = body.location
-    choice, bad = _place(body.location_id, loc.latitude if loc else None,
-                         loc.longitude if loc else None)  # fmt: skip
+    choice, bad = _place(body.location_id, **_loc_args(body.location))
     if bad is not None:
         return bad
     plan = body.plan
@@ -530,8 +580,13 @@ def sensitivity(body: SensitivityRequest) -> Any:
     unsupported = _unsupported(plan, ctx)
     if unsupported is not None:
         return unsupported
-    rule_id = _CHECK_TO_RULE.get(body.rule_id, body.rule_id)
-    if rule_id not in {r.rule_id for r in ctx.index.catalog.rules}:
+    rule_id: str | None = _CHECK_TO_RULE.get(body.rule_id, body.rule_id)
+    known_rules = {r.rule_id for r in ctx.index.catalog.rules}
+    if not engine.has_rules(ctx) or (
+        not ctx.is_nc and body.rule_id == DEFAULT_RULE and rule_id not in known_rules
+    ):
+        rule_id = None  # no regional rule to sweep: the weather only (any cover crop)
+    elif rule_id not in known_rules:
         return invalid(
             [issue("rule_id", "unknown_rule", f"unknown rule or check '{body.rule_id}'")]
         )
@@ -541,7 +596,8 @@ def sensitivity(body: SensitivityRequest) -> Any:
     except InvalidPlanError as exc:
         return invalid(_issues_from_plan_error(exc, "plan"))
     return SensitivityResponse(
-        meta=_meta(plan_version(plan), ctx.snapshot_hash), weather_location=_wl(choice), **payload
+        meta=_meta(plan_version(plan), ctx.snapshot_hash, ctx), weather_location=_wl(choice),
+        **payload,
     )
 
 
@@ -553,8 +609,11 @@ def years(
     location_id: Annotated[str | None, Query(description="place id from the snapshot index")] = None,
     latitude: Annotated[float | None, Query(ge=-90, le=90)] = None,
     longitude: Annotated[float | None, Query(ge=-180, le=180)] = None,
+    lat: Annotated[float | None, Query(ge=-90, le=90, description="alias of latitude")] = None,
+    lon: Annotated[float | None, Query(ge=-180, le=180, description="alias of longitude")] = None,
+    cell_id: Annotated[str | None, Query(description="a POWER grid cell id")] = None,
 ) -> Any:
-    choice, bad = _place(location_id, latitude, longitude)
+    choice, bad = _place(location_id, _first(latitude, lat), _first(longitude, lon), cell_id)
     if bad is not None:
         return bad
     sp, err = _sample(plan, "plan")
@@ -562,14 +621,43 @@ def years(
         return _invalid_for([err], choice)
     if sp is None or sp.plan is None:
         return _invalid_for([issue("plan", "plan_unavailable", "that plan is unavailable")], choice)
-    no_weather = _no_weather(choice, sp.plan.plan_id)
+    return _years(sp.plan, choice)
+
+
+class YearsRequest(BaseModel):
+    """A2: the year table for an edited plan (a field's own dates) at a location."""
+
+    model_config = ConfigDict(extra="forbid")
+    plan: Plan
+    location: LocationIn | None = None
+    location_id: str | None = None
+
+
+@router.post("/years", response_model=YearsResponse | UnsupportedResponse)
+def years_post(body: YearsRequest) -> Any:
+    choice, bad = _place(body.location_id, **_loc_args(body.location))
+    if bad is not None:
+        return bad
+    try:
+        engine.build_calendar(body.plan, engine.REFERENCE_YEAR)
+    except InvalidPlanError as exc:
+        return _invalid_for(_issues_from_plan_error(exc, "plan"), choice)
+    return _years(body.plan, choice)
+
+
+def _first(a: float | None, b: float | None) -> float | None:
+    return a if a is not None else b
+
+
+def _years(plan: Plan, choice: places.Choice) -> Any:
+    no_weather = _no_weather(choice, plan.plan_id)
     if no_weather is not None:
         return no_weather
     assert choice.ctx is not None
     ctx = choice.ctx
     return YearsResponse(
-        meta=_meta(plan_version(sp.plan), ctx.snapshot_hash), weather_location=_wl(choice),
-        **years_payload(sp.plan, ctx),
+        meta=_meta(plan_version(plan), ctx.snapshot_hash, ctx), weather_location=_wl(choice),
+        **years_payload(plan, ctx),
     )
 
 

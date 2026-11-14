@@ -1,0 +1,22 @@
+{
+  "region_key": "FR-IDF",
+  "country": "FR",
+  "admin1": "FR-IDF",
+  "origin": "dataset_estimate",
+  "label": "Île-de-France, France: SAGE-only demo profile",
+  "research": {
+    "job_status": null,
+    "status": "unavailable",
+    "reason": "research_not_configured",
+    "note": "Committed without AI research: no Anthropic credentials were available when it was built (card B3). Crop calendars come from SAGE for each farm's own 0.5° cell."
+  },
+  "crops": [],
+  "cover_crops": [],
+  "rotations": [],
+  "double_crops": [],
+  "gaps": [
+    "No regional research has run for this region yet: there are no sourced rules, cover crops, rotations or double crops.",
+    "Crop calendars are SAGE gridded estimates (Sacks et al. 2010), not local guidance."
+  ],
+  "disclaimer": "Gridded crop-calendar estimates only; check planting dates with a local adviser."
+}

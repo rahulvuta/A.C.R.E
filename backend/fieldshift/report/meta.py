@@ -24,11 +24,15 @@ def snapshot_hash() -> str | None:
         return None
 
 
-def response_meta(plan_version: str | None = None) -> dict[str, Any]:
-    idx = get_index()
+def response_meta(plan_version: str | None = None, *, index: CatalogIndex | None = None,
+                  weather: bool = True) -> dict[str, Any]:
+    """``index``: the catalog the response used (default: NC). ``weather=False`` for an answer
+    that used no weather (a regional check or profile): its ``snapshot_hash`` is then ``None``
+    rather than the Union County snapshot it never read."""
+    idx = index or get_index()
     return {
         "plan_version": plan_version,
         "catalog_version": f"{idx.version}:{idx.catalog.manifest.content_hash[:12]}",
-        "snapshot_hash": snapshot_hash(),
+        "snapshot_hash": snapshot_hash() if weather else None,
         "request_id": uuid.uuid4().hex,
     }

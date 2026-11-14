@@ -1,0 +1,30 @@
+{
+  "cell": {
+    "center": {
+      "latitude": 42.0,
+      "longitude": -93.75
+    },
+    "note": "One NASA POWER weather series covers this whole cell.",
+    "size_deg": [
+      0.5,
+      0.625
+    ]
+  },
+  "cell_id": "cell_+42.000_-93.750",
+  "coverage": null,
+  "job_status": "pending",
+  "meta": {
+    "catalog_version": "v2:8eeb5bf961eb",
+    "plan_version": null,
+    "request_id": "req_example",
+    "snapshot_hash": null
+  },
+  "notes": [],
+  "poll": "/v1/weather/cell_+42.000_-93.750",
+  "reason": null,
+  "reason_text": null,
+  "retrieved_at": null,
+  "snapshot_hash": null,
+  "source": null,
+  "status": "unknown"
+}

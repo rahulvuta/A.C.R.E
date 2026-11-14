@@ -13,6 +13,8 @@ from fieldshift.seasons.coverage import season_coverage
 
 
 def _label(ctx: Context) -> str:
+    if not ctx.is_nc and ctx.location is not None:
+        return ctx.location.name
     if ctx.location is None or ctx.location.id == "union":
         return "Union County, NC (sample)"
     return f"{ctx.location.name}, NC"

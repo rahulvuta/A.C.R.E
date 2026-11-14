@@ -1,0 +1,19 @@
+{
+  "dataset": "Koppen-Geiger climate classification, 1991-2020 (present day)",
+  "citation": "Beck et al. 2023, Koppen-Geiger 1991-2020",
+  "paper": "Beck, H.E., McVicar, T.R., Vergopolan, N. et al. High-resolution (1 km) Koppen-Geiger maps for 1901-2099 based on constrained CMIP6 projections. Scientific Data 10, 724 (2023). https://doi.org/10.1038/s41597-023-02549-6",
+  "data_doi": "10.6084/m9.figshare.21789074.v2",
+  "license": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)",
+  "source_file": "1991_2020/koppen_geiger_0p1.tif in koppen_geiger_tif.zip",
+  "source_sha256": "59b749fe6711e72c720ff903044eb0efb4373524ee434740ed7384a0284c155b",
+  "resolution_deg": 0.1,
+  "approx_resolution_km": 11,
+  "grid": {
+    "rows": 1800,
+    "cols": 3600,
+    "north_edge": 90.0,
+    "west_edge": -180.0
+  },
+  "water_value": 0,
+  "note": "Stored unchanged (0.1 degree map from the dataset; no resampling by us)."
+}

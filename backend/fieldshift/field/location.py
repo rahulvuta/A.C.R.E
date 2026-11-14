@@ -23,6 +23,7 @@ from pydantic import BaseModel, Field
 
 from fieldshift.contracts import Status
 from fieldshift.field.regions import normalize_field_region, region_scope
+from fieldshift.geo.locate import describe
 from fieldshift.weather.locations import LocationIndex, get_index
 from fieldshift.weather.snapshot import DEFAULT_SNAPSHOT_DIR
 from fieldshift.weather.sources import derive_grid_cell
@@ -81,6 +82,13 @@ class LocationResult(BaseModel):
     weather: WeatherSupport | None = None
     guidance: GuidanceSupport | None = None
     notes: list[str] = Field(default_factory=list)
+    # worldwide fields (card B1); all additive
+    hemisphere: str | None = None
+    on_land: bool | None = None
+    climate: dict[str, Any] | None = None
+    region_keys: list[str] = Field(default_factory=list)
+    nc_region: str | None = None
+    place: dict[str, Any] | None = None
 
 
 #: Coarse NC outline as (latitude, longitude) vertices, clockwise from the northeast corner.
@@ -183,14 +191,18 @@ def resolve_location(
         )
     in_nc = in_nc_bounds(la, lo)
     bounds = Bounds(in_nc=in_nc)
-    if not in_nc:
+    # Worldwide: only water is unsupported. Offline: the place comes from fixtures or the cache.
+    desc = describe(la, lo, allow_network=False)
+    if desc.status == "unsupported":
         return LocationResult(
             status=Status.UNSUPPORTED,
             code="unsupported_location",
-            reason="the point is outside North Carolina; guidance and history cover NC only",
-            latitude=la,
-            longitude=lo,
+            reason=desc.reason_text or "the point is over water",
+            latitude=round(la, 2),
+            longitude=round(lo, 2),
             bounds=bounds,
+            on_land=False,
+            hemisphere=desc.hemisphere,
         )
 
     cell = derive_grid_cell(la, lo)
@@ -227,7 +239,20 @@ def resolve_location(
         "north carolina",
         "north carolina statewide",
     }
-    if scope == "nc" and tag is None and region and region.strip() and not statewide:
+    if not in_nc:
+        # NC rules apply only in NC: a region text cannot move them to another place.
+        why = (
+            f"region '{region}' names a North Carolina region, but this point is outside "
+            "North Carolina; "
+            if tag is not None and region
+            else ""
+        )
+        guidance = GuidanceSupport(
+            supported=False, status=Status.UNKNOWN, region=None, basis="none",
+            reason=why + "North Carolina guidance does not apply here; guidance for this place "
+            "comes from its regional profile (GET /v1/regions/{region_key}/profile)",
+        )  # fmt: skip
+    elif scope == "nc" and tag is None and region and region.strip() and not statewide:
         guidance = GuidanceSupport(
             supported=False, status=Status.UNKNOWN, region=None, basis="provided",
             reason=f"region '{region}' is not in the region mapping table; guidance is unknown",
@@ -273,8 +298,14 @@ def resolve_location(
     )
     return LocationResult(
         status=status,
-        latitude=la,
-        longitude=lo,
+        hemisphere=desc.hemisphere,
+        on_land=desc.on_land,
+        climate=desc.climate.as_dict() if desc.climate is not None else None,
+        region_keys=desc.region_keys,
+        nc_region=desc.nc_region,
+        place=desc.place or None,
+        latitude=round(la, 2),
+        longitude=round(lo, 2),
         bounds=bounds,
         grid_cell=cell,
         cell_id=cid,

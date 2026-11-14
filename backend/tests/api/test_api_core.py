@@ -191,7 +191,8 @@ def test_chronology_error_is_a_typed_400_naming_the_field(client):
         ("/v1/plans/compare", {"plan_ids": ["nope"]}, "plan_ids.0"),
         ("/v1/plans/compare", {"rotation_ids": ["nope"]}, "rotation_ids.0"),
         ("/v1/plans/compare", {}, "plans"),
-        ("/v1/plans/compare", {"unknown_field": 1, "plan_ids": ["corn_soy__rye"]}, "unknown_field"),
+        # a client's own key is never echoed (A3 privacy fix): it is reported as <key>
+        ("/v1/plans/compare", {"unknown_field": 1, "plan_ids": ["corn_soy__rye"]}, "<key>"),
         ("/v1/plans/sensitivity", {}, "plan"),
     ],
 )
@@ -429,12 +430,14 @@ def test_sensitivity_flags_gaps_that_cross_feb_29(client):
 # --- review r2 fixes ----------------------------------------------------------------------------------------
 
 
-def test_a_point_outside_nc_is_unsupported_not_union_county_data(client):
+def test_a_point_outside_nc_is_not_union_county_data(client, tmp_path, monkeypatch):
+    monkeypatch.setenv("FIELDSHIFT_CACHE_DIR", str(tmp_path / "cache"))  # nothing stored
     for lat, lon in [(0.0, 0.0), (40.7, -74.0)]:  # null island, NYC
         body = post(client, "/v1/plans/compare", {
             "plan_ids": ["corn_soy__rye"], "location": {"latitude": lat, "longitude": lon}}).json()
         plan = body["plans"][0]
-        assert plan["status"] == "unsupported" and "unsupported_location" in plan["reason"]
+        assert plan["status"] == "unavailable"
+        assert plan["reason"].split(":")[0] in {"weather_not_prepared", "offline_no_snapshot"}
         assert plan["spring"] is None and plan["eras"] == {}
         assert body["location"] is not None
 

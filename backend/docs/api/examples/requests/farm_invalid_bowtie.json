@@ -1,0 +1,60 @@
+{
+  "body": {
+    "farm": {
+      "farm_id": "example_farm",
+      "fields": [
+        {
+          "field_id": "fld_bad",
+          "geometry": {
+            "coordinates": [
+              [
+                [
+                  -60.58,
+                  -33.88
+                ],
+                [
+                  -60.57,
+                  -33.89
+                ],
+                [
+                  -60.57,
+                  -33.88
+                ],
+                [
+                  -60.58,
+                  -33.89
+                ],
+                [
+                  -60.58,
+                  -33.88
+                ]
+              ]
+            ],
+            "type": "Polygon"
+          },
+          "name": "Bowtie",
+          "plan": {
+            "next_crop_id": "soybean",
+            "next_plant": "11-15",
+            "plan_id": "fld_bad_plan",
+            "prev_harvest": "04-20",
+            "previous_crop_id": "maize",
+            "winter": {
+              "crop_id": "cereal_rye",
+              "kind": "cover",
+              "seed": "05-01",
+              "terminate": "10-20"
+            }
+          }
+        }
+      ],
+      "name": "Example farm (synthetic)"
+    },
+    "options": {
+      "include_capabilities": false
+    }
+  },
+  "method": "POST",
+  "status": 400,
+  "url": "/v1/farms/analyze"
+}

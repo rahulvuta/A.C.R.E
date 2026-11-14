@@ -69,7 +69,7 @@ def replay_season(plan: Plan, year: int, ctx: Context, ts: ThresholdSet) -> dict
 
     spring = b.spring
     triggered: list[TriggeredCheck] = []
-    from fieldshift.compare.engine import CHECK_META
+    from fieldshift.compare.engine import CHECK_META, SPRING_LABEL, off_season_label
 
     ordered = sorted(b.evaluation.checks, key=lambda c: (c.rule_id not in GATES, c.rule_id))
     for c in ordered:
@@ -97,15 +97,18 @@ def replay_season(plan: Plan, year: int, ctx: Context, ts: ThresholdSet) -> dict
             "percentile": spring.percentile, "cutoff_mm": spring.cutoff_mm,
             "is_dry": spring.is_dry, "status": spring.status,
             "classification_status": spring.classification_status, "reasons": spring.reasons,
+            "season_label": SPRING_LABEL,
         },
         "wetness": {
             "gwettop_window_mean": spring.wetness.gwettop,
             "gwetroot_window_mean": spring.wetness.gwetroot,
             "unit": "fraction (0-1)", "label": "modeled", "status": spring.wetness.status,
         },
-        "winter": b.winter.model_dump(mode="json", exclude={"heavy_rain_events"}),
+        "winter": {**b.winter.model_dump(mode="json", exclude={"heavy_rain_events"}),
+                   "season_label": off_season_label(plan, ctx)},
         "thresholds": thresholds_view(ts, ctx),
         "checks_triggered": triggered,
         "key_rain_days": key_days,
         "daily": daily,
+        "hemisphere": ctx.hemisphere,
     }
