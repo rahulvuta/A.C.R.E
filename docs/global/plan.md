@@ -34,18 +34,46 @@ Rules: `CLAUDE.md` (root). API shapes: `docs/global/contract.md`. Status and han
 - **Map:** MapLibre GL JS with Esri World Imagery (satellite, with attribution) and OSM (streets), drawing with terra-draw, measurements with turf. No map key needed.
 - **Storage:** no accounts and no database. Farms live in browser `localStorage` (versioned) with GeoJSON import and export. The backend stores no farm data. Only the weather, soil, geocoder and research caches are on disk.
 
+## Product focus (2026-11-14 follow-up; overrides earlier emphasis)
+
+Field Shift's central question is: *"Given my farm's location, soil, crops, historical weather and my own goals, which future crop-rotation plans suit it best, why should I consider them, and how do I carry them out?"* Historical stress testing **supports** that decision. It is not the product. Future planning, rotation generation, farmer priorities and explainable recommendations (cards **P1–P6** below) come before cosmetic work and before the rest of the geographic expansion.
+
+What already exists for this:
+- The plan finder (`planner/finder.py`, Phase 7) searches only predefined options.
+- The checker validates one plan.
+- The calendar and backup cover one season.
+- The frontend's priority picker (3 fixed priorities) only reorders cards.
+
+What's missing:
+- Generating candidates.
+- Weighted goals and hard constraints.
+- Multi-objective evaluation.
+- Soil-health and water indicators.
+- A multi-season future plan.
+
+**Hard rules for P1–P6:**
+- No single made-up score.
+- A recommendation is a shortlist of non-dominated plans (Pareto) over named indicators. The farmer's weights only order and explain that shortlist; they never invent a number.
+- Every indicator has a documented definition and source.
+- Expected benefits (soil health, water) are labelled as **indicators** drawn from sourced principles, never as measured outcomes.
+- No erosion, yield, soil-health improvement or water-saving figures, ever.
+- Where the regional evidence is too thin to generate options, return `insufficient_data` with the gaps, not a guess.
+
 ## Waves (cards in the same wave run in parallel)
 
 | Wave | A (backend) | B (backend) | C (frontend) | D (frontend) | Merge to main |
 |---|---|---|---|---|---|
 | 1 | **A1** global weather on demand | **B1** geo and capabilities | **C1** map, search, pick a point | **D1** app shell, farm state, adapter (against contract fixtures) | after wave 1 |
 | 2 | **A2** location-generic analysis | **B2** regional catalogs and SAGE | **C2** farm and field editor, GeoJSON, storage | **D2** field-level planning screens | after wave 2 |
-| 3 | **A3** farm and field batch API | **B3** AI regional research | **C3** 3D field from polygon + **C4** map results layer | **D3** provenance, research review, resolution notices | after wave 3 |
-| 4 | **A4** contract freeze, deploy, smoke | **B4** global soil, live, tools with area | C helps D4 (e2e specs for map flows) | **D4** integration, full-workflow e2e, release | release |
+| 3 | **P2** indicators and Pareto evaluation (A) | **P1** goals, constraints and rotation generator (B) | **P4** goals and constraints UI (Abhi, after C2/D2) | | after wave 3 |
+| 4 | **A3** farm and field batch API (now also carries goals per field) | **P3** future multi-season farm plan (B) | **P5** options and recommendation screens (Abhi) | | after wave 4 |
+| 5 | **A4** contract freeze, deploy, smoke | **B3** AI regional research, then **B4** soil, live, tools | **P6** future plan editor (Abhi), then **C3/C4/D3** | **D4** integration, full-workflow e2e, release (Abhi) | release |
+
+**Frontend owner change (2026-11-14):** Abhi took over all frontend cards from Agents C and D (they ran out of usage). Their unfinished work is on `frontend/dev` (`fe03061` C, `e68a2e9` D). Abhi's order: finish C1 fixes → D1 → C2 → D2 → P4 → P5 → P6 → C3/C4/D3 → D4. Read "C" and "D" in the rest of this file as Abhi.
 
 Sync points (pull, don't reimplement):
 1. Everyone starts from the G0 contract. When a backend card changes a shape, A updates `docs/global/contract.md` and logs it. B posts its shapes in `log-B.md`, and A folds them in.
-2. A2 and A3 call B's `catalog_for_location()` (B2). Until B2 lands, A uses the NC v2 catalog for NC and an empty catalog elsewhere (all rules `unknown`).
+2. A2, A3 and P2 call B's `catalog_for_location()` (B2); P2 consumes P1's candidates through `generate_candidates()` (stub with the NC presets until P1 lands). Until B2 lands, A uses the NC v2 catalog for NC and an empty catalog elsewhere (all rules `unknown`).
 3. A3's per-field capabilities call B's `capabilities_for()` (B1).
 4. D works against fixtures built from the contract in `web/src/api/fixtures/`. It swaps to the live API when the matching backend card is pushed: `git merge origin/backend`, run the backend locally.
 5. C owns `web/src/farm/types.ts` (the Farm and Field model, drafted in G0). D imports it and never edits it.
@@ -315,3 +343,129 @@ Accept:
 - `npm test`, typecheck and build are clean.
 - The demo works offline.
 - Lighthouse accessibility is ≥ 90 on the map page.
+
+
+---
+
+## P1 — Goals, constraints and rotation generator (B, wave 3)
+
+Build:
+- `planner/goals.py`, with the goals and constraints model (contract §8):
+  - Priorities from a fixed list (`soil_cover`, `water_conservation`, `weather_resilience`, `crop_diversity`, `living_cover_duration`, `management_simplicity`), each with a weight of 0–3. 0 means "don't care". Weights are relative and never shown as a score.
+  - Hard constraints:
+    - allowed and excluded crops;
+    - must-include crop;
+    - irrigation available yes/no/unknown;
+    - equipment limits (no_drill_interseeding, no_roller_crimper, ...);
+    - latest planting and earliest harvest dates;
+    - number of seasons (1–4);
+    - crop history: the last 1–3 crops on the field.
+  - Preferences (soft): crops liked or disliked.
+  - Unknown stays unknown and never counts as "no".
+- `planner/generator.py`: `generate_candidates(location, field_context, goals)` enumerates multi-season sequences, including cover-crop and double-crop combinations.
+  - Inputs: the location's catalog (`catalog_for_location`), the regional crop calendars (SAGE and profile windows), the rotation-compatibility and planting-window rules, crop history, and the hard constraints.
+  - Dates: each sequence gets dated windows from sourced calendars (with `origin` on each date). Hard constraints prune candidates; a candidate that breaks one is never returned.
+  - Rule checks: every candidate goes through the existing checker. A candidate with an `avoid` or blocking verdict is dropped. One with `manual_check` stays, flagged.
+  - Limits: capped at 50 candidates per field, deterministic order, and a `generation_log` of what was pruned and why.
+  - Thin evidence: if the catalog has fewer than 2 crops with sourced calendars for the location, return `status: insufficient_data` with `gaps[]` and no candidates.
+- `POST /v1/plans/generate` (contract §8). Generated plans are ordinary `Plan` objects, so a farmer can edit any of them and send it to compare, check or the future plan.
+
+Accept:
+- Union County with defaults generates the 3 existing presets among its candidates.
+- Excluding soybean removes every sequence containing it.
+- A latest-planting date prunes late double-crops, and the pruning is logged.
+- Crop history `soybean, soybean` with a sourced rotation rule against a third soybean drops that sequence.
+- A location with no sourced calendars gives `insufficient_data`.
+- Pergamino generates Southern Hemisphere-dated sequences, and no NC rule ids appear.
+- The output is identical across runs.
+
+## P2 — Indicators and Pareto evaluation (A, wave 3)
+
+Build:
+- `compare/indicators.py`: a per-candidate indicator vector. Each indicator has `{value, unit, direction: higher_better|lower_better, origin, definition, source}`. Most reuse the existing analysis:
+  - `rain_on_bare_soil_mm` (median off-season rain outside living cover) and `heavy_rain_days_on_bare_soil`;
+  - `dry_pre_plant_frequency` (share of the cell's seasons that were dry for each planting window; per-window denominators kept);
+  - `modeled_root_zone_wetness_at_planting` (labelled modeled);
+  - `living_cover_days` and `bare_soil_days` per year;
+  - `crop_family_diversity` (distinct families over the sequence; families from the catalog);
+  - `rule_flags` (count of flagged and `manual_check` checks, listed);
+  - `management_operations` (count of distinct field operations: seed, terminate, plant, harvest, per season);
+  - `irrigation_dependence` (only when irrigation access is known).
+  - The soil-health and water linkage is qualitative and sourced, for example the USDA NRCS soil health principles (keep the soil covered, maximise living roots, increase diversity) and water-conservation guidance. Each indicator's `rationale` cites a source. The definitions, relationships and sources go in `backend/docs/indicators.md` before coding.
+  - Soil context (texture, SOC, drainage from SDA or SoilGrids) is attached as `context` and is never turned into a benefit number.
+- `compare/pareto.py`:
+  - Map the farmer's non-zero priorities to their indicators (the mapping table is in `docs/indicators.md`).
+  - Compute the non-dominated set over those indicators, comparing only candidates whose indicators are all available and that share a location and catalog. Missing indicators make a candidate `partial` and keep it out of dominance comparisons against complete ones; it gets listed separately.
+  - Order the shortlist by the weighted sum of **rank positions** (no raw-value arithmetic across units). Show the ordering method in the response.
+  - Report the trade-off pairs: which indicators each shortlisted plan wins and loses against the others.
+- Explanation per shortlisted plan:
+  - `why` (the indicators where it is best, with values and sources);
+  - `trade_offs`;
+  - `uncertainties` (modeled data, `ai_suggested` rules, `dataset_estimate` calendars, short coverage);
+  - `historical_vulnerabilities` (its worst 3 past seasons by its weakest indicator, with year links to the replay).
+  - The response says the shortlist is "not universally optimal; depends on these priorities and this history".
+- `POST /v1/plans/recommend` (contract §9): goals + field context → P1 candidates → indicators → shortlist and explanations. It also accepts a farmer-edited candidate list instead of generating one.
+
+Accept:
+- Dominance is tested on synthetic vectors: ties, a missing indicator, and a single candidate.
+- Union County, with `soil_cover` weighted 3, shortlists the rye plan and explains its bare-soil rain advantage and its dry-spring check trade-off, with the real numbers from compare.
+- Changing the weights reorders the shortlist without changing any indicator value.
+- No field in the response is a composite score.
+- Pergamino runs with its own thresholds.
+- Indicator definitions are in `docs/indicators.md`, each with a source.
+
+## P3 — Future multi-season farm plan (B, wave 4)
+
+Build:
+- Extend `planner/calendar.py` and `planner/backup.py` into `planner/future.py`, which takes a chosen plan (generated or edited), a start season and N seasons. It returns dated windows for each season (the actual future dates from the plan's MM-DD values plus the calendar), each with `origin` (`verified_source`, `dataset_estimate`, `grower` or `assumed`).
+- Each season contains:
+  - planting and harvest windows;
+  - the cover-crop schedule;
+  - management milestones;
+  - decision deadlines, using the existing switch-condition logic and `next_check_date`;
+  - source-backed explanations;
+  - warnings (rule flags);
+  - historical vulnerabilities (from P2);
+  - the backup strategy (the existing backup plan, per season).
+- Editing: an `edits[]` input (move a date, swap a cover, change a priority) returns the updated plan plus a diff that reuses the existing calendar diff. The analysis reruns through P2 for the changed plan only.
+- `POST /v1/plans/future` (contract §10). The field note (Phase 9) gains a `future_plan` section.
+
+Accept:
+- The Union rye plan over 2 seasons gives real 2027 and 2028 dates, and every date's `origin` is right.
+- Moving rye termination by 7 days updates the milestones and decision deadline, and the diff lists the changes.
+- A Pergamino plan gives southern dates crossing the calendar year.
+- The note includes the future plan with audit ids.
+
+## P4 — Goals and constraints UI (Abhi, wave 3)
+
+Per field:
+- Priority sliders (0–3) for the P1 list. The old priority picker becomes this.
+- Hard constraints and preferences, kept clearly apart.
+- Crop history entry.
+- Unknown stays a real answer.
+- Stored with the field in `acre.farms.v1`.
+
+Accept: values round-trip through storage and the contract §8 request fixture, and unknown never serialises as false.
+
+## P5 — Options and recommendation screens (Abhi, wave 4)
+
+Build:
+- "Find plans for this field" calls `/v1/plans/recommend` and shows the shortlist. Each plan gets its why, trade-offs, uncertainties and historical vulnerabilities, with origin badges and links to replay years.
+- A trade-off view over the farmer's chosen indicators: a small multiples table or chart, no composite score.
+- "Edit this plan" opens it in the field plan editor. `insufficient_data` shows the gaps and offers manual planning.
+
+Accept:
+- The Union fixture shows the rye plan's explanation.
+- No score appears anywhere (tested).
+- A weight change reorders without changing values.
+- `insufficient_data` renders the gaps.
+
+## P6 — Future plan editor (Abhi, wave 5)
+
+Build:
+- The selected plan becomes a multi-season timeline: windows, cover schedule, milestones, deadlines and the backup, from `/v1/plans/future`.
+- Dates are draggable, sending `edits[]` and showing the returned diff and updated analysis.
+- Sourced dates, assumptions and grower-entered dates are visibly different.
+- Print or export with the field note.
+
+Accept: a drag updates the deadline and the diff (mocked), origin styles are tested, and the export includes the future plan.

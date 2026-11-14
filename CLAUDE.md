@@ -2,21 +2,20 @@
 
 Field Shift is a historical stress test for crop plans: it replays a farmer's plan against decades of NASA weather and the published agricultural guidance for that place. It is going global: any farm, drawn on a map, with fields that each have their own plan. The plan is in `docs/global/plan.md` and is the source of truth. The API contract is `docs/global/contract.md`.
 
-Rahul is the only human on the project. Four Claude agents build it in parallel. Your launch prompt says which one you are. If it doesn't, ask before touching code.
+Rahul owns the backend, with Claude Agents A and B. Abhi is back and owns the frontend (all former Agent C and D cards). Your launch prompt says which one you are. If it doesn't, ask before touching code.
 
 | Agent | Side | Folder (worktree) | Branch |
 |---|---|---|---|
 | **A** | backend: weather, seasons, metrics, compare, farm API, contract, deploy | `/Users/rahulvuta/Desktop/Projects/NSA26` | `backend` |
 | **B** | backend: geo, catalogs, rules, AI research, planner, field tools, reports | `/Users/rahulvuta/Desktop/Projects/NSA26` | `backend` |
-| **C** | frontend: map, farm and field editor, geometry, 3D field shape | `/Users/rahulvuta/Desktop/Projects/NSA26-frontend` | `frontend/dev` |
-| **D** | frontend: app shell, state, API adapter, field planning screens, provenance UI | `/Users/rahulvuta/Desktop/Projects/NSA26-frontend` | `frontend/dev` |
+| **Abhi** (+ his AI) | all frontend cards (former C and D, plus P4–P6) | his own checkout | `frontend/dev` |
 
 Side rules still apply: `backend/CLAUDE.md` for A and B (engineering rules, status vocabulary, Codex gate), `web/CLAUDE.md` for C and D (theme kit, layout, no calculation). Where they disagree with this file on git, ownership or the remote, **this file wins**.
 
 ## 1. Git (hard rules)
 
 - Remote `origin` = https://github.com/rahulvuta/A.C.R.E (private). Never push anywhere else. The old repo `abhijandyala/sa2026` is retired: never push to it.
-- **A and B** commit only on `backend`, in the NSA26 folder. **C and D** commit only on `frontend/dev`, in the NSA26-frontend folder. Before every push, `git rev-parse --abbrev-ref HEAD` must print your branch; if not, stop.
+- **A and B** commit only on `backend`, in the NSA26 folder. **Abhi** (the frontend) commits only on `frontend/dev` (or `frontend/*` branches merged into it). Before every push, `git rev-parse --abbrev-ref HEAD` must print your branch; if not, stop.
 - **Never** commit to, merge into, reset, rebase or force-push `main`. Only Rahul's coordinating session merges `backend` and `frontend/dev` into `main` (at the end of each wave in the plan). Never force-push `backend` or `frontend/dev`.
 - Two agents share each folder: stage only paths you own (`git add <your paths>`, or `git commit -- <paths>`), never `git add -A`, never revert or reformat files you don't own, never run a formatter over the whole tree.
 - Frontend agents may `git merge origin/backend` into `frontend/dev` to pick up new endpoints (it only reads backend files). Backend agents never merge frontend branches.
@@ -31,8 +30,8 @@ Only edit what you own. Need a change elsewhere? Write it in your log (`docs/glo
 |---|---|
 | A | `backend/fieldshift/{weather,seasons,compare,api,farms}/`, `backend/fieldshift/contracts.py`, `backend/fieldshift/metrics/{winter,spring,thresholds}.py`, `backend/data/snapshots/`, `backend/data/samples/union_plans.json`, `backend/scripts/`, `backend/railway.json`, `backend/docs/api/`, `backend/docs/backend-runbook.md`, `docs/global/contract.md` (after G0) |
 | B | `backend/fieldshift/{geo,catalogs,research,planner,field,tools,report}/`, `backend/fieldshift/metrics/{rules,rule_text}.py`, `backend/data/{catalogs/regions,catalogs/v3,geo}/`, `backend/data/samples/zones.json` |
-| C | `web/src/{map,farm,scene}/`, `web/tests/e2e/map*`, `web/tests/e2e/farm*` |
-| D | `web/src/{api,state,screens,view,content,site,ui,styles,data}/`, `web/src/{App,main,config}.tsx?`, `web/public/data/`, `web/scripts/`, `web/tests/e2e/` (other than C's files) |
+| Abhi (was C) | `web/src/{map,farm,scene}/`, `web/tests/e2e/map*`, `web/tests/e2e/farm*` |
+| Abhi (was D) | `web/src/{api,state,screens,view,content,site,ui,styles,data}/`, `web/src/{App,main,config}.tsx?`, `web/public/data/`, `web/scripts/`, `web/tests/e2e/` (other than C's files) |
 | shared (small `Edit`, re-read right before) | `backend/pyproject.toml`, `backend/Makefile`, `web/package.json`, `web/package-lock.json` (only via `npm install <pkg>@<exact version>`), `web/vite.config.ts` |
 | each agent its own | `docs/global/log-A.md` … `log-D.md`, tests next to its code (`backend/tests/<area>/`, `*.test.ts(x)` beside the file) |
 | Rahul only | `CLAUDE.md` (this file), `docs/global/plan.md` (agents append nothing here; status goes in your log) |
