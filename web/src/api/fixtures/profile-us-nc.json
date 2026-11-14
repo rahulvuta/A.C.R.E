@@ -1,0 +1,81 @@
+{
+  "_fixture": "Synthetic fixture built from docs/global/contract.md (Agent D). Not real backend output; geometry is invented.",
+  "meta": {
+    "plan_version": "fixture",
+    "catalog_version": "v3:fixture",
+    "snapshot_hash": "fixture-0000",
+    "request_id": "fx_profile_nc"
+  },
+  "region_key": "US-NC",
+  "status": "complete",
+  "research": null,
+  "crops": [
+    {
+      "crop_id": "maize",
+      "name": "Corn",
+      "roles": [
+        "cash"
+      ],
+      "calendar": {
+        "plant": {
+          "start": "04-01",
+          "end": "05-15"
+        },
+        "harvest": {
+          "start": "08-15",
+          "end": "10-31"
+        },
+        "origin": "verified_source",
+        "source": {
+          "title": "NC State Corn Production Guide",
+          "url": "https://corn.ces.ncsu.edu/"
+        }
+      }
+    },
+    {
+      "crop_id": "soybean",
+      "name": "Soybean",
+      "roles": [
+        "cash"
+      ],
+      "calendar": {
+        "plant": {
+          "start": "05-01",
+          "end": "06-30"
+        },
+        "harvest": {
+          "start": "10-01",
+          "end": "11-30"
+        },
+        "origin": "verified_source",
+        "source": {
+          "title": "NC State Soybean Production Guide",
+          "url": "https://soybeans.ces.ncsu.edu/"
+        }
+      }
+    }
+  ],
+  "cover_crops": [
+    {
+      "crop_id": "cereal_rye",
+      "name": "Cereal rye",
+      "origin": "verified_source",
+      "sources": [
+        {
+          "title": "NC State cover crop guide",
+          "url": "https://www.carolinacovers.org/"
+        }
+      ]
+    }
+  ],
+  "rotations": [
+    {
+      "label": "Corn → rye cover → soybean",
+      "origin": "verified_source",
+      "sources": []
+    }
+  ],
+  "rules": [],
+  "gaps": [],
+  "disclaimer": null
+}

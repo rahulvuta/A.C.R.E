@@ -12,6 +12,27 @@ import {
   toBackendPlan,
   type CompareExtras,
 } from "./adapt";
+import {
+  adaptCapabilities,
+  adaptFarmAnalysis,
+  adaptGeoSearch,
+  adaptIssues,
+  adaptProfile,
+  adaptResearch,
+  adaptReverse,
+  adaptWeather,
+  BackendCapabilities,
+  BackendFarmAnalysis,
+  BackendGeoSearch,
+  BackendIssues,
+  BackendProfile,
+  BackendResearch,
+  BackendReverse,
+  BackendWeather,
+  toBackendFarm,
+} from "./adapt";
+import type { Capabilities, FarmAnalysis, GeoSearch, InputIssue, PlaceInfo, RegionProfile, ResearchJob, WeatherCell } from "./model";
+import type { Farm } from "../farm/types";
 import { LocationResolveResponse, ReplayResponse, type CompareResponse, type PlanInput, type SensitivityResponse, type YearsResponse } from "./schema";
 
 /*
@@ -28,14 +49,16 @@ export type Origin = "saved" | "live";
 
 export type Failure = {
   ok: false;
-  kind: "timeout" | "network" | "not-found" | "parse" | "schema" | "stale" | "offline";
+  kind: "timeout" | "network" | "not-found" | "parse" | "schema" | "stale" | "offline" | "invalid";
   message: string;
   detail?: string;
+  /** For `invalid`: the backend's typed issues (HTTP 400 invalid_input), each naming its field. */
+  issues?: InputIssue[];
 };
 export type Success<T> = { ok: true; data: T; origin: Origin };
 export type Result<T> = Success<T> | Failure;
 
-type FetchLike = (
+export type FetchLike = (
   input: string,
   init?: { signal?: AbortSignal; method?: string; headers?: Record<string, string>; body?: string },
 ) => Promise<{ ok: boolean; status: number; text: () => Promise<string>; headers?: { get: (n: string) => string | null } }>;
@@ -63,6 +86,16 @@ async function getJson<T>(
   try {
     const res = await opts.fetchImpl(url, { ...opts.init, signal: controller.signal });
     if (res.status === 404) return { ok: false, kind: "not-found", message: "That data file was not found." };
+    if (res.status === 400) {
+      let issues: InputIssue[] = [];
+      try {
+        const parsed = BackendIssues.safeParse(JSON.parse(await res.text()));
+        if (parsed.success) issues = adaptIssues(parsed.data);
+      } catch {
+        /* a 400 without a readable body still says the input was refused */
+      }
+      return { ok: false, kind: "invalid", message: issues[0]?.message ?? "The service could not accept this input.", issues };
+    }
     if (!res.ok) return { ok: false, kind: "network", message: `The service answered with an error (HTTP ${res.status}).` };
     text = await res.text();
     if (looksLikeHtml(res.headers?.get("content-type"), text)) {
@@ -219,3 +252,54 @@ export function latestOnly() {
     isLatest: (t: number) => t === ticket,
   };
 }
+
+/*
+  The global API (docs/global/contract.md §2–§7): map search, place, capabilities, weather
+  on demand, farm analysis, regional profile and research. Every answer goes through
+  adapt.ts. Without a service (no VITE_API_BASE) each call is an `offline` failure, so the
+  screens say so instead of inventing data; tests and the fixture mode pass `fixtureFetch`.
+  Coordinates go only in the request to the service, never in a log.
+*/
+export function createGlobalClient(opts: { apiBase: string | null; timeoutMs: number; fetchImpl?: FetchLike }) {
+  const fetchImpl: FetchLike = opts.fetchImpl ?? ((u, init) => fetch(u, init));
+  const base = { timeoutMs: opts.timeoutMs, fetchImpl };
+  const api = (path: string) => (opts.apiBase ? `${opts.apiBase.replace(/\/$/, "")}${path}` : null);
+  const offline: Failure = { ok: false, kind: "offline", message: "This needs the A.C.R.E service, which is not connected in this build." };
+  const post = (body: unknown) => ({ method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+  const coords = (p: LatLon) => `lat=${encodeURIComponent(p.latitude)}&lon=${encodeURIComponent(p.longitude)}`;
+
+  async function call<B, T>(
+    path: string,
+    schema: ZodType<B, ZodTypeDef, unknown>,
+    make: (b: B) => T,
+    init?: { method?: string; headers?: Record<string, string>; body?: string },
+  ): Promise<Result<T>> {
+    const url = api(path);
+    if (!url) return offline;
+    const r = await getJson(url, schema, { ...base, init });
+    if (!r.ok) return r;
+    try {
+      return { ok: true, data: make(r.data), origin: "live" };
+    } catch (err) {
+      const issue = (err as { issues?: Array<{ path: Array<string | number>; message: string }> }).issues?.[0];
+      return { ok: false, kind: "schema", message: "The data does not match the agreed format.", detail: issue ? `${issue.path.join(".")}: ${issue.message}` : String(err) };
+    }
+  }
+
+  return {
+    hasLiveApi: Boolean(opts.apiBase),
+    geoSearch: (q: string, limit = 5): Promise<Result<GeoSearch>> =>
+      call(`/v1/geo/search?q=${encodeURIComponent(q)}&limit=${limit}`, BackendGeoSearch, adaptGeoSearch),
+    geoReverse: (p: LatLon): Promise<Result<PlaceInfo>> => call(`/v1/geo/reverse?${coords(p)}`, BackendReverse, adaptReverse),
+    capabilities: (p: LatLon): Promise<Result<Capabilities>> => call(`/v1/locations/capabilities?${coords(p)}`, BackendCapabilities, adaptCapabilities),
+    prepareWeather: (p: LatLon, refresh = false): Promise<Result<WeatherCell>> =>
+      call("/v1/weather/prepare", BackendWeather, adaptWeather, post({ location: { latitude: p.latitude, longitude: p.longitude }, refresh })),
+    weather: (cellId: string): Promise<Result<WeatherCell>> => call(`/v1/weather/${encodeURIComponent(cellId)}`, BackendWeather, adaptWeather),
+    analyzeFarm: (farm: Farm): Promise<Result<FarmAnalysis>> => call("/v1/farms/analyze", BackendFarmAnalysis, adaptFarmAnalysis, post(toBackendFarm(farm))),
+    regionProfile: (regionKey: string): Promise<Result<RegionProfile>> =>
+      call(`/v1/regions/${encodeURIComponent(regionKey)}/profile`, BackendProfile, adaptProfile),
+    startResearch: (regionKey: string): Promise<Result<ResearchJob>> => call("/v1/regions/research", BackendResearch, adaptResearch, post({ region_key: regionKey })),
+    research: (jobId: string): Promise<Result<ResearchJob>> => call(`/v1/regions/research/${encodeURIComponent(jobId)}`, BackendResearch, adaptResearch),
+  };
+}
+export type GlobalClient = ReturnType<typeof createGlobalClient>;

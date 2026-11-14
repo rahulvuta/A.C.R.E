@@ -1,0 +1,38 @@
+{
+  "_fixture": "Synthetic fixture built from docs/global/contract.md (Agent D). Not real backend output; geometry is invented.",
+  "meta": {
+    "plan_version": "fixture",
+    "catalog_version": "v3:fixture",
+    "snapshot_hash": "fixture-0000",
+    "request_id": "fx_weather_ready"
+  },
+  "cell_id": "lat-34.00_lon-60.625",
+  "job_status": "ready",
+  "status": "complete",
+  "reason": null,
+  "reason_text": null,
+  "source": "fetched",
+  "snapshot_hash": "fixture-perg-0001",
+  "retrieved_at": "2026-11-14T15:02:11Z",
+  "cell": {
+    "center": {
+      "latitude": -34,
+      "longitude": -60.625
+    },
+    "size_deg": [
+      0.5,
+      0.625
+    ],
+    "note": "One NASA POWER weather series covers this whole cell."
+  },
+  "coverage": {
+    "first_date": "1981-01-01",
+    "last_date": "2026-11-10",
+    "complete_pre_plant_windows": null,
+    "complete_years": 45,
+    "missing_days": {
+      "PRECTOTCORR": 0
+    },
+    "status": "complete"
+  }
+}

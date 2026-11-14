@@ -1,0 +1,34 @@
+{
+  "_fixture": "Synthetic fixture built from docs/global/contract.md (Agent D). Not real backend output; geometry is invented.",
+  "meta": {
+    "plan_version": "fixture",
+    "catalog_version": "v3:fixture",
+    "snapshot_hash": "fixture-0000",
+    "request_id": "fx_reverse_union"
+  },
+  "status": "complete",
+  "place": {
+    "display": "Union County, North Carolina, United States",
+    "country": "US",
+    "country_name": "United States",
+    "admin1": "US-NC",
+    "admin1_name": "North Carolina",
+    "admin2_name": "Union County"
+  },
+  "hemisphere": "north",
+  "on_land": true,
+  "climate": {
+    "koppen": "Cfa",
+    "label": "Humid subtropical",
+    "resolution_km": 5,
+    "source": "Beck et al. 2023, Koppen-Geiger 1991-2020",
+    "origin": "dataset_estimate"
+  },
+  "cell_id": "lat35.00_lon-80.625",
+  "region_keys": [
+    "US-NC",
+    "US",
+    "koppen:Cfa"
+  ],
+  "nc_region": "Piedmont"
+}

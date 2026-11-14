@@ -1,0 +1,15 @@
+{
+  "_fixture": "Synthetic fixture built from docs/global/contract.md (Agent D). Not real backend output; geometry is invented.",
+  "meta": {
+    "plan_version": "fixture",
+    "catalog_version": "v3:fixture",
+    "snapshot_hash": "fixture-0000",
+    "request_id": "fx_research_off"
+  },
+  "job_id": null,
+  "job_status": "failed",
+  "region_key": "AR-B",
+  "status": "unavailable",
+  "reason": "research_not_configured",
+  "reason_text": "AI research is not set up on this service; the crop calendar dataset is used instead."
+}

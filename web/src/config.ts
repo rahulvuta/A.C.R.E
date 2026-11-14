@@ -17,3 +17,13 @@ export const API_BASE: string | null = (import.meta.env.VITE_API_BASE as string 
 export const LOAD_TIMEOUT_MS = 8000;
 // A sleeping free-tier host can take a while to wake; past this the saved sample stays.
 export const LIVE_TIMEOUT_MS = 20000;
+
+// Fixture mode (no service, sample responses from src/api/fixtures/): `?fixtures=1`, or
+// VITE_API_FIXTURES=1 at build time. Every screen that uses it says "Sample responses".
+export const FIXTURE_MODE: boolean =
+  !API_BASE &&
+  ((import.meta.env.VITE_API_FIXTURES as string | undefined) === "1" ||
+    (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("fixtures") === "1"));
+
+// Bounded wait for the global endpoints (search, place, capabilities, farm analysis).
+export const GLOBAL_TIMEOUT_MS = 20000;

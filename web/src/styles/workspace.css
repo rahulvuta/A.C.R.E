@@ -1,0 +1,28 @@
+/* The global workspace (cards D1–D3): map entry, farm overview, field pages. Kit tokens only. */
+.ws-main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+}
+.ws-map {
+  flex: 1;
+  min-height: 560px;
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.ws-map > * {
+  flex: 1;
+  min-width: 0;
+}
+.ws-nomap {
+  display: grid;
+  place-content: center;
+  gap: 12px;
+  padding: 32px;
+  color: var(--ink-muted);
+  text-align: center;
+}
