@@ -42,8 +42,13 @@ def test_a_corrupted_example_fails_validation():
 
 
 SPECS = {e.name: e for e in contract.example_specs()}
-SCHEMA_CHECKED = ["calendar", "backup", "note", "note_get", "compare", "compare_unsupported_location", "error_invalid_input", "health",
-                  "replay", "sensitivity", "years", "rotations"]
+SCHEMA_CHECKED = ["calendar", "backup", "note", "note_get", "compare", "compare_outside_nc_offline", "error_invalid_input", "health",
+                  "replay", "sensitivity", "years", "rotations",
+                  # A4: the global endpoints
+                  "weather_prepare_union", "weather_prepare_pergamino", "weather_get_offline",
+                  "weather_prepare_pending", "compare_pergamino", "years_post_pergamino",
+                  "sensitivity_pergamino", "farm_analyze_nc_pergamino", "farm_analyze_offline",
+                  "farm_invalid_bowtie", "recommend_union", "recommend_pergamino"]
 
 
 @pytest.mark.parametrize("name", SCHEMA_CHECKED)
@@ -244,3 +249,21 @@ def test_exception_tracebacks_never_carry_message_text_into_logs(caplog, monkeyp
 def test_cors_allows_vite_fallback_port():
     r = TestClient(create_app()).get("/health", headers={"Origin": "http://localhost:5174"})
     assert r.headers.get("access-control-allow-origin") == "http://localhost:5174"
+
+
+def test_global_examples_say_what_they_show():
+    ex = lambda n: json.loads((contract.EXAMPLES_DIR / f"{n}.json").read_text())  # noqa: E731
+    assert ex("weather_prepare_union")["source"] == "committed"
+    assert ex("weather_prepare_pergamino")["job_status"] == "ready"
+    assert ex("weather_prepare_pending")["job_status"] == "pending"
+    assert ex("weather_get_offline")["reason"] == "offline_no_snapshot"
+    assert ex("compare_outside_nc_offline")["weather_location"]["code"] == "offline_no_snapshot"
+    perg = ex("compare_pergamino")
+    assert perg["plans"][0]["hemisphere"] == "south"
+    assert perg["thresholds"]["heavy_rain"]["method"] == "etccdi_r95p"
+    farm = ex("farm_analyze_nc_pergamino")
+    assert [f["scope"] for f in farm["fields"]] == ["nc", "global"]
+    assert "coordinates" not in json.dumps(farm)
+    assert ex("farm_invalid_bowtie")["issues"][0]["code"] == "self_intersection"
+    for n in ("recommend_union", "recommend_pergamino"):
+        assert "score" not in json.dumps(ex(n)).lower()

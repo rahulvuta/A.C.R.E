@@ -65,6 +65,20 @@ class HeavyRainRule:
 
 HEAVY_RAIN_RULE = HeavyRainRule(method="published_reference")
 
+#: Outside North Carolina (A2): the cell's own 95th percentile of wet days (>= 1 mm) over the
+#: 1981-2010 base period, all months. That is the ETCCDI R95p threshold definition (Expert Team on
+#: Climate Change Detection and Indices; Zhang et al. 2011, WIREs Climate Change 2:851-870).
+ETCCDI_BASE = (1981, 2010)
+ETCCDI_R95P_NOTE = (
+    "This cell's own 95th percentile of wet-day (>= 1 mm) daily precipitation over the 1981-2010 "
+    "base period (the ETCCDI R95p threshold definition), computed once from NASA POWER daily "
+    "values and frozen. It is a local heavy-rain marker, not a published agronomic threshold. "
+    "Solar-day (LST) daily values; rainfall depth only, not erosion or soil loss. Zero-count "
+    "seasons are valid results."
+)
+ETCCDI_R95P_RULE = HeavyRainRule(method="etccdi_r95p", months=tuple(range(1, 13)),
+                                 note=ETCCDI_R95P_NOTE)  # fmt: skip
+
 
 class ReferenceError(RuntimeError):
     """The weather reference row is missing or unusable."""
@@ -101,10 +115,47 @@ def _published_threshold(series: DailySeries, rule: HeavyRainRule, span: str) ->
     )
 
 
+def _etccdi_r95p_threshold(series: DailySeries, rule: HeavyRainRule) -> Threshold:
+    start, end = ETCCDI_BASE
+    frame = series.frame
+    in_base = (frame.index.year >= start) & (frame.index.year <= end)
+    precip = frame.loc[in_base, "precip_mm"].dropna()
+    wet = precip[precip >= rule.wet_day_min_mm]
+    base_days = int(in_base.sum())
+    expected = sum(366 if (y % 4 == 0 and (y % 100 != 0 or y % 400 == 0)) else 365
+                   for y in range(start, end + 1))  # fmt: skip
+    valid = int(len(precip))
+    params: dict[str, Any] = {
+        "assumed": False, "inclusive": True, "comparison": "daily precip_mm >= value",
+        "percentile": rule.percentile, "wet_day_min_mm": rule.wet_day_min_mm,
+        "base_period": [start, end], "base_valid_days": valid, "base_expected_days": expected,
+        "quantile_method": "numpy linear interpolation over wet days",
+        "daily_value_basis": "NASA POWER PRECTOTCORR, time_standard=LST (solar day)",
+        "scope": "rainfall depth only; not erosion or soil loss",
+    }  # fmt: skip
+    span = f"{start}-01-01..{end}-12-31"
+    # The base period must be mostly present: at least 25 of its 30 years of valid days.
+    if base_days == 0 or valid < expected * 25 / 30 or wet.empty:
+        return Threshold(
+            name=HEAVY_RAIN_NAME, method=rule.method, value=None, unit="mm/day",
+            parameters=params, reference_span=span, n_reference=int(len(wet)),
+            status=Status.INSUFFICIENT_DATA,
+            note="Too little of the 1981-2010 base period is in this cell's record to fix a "
+            "local heavy-rain value.",
+        )  # fmt: skip
+    value = round(float(np.percentile(wet.to_numpy(), rule.percentile)), 3)
+    return Threshold(
+        name=HEAVY_RAIN_NAME, method=rule.method, value=value, unit="mm/day", parameters=params,
+        reference_span=span, n_reference=int(len(wet)), note=rule.note,
+    )
+
+
 def heavy_rain_threshold(series: DailySeries, rule: HeavyRainRule = HEAVY_RAIN_RULE) -> Threshold:
     span = f"{series.first_date.isoformat()}..{series.last_date.isoformat()}"
     if rule.method == "published_reference":
         return _published_threshold(series, rule, span)
+    if rule.method == "etccdi_r95p":
+        return _etccdi_r95p_threshold(series, rule)
     params: dict[str, Any] = {"assumed": True, "inclusive": True}
     if rule.method == "fixed_mm":
         assert rule.fixed_mm is not None
@@ -147,8 +198,13 @@ def build_threshold_set(
     snapshot_hash: str,
     plant_mds: tuple[str, ...] | list[str] = (),
     heavy_rule: HeavyRainRule = HEAVY_RAIN_RULE,
+    location: str | None = None,
 ) -> ThresholdSet:
-    """Compute every threshold once. Spring dry cutoffs are added per planting MM-DD (Phase 4a)."""
+    """Compute every threshold once. Spring dry cutoffs are added per planting MM-DD (Phase 4a).
+
+    ``location`` (the POWER cell id) and each threshold's ``origin`` are labels; they never change
+    a value or the ``threshold_set_id``.
+    """
     thresholds: dict[str, Threshold] = {HEAVY_RAIN_NAME: heavy_rain_threshold(series, heavy_rule)}
     if plant_mds:
         from fieldshift.metrics.spring import spring_dry_threshold
@@ -156,4 +212,11 @@ def build_threshold_set(
         for md in sorted(set(plant_mds)):
             t = spring_dry_threshold(series, md)
             thresholds[t.name] = t
-    return ThresholdSet(snapshot_hash=snapshot_hash, thresholds=thresholds)
+    labelled = {
+        name: t.model_copy(update={
+            "location": location,
+            "origin": "verified_source" if t.source is not None else "calculation",
+        })  # fmt: skip
+        for name, t in thresholds.items()
+    }
+    return ThresholdSet(snapshot_hash=snapshot_hash, thresholds=labelled)

@@ -1,0 +1,24 @@
+{
+  "body": {
+    "location": {
+      "latitude": -33.89,
+      "longitude": -60.57
+    },
+    "plan": {
+      "next_crop_id": "soybean",
+      "next_plant": "11-15",
+      "plan_id": "perg_soy",
+      "prev_harvest": "04-20",
+      "previous_crop_id": "maize",
+      "winter": {
+        "crop_id": "cereal_rye",
+        "kind": "cover",
+        "seed": "05-01",
+        "terminate": "10-20"
+      }
+    }
+  },
+  "method": "POST",
+  "status": 200,
+  "url": "/v1/years"
+}

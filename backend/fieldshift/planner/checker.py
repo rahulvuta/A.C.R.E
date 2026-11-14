@@ -129,6 +129,47 @@ def facts_from_calendar(plan: Plan, cal: SeasonCalendar) -> SeasonFacts:
     )
 
 
+_CROP_FIELDS = ("previous_crop_id", "next_crop_id")
+
+
+def unknown_crop_issues(plan: Plan) -> list[FieldIssue]:
+    """Crop ids that are not crops at all (not in the generalised list nor an alias)."""
+    from fieldshift.catalogs import crop_ids
+
+    out: list[FieldIssue] = []
+    slots = [(f, getattr(plan, f)) for f in _CROP_FIELDS]
+    if plan.winter.kind != "none" and plan.winter.crop_id:
+        slots.append(("winter.crop_id", plan.winter.crop_id))
+    for name, cid in slots:
+        if not crop_ids.is_known(cid):
+            out.append(FieldIssue(field=name, code="unknown_crop",
+                                  message=f"'{cid}' is not a known crop id"))  # fmt: skip
+    return out
+
+
+def map_plan_to_catalog(plan: Plan, index: CatalogIndex) -> Plan:
+    """The same plan with each crop id spelled the way ``index`` spells it (aliases: ``maize`` is
+    ``field_corn`` in the NC catalog and the other way round elsewhere). Unknown ids stay."""
+    from fieldshift.catalogs import crop_ids
+
+    upd: dict[str, Any] = {}
+    for f in _CROP_FIELDS:
+        cid = getattr(plan, f)
+        mapped = crop_ids.id_in_catalog(cid, index.crops)
+        if mapped and mapped != cid:
+            upd[f] = mapped
+    if plan.winter.crop_id:
+        mapped = crop_ids.id_in_catalog(plan.winter.crop_id, index.crops)
+        if mapped and mapped != plan.winter.crop_id:
+            upd["winter"] = plan.winter.model_copy(update={"crop_id": mapped})
+    return plan.model_copy(update=upd) if upd else plan
+
+
+def is_regional(index: CatalogIndex) -> bool:
+    """A non-NC regional catalog (B2), where NC region text does not apply."""
+    return getattr(index, "in_nc", True) is False
+
+
 def _unsupported(plan: Plan, index: CatalogIndex) -> list[str]:
     out: list[str] = []
     slots = [("previous_crop_id", plan.previous_crop_id, "cash_crop"),
@@ -143,7 +184,7 @@ def _unsupported(plan: Plan, index: CatalogIndex) -> list[str]:
             )
         elif crop.crop_role != role:
             out.append(f"{field}: '{crop_id}' is a {crop.crop_role}, but this slot needs a {role}")
-    if not region_supported(plan.region):
+    if not is_regional(index) and not region_supported(plan.region):
         out.append(f"region: '{plan.region}' is outside North Carolina; guidance is NC-only")
     return out
 
@@ -206,6 +247,10 @@ def check_plan(
 ) -> CheckResult:
     """Check ``plan`` for one planting ``year`` (default: the next planting season)."""
     year = year or default_planting_year()
+    plan = map_plan_to_catalog(plan, index)
+    if is_regional(index) and (bad := unknown_crop_issues(plan)):
+        return CheckResult(status=Status.INVALID_INPUT, plan_id=plan.plan_id, year=year,
+                           issues=bad)  # fmt: skip
     unsupported = _unsupported(plan, index)
     if unsupported:
         return CheckResult(

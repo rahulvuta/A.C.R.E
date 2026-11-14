@@ -140,6 +140,9 @@ class RuleSource(BaseModel):
     url: str | None
     locator: str | None
     verified_date: str | None
+    # catalog v3 (B2): who stands behind the row and the words it rests on
+    evidence_quote: str | None = None
+    limitations: str | None = None
 
 
 class RuleCheck(BaseModel):
@@ -170,6 +173,10 @@ class RuleCheck(BaseModel):
     # target. ``None`` when the rule carries no number; a real 0 (sb_nut_01) is kept.
     reference: dict[str, Any] | None = None
     source: RuleSource
+    # B2: provenance of the catalog row (verified_source for NC; source_checked / ai_suggested /
+    # dataset_estimate elsewhere) and the region it was written for.
+    origin: str = "verified_source"
+    region_key: str = "US-NC"
 
 
 class SeasonEvaluation(BaseModel):
@@ -661,7 +668,13 @@ def _source(rule: CropRule) -> RuleSource:
         url=rule.source_url,
         locator=rule.source_locator,
         verified_date=rule.verified_date.isoformat() if rule.verified_date else None,
+        evidence_quote=rule.evidence_quote,
+        limitations=rule.limitations,
     )
+
+
+#: Only rows a person verified, or whose quote code found on the cited page, go on a printed page.
+PRINTABLE_ORIGINS = frozenset({"verified_source", "source_checked"})
 
 
 def _check(rule: CropRule, status: Status, reason: str, **kw: Any) -> RuleCheck:
@@ -674,13 +687,16 @@ def _check(rule: CropRule, status: Status, reason: str, **kw: Any) -> RuleCheck:
     )  # fmt: skip
     return RuleCheck(
         text=text,
-        print=rule_text.should_print(
+        print=rule.origin in PRINTABLE_ORIGINS
+        and rule_text.should_print(
             rule,
             status=status,
             flagged=flagged,
             chronology_conflict=chrono,
             has_gate=rule.rule_id in GATES,
         ),
+        origin=rule.origin,
+        region_key=rule.region_key,
         rule_id=rule.rule_id,
         crop_id=rule.crop_id,
         rule_type=rule.rule_type,
@@ -709,6 +725,15 @@ def _verdict(rule: CropRule, met: bool) -> tuple[Verdict | None, bool]:
     return "manual_check", False  # informational row with no suitability
 
 
+def _region(rule: CropRule, view: SeasonView) -> tuple[str, str]:
+    """NC rows use the NC region table. A row written for another region key (catalog v3) only
+    ever reaches a season through ``catalog_for_location``, which loads just the rows of the
+    location's own region chain, so it applies; its region text is never read as NC geography."""
+    if rule.region_key != "US-NC":
+        return "match", f"rule written for region {rule.region_key}, this location's catalog"
+    return region_match(rule.region, view.region)
+
+
 def evaluate_rule(
     rule: CropRule,
     view: SeasonView,
@@ -725,7 +750,12 @@ def evaluate_rule(
             f"growth stage '{rule.growth_stage}' is outside the evaluated stages",
             verdict="inapplicable",
         )
-    match, why = region_match(rule.region, view.region)
+    match, why = _region(rule, view)
+    if match == "no_match":
+        return _check(rule, "inapplicable", why, verdict="inapplicable")
+    if rule.review == "manual_check":  # its numbers are not in its quote: a person must check it
+        return _check(rule, "manual_check", "the cited quote does not contain this row's numbers",
+                      verdict="manual_check")
     if match == "no_match":
         return _check(rule, "inapplicable", why, verdict="inapplicable")
     if match == "unknown":
@@ -835,9 +865,10 @@ def _mark_conflicts(checks: list[RuleCheck], index: CatalogIndex) -> None:
     }
     for rid in list(live):
         rule = index.rule(rid)
-        if rule is None or not rule.guidance:
+        if rule is None:
             continue
-        for other in _CONFLICT_RE.findall(rule.guidance):
+        declared = [x.strip() for x in (rule.conflicts_with or "").split(";") if x.strip()]
+        for other in dict.fromkeys([*_CONFLICT_RE.findall(rule.guidance or ""), *declared]):
             if other in live and other != rid:
                 for a, b in ((rid, other), (other, rid)):
                     chk = by_id[a]
@@ -847,7 +878,8 @@ def _mark_conflicts(checks: list[RuleCheck], index: CatalogIndex) -> None:
                         chk.text = _sentence_join(
                             chk.text, f"the sources disagree here (see {b}) and neither is chosen"
                         )
-                    chk.print = True  # conflicting guidance is worth putting on the page
+                    # conflicting guidance is worth putting on the page (unconfirmed AI rows never)
+                    chk.print = chk.origin in PRINTABLE_ORIGINS
 
 
 def evaluate_season(

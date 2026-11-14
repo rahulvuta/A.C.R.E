@@ -1,0 +1,14 @@
+{
+  "body": {
+    "goals": {
+      "priorities": {
+        "management_simplicity": 1,
+        "soil_cover": 3
+      }
+    },
+    "location_id": "union"
+  },
+  "method": "POST",
+  "status": 200,
+  "url": "/v1/plans/recommend"
+}

@@ -96,6 +96,8 @@ def derive_grid_cell(latitude: float, longitude: float) -> dict[str, float | str
     """Return the MERRA-2 cell (0.5 x 0.625 deg) containing the point. Derived, not API-stated."""
     lat_center = round(-90.0 + GRID_LAT_STEP * round((latitude + 90.0) / GRID_LAT_STEP), 6)
     lon_center = round(-180.0 + GRID_LON_STEP * round((longitude + 180.0) / GRID_LON_STEP), 6)
+    if lon_center >= 180.0:  # the cell centred on the antimeridian is -180, not +180
+        lon_center = round(lon_center - 360.0, 6)
     return {
         "center_latitude": lat_center,
         "center_longitude": lon_center,

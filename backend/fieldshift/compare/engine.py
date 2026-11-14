@@ -11,6 +11,7 @@ import hashlib
 import json
 import statistics
 from dataclasses import dataclass
+from datetime import timedelta
 from typing import Any
 
 from fieldshift.compare.context import Context
@@ -30,6 +31,7 @@ from fieldshift.compare.models import (
     CalendarSummary,
     CheckSummaryOut,
     PlanComparison,
+    PlanCoverage,
     RuleLine,
     SeasonRow,
     SharedYears,
@@ -54,7 +56,12 @@ from fieldshift.metrics.spring import (
     compute_spring,
     spring_reference,
 )
-from fieldshift.metrics.thresholds import HEAVY_RAIN_NAME, build_threshold_set
+from fieldshift.metrics.thresholds import (
+    ETCCDI_R95P_RULE,
+    HEAVY_RAIN_NAME,
+    HEAVY_RAIN_RULE,
+    build_threshold_set,
+)
 from fieldshift.metrics.winter import ALL_SEGMENTS, WinterExposure, compute_winter
 from fieldshift.planner.checker import check_plan
 from fieldshift.seasons.align import build_calendar
@@ -81,16 +88,56 @@ CHECK_META: dict[str, tuple[str, str, str]] = {
 
 # --------------------------------------------------------------------------- shared caches
 
-_THRESHOLD_CACHE: dict[tuple[str, tuple[str, ...]], ThresholdSet] = {}
+_THRESHOLD_CACHE: dict[tuple[Any, ...], ThresholdSet] = {}
 _REFERENCE_CACHE: dict[tuple[str, str], SpringReference] = {}
 
 
 def threshold_set_for(ctx: Context, plant_mds: list[str]) -> ThresholdSet:
-    """The one frozen ThresholdSet for a request (cached; immutable, so safe to share)."""
-    key = (ctx.snapshot_hash, tuple(sorted(set(plant_mds))))
+    """The one frozen ThresholdSet for a request (cached; immutable, so safe to share).
+
+    Heavy rain is the published 76.2 mm in North Carolina and the cell's own ETCCDI R95p
+    elsewhere (A2); the scope is part of the key, so a border cell never mixes the two.
+    """
+    mds = tuple(sorted(set(plant_mds)))
+    key = (ctx.snapshot_hash, mds, ctx.scope, ctx.cell_id)
     if key not in _THRESHOLD_CACHE:
-        _THRESHOLD_CACHE[key] = build_threshold_set(ctx.series, ctx.snapshot_hash, list(key[1]))
+        rule = HEAVY_RAIN_RULE if ctx.is_nc else ETCCDI_R95P_RULE
+        _THRESHOLD_CACHE[key] = build_threshold_set(ctx.series, ctx.snapshot_hash, list(mds),
+                                                    rule, location=ctx.cell_id)  # fmt: skip
     return _THRESHOLD_CACHE[key]
+
+
+def has_rules(ctx: Context) -> bool:
+    """False outside NC while no regional catalog is loaded: every rule is then unknown."""
+    return bool(ctx.index.catalog.rules)
+
+
+MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+SPRING_LABEL = "30 days before planting"
+
+
+def off_season_label(plan: Plan, ctx: Context) -> str:
+    """``Winter`` in North Carolina (unchanged wording); elsewhere ``Off-season (Apr–Nov)``, the
+    months of the [previous harvest, planting) window, which works in either hemisphere."""
+    if ctx.is_nc:
+        return "Winter"
+    cal = build_calendar(plan, REFERENCE_YEAR)
+    first = MONTHS[cal.prev_harvest.month - 1]
+    last = MONTHS[(cal.plant - timedelta(days=1)).month - 1]
+    return f"Off-season ({first})" if first == last else f"Off-season ({first}–{last})"
+
+
+def plan_coverage(bundles: list[SeasonBundle], ctx: Context) -> PlanCoverage:
+    """Which planting years this plan's windows can use at this cell (coverage-aware eras)."""
+    def ok(metric: str) -> list[int]:
+        return [b.year for b in bundles if b.coverage.metrics[metric].status == Status.COMPLETE]
+
+    cov = ctx.manifest["coverage"]
+    return PlanCoverage(
+        first_date=cov["first_date"], last_date=cov["last_date"],
+        available_years=ok("full_season"), spring_available_years=ok("spring"),
+        off_season_available_years=ok("winter"), cell_id=ctx.cell_id,
+    )  # fmt: skip
 
 
 def reference_for(ctx: Context, plant_md: str) -> SpringReference:
@@ -147,7 +194,12 @@ def season_bundle(
     winter = compute_winter(plan, cal, ctx.series, ts, ctx.snapshot_hash)
     spring = compute_spring(plan, cal, ctx.series, ts, ctx.snapshot_hash, ref)
     facts = build_season_facts(plan, cal, spring, cov)
-    return SeasonBundle(year, cal, cov, winter, spring, facts, evaluate_season(facts, ctx.index))
+    if not has_rules(ctx):  # no regional catalog: nothing to evaluate, never NC's rules
+        ev = SeasonEvaluation(year=year, plan_id=plan.plan_id, status=Status.UNKNOWN,
+                              errors=["no_regional_catalog"])  # fmt: skip
+    else:
+        ev = evaluate_season(facts, ctx.index)
+    return SeasonBundle(year, cal, cov, winter, spring, facts, ev)
 
 
 def season_bundles(
@@ -225,6 +277,7 @@ def _rule_lines(res: Any, exclude: set[str]) -> tuple[list[RuleLine], list, list
             conflicts_with=list(r.conflicts_with),
             source=_source(r.source),
             reference=r.reference,
+            origin=getattr(r, "origin", None),
         )
         for r in res.rules
         if r.status != Status.INAPPLICABLE and r.rule_id not in exclude
@@ -471,10 +524,12 @@ def analyze_plan(
     maturity_group: Any = None,
 ) -> tuple[PlanComparison, dict[str, Indicator]]:
     """Run one plan over every planting year. Returns the result and its per-year indicators."""
-    if plan.winter.kind == "winter_grain":
-        return _analyze_wheat(plan, ctx, ts, full_season_plan, maturity_group), {}
-    checked = check_plan(plan, ctx.index, year=REFERENCE_YEAR)
-    if checked.status == Status.UNSUPPORTED:
+    if plan.winter.kind == "winter_grain" and ctx.is_nc:
+        pc = _analyze_wheat(plan, ctx, ts, full_season_plan, maturity_group)
+        _label(pc, plan, ctx)
+        return pc, {}
+    checked = check_plan(plan, ctx.index, year=REFERENCE_YEAR) if has_rules(ctx) else None
+    if checked is not None and checked.status == Status.UNSUPPORTED:
         return PlanComparison(
             plan_id=plan.plan_id,
             label=plan.label,
@@ -517,10 +572,13 @@ def analyze_plan(
     winter_summary, spring_summary = _summaries(plan, winters, springs, ts, dry_name)
     shortcuts = spring_shortcuts(reference_for(ctx, plan.next_plant))
     spring_summary = spring_summary.model_copy(update={"shortcuts": shortcuts})
-    lines, conflicts, notes = _rule_lines(checked, {s.rule_id for s in spring_checks})
+    if checked is not None:
+        lines, conflicts, notes = _rule_lines(checked, {s.rule_id for s in spring_checks})
+    else:
+        lines, conflicts, notes = [], [], []
     rows = _season_rows(bundles)
     ref_winter = winters[REFERENCE_YEAR]
-    return PlanComparison(
+    pc = PlanComparison(
         plan_id=plan.plan_id,
         label=plan.label,
         status=Status.COMPLETE,
@@ -535,7 +593,20 @@ def analyze_plan(
         eras=eras,
         seasons=rows,
         residue_context=[r.model_dump(mode="json") for r in ref_winter.residue_context],
-    ), indicators
+        coverage=plan_coverage(bundles, ctx),
+        catalog=ctx.catalog_state,
+    )
+    _label(pc, plan, ctx)
+    return pc, indicators
+
+
+def _label(pc: PlanComparison, plan: Plan, ctx: Context) -> None:
+    """A2 fields: hemisphere and the season wording (added; NC values keep their meaning)."""
+    pc.hemisphere = ctx.hemisphere
+    if pc.winter is not None:
+        pc.winter = pc.winter.model_copy(update={"season_label": off_season_label(plan, ctx)})
+    if pc.spring is not None:
+        pc.spring = pc.spring.model_copy(update={"season_label": SPRING_LABEL})
 
 
 # --------------------------------------------------------------------------- several plans

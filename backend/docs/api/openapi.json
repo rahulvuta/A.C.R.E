@@ -1205,6 +1205,73 @@
         "title": "CalendarSummary",
         "type": "object"
       },
+      "CandidateIn": {
+        "additionalProperties": false,
+        "description": "A farmer-edited candidate: one plan per season (1-4).",
+        "properties": {
+          "candidate_id": {
+            "minLength": 1,
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "plans": {
+            "items": {
+              "$ref": "#/components/schemas/Plan"
+            },
+            "maxItems": 4,
+            "minItems": 1,
+            "title": "Plans",
+            "type": "array"
+          }
+        },
+        "required": [
+          "candidate_id",
+          "plans"
+        ],
+        "title": "CandidateIn",
+        "type": "object"
+      },
+      "CellOut": {
+        "additionalProperties": false,
+        "properties": {
+          "center": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Center",
+            "type": "object"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "size_deg": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Size Deg",
+            "type": "array"
+          }
+        },
+        "required": [
+          "center",
+          "size_deg",
+          "note"
+        ],
+        "title": "CellOut",
+        "type": "object"
+      },
       "CheckResult": {
         "properties": {
           "calendar": {
@@ -1731,6 +1798,71 @@
           "days"
         ],
         "title": "CoverInterval",
+        "type": "object"
+      },
+      "CoverageOut": {
+        "additionalProperties": false,
+        "properties": {
+          "basis": {
+            "title": "Basis",
+            "type": "string"
+          },
+          "complete_off_seasons": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Complete Off Seasons"
+          },
+          "complete_pre_plant_windows": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Complete Pre Plant Windows"
+          },
+          "complete_years": {
+            "title": "Complete Years",
+            "type": "integer"
+          },
+          "first_date": {
+            "title": "First Date",
+            "type": "string"
+          },
+          "last_date": {
+            "title": "Last Date",
+            "type": "string"
+          },
+          "missing_days": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Missing Days",
+            "type": "object"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          }
+        },
+        "required": [
+          "first_date",
+          "last_date",
+          "complete_years",
+          "complete_pre_plant_windows",
+          "complete_off_seasons",
+          "missing_days",
+          "status",
+          "basis"
+        ],
+        "title": "CoverageOut",
         "type": "object"
       },
       "CrossBrief": {
@@ -2667,6 +2799,174 @@
         "title": "FallbackDiff",
         "type": "object"
       },
+      "FarmIn": {
+        "additionalProperties": false,
+        "properties": {
+          "farm_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Farm Id"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/FieldIn"
+            },
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Fields",
+            "type": "array"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "required": [
+          "fields"
+        ],
+        "title": "FarmIn",
+        "type": "object"
+      },
+      "FarmRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "farm": {
+            "$ref": "#/components/schemas/FarmIn"
+          },
+          "options": {
+            "$ref": "#/components/schemas/OptionsIn"
+          }
+        },
+        "required": [
+          "farm"
+        ],
+        "title": "FarmRequest",
+        "type": "object"
+      },
+      "FarmResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "farm_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Farm Id"
+          },
+          "fields": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Fields",
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "totals": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Totals",
+            "type": "object"
+          },
+          "weather_cells": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Weather Cells",
+            "type": "array"
+          }
+        },
+        "required": [
+          "meta",
+          "farm_id",
+          "status",
+          "fields",
+          "weather_cells",
+          "totals",
+          "notes"
+        ],
+        "title": "FarmResponse",
+        "type": "object"
+      },
+      "FieldIn": {
+        "additionalProperties": false,
+        "properties": {
+          "field_id": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Field Id",
+            "type": "string"
+          },
+          "geometry": {
+            "additionalProperties": true,
+            "title": "Geometry",
+            "type": "object"
+          },
+          "goals": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalsIn"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "plan": {
+            "$ref": "#/components/schemas/Plan"
+          }
+        },
+        "required": [
+          "field_id",
+          "geometry",
+          "plan"
+        ],
+        "title": "FieldIn",
+        "type": "object"
+      },
       "FieldIssue": {
         "additionalProperties": false,
         "description": "One typed validation problem, attached to the input field that caused it.",
@@ -2923,6 +3223,33 @@
           }
         },
         "title": "GapPair",
+        "type": "object"
+      },
+      "GoalsIn": {
+        "additionalProperties": true,
+        "description": "Contract \u00a78. Only ``priorities`` is read here; constraints and preferences go to the\ncandidate generator (P1). Unknown stays unknown: nothing is defaulted to \"no\".",
+        "properties": {
+          "constraints": {
+            "additionalProperties": true,
+            "title": "Constraints",
+            "type": "object"
+          },
+          "preferences": {
+            "additionalProperties": true,
+            "title": "Preferences",
+            "type": "object"
+          },
+          "priorities": {
+            "additionalProperties": {
+              "maximum": 3.0,
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "title": "Priorities",
+            "type": "object"
+          }
+        },
+        "title": "GoalsIn",
         "type": "object"
       },
       "GrainInterval": {
@@ -3203,24 +3530,46 @@
       },
       "LocationIn": {
         "additionalProperties": false,
+        "description": "A point, or (A2) a POWER grid ``cell_id`` standing for the cell centre.",
         "properties": {
+          "cell_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cell Id"
+          },
           "latitude": {
-            "maximum": 90.0,
-            "minimum": -90.0,
-            "title": "Latitude",
-            "type": "number"
+            "anyOf": [
+              {
+                "maximum": 90.0,
+                "minimum": -90.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude"
           },
           "longitude": {
-            "maximum": 180.0,
-            "minimum": -180.0,
-            "title": "Longitude",
-            "type": "number"
+            "anyOf": [
+              {
+                "maximum": 180.0,
+                "minimum": -180.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude"
           }
         },
-        "required": [
-          "latitude",
-          "longitude"
-        ],
         "title": "LocationIn",
         "type": "object"
       },
@@ -3585,6 +3934,40 @@
         "title": "NotePlanCalendar",
         "type": "object"
       },
+      "OptionsIn": {
+        "additionalProperties": false,
+        "properties": {
+          "include_capabilities": {
+            "default": true,
+            "title": "Include Capabilities",
+            "type": "boolean"
+          },
+          "include_soil": {
+            "default": false,
+            "title": "Include Soil",
+            "type": "boolean"
+          },
+          "prepare_weather": {
+            "default": true,
+            "title": "Prepare Weather",
+            "type": "boolean"
+          },
+          "recommend": {
+            "default": false,
+            "title": "Recommend",
+            "type": "boolean"
+          },
+          "wait_s": {
+            "default": 0.0,
+            "maximum": 120.0,
+            "minimum": 0.0,
+            "title": "Wait S",
+            "type": "number"
+          }
+        },
+        "title": "OptionsIn",
+        "type": "object"
+      },
       "PathNote": {
         "description": "A part of the plan the catalog cannot evaluate yet.",
         "properties": {
@@ -3814,6 +4197,18 @@
               }
             ]
           },
+          "catalog": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Catalog"
+          },
           "conflicts": {
             "items": {
               "items": {
@@ -3823,6 +4218,16 @@
             },
             "title": "Conflicts",
             "type": "array"
+          },
+          "coverage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanCoverage"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "dates_assumed": {
             "anyOf": [
@@ -3889,6 +4294,21 @@
             },
             "title": "Eras Shared Years",
             "type": "object"
+          },
+          "hemisphere": {
+            "anyOf": [
+              {
+                "enum": [
+                  "north",
+                  "south"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hemisphere"
           },
           "label": {
             "anyOf": [
@@ -4051,6 +4471,61 @@
         "title": "PlanComparison",
         "type": "object"
       },
+      "PlanCoverage": {
+        "additionalProperties": false,
+        "description": "A2: the planting years this plan's own windows can use at its weather cell.",
+        "properties": {
+          "available_years": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Available Years",
+            "type": "array"
+          },
+          "cell_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cell Id"
+          },
+          "first_date": {
+            "title": "First Date",
+            "type": "string"
+          },
+          "last_date": {
+            "title": "Last Date",
+            "type": "string"
+          },
+          "off_season_available_years": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Off Season Available Years",
+            "type": "array"
+          },
+          "spring_available_years": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Spring Available Years",
+            "type": "array"
+          }
+        },
+        "required": [
+          "first_date",
+          "last_date",
+          "available_years",
+          "spring_available_years",
+          "off_season_available_years"
+        ],
+        "title": "PlanCoverage",
+        "type": "object"
+      },
       "PlanEdit": {
         "additionalProperties": false,
         "properties": {
@@ -4069,6 +4544,31 @@
           "field"
         ],
         "title": "PlanEdit",
+        "type": "object"
+      },
+      "PrepareRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "location": {
+            "$ref": "#/components/schemas/WeatherLocationIn"
+          },
+          "refresh": {
+            "default": false,
+            "title": "Refresh",
+            "type": "boolean"
+          },
+          "wait_s": {
+            "default": 0.0,
+            "maximum": 120.0,
+            "minimum": 0.0,
+            "title": "Wait S",
+            "type": "number"
+          }
+        },
+        "required": [
+          "location"
+        ],
+        "title": "PrepareRequest",
         "type": "object"
       },
       "RawScenario": {
@@ -4336,6 +4836,57 @@
         "title": "RawWinter",
         "type": "object"
       },
+      "RecommendRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "candidates": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/CandidateIn"
+                },
+                "maxItems": 50,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidates"
+          },
+          "field": {
+            "additionalProperties": true,
+            "title": "Field",
+            "type": "object"
+          },
+          "goals": {
+            "$ref": "#/components/schemas/GoalsIn"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocationIn"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "location_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location Id"
+          }
+        },
+        "title": "RecommendRequest",
+        "type": "object"
+      },
       "ReferenceOut": {
         "additionalProperties": true,
         "description": "A published number carried by a rule; never the grower's target.",
@@ -4599,6 +5150,21 @@
             "title": "Dates",
             "type": "object"
           },
+          "hemisphere": {
+            "anyOf": [
+              {
+                "enum": [
+                  "north",
+                  "south"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hemisphere"
+          },
           "key_rain_days": {
             "items": {
               "$ref": "#/components/schemas/KeyRainDay"
@@ -4780,6 +5346,11 @@
             "title": "Optional",
             "type": "boolean"
           },
+          "origin": {
+            "default": "verified_source",
+            "title": "Origin",
+            "type": "string"
+          },
           "print": {
             "default": false,
             "title": "Print",
@@ -4800,6 +5371,11 @@
               }
             ],
             "title": "Reference"
+          },
+          "region_key": {
+            "default": "US-NC",
+            "title": "Region Key",
+            "type": "string"
           },
           "rule_id": {
             "title": "Rule Id",
@@ -4901,6 +5477,17 @@
           "flagged": {
             "title": "Flagged",
             "type": "boolean"
+          },
+          "origin": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin"
           },
           "print": {
             "default": false,
@@ -5069,6 +5656,28 @@
       },
       "RuleSource": {
         "properties": {
+          "evidence_quote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Quote"
+          },
+          "limitations": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limitations"
+          },
           "locator": {
             "anyOf": [
               {
@@ -5513,12 +6122,26 @@
         "additionalProperties": false,
         "properties": {
           "checks_count": {
-            "title": "Checks Count",
-            "type": "integer"
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checks Count"
           },
           "denominator": {
-            "title": "Denominator",
-            "type": "integer"
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Denominator"
           },
           "gap_days": {
             "title": "Gap Days",
@@ -5646,13 +6269,39 @@
             "title": "Base Plan Id",
             "type": "string"
           },
+          "catalog": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Catalog"
+          },
           "check_id": {
-            "title": "Check Id",
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Check Id"
           },
           "denominator": {
-            "title": "Denominator",
-            "type": "integer"
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Denominator"
           },
           "dry_years": {
             "items": {
@@ -5690,6 +6339,17 @@
             },
             "title": "Rule Ids",
             "type": "array"
+          },
+          "season_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Season Label"
           },
           "status": {
             "$ref": "#/components/schemas/Status"
@@ -6413,6 +7073,17 @@
             ],
             "title": "Median Total Mm"
           },
+          "season_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Season Label"
+          },
           "shortcuts": {
             "anyOf": [
               {
@@ -6502,6 +7173,17 @@
         "additionalProperties": false,
         "description": "One frozen threshold with the method and reference span that produced it.",
         "properties": {
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
           "method": {
             "title": "Method",
             "type": "string"
@@ -6524,6 +7206,17 @@
               }
             ],
             "title": "Note"
+          },
+          "origin": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin"
           },
           "parameters": {
             "additionalProperties": true,
@@ -6998,6 +7691,138 @@
         "title": "UnsupportedResponse",
         "type": "object"
       },
+      "WeatherCellResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "cell": {
+            "$ref": "#/components/schemas/CellOut"
+          },
+          "cell_id": {
+            "title": "Cell Id",
+            "type": "string"
+          },
+          "coverage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CoverageOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "job_status": {
+            "enum": [
+              "pending",
+              "ready",
+              "failed"
+            ],
+            "title": "Job Status",
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "poll": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Poll"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "reason_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Text"
+          },
+          "retrieved_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrieved At"
+          },
+          "snapshot_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snapshot Hash"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "enum": [
+                  "committed",
+                  "cache",
+                  "fetched"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          }
+        },
+        "required": [
+          "meta",
+          "cell_id",
+          "job_status",
+          "status",
+          "reason",
+          "reason_text",
+          "source",
+          "snapshot_hash",
+          "retrieved_at",
+          "cell",
+          "coverage",
+          "poll",
+          "notes"
+        ],
+        "title": "WeatherCellResponse",
+        "type": "object"
+      },
       "WeatherLocation": {
         "additionalProperties": false,
         "description": "Which place's weather answered the request, and where its thresholds come from.",
@@ -7187,6 +8012,51 @@
           "thresholds_from"
         ],
         "title": "WeatherLocation",
+        "type": "object"
+      },
+      "WeatherLocationIn": {
+        "additionalProperties": false,
+        "description": "A point (``latitude``/``longitude``) or a POWER ``cell_id``; exactly one of the two.",
+        "properties": {
+          "cell_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cell Id"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "maximum": 90.0,
+                "minimum": -90.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "maximum": 180.0,
+                "minimum": -180.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude"
+          }
+        },
+        "title": "WeatherLocationIn",
         "type": "object"
       },
       "WetnessSnapshot": {
@@ -7512,6 +8382,17 @@
             "title": "Reasons",
             "type": "array"
           },
+          "season_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Season Label"
+          },
           "seasons": {
             "title": "Seasons",
             "type": "integer"
@@ -7585,6 +8466,41 @@
           "reason"
         ],
         "title": "YearRow",
+        "type": "object"
+      },
+      "YearsRequest": {
+        "additionalProperties": false,
+        "description": "A2: the year table for an edited plan (a field's own dates) at a location.",
+        "properties": {
+          "location": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocationIn"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "location_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location Id"
+          },
+          "plan": {
+            "$ref": "#/components/schemas/Plan"
+          }
+        },
+        "required": [
+          "plan"
+        ],
+        "title": "YearsRequest",
         "type": "object"
       },
       "YearsResponse": {
@@ -7702,15 +8618,48 @@
     },
     "/v1/crops": {
       "get": {
+        "description": "The crops of the NC catalog, or of the catalog at ``lat``/``lon`` (B2).",
         "operationId": "get_crops_v1_crops_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "lat",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lat"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lon",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lon"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Get Crops V1 Crops Get",
-                  "type": "object"
+                  "title": "Response Get Crops V1 Crops Get"
                 }
               }
             },
@@ -7740,6 +8689,57 @@
         "summary": "Get Crops",
         "tags": [
           "planner"
+        ]
+      }
+    },
+    "/v1/farms/analyze": {
+      "post": {
+        "operationId": "analyze_v1_farms_analyze_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FarmRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FarmResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Analyze",
+        "tags": [
+          "farms"
         ]
       }
     },
@@ -7782,6 +8782,160 @@
         "summary": "Post Fertilizer",
         "tags": [
           "tools"
+        ]
+      }
+    },
+    "/v1/geo/reverse": {
+      "get": {
+        "description": "Place, climate class, hemisphere, weather cell and region keys for a point.",
+        "operationId": "get_reverse_v1_geo_reverse_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "lat",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lat"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lon",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lon"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Reverse V1 Geo Reverse Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Reverse",
+        "tags": [
+          "field",
+          "geo"
+        ]
+      }
+    },
+    "/v1/geo/search": {
+      "get": {
+        "description": "Find a place by name, or accept coordinates (decimal or degrees-minutes-seconds).",
+        "operationId": "get_search_v1_geo_search_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Search V1 Geo Search Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Search",
+        "tags": [
+          "field",
+          "geo"
         ]
       }
     },
@@ -7900,6 +9054,83 @@
         "summary": "Get Live Route",
         "tags": [
           "field"
+        ]
+      }
+    },
+    "/v1/locations/capabilities": {
+      "get": {
+        "description": "What the app can do at a point: weather, catalog, soil, live weather, drought, tools.",
+        "operationId": "get_capabilities_v1_locations_capabilities_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "lat",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lat"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lon",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lon"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Capabilities V1 Locations Capabilities Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Capabilities",
+        "tags": [
+          "field",
+          "geo"
         ]
       }
     },
@@ -8164,6 +9395,90 @@
         ]
       }
     },
+    "/v1/plans/future": {
+      "post": {
+        "description": "Body: ``{location?, candidate | plans | plan | plan_id | rotation_id, start_season,\nseasons, edits?, as_of?, inputs?}`` (contract \u00a710).",
+        "operationId": "post_future_v1_plans_future_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Post Future V1 Plans Future Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Post Future",
+        "tags": [
+          "planner"
+        ]
+      }
+    },
+    "/v1/plans/generate": {
+      "post": {
+        "description": "Body: ``{location?, field?, goals?, start_year?}`` (contract \u00a78). Location defaults to the\nUnion County demo point. Generated plans are ordinary ``Plan`` objects (one per season).",
+        "operationId": "post_generate_v1_plans_generate_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Post Generate V1 Plans Generate Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Post Generate",
+        "tags": [
+          "planner"
+        ]
+      }
+    },
     "/v1/plans/note": {
       "post": {
         "description": "Body: ``{plan | plan_id, alternative? | alternative_id?, year?, as_of?, inputs?}``.\n\nFor a ``winter_grain`` (wheat) plan also ``maturity_group?`` and ``compare_to_plan? |\ncompare_to_plan_id?`` (a full-season soybean plan, shown as different-calendar).",
@@ -8203,6 +9518,57 @@
         "summary": "Post Note",
         "tags": [
           "decision-tools"
+        ]
+      }
+    },
+    "/v1/plans/recommend": {
+      "post": {
+        "operationId": "recommend_plans_v1_plans_recommend_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecommendRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Recommend Plans V1 Plans Recommend Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Recommend Plans",
+        "tags": [
+          "recommend"
         ]
       }
     },
@@ -8452,6 +9818,188 @@
         ]
       }
     },
+    "/v1/regions/research": {
+      "post": {
+        "description": "Body: ``{region_key | location, crops?, refresh?, wait_s?}``. NC is never researched.",
+        "operationId": "post_research_v1_regions_research_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Post Research V1 Regions Research Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Post Research",
+        "tags": [
+          "field",
+          "research"
+        ]
+      }
+    },
+    "/v1/regions/research/{job_id}": {
+      "get": {
+        "operationId": "get_research_v1_regions_research__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Research V1 Regions Research  Job Id  Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Research",
+        "tags": [
+          "field",
+          "research"
+        ]
+      }
+    },
+    "/v1/regions/{region_key}/profile": {
+      "get": {
+        "description": "Crops, calendars, covers, rotations and rules for a region, each with ``origin``.",
+        "operationId": "get_region_profile_v1_regions__region_key__profile_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "region_key",
+            "required": true,
+            "schema": {
+              "title": "Region Key",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lat",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lat"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lon",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lon"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Region Profile V1 Regions  Region Key  Profile Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Region Profile",
+        "tags": [
+          "field",
+          "regions"
+        ]
+      }
+    },
     "/v1/rotations": {
       "get": {
         "description": "The presets: each rotation is two plan legs.",
@@ -8571,6 +10119,64 @@
                 }
               ],
               "title": "Longitude"
+            }
+          },
+          {
+            "description": "alias of latitude",
+            "in": "query",
+            "name": "lat",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 90,
+                  "minimum": -90,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "alias of latitude",
+              "title": "Lat"
+            }
+          },
+          {
+            "description": "alias of longitude",
+            "in": "query",
+            "name": "lon",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 180,
+                  "minimum": -180,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "alias of longitude",
+              "title": "Lon"
+            }
+          },
+          {
+            "description": "a POWER grid cell id",
+            "in": "query",
+            "name": "cell_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "a POWER grid cell id",
+              "title": "Cell Id"
             }
           }
         ],
@@ -8765,6 +10371,111 @@
         ]
       }
     },
+    "/v1/weather/prepare": {
+      "post": {
+        "description": "Committed snapshot, then the cache, then a POWER fetch of the cell (a background job).",
+        "operationId": "prepare_weather_v1_weather_prepare_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrepareRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeatherCellResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Prepare Weather",
+        "tags": [
+          "weather"
+        ]
+      }
+    },
+    "/v1/weather/{cell_id}": {
+      "get": {
+        "description": "The state of one cell. Never starts a fetch.",
+        "operationId": "get_weather_v1_weather__cell_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cell_id",
+            "required": true,
+            "schema": {
+              "title": "Cell Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeatherCellResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Weather",
+        "tags": [
+          "weather"
+        ]
+      }
+    },
     "/v1/years": {
       "get": {
         "operationId": "years_v1_years_get",
@@ -8834,6 +10545,64 @@
               ],
               "title": "Longitude"
             }
+          },
+          {
+            "description": "alias of latitude",
+            "in": "query",
+            "name": "lat",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 90,
+                  "minimum": -90,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "alias of latitude",
+              "title": "Lat"
+            }
+          },
+          {
+            "description": "alias of longitude",
+            "in": "query",
+            "name": "lon",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 180,
+                  "minimum": -180,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "alias of longitude",
+              "title": "Lon"
+            }
+          },
+          {
+            "description": "a POWER grid cell id",
+            "in": "query",
+            "name": "cell_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "a POWER grid cell id",
+              "title": "Cell Id"
+            }
           }
         ],
         "responses": {
@@ -8877,6 +10646,63 @@
           }
         },
         "summary": "Years",
+        "tags": [
+          "core"
+        ]
+      },
+      "post": {
+        "operationId": "years_post_v1_years_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/YearsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/YearsResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UnsupportedResponse"
+                    }
+                  ],
+                  "title": "Response Years Post V1 Years Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Years Post",
         "tags": [
           "core"
         ]

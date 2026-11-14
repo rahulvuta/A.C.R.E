@@ -22,6 +22,7 @@ from fieldshift.compare.engine import (
     CHECK_META,
     REFERENCE_YEAR,
     YEARS,
+    off_season_label,
     reference_for,
     thresholds_view,
 )
@@ -46,8 +47,10 @@ def _leap_gap(plan: Plan) -> int | None:
 
 
 def sweep_termination(
-    plan: Plan, ctx: Context, ts: ThresholdSet, rule_id: str = DEFAULT_RULE
+    plan: Plan, ctx: Context, ts: ThresholdSet, rule_id: str | None = DEFAULT_RULE
 ) -> dict[str, Any]:
+    """``rule_id=None`` sweeps the weather only (any cover crop, no catalog rule): check counts are
+    then ``None``, never 0."""
     if plan.winter.kind != "cover":
         raise InvalidPlanError(
             [
@@ -99,6 +102,8 @@ def sweep_termination(
                 rains.append(float(cum[i_seed] + (cum[-1] - cum[i_term])))
                 if heavy is not None:
                     heavies.append(float(hv[i_seed] + (hv[-1] - hv[i_term])))
+            if rule_id is None:
+                continue
             facts = build_season_facts(p2, cal, spring, cov)
             chk = evaluate_season(facts, ctx.index, rule_ids=[rule_id]).check(rule_id)
             if chk is not None:
@@ -120,15 +125,17 @@ def sweep_termination(
                 heavy_rain_days_outside_cover_median=(
                     round(statistics.median(heavies), 1) if heavies else None
                 ),
-                checks_count=count,
-                denominator=denom,
+                checks_count=count if rule_id is not None else None,
+                denominator=denom if rule_id is not None else None,
                 qualifying_years=qualifying,
             )
         )
         d += timedelta(days=1)
 
     dry_years = [y for y, _, _, s, _, _, _ in per_year if s.is_dry]
-    if any(p.denominator > 0 for p in points):
+    if rule_id is None:
+        status = Status.UNKNOWN
+    elif any((p.denominator or 0) > 0 for p in points):
         status = Status.COMPLETE
     elif seen and seen <= {Status.INAPPLICABLE}:
         status = Status.INAPPLICABLE
@@ -146,9 +153,12 @@ def sweep_termination(
             "prev_harvest": plan.prev_harvest,
             "low_moisture_concern": plan.grower.low_moisture_concern,
         },
-        "check_id": CHECK_META.get(rule_id, (rule_id,))[0],
-        "rule_ids": [rule_id],
-        "denominator": max((p.denominator for p in points), default=0),
+        "check_id": CHECK_META.get(rule_id, (rule_id,))[0] if rule_id is not None else None,
+        "rule_ids": [rule_id] if rule_id is not None else [],
+        "denominator": (max((p.denominator or 0 for p in points), default=0)
+                        if rule_id is not None else None),  # fmt: skip
+        "catalog": ctx.catalog_state,
+        "season_label": off_season_label(plan, ctx),
         "dry_years": dry_years,
         "reference_year": REFERENCE_YEAR,
         "points": points,

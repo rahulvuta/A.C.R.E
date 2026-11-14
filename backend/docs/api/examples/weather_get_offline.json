@@ -1,0 +1,30 @@
+{
+  "cell": {
+    "center": {
+      "latitude": 42.0,
+      "longitude": -93.75
+    },
+    "note": "One NASA POWER weather series covers this whole cell.",
+    "size_deg": [
+      0.5,
+      0.625
+    ]
+  },
+  "cell_id": "cell_+42.000_-93.750",
+  "coverage": null,
+  "job_status": "failed",
+  "meta": {
+    "catalog_version": "v2:8eeb5bf961eb",
+    "plan_version": null,
+    "request_id": "req_example",
+    "snapshot_hash": null
+  },
+  "notes": [],
+  "poll": null,
+  "reason": "offline_no_snapshot",
+  "reason_text": "The server is in offline mode and has no stored weather for this grid cell.",
+  "retrieved_at": null,
+  "snapshot_hash": null,
+  "source": null,
+  "status": "unavailable"
+}
