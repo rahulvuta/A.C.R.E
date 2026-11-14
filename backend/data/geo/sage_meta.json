@@ -1,0 +1,152 @@
+{
+  "dataset": "SAGE Crop Calendar Dataset (planting and harvest dates), 0.5 degree",
+  "citation": "Sacks, Deryng, Foley & Ramankutty 2010, Crop planting dates: an analysis of global patterns, Global Ecology and Biogeography 19, 607-620",
+  "doi": "10.1111/j.1466-8238.2010.00551.x",
+  "url": "https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/",
+  "license_note": "SAGE: datasets may be freely downloaded; cite Sacks et al. 2010.",
+  "resolution_deg": 0.5,
+  "grid": {
+    "rows": 360,
+    "cols": 720,
+    "north_edge": 90.0,
+    "west_edge": -180.0
+  },
+  "layers": [
+    "plant_start",
+    "plant",
+    "plant_end",
+    "harvest_start",
+    "harvest",
+    "harvest_end"
+  ],
+  "units": "day of year (1-365); 0 = no data; an end before a start means the window crosses New Year",
+  "values_are": "dataset_estimate: gridded estimates from national and sub-national reports, mostly circa 1990-2000; not a recommendation",
+  "extrapolated_note": "cells marked extrapolated exist only in SAGE's filled file",
+  "crops": {
+    "barley": {
+      "sage_file": "Barley",
+      "name": "Barley (spring)",
+      "note": ""
+    },
+    "winter_barley": {
+      "sage_file": "Barley.Winter",
+      "name": "Winter barley",
+      "note": ""
+    },
+    "cassava": {
+      "sage_file": "Cassava",
+      "name": "Cassava",
+      "note": ""
+    },
+    "cotton": {
+      "sage_file": "Cotton",
+      "name": "Cotton",
+      "note": ""
+    },
+    "groundnut": {
+      "sage_file": "Groundnuts",
+      "name": "Groundnut (peanut)",
+      "note": ""
+    },
+    "maize": {
+      "sage_file": "Maize",
+      "name": "Maize (corn), main season",
+      "note": ""
+    },
+    "maize_second": {
+      "sage_file": "Maize.2",
+      "name": "Maize (corn), second season",
+      "note": "second crop of the year"
+    },
+    "millet": {
+      "sage_file": "Millet",
+      "name": "Millet",
+      "note": ""
+    },
+    "oats": {
+      "sage_file": "Oats",
+      "name": "Oats (spring)",
+      "note": ""
+    },
+    "winter_oats": {
+      "sage_file": "Oats.Winter",
+      "name": "Winter oats",
+      "note": ""
+    },
+    "potato": {
+      "sage_file": "Potatoes",
+      "name": "Potato",
+      "note": ""
+    },
+    "pulses": {
+      "sage_file": "Pulses",
+      "name": "Pulses",
+      "note": ""
+    },
+    "winter_rapeseed": {
+      "sage_file": "Rapeseed.Winter",
+      "name": "Winter rapeseed (canola)",
+      "note": ""
+    },
+    "rice": {
+      "sage_file": "Rice",
+      "name": "Rice, main season",
+      "note": ""
+    },
+    "rice_second": {
+      "sage_file": "Rice.2",
+      "name": "Rice, second season",
+      "note": "second crop of the year"
+    },
+    "winter_rye": {
+      "sage_file": "Rye.Winter",
+      "name": "Winter rye (grain)",
+      "note": ""
+    },
+    "sorghum": {
+      "sage_file": "Sorghum",
+      "name": "Sorghum, main season",
+      "note": ""
+    },
+    "sorghum_second": {
+      "sage_file": "Sorghum.2",
+      "name": "Sorghum, second season",
+      "note": "second crop of the year"
+    },
+    "soybean": {
+      "sage_file": "Soybeans",
+      "name": "Soybean",
+      "note": ""
+    },
+    "sugarbeet": {
+      "sage_file": "Sugarbeets",
+      "name": "Sugar beet",
+      "note": ""
+    },
+    "sunflower": {
+      "sage_file": "Sunflower",
+      "name": "Sunflower",
+      "note": ""
+    },
+    "sweet_potato": {
+      "sage_file": "Sweet.Potatoes",
+      "name": "Sweet potato",
+      "note": ""
+    },
+    "spring_wheat": {
+      "sage_file": "Wheat",
+      "name": "Spring wheat",
+      "note": ""
+    },
+    "winter_wheat": {
+      "sage_file": "Wheat.Winter",
+      "name": "Winter wheat",
+      "note": ""
+    },
+    "yam": {
+      "sage_file": "Yams",
+      "name": "Yam",
+      "note": ""
+    }
+  }
+}

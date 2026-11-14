@@ -42,6 +42,11 @@ def _coord(value: Any, name: str, lo: float, hi: float) -> tuple[float | None, d
     return x, None
 
 
+def _outside_nc(loc: Any) -> bool:
+    """Soil and live data are North Carolina only until the global soil/live card (B4) lands."""
+    return loc.status == Status.UNSUPPORTED or (loc.bounds is not None and not loc.bounds.in_nc)
+
+
 @router.post("/locations/resolve")
 async def post_resolve(request: Request) -> Any:
     """Body: ``{"lat": float, "lon": float, "region": str?}``.
@@ -81,12 +86,13 @@ def get_soil_route(lat: str | None = None, lon: str | None = None) -> Any:
         return invalid(problems)
     la, lo_ = point
     loc = resolve_location(la, lo_)
-    if loc.status == Status.UNSUPPORTED:
+    if _outside_nc(loc):
         return {
             "meta": response_meta(),
             "status": "unsupported",
-            "code": loc.code,
-            "reason": loc.reason,
+            "code": loc.code or "unsupported_location",
+            "reason": loc.reason
+            or "soil and live data cover North Carolina only for now (global data is card B4)",
             "soil": unavailable("outside North Carolina").model_dump(mode="json"),
         }
     soil = get_soil(la, lo_)  # follows FIELDSHIFT_OFFLINE; never raises
@@ -124,12 +130,13 @@ def get_live_route(lat: str | None = None, lon: str | None = None) -> Any:
     if point is None:
         return invalid(problems)
     loc = resolve_location(*point)
-    if loc.status == Status.UNSUPPORTED:
+    if _outside_nc(loc):
         return {
             "meta": response_meta(),
             "status": "unsupported",
-            "code": loc.code,
-            "reason": loc.reason,
+            "code": loc.code or "unsupported_location",
+            "reason": loc.reason
+            or "soil and live data cover North Carolina only for now (global data is card B4)",
         }
     return {
         "meta": response_meta(),
@@ -177,3 +184,9 @@ async def post_zones_analyze(request: Request) -> Any:
         return invalid(unknown)
     result = analyze_zones(zs, ponding=ponding, heavy_rain_days=heavy, changes=changes)
     return {"meta": response_meta(), "result": result.model_dump(mode="json")}
+
+
+# Card B1: geo search, reverse geocoding and capabilities ride on this (already mounted) router.
+from fieldshift.geo.routes import router as _geo_router  # noqa: E402
+
+router.include_router(_geo_router)

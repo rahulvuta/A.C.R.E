@@ -33,12 +33,27 @@ def test_union_sample_resolves_offline_from_the_snapshot():
     assert r.grid_cell["center_latitude"] == 35.0 and r.cell_id == "cell_+35.000_-80.625"
 
 
-def test_point_outside_nc_is_unsupported_location():
-    for lat, lon in ((40.7, -74.0), (33.0, -80.0), (35.0, -90.0)):
+def test_only_water_is_unsupported_and_nc_guidance_stays_in_nc():
+    for lat, lon in ((0.0, -30.0), (28.0, -90.0), (33.0, -75.0)):  # open ocean, gulf, atlantic
         r = resolve_location(lat, lon)
-        assert r.status == "unsupported" and r.code == "unsupported_location" and not r.bounds.in_nc
-        assert r.weather is None
+        assert r.status == "unsupported" and r.code == "unsupported_location"
+        assert r.on_land is False and r.weather is None
     assert in_nc_bounds(35.78, -78.64)
+    # land outside NC resolves worldwide, but North Carolina's rules never apply there
+    for lat, lon in ((40.7, -74.0), (-33.89, -60.57), (48.85, 2.35)):
+        r = resolve_location(lat, lon)
+        assert r.status == "partial" and not r.bounds.in_nc and r.on_land
+        assert not r.guidance.supported and r.guidance.region is None
+        assert r.climate["koppen"] and r.hemisphere in ("north", "south")
+        assert r.weather.status == "unavailable"  # no committed snapshot here
+    nc_text = resolve_location(-33.89, -60.57, region="NC Piedmont")
+    assert nc_text.guidance.region is None and "outside North Carolina" in nc_text.guidance.reason
+
+
+def test_worldwide_fields_for_nc_points():
+    r = resolve_location(35.52, -78.37)
+    assert r.nc_region == "Coastal Plain" and r.region_keys == ["US-NC", "US", "koppen:Cfa"]
+    assert r.hemisphere == "north" and r.climate["origin"] == "dataset_estimate"
 
 
 @pytest.mark.parametrize(
@@ -229,9 +244,12 @@ def test_evidence_requires_a_date_and_finite_numbers():
 def test_neighbouring_state_cities_are_outside_nc(lat, lon, inside):
     assert in_nc_bounds(lat, lon) is inside
     r = resolve_location(lat, lon)
-    assert (r.status != "unsupported") is inside
-    if not inside:
+    if inside:
+        assert r.status != "unsupported" and r.bounds.in_nc
+    elif r.status == "unsupported":  # the point is in the sea
         assert r.code == "unsupported_location"
+    else:  # a neighbouring state: resolves, but NC guidance does not apply
+        assert not r.bounds.in_nc and not r.guidance.supported
 
 
 def test_explicit_unmapped_region_text_is_unknown_guidance():
@@ -259,7 +277,7 @@ def test_resolve_route(client):
     j = ok.json()
     assert set(j["meta"]) == {"plan_version", "catalog_version", "snapshot_hash", "request_id"}
     assert j["location"]["weather"]["source"] == "snapshot"
-    out = client.post("/v1/locations/resolve", json={"lat": 40.7, "lon": -74.0})
+    out = client.post("/v1/locations/resolve", json={"lat": 0.0, "lon": -30.0})
     assert out.status_code == 200 and out.json()["location"]["code"] == "unsupported_location"
 
 
