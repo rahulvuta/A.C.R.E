@@ -16,27 +16,40 @@ Rules that apply to every response:
 
 ```json
 {"latitude": -33.89, "longitude": -60.57}          // or
-{"cell_id": "lat-34.00_lon-60.625"}                  // a POWER grid cell
+{"cell_id": "cell_-34.000_-60.625"}                  // a POWER grid cell
 ```
 Existing endpoints that take `location` keep their old behaviour when it is omitted (the NC demo).
 
-## 2. Weather on demand (A1)
+## 2. Weather on demand (A1, shipped)
 
-`POST /v1/weather/prepare` with body `{"location": Location, "refresh": false}`:
+`cell_id` format (unchanged from the existing NC API): `cell_<lat centre %+.3f>_<lon centre %+.3f>`, the MERRA-2 cell (0.5° lat × 0.625° lon) containing the point, e.g. `cell_-34.000_-60.625` (Pergamino), `cell_+35.000_-80.625` (Union County). Cell centres are grid values and are returned exactly (not rounded); the caller's point is never echoed.
+
+`POST /v1/weather/prepare` with body `{"location": {"latitude", "longitude"} | {"cell_id"}, "refresh": false, "wait_s": 0}`:
+- `wait_s` (0–120, default 0): block up to that long for a fetch to finish. With 0 a fetch returns `pending` at once.
+- `refresh: true` is the only way to re-fetch a cached cell. It writes a new snapshot (new hash) and never rewrites the old one. It is ignored for the committed NC cells (a note says so) and offline (a note says so).
 
 ```json
-{"meta": {}, "cell_id": "lat-34.00_lon-60.625", "job_status": "ready",
+{"meta": {"plan_version": null, "catalog_version": "…", "snapshot_hash": "…", "request_id": "…"},
+ "cell_id": "cell_-34.000_-60.625", "job_status": "ready",
  "status": "complete", "reason": null, "reason_text": null,
- "source": "committed|cache|fetched", "snapshot_hash": "…", "retrieved_at": "2026-11-14T15:02:11Z",
+ "source": "fetched", "snapshot_hash": "…", "retrieved_at": "2026-11-14T16:41:05Z",
  "cell": {"center": {"latitude": -34.0, "longitude": -60.625}, "size_deg": [0.5, 0.625],
           "note": "One NASA POWER weather series covers this whole cell."},
- "coverage": {"first_date": "1981-01-01", "last_date": "2026-11-10", "complete_pre_plant_windows": null,
-              "complete_years": 45, "missing_days": {"PRECTOTCORR": 0}, "status": "complete"}}
+ "coverage": {"first_date": "1981-01-01", "last_date": "2026-11-11", "complete_years": 45,
+              "complete_pre_plant_windows": null, "complete_off_seasons": null,
+              "missing_days": {"PRECTOTCORR": 0, "T2M_MAX": 0, "T2M_MIN": 0, "T2M": 0, "GWETTOP": 0, "GWETROOT": 0},
+              "status": "complete", "basis": "complete year = a calendar year with every parameter on every day; …"},
+ "poll": null, "notes": []}
 ```
-- `job_status: "pending"` returns `poll: "/v1/weather/{cell_id}"`.
-- `failed` returns `status: "unavailable"` with a reason such as `power_unreachable` or `offline_no_snapshot`.
+- `source`: `committed` (the 8 NC snapshots, always win), `cache` (fetched earlier), `fetched` (by this request), or `null` when nothing is stored.
+- `meta.snapshot_hash` equals `snapshot_hash` (null when nothing is stored).
+- `coverage.status`: `complete` (≥ 40 complete calendar years), `partial`, or `insufficient_data` (< 15). `complete_pre_plant_windows` and `complete_off_seasons` depend on a plan's dates, so they are `null` here; the analysis reports them as `coverage.available_years` (A2).
+- `last_date` is the last day POWER serves with every parameter (recent days are fill values and are trimmed).
+- `job_status: "pending"` has `status: "unknown"`, `coverage: null`, `snapshot_hash: null` and `poll: "/v1/weather/{cell_id}"`.
+- `job_status: "failed"` has `status: "unavailable"` and a `reason`: `offline_no_snapshot`, `power_unreachable`, `power_error`, `power_bad_response`, `power_no_data`, `cache_write_failed`, or `not_prepared` (GET only: nobody asked for this cell yet). Every reason has a `reason_text`.
+- Bad input is HTTP 400 `invalid_input` with issue codes `incomplete_point`, `location_conflict` (a point and a cell id), `invalid_cell`, or the schema's range errors.
 
-`GET /v1/weather/{cell_id}` returns the same body.
+`GET /v1/weather/{cell_id}` returns the same body and never starts a fetch.
 
 ## 3. Geo (B1)
 
@@ -55,7 +68,7 @@ Existing endpoints that take `location` keep their old behaviour when it is omit
  "hemisphere": "south", "on_land": true,
  "climate": {"koppen": "Cfa", "label": "Humid subtropical", "resolution_km": 5,
              "source": "Beck et al. 2023, Koppen-Geiger 1991-2020", "origin": "dataset_estimate"},
- "cell_id": "lat-34.00_lon-60.625",
+ "cell_id": "cell_-34.000_-60.625",
  "region_keys": ["AR-B", "AR", "koppen:Cfa"],
  "nc_region": null}
 ```
@@ -67,7 +80,7 @@ Existing endpoints that take `location` keep their old behaviour when it is omit
 ```json
 {"meta": {}, "region_key": "AR-B",
  "features": {
-  "weather":      {"status": "complete", "job_status": "ready", "cell_id": "…", "origin": "nasa_measured"},
+  "weather":      {"status": "complete", "job_status": "ready", "cell_id": "…", "source": "cache", "origin": "nasa_modeled"},
   "catalog":      {"status": "partial", "origin": "ai_suggested", "region_key": "AR-B",
                    "reason_text": "Suggestions found by AI research; check them with a local adviser."},
   "soil":         {"status": "complete", "provider": "soilgrids", "resolution_m": 250, "origin": "dataset_estimate"},
@@ -94,10 +107,10 @@ Response:
 {"meta": {}, "status": "partial",
  "fields": [{"field_id": "fld_1", "name": "North 40", "area_ha": 101.3, "area_ac": 250.3,
              "centroid": {"latitude": -33.89, "longitude": -60.58},
-             "cell_id": "lat-34.00_lon-60.625", "job_status": "ready",
+             "cell_id": "cell_-34.000_-60.625", "job_status": "ready",
              "capabilities": {},
              "result": {}}],
- "weather_cells": [{"cell_id": "lat-34.00_lon-60.625", "field_ids": ["fld_1"],
+ "weather_cells": [{"cell_id": "cell_-34.000_-60.625", "field_ids": ["fld_1"],
                     "note": "These fields share one NASA weather series; differences between them come from their plans, not their weather."}],
  "totals": {"area_ha": 101.3, "area_ac": 250.3}}
 ```

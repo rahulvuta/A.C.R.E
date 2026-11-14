@@ -1205,6 +1205,36 @@
         "title": "CalendarSummary",
         "type": "object"
       },
+      "CellOut": {
+        "additionalProperties": false,
+        "properties": {
+          "center": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Center",
+            "type": "object"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "size_deg": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Size Deg",
+            "type": "array"
+          }
+        },
+        "required": [
+          "center",
+          "size_deg",
+          "note"
+        ],
+        "title": "CellOut",
+        "type": "object"
+      },
       "CheckResult": {
         "properties": {
           "calendar": {
@@ -1731,6 +1761,71 @@
           "days"
         ],
         "title": "CoverInterval",
+        "type": "object"
+      },
+      "CoverageOut": {
+        "additionalProperties": false,
+        "properties": {
+          "basis": {
+            "title": "Basis",
+            "type": "string"
+          },
+          "complete_off_seasons": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Complete Off Seasons"
+          },
+          "complete_pre_plant_windows": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Complete Pre Plant Windows"
+          },
+          "complete_years": {
+            "title": "Complete Years",
+            "type": "integer"
+          },
+          "first_date": {
+            "title": "First Date",
+            "type": "string"
+          },
+          "last_date": {
+            "title": "Last Date",
+            "type": "string"
+          },
+          "missing_days": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Missing Days",
+            "type": "object"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          }
+        },
+        "required": [
+          "first_date",
+          "last_date",
+          "complete_years",
+          "complete_pre_plant_windows",
+          "complete_off_seasons",
+          "missing_days",
+          "status",
+          "basis"
+        ],
+        "title": "CoverageOut",
         "type": "object"
       },
       "CrossBrief": {
@@ -4069,6 +4164,31 @@
           "field"
         ],
         "title": "PlanEdit",
+        "type": "object"
+      },
+      "PrepareRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "location": {
+            "$ref": "#/components/schemas/WeatherLocationIn"
+          },
+          "refresh": {
+            "default": false,
+            "title": "Refresh",
+            "type": "boolean"
+          },
+          "wait_s": {
+            "default": 0.0,
+            "maximum": 120.0,
+            "minimum": 0.0,
+            "title": "Wait S",
+            "type": "number"
+          }
+        },
+        "required": [
+          "location"
+        ],
+        "title": "PrepareRequest",
         "type": "object"
       },
       "RawScenario": {
@@ -6998,6 +7118,138 @@
         "title": "UnsupportedResponse",
         "type": "object"
       },
+      "WeatherCellResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "cell": {
+            "$ref": "#/components/schemas/CellOut"
+          },
+          "cell_id": {
+            "title": "Cell Id",
+            "type": "string"
+          },
+          "coverage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CoverageOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "job_status": {
+            "enum": [
+              "pending",
+              "ready",
+              "failed"
+            ],
+            "title": "Job Status",
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "poll": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Poll"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "reason_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Text"
+          },
+          "retrieved_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrieved At"
+          },
+          "snapshot_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snapshot Hash"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "enum": [
+                  "committed",
+                  "cache",
+                  "fetched"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          }
+        },
+        "required": [
+          "meta",
+          "cell_id",
+          "job_status",
+          "status",
+          "reason",
+          "reason_text",
+          "source",
+          "snapshot_hash",
+          "retrieved_at",
+          "cell",
+          "coverage",
+          "poll",
+          "notes"
+        ],
+        "title": "WeatherCellResponse",
+        "type": "object"
+      },
       "WeatherLocation": {
         "additionalProperties": false,
         "description": "Which place's weather answered the request, and where its thresholds come from.",
@@ -7187,6 +7439,51 @@
           "thresholds_from"
         ],
         "title": "WeatherLocation",
+        "type": "object"
+      },
+      "WeatherLocationIn": {
+        "additionalProperties": false,
+        "description": "A point (``latitude``/``longitude``) or a POWER ``cell_id``; exactly one of the two.",
+        "properties": {
+          "cell_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cell Id"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "maximum": 90.0,
+                "minimum": -90.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "maximum": 180.0,
+                "minimum": -180.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude"
+          }
+        },
+        "title": "WeatherLocationIn",
         "type": "object"
       },
       "WetnessSnapshot": {
@@ -8762,6 +9059,111 @@
         "summary": "Get Soil Route",
         "tags": [
           "field"
+        ]
+      }
+    },
+    "/v1/weather/prepare": {
+      "post": {
+        "description": "Committed snapshot, then the cache, then a POWER fetch of the cell (a background job).",
+        "operationId": "prepare_weather_v1_weather_prepare_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrepareRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeatherCellResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Prepare Weather",
+        "tags": [
+          "weather"
+        ]
+      }
+    },
+    "/v1/weather/{cell_id}": {
+      "get": {
+        "description": "The state of one cell. Never starts a fetch.",
+        "operationId": "get_weather_v1_weather__cell_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cell_id",
+            "required": true,
+            "schema": {
+              "title": "Cell Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeatherCellResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Weather",
+        "tags": [
+          "weather"
         ]
       }
     },

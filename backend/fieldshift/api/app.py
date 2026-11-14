@@ -24,6 +24,7 @@ from fieldshift.api.schemas import (
     ServerErrorResponse,
     WeatherUnavailableResponse,
 )
+from fieldshift.api.weather_routes import router as weather_router
 from fieldshift.compare import locations as places
 from fieldshift.compare.context import Context, get_context
 from fieldshift.compare.text import reason_text
@@ -209,7 +210,8 @@ def create_app() -> FastAPI:
                         headers=getattr(exc, "headers", None))
 
     error_docs = {400: {"model": InvalidInputResponse}, 500: {"model": ServerErrorResponse}}
-    for r in (core_router, planner_router, report_router, field_router, tools_router):
+    for r in (core_router, planner_router, report_router, field_router, tools_router,
+              weather_router):
         app.include_router(r, responses=error_docs)
     # Routes that depend on ``get_context`` follow the request's place (location_id / point).
     app.dependency_overrides[get_context] = request_context
