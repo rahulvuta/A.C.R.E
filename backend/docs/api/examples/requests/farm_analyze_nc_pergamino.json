@@ -1,0 +1,104 @@
+{
+  "body": {
+    "farm": {
+      "farm_id": "example_farm",
+      "fields": [
+        {
+          "field_id": "fld_nc",
+          "geometry": {
+            "coordinates": [
+              [
+                [
+                  -80.56,
+                  34.98
+                ],
+                [
+                  -80.55,
+                  34.98
+                ],
+                [
+                  -80.55,
+                  34.97
+                ],
+                [
+                  -80.56,
+                  34.97
+                ],
+                [
+                  -80.56,
+                  34.98
+                ]
+              ]
+            ],
+            "type": "Polygon"
+          },
+          "name": "Union field (synthetic)",
+          "plan": {
+            "next_crop_id": "soybean",
+            "next_plant": "05-12",
+            "plan_id": "fld_nc_plan",
+            "prev_harvest": "10-15",
+            "previous_crop_id": "field_corn",
+            "winter": {
+              "crop_id": "cereal_rye",
+              "kind": "cover",
+              "seed": "10-25",
+              "terminate": "04-20"
+            }
+          }
+        },
+        {
+          "field_id": "fld_ar",
+          "geometry": {
+            "coordinates": [
+              [
+                [
+                  -60.58,
+                  -33.88
+                ],
+                [
+                  -60.57,
+                  -33.88
+                ],
+                [
+                  -60.57,
+                  -33.89
+                ],
+                [
+                  -60.58,
+                  -33.89
+                ],
+                [
+                  -60.58,
+                  -33.88
+                ]
+              ]
+            ],
+            "type": "Polygon"
+          },
+          "name": "Pergamino field (synthetic)",
+          "plan": {
+            "next_crop_id": "soybean",
+            "next_plant": "11-15",
+            "plan_id": "fld_ar_plan",
+            "prev_harvest": "04-20",
+            "previous_crop_id": "maize",
+            "winter": {
+              "crop_id": "cereal_rye",
+              "kind": "cover",
+              "seed": "05-01",
+              "terminate": "10-20"
+            }
+          }
+        }
+      ],
+      "name": "Example farm (synthetic)"
+    },
+    "options": {
+      "include_capabilities": false
+    }
+  },
+  "method": "POST",
+  "status": 200,
+  "url": "/v1/farms/analyze"
+}

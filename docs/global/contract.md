@@ -1,4 +1,8 @@
-# Global API contract (draft, G0)
+# Global API contract
+
+**Status (A4, 2026-11-14):** §1, §2, §5 and §9 are shipped and match the code. The frozen source of truth is `backend/docs/api/openapi.json` plus `backend/docs/api/examples/` (regenerate with `python -m fieldshift.api.contract`; `--check` fails when stale). Real example responses for the global endpoints: `weather_prepare_union` (committed NC cell), `weather_prepare_pergamino` (cached cell), `weather_prepare_pending`, `weather_get_offline` (`offline_no_snapshot`), `compare_pergamino`, `compare_outside_nc_offline` (was `compare_unsupported_location`), `years_post_pergamino`, `sensitivity_pergamino`, `farm_analyze_nc_pergamino`, `farm_analyze_offline`, `farm_invalid_bowtie`, `recommend_union`, `recommend_pergamino`; each has its request in `examples/requests/`. §3, §4 (B1), §6–§8 (B2, P1) and §10 (P3) are B's and are folded in as B announces them in `log-B.md`.
+
+# (G0 draft text follows, updated per section)
 
 Draft shapes for the new endpoints, so the frontend can build against fixtures while the backend is being written. After G0, **A owns this file**. B posts shape changes in `log-B.md`, and A folds them in. After A4, the frozen source of truth is `backend/docs/api/openapi.json` plus its examples. Where they disagree, OpenAPI wins and A fixes this file.
 

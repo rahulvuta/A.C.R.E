@@ -1,0 +1,62 @@
+{
+  "farm_id": "example_farm",
+  "fields": [
+    {
+      "area_ac": 227.94,
+      "area_ha": 92.24,
+      "capabilities": null,
+      "cell_id": "cell_+42.000_-93.750",
+      "centroid": {
+        "latitude": 41.89,
+        "longitude": -93.6
+      },
+      "field_id": "fld_ia",
+      "job_status": "failed",
+      "name": "Unprepared cell (synthetic)",
+      "poll": null,
+      "reason": "offline_no_snapshot",
+      "reason_text": "The server is in offline mode and has no stored weather for this grid cell.",
+      "result": null,
+      "scope": null,
+      "snapshot_hash": null,
+      "status": "unavailable"
+    }
+  ],
+  "meta": {
+    "catalog_version": "v2:8eeb5bf961eb",
+    "plan_version": null,
+    "request_id": "req_example",
+    "snapshot_hash": null
+  },
+  "notes": [
+    "A field is assigned to the weather cell that contains its centroid, even when its boundary reaches into a neighbouring cell.",
+    "Only area is totalled. Results are per field and are never added across fields."
+  ],
+  "status": "unavailable",
+  "totals": {
+    "area_ac": 227.94,
+    "area_ha": 92.24
+  },
+  "weather_cells": [
+    {
+      "cell": {
+        "center": {
+          "latitude": 42.0,
+          "longitude": -93.75
+        },
+        "note": "One NASA POWER weather series covers this whole cell.",
+        "size_deg": [
+          0.5,
+          0.625
+        ]
+      },
+      "cell_id": "cell_+42.000_-93.750",
+      "field_ids": [
+        "fld_ia"
+      ],
+      "job_status": "failed",
+      "note": "One NASA POWER weather series covers this whole cell.",
+      "snapshot_hash": null
+    }
+  ]
+}

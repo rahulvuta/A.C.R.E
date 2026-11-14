@@ -108,3 +108,44 @@ Winter wheat double-crop and SMAP (Phase 12) are not built; the wheat path retur
 - **Thresholds.** Each place gets its own frozen `ThresholdSet`: dry-spring cutoffs from its own 1981-2025 baseline, heavy rain the fixed 76.2 mm. Locations are never mixed in a threshold set, era comparison or shared-year set (one request is one place).
 - **No snapshot.** A North Carolina point whose cell has no snapshot returns HTTP 200 `unavailable`, code `no_weather_snapshot`, `reason_text`, `meta.snapshot_hash: null`. A point outside NC stays `unsupported_location`. An unknown `location_id`, or an id and a point that disagree, is HTTP 400 `invalid_input`.
 - **Adding a county.** Add it to `PLACES` in `fieldshift/weather/locations.py`, then `python -m fieldshift.weather build-locations` (needs the network once; refuses under `FIELDSHIFT_OFFLINE=1`; fetches only missing cells; compares a place that shares a cell with the stored history and stops if they differ). `python -m fieldshift.weather verify-locations` checks the index and every snapshot offline. Regenerate the contract afterwards.
+
+## Global deployment (A4)
+
+### Railway service
+
+- Root directory `backend`, start command and health check in `railway.json` (`/health`).
+- **Run one process (one uvicorn worker).** Weather fetches are de-duplicated per grid cell inside the process. Two workers could fetch the same cell at once. That is safe (each writes its own temporary folder and renames it into place) but wastes a POWER call.
+- **Attach a Railway volume and point `FIELDSHIFT_CACHE_DIR` at it** (for example mount `/data`, set `FIELDSHIFT_CACHE_DIR=/data/fieldshift`). Without a volume every redeploy starts with an empty cache and re-fetches each cell.
+  - `<cache>/weather/<cell_id>/<snapshot_hash>/`: one NASA POWER snapshot per grid cell (raw response, `daily.parquet`, `manifest.json`), about 1.6 MB raw + 0.4 MB parquet per cell. `current.json` names the served hash. A refresh adds a new hash folder and never rewrites an old one. Delete old hash folders by hand if space matters; nothing else references them.
+  - `<cache>/geo/`: geocoder cache (B1). `<cache>/regions/`: research profiles (B3).
+  - The cache holds no farm data: weather is fetched for the cell centre, never the farm point, and the backend stores no farm, field or boundary.
+- The 8 NC county snapshots are committed in `data/snapshots/` and always win over the cache.
+
+### Environment variables
+
+| Variable | Default | What it does |
+|---|---|---|
+| `FIELDSHIFT_CACHE_DIR` | `backend/data/cache` (gitignored) | Weather, geocoder and research caches. Use the Railway volume. |
+| `FIELDSHIFT_OFFLINE` | unset | `1`: never touch the network. Committed NC snapshots and whatever is already cached are served; anything else answers `unavailable` / `offline_no_snapshot`. |
+| `FIELDSHIFT_POWER_TIMEOUT_S` | `120` | Timeout per NASA POWER request. Each fetch is retried once. |
+| `FIELDSHIFT_CORS_ORIGINS` | GitHub Pages + local Vite ports | Comma-separated allowed origins. Set it to the deployed frontend's origin. |
+| `ANTHROPIC_API_KEY` | unset | AI regional research (B3). Without it research answers `unavailable` / `research_not_configured` and the SAGE-only profiles are served. Never logged. |
+| `FIELDSHIFT_RESEARCH_MODEL` | `claude-sonnet-5-5` | Model for AI research (B3). |
+
+### Cost and rate limits
+
+- **NASA POWER** is free and needs no key. One fetch per grid cell (1981-01-01 to yesterday, 6 parameters, about 15 s and 1.6 MB). It is fetched once and then served from the cache. Only `refresh: true` re-fetches. POWER asks clients not to flood it: the one-fetch-per-cell rule and the two background fetch threads keep the load low.
+- **Nominatim (OSM)**: at most 1 request per second, a generic User-Agent, results cached (B1). Coordinate input is parsed locally and never sent.
+- **Claude API (B3)**: billed per token. Research is cached per region key, with one job per key at a time and token and time limits per job (see B3). The prompt gets only the country, admin1, climate class and crop list, never coordinates or farm data.
+- **SoilGrids / Open-Meteo / USDA SDA / NWS / USDM**: free; cached per provider (B4).
+
+### Smoke test
+
+```bash
+python scripts/smoke_global.py seed --cache /tmp/fs-cache      # recorded Pergamino POWER response, no network
+FIELDSHIFT_OFFLINE=1 FIELDSHIFT_CACHE_DIR=/tmp/fs-cache python -m uvicorn fieldshift.api.app:app --port 8765
+python scripts/smoke_global.py run --base http://127.0.0.1:8765
+```
+Without a server: `FIELDSHIFT_OFFLINE=1 FIELDSHIFT_CACHE_DIR=/tmp/fs-cache python scripts/smoke_global.py run --inprocess` sends the same requests to the app in-process (FastAPI TestClient).
+
+It walks search → reverse → capabilities → weather prepare and poll → farm analyze → recommend → field note → regional profile for the NC demo (committed snapshot) and Pergamino (the seeded cell), and checks every `status` against the nine status words.
