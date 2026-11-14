@@ -1,0 +1,249 @@
+/* Map screens (Agent C). Uses the kit tokens only; `mp-` prefix. */
+.mp-screen {
+  display: grid;
+  grid-template-columns: minmax(320px, 380px) 1fr;
+  height: 100%;
+  min-height: 560px;
+  background: var(--surface-2);
+}
+.mp-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  overflow-y: auto;
+  background: var(--surface);
+  border-right: var(--border);
+}
+.mp-stage {
+  position: relative;
+  min-height: 0;
+}
+.mp-map {
+  position: absolute;
+  inset: 0;
+}
+.mp-map-failed {
+  display: grid;
+  place-items: center;
+  padding: var(--sp-6);
+  color: var(--ink-muted);
+}
+.mp-layer-switch {
+  position: absolute;
+  top: var(--sp-3);
+  left: var(--sp-3);
+  z-index: 2;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+.mp-label {
+  display: block;
+  margin-bottom: var(--sp-2);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.mp-search-row {
+  display: flex;
+  gap: var(--sp-2);
+}
+.mp-input {
+  flex: 1;
+  min-width: 0;
+}
+.mp-quiet {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 14px;
+}
+.mp-error {
+  margin: 0;
+  color: var(--error);
+  font-size: 14px;
+}
+.mp-results {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mp-result {
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--action);
+  font: inherit;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+.mp-result:hover {
+  background: var(--surface-2);
+}
+.mp-card {
+  padding: var(--sp-4);
+  border: var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+.mp-card-title {
+  margin: 0 0 var(--sp-3);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.mp-card-sub {
+  margin: var(--sp-4) 0 var(--sp-2);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-muted);
+}
+.mp-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px var(--sp-3);
+  margin: 0;
+  font-size: 14px;
+}
+.mp-facts dt {
+  color: var(--ink-muted);
+}
+.mp-facts dd {
+  margin: 0;
+}
+.mp-caps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+}
+.mp-caps li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px var(--sp-2);
+  align-items: center;
+}
+.mp-cap-detail {
+  grid-column: 1 / -1;
+  color: var(--ink-muted);
+  font-size: 13px;
+}
+.mp-card-action {
+  margin-top: var(--sp-4);
+}
+.mp-pin {
+  width: 18px;
+  height: 18px;
+  border: 3px solid var(--surface);
+  border-radius: 50% 50% 50% 0;
+  background: var(--action);
+  transform: rotate(-45deg) translate(3px, -3px);
+  box-shadow: 0 1px 3px rgb(14 21 24 / 0.35);
+}
+/* Attribution stays legible over imagery. */
+.mp-stage .maplibregl-ctrl-attrib {
+  background: rgb(255 255 255 / 0.85);
+  font-size: 11px;
+}
+/* Farm editor (C2) */
+.mp-farm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding-top: var(--sp-4);
+  border-top: var(--border);
+}
+.mp-farm-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.mp-farm-name {
+  font-size: 16px;
+  font-weight: 500;
+}
+.mp-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+.mp-drawing {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  font-size: 14px;
+}
+.mp-drawing p {
+  margin: 0;
+}
+.mp-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mp-fields li {
+  border-radius: var(--radius-md);
+}
+.mp-fields li.is-selected {
+  background: var(--surface-2);
+}
+.mp-field {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+.mp-field:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+.mp-field[aria-pressed="true"] .mp-field-name {
+  color: var(--action);
+  font-weight: 500;
+}
+.mp-field-area {
+  color: var(--ink-muted);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.mp-field-edit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  padding: 0 10px 10px;
+}
+.mp-field-edit .input {
+  flex: 1 1 100%;
+}
+.mp-files {
+  display: flex;
+  gap: var(--sp-2);
+}
+.mp-fine {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 13px;
+}
