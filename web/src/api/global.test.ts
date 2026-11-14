@@ -15,6 +15,12 @@ import {
   BackendReverse,
   BackendWeather,
   toBackendFarm,
+  adaptFuture,
+  adaptGeneration,
+  adaptRecommendation,
+  BackendFuture,
+  BackendGeneration,
+  BackendRecommendation,
 } from "./adapt";
 import { createGlobalClient, type FetchLike } from "./client";
 import { FIXTURE_API_BASE, FIXTURES, fixtureFetch, POLYGONS, type FixtureName } from "./fixtures";
@@ -30,6 +36,9 @@ const READERS: Record<FixtureName, (raw: unknown) => unknown> = {
   farmMixed: (r) => adaptFarmAnalysis(BackendFarmAnalysis.parse(r)),
   farmThree: (r) => adaptFarmAnalysis(BackendFarmAnalysis.parse(r)),
   farmTwo: (r) => adaptFarmAnalysis(BackendFarmAnalysis.parse(r)),
+  futureUnion: (r) => adaptFuture(BackendFuture.parse(r)),
+  generateUnion: (r) => adaptGeneration(BackendGeneration.parse(r)),
+  recommendUnion: (r) => adaptRecommendation(BackendRecommendation.parse(r)),
   geoReverseOcean: (r) => adaptReverse(BackendReverse.parse(r)),
   geoReversePergamino: (r) => adaptReverse(BackendReverse.parse(r)),
   geoReverseUnion: (r) => adaptReverse(BackendReverse.parse(r)),

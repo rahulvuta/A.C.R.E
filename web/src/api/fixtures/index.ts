@@ -18,7 +18,10 @@ import geoReverseUnion from "./geo-reverse-union.json";
 import geoSearchCoordinates from "./geo-search-coordinates.json";
 import geoSearchEmpty from "./geo-search-empty.json";
 import geoSearchPergamino from "./geo-search-pergamino.json";
+import futureUnion from "./future-union.json";
+import generateUnion from "./generate-union.json";
 import polygons from "./polygons.json";
+import recommendUnion from "./recommend-union.json";
 import profileArB from "./profile-ar-b.json";
 import profileUsNc from "./profile-us-nc.json";
 import researchPending from "./research-pending.json";
@@ -38,6 +41,9 @@ export const FIXTURES = {
   farmMixed,
   farmThree,
   farmTwo,
+  futureUnion,
+  generateUnion,
+  recommendUnion,
   geoReverseOcean,
   geoReversePergamino,
   geoReverseUnion,
@@ -105,6 +111,10 @@ export function fixtureAnswer(url: string, init?: { method?: string; body?: stri
     if (key === "US-NC") return ok(FIXTURES.profileUsNc);
     return { status: 404, body: { detail: "no profile" } };
   }
+  // §8–§10: real responses from the local backend for the Union County demo point.
+  if (path === "/v1/plans/generate") return ok(FIXTURES.generateUnion);
+  if (path === "/v1/plans/recommend") return ok(FIXTURES.recommendUnion);
+  if (path === "/v1/plans/future") return ok(FIXTURES.futureUnion);
   if (path.startsWith("/v1/tools/")) return ok(FIXTURES.toolsFertilizer);
   return { status: 404, body: { detail: "no fixture" } };
 }

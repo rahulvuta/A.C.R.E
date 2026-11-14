@@ -30,8 +30,17 @@ import {
   BackendReverse,
   BackendWeather,
   toBackendFarm,
+  adaptFuture,
+  adaptGeneration,
+  adaptRecommendation,
+  BackendFuture,
+  BackendGeneration,
+  BackendRecommendation,
+  toBackendGoals,
+  toBackendPlace,
+  toBackendPlanningField,
 } from "./adapt";
-import type { Capabilities, FarmAnalysis, GeoSearch, InputIssue, PlaceInfo, RegionProfile, ResearchJob, WeatherCell } from "./model";
+import type { Capabilities, FarmAnalysis, FuturePlan, Generation, GeoSearch, Goals, InputIssue, PlaceInfo, PlanningField, PlanPlace, Recommendation, RegionProfile, ResearchJob, WeatherCell } from "./model";
 import type { Farm } from "../farm/types";
 import { LocationResolveResponse, ReplayResponse, type CompareResponse, type PlanInput, type SensitivityResponse, type YearsResponse } from "./schema";
 
@@ -300,6 +309,20 @@ export function createGlobalClient(opts: { apiBase: string | null; timeoutMs: nu
       call(`/v1/regions/${encodeURIComponent(regionKey)}/profile`, BackendProfile, adaptProfile),
     startResearch: (regionKey: string): Promise<Result<ResearchJob>> => call("/v1/regions/research", BackendResearch, adaptResearch, post({ region_key: regionKey })),
     research: (jobId: string): Promise<Result<ResearchJob>> => call(`/v1/regions/research/${encodeURIComponent(jobId)}`, BackendResearch, adaptResearch),
+    /** §8: candidate rotations for one field. */
+    generate: (place: PlanPlace, goals: Goals | null, field?: PlanningField): Promise<Result<Generation>> =>
+      call("/v1/plans/generate", BackendGeneration, adaptGeneration, post({ ...toBackendPlace(place), ...(field ? { field: toBackendPlanningField(field) } : {}), ...(goals ? { goals: toBackendGoals(goals) } : {}) })),
+    /** §9: the Pareto shortlist for one field (candidates from the generator unless given). */
+    recommend: (place: PlanPlace, goals: Goals | null, field?: PlanningField, candidates?: Array<Record<string, unknown>>): Promise<Result<Recommendation>> =>
+      call(
+        "/v1/plans/recommend",
+        BackendRecommendation,
+        adaptRecommendation,
+        post({ ...toBackendPlace(place), ...(field ? { field: toBackendPlanningField(field) } : {}), ...(goals ? { goals: toBackendGoals(goals) } : {}), ...(candidates ? { candidates } : {}) }),
+      ),
+    /** §10: the multi-season future plan for a candidate (raw, from generate) or one plan. */
+    future: (place: PlanPlace, what: { candidate: Record<string, unknown> } | { plan: Record<string, unknown> }, startSeason: string, seasons = 2, edits?: Array<{ field: string; value: unknown }>): Promise<Result<FuturePlan>> =>
+      call("/v1/plans/future", BackendFuture, adaptFuture, post({ ...toBackendPlace(place), ...what, start_season: startSeason, seasons, ...(edits?.length ? { edits } : {}) })),
   };
 }
 export type GlobalClient = ReturnType<typeof createGlobalClient>;

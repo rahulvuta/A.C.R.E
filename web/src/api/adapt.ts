@@ -28,6 +28,15 @@ import {
   type ResearchJob,
   type SourceRef,
   type WeatherCell,
+  type BackendPlanShape,
+  type FuturePlan,
+  type Generation,
+  type Goals,
+  type LogLine,
+  type Option,
+  type PlanningField,
+  type PlanPlace,
+  type Recommendation,
 } from "./model";
 import type { Farm } from "../farm/types";
 
@@ -869,3 +878,250 @@ export function adaptResearch(r: z.infer<typeof BackendResearch>): ResearchJob {
     profileUrl: nn(r.profile_url),
   };
 }
+
+// ------------------------------------------------------------------ §8–§10 goals, generate, recommend, future
+const BackendLog = z.array(z.object({ kind: str, name: str, rule: str, constraint: str, pruned: z.union([z.number(), z.string()]).nullable().optional(), reason_text: str }).passthrough()).default([]);
+const adaptLog = (l: z.infer<typeof BackendLog>): LogLine[] =>
+  l.map((x) => ({ kind: x.kind ?? (x.rule ? "rule" : "constraint"), name: x.name ?? x.rule ?? x.constraint ?? "", pruned: nn(x.pruned), reasonText: x.reason_text ?? "" }));
+const PlanShape = z.object({ plan_id: z.string(), label: str }).passthrough();
+
+const BackendCandidate = z
+  .object({
+    candidate_id: z.string(),
+    label: str,
+    crops: z.array(z.string()).default([]),
+    seasons: z.array(z.object({ season: int, year: int.nullable().optional(), plan: PlanShape }).passthrough()).default([]),
+    origins: z.union([z.array(z.string()), z.record(z.string())]).default([]),
+    checks_summary: z.object({ flagged: z.array(z.string()).default([]), manual_check: z.array(z.string()).default([]) }).passthrough().nullable().optional(),
+  })
+  .passthrough();
+export const BackendGeneration = z
+  .object({ meta: Meta.optional(), status: LooseStatus, reason_text: str, region_key: str, candidates: z.array(BackendCandidate).default([]), generation_log: BackendLog, gaps: z.array(z.string()).default([]) })
+  .passthrough();
+export function adaptGeneration(r: z.infer<typeof BackendGeneration>): Generation {
+  return {
+    status: asStatus(r.status),
+    reasonText: nn(r.reason_text),
+    regionKey: nn(r.region_key),
+    candidates: r.candidates.map((c) => ({
+      candidateId: c.candidate_id,
+      label: c.label ?? c.candidate_id,
+      crops: c.crops,
+      seasons: c.seasons.map((s) => ({ season: s.season, year: nn(s.year), plan: s.plan as BackendPlanShape })),
+      origins: Array.isArray(c.origins) ? c.origins.map((o) => asOrigin(o, "assumed")) : [...new Set(Object.values(c.origins).map((o) => asOrigin(o, "assumed")))],
+      flaggedRuleIds: c.checks_summary?.flagged ?? [],
+      manualCheckRuleIds: c.checks_summary?.manual_check ?? [],
+      raw: c as Record<string, unknown>,
+    })),
+    log: adaptLog(r.generation_log),
+    gaps: r.gaps,
+  };
+}
+
+const BackendIndicator = z
+  .object({
+    value: num,
+    unit: str,
+    direction: str,
+    origin: str,
+    status: LooseStatus,
+    definition: str,
+    rationale: str,
+    source: BackendSource.nullable().optional(),
+    per_leg: z.array(z.unknown()).default([]),
+    in_priorities: z.boolean().optional(),
+  })
+  .passthrough();
+const BackendOption = z
+  .object({
+    candidate_id: z.string(),
+    label: str,
+    origin: str,
+    plans: z.array(PlanShape).default([]),
+    leg_status: z.array(z.string()).default([]),
+    indicators: z.record(BackendIndicator).default({}),
+    rank_positions: z.record(z.unknown()).default({}),
+    wins: z.array(z.string()).default([]),
+    loses: z.array(z.string()).default([]),
+    why: z.array(z.object({ indicator: z.string(), text: z.string(), source: BackendSource.nullable().optional() }).passthrough()).default([]),
+    trade_offs: z
+      .array(
+        z
+          .object({
+            versus: z.string(),
+            text: z.string(),
+            worse_on: z.array(z.object({ indicator: z.string(), value: num, versus_value: num, in_priorities: z.boolean().optional() }).passthrough()).default([]),
+          })
+          .passthrough(),
+      )
+      .default([]),
+    uncertainties: z.array(z.object({ text: z.string(), origin: str }).passthrough()).default([]),
+    historical_vulnerabilities: z
+      .array(
+        z
+          .object({ year: z.union([z.string(), z.number()]), indicator: z.string(), plan_id: z.string().default(""), value: num, text: z.string().default(""), replay: z.object({ method: z.string(), path: z.string(), body: z.record(z.unknown()) }).passthrough().nullable().optional() })
+          .passthrough(),
+      )
+      .default([]),
+    dominated_by: z.array(z.string()).default([]),
+    missing: z.array(z.string()).default([]),
+  })
+  .passthrough();
+export const BackendRecommendation = z
+  .object({
+    meta: Meta.optional(),
+    status: LooseStatus,
+    result_id: str,
+    hemisphere: z.enum(["north", "south"]).nullable().optional(),
+    method: z.object({ indicators_used: z.array(z.string()).default([]), weights: z.record(z.unknown()).default({}), ordering_text: str, note: str }).passthrough().nullable().optional(),
+    shortlist: z.array(BackendOption).default([]),
+    not_comparable: z.array(BackendOption).default([]),
+    dominated: z.array(BackendOption).default([]),
+    generation_log: BackendLog,
+    gaps: z.array(z.string()).default([]),
+    reason_text: str,
+  })
+  .passthrough();
+const perLegValue = (v: unknown): number | null =>
+  typeof v === "number" ? v : v && typeof v === "object" && typeof (v as { value?: unknown }).value === "number" ? (v as { value: number }).value : null;
+const numbersOnly = (r: Record<string, unknown>): Record<string, number | null> =>
+  Object.fromEntries(Object.entries(r).filter(([, v]) => v === null || typeof v === "number")) as Record<string, number | null>;
+function adaptOption(o: z.infer<typeof BackendOption>): Option {
+  return {
+    candidateId: o.candidate_id,
+    label: o.label ?? o.candidate_id,
+    origin: o.origin ?? "generated",
+    plans: o.plans as BackendPlanShape[],
+    legStatus: o.leg_status.map(asStatus),
+    indicators: Object.fromEntries(
+      Object.entries(o.indicators).map(([name, i]) => [
+        name,
+        {
+          name,
+          value: nn(i.value),
+          unit: nn(i.unit),
+          direction: i.direction === "lower_better" || i.direction === "higher_better" ? i.direction : null,
+          origin: asOrigin(i.origin, "calculation"),
+          status: asStatus(i.status),
+          definition: nn(i.definition),
+          rationale: nn(i.rationale),
+          source: source(i.source),
+          perLeg: i.per_leg.map(perLegValue),
+          inPriorities: i.in_priorities ?? false,
+        },
+      ]),
+    ),
+    rankPositions: numbersOnly(o.rank_positions),
+    wins: o.wins,
+    loses: o.loses,
+    why: o.why.map((w) => ({ indicator: w.indicator, text: w.text, source: source(w.source) })),
+    tradeOffs: o.trade_offs.map((t) => ({
+      versus: t.versus,
+      text: t.text,
+      worseOn: t.worse_on.map((w) => ({ indicator: w.indicator, value: nn(w.value), versusValue: nn(w.versus_value), inPriorities: w.in_priorities ?? false })),
+    })),
+    uncertainties: o.uncertainties.map((u) => ({ text: u.text, origin: asOrigin(u.origin, "assumed") })),
+    vulnerabilities: o.historical_vulnerabilities.map((v) => ({
+      year: String(v.year),
+      indicator: v.indicator,
+      planId: v.plan_id,
+      value: nn(v.value),
+      text: v.text,
+      replay: v.replay ? { method: v.replay.method, path: v.replay.path, body: v.replay.body } : null,
+    })),
+    dominatedBy: o.dominated_by,
+    missing: o.missing,
+  };
+}
+export function adaptRecommendation(r: z.infer<typeof BackendRecommendation>): Recommendation {
+  return {
+    status: asStatus(r.status),
+    resultId: nn(r.result_id),
+    hemisphere: nn(r.hemisphere),
+    method: r.method ? { indicatorsUsed: r.method.indicators_used, weights: numbersOnly(r.method.weights) as Record<string, number>, orderingText: nn(r.method.ordering_text), note: nn(r.method.note) } : null,
+    shortlist: r.shortlist.map(adaptOption),
+    notComparable: r.not_comparable.map(adaptOption),
+    dominated: r.dominated.map(adaptOption),
+    log: adaptLog(r.generation_log),
+    gaps: r.gaps,
+    reasonText: nn(r.reason_text),
+  };
+}
+
+const BackendFutureSeason = z
+  .object({
+    season: z.union([z.string(), z.number()]),
+    status: LooseStatus,
+    plan: PlanShape.nullable().optional(),
+    windows: z.array(z.object({ kind: z.string(), start: z.string(), end: z.string(), label: z.string().default(""), origin: str, source: BackendSource.nullable().optional(), field: str }).passthrough()).default([]),
+    milestones: z
+      .array(z.object({ date: z.string(), end_date: str, label: z.string().default(""), kind: z.string().default(""), flagged: z.boolean().default(false), origin: str, rule_ids: z.array(z.string()).default([]) }).passthrough())
+      .default([]),
+    decision_deadlines: z
+      .array(z.object({ date: z.string(), decision: z.string(), switch_condition: str, next_check_date: str, rule_ids: z.array(z.string()).default([]) }).passthrough())
+      .default([]),
+    explanations: z.array(z.object({ rule_id: z.string(), text: z.string().default(""), status: LooseStatus, origin: str, source: BackendSource.nullable().optional() }).passthrough()).default([]),
+    warnings: z.array(z.union([z.string(), z.object({ text: z.string() }).passthrough()])).default([]),
+    backup: z.object({ status: LooseStatus, fallback_plan_id: str, divergence: z.object({ what: str }).passthrough().nullable().optional() }).passthrough().nullable().optional(),
+    notes: z.array(z.union([z.string(), z.object({ text: z.string() }).passthrough()])).default([]),
+  })
+  .passthrough();
+export const BackendFuture = z
+  .object({
+    meta: Meta.optional(),
+    status: LooseStatus,
+    start_season: z.union([z.string(), z.number()]).nullable().optional(),
+    seasons: z.array(BackendFutureSeason).default([]),
+    note: str,
+    dates_basis: str,
+    diff: z.object({ changes: z.array(z.object({ field: z.string().default(""), from: z.unknown(), to: z.unknown(), text: str }).passthrough()).default([]) }).passthrough().nullable().optional(),
+  })
+  .passthrough();
+const textOf = (x: string | { text: string }) => (typeof x === "string" ? x : x.text);
+export function adaptFuture(r: z.infer<typeof BackendFuture>): FuturePlan {
+  return {
+    status: asStatus(r.status),
+    startSeason: r.start_season == null ? null : String(r.start_season),
+    note: nn(r.note),
+    datesBasis: nn(r.dates_basis),
+    diff: (r.diff?.changes ?? []).map((c) => ({ field: c.field, from: c.from, to: c.to, text: nn(c.text) })),
+    seasons: r.seasons.map((s) => ({
+      season: String(s.season),
+      status: asStatus(s.status),
+      plan: (s.plan as BackendPlanShape | null | undefined) ?? null,
+      windows: s.windows.map((w) => ({ kind: w.kind, start: w.start, end: w.end, label: w.label, origin: asOrigin(w.origin, "assumed"), source: source(w.source), field: nn(w.field) })),
+      milestones: s.milestones.map((m) => ({ date: m.date, endDate: nn(m.end_date), label: m.label, kind: m.kind, flagged: m.flagged, origin: asOrigin(m.origin, "assumed"), ruleIds: m.rule_ids })),
+      deadlines: s.decision_deadlines.map((d) => ({ date: d.date, decision: d.decision, switchCondition: nn(d.switch_condition), nextCheckDate: nn(d.next_check_date), ruleIds: d.rule_ids })),
+      explanations: s.explanations.map((e) => ({ ruleId: e.rule_id, text: e.text, status: asStatus(e.status), origin: asOrigin(e.origin), source: source(e.source) })),
+      warnings: s.warnings.map(textOf),
+      backup: s.backup ? { status: asStatus(s.backup.status), fallbackPlanId: nn(s.backup.fallback_plan_id), what: nn(s.backup.divergence?.what) } : null,
+      notes: s.notes.map(textOf),
+    })),
+  };
+}
+
+/** Request pieces shared by generate / recommend / future. */
+export function toBackendPlace(p: PlanPlace) {
+  if ("point" in p) return { location: { latitude: p.point.latitude, longitude: p.point.longitude } };
+  if ("cellId" in p) return { location: { cell_id: p.cellId } };
+  return { location_id: p.locationId };
+}
+export function toBackendGoals(g: Goals) {
+  const c = g.constraints ?? {};
+  const p = g.preferences ?? {};
+  return {
+    priorities: Object.fromEntries(Object.entries(g.priorities).filter(([, v]) => typeof v === "number")),
+    constraints: {
+      allowed_crops: c.allowedCrops ?? null,
+      excluded_crops: c.excludedCrops ?? [],
+      must_include: c.mustInclude ?? [],
+      irrigation: c.irrigation ?? "unknown",
+      equipment: c.equipment ?? [],
+      latest_planting: c.latestPlanting ?? null,
+      earliest_harvest: c.earliestHarvest ?? null,
+      seasons: c.seasons ?? null,
+    },
+    preferences: { liked_crops: p.likedCrops ?? [], disliked_crops: p.dislikedCrops ?? [] },
+  };
+}
+export const toBackendPlanningField = (f: PlanningField) => ({ field_id: f.fieldId, area_ha: f.areaHa, crop_history: f.cropHistory, soil: null });
