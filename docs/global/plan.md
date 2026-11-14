@@ -59,6 +59,12 @@ What's missing:
 - No erosion, yield, soil-health improvement or water-saving figures, ever.
 - Where the regional evidence is too thin to generate options, return `insufficient_data` with the gaps, not a guess.
 
+## Fast path (2026-11-14, overrides the wave order below)
+
+- **Core, in order.** A: A1 ✓ → A2 → P2 → A3 → A4 (A4 reduced to a contract refresh and a smoke test). B: B1 ✓ → B2 → P1 → P3.
+- **Optional, only after the core is pushed:** B3 (AI research) and B4 (global soil, live weather, tools with area).
+- P2 builds against B's real `generate_candidates()` as soon as B announces it in `log-B.md`. Until then it stubs it with the NC presets.
+
 ## Waves (cards in the same wave run in parallel)
 
 | Wave | A (backend) | B (backend) | C (frontend) | D (frontend) | Merge to main |
