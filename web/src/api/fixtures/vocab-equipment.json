@@ -1,0 +1,65 @@
+{
+ "meta": {
+  "request_id": "fixture",
+  "snapshot_hash": null
+ },
+ "_fixture": "Synthetic fixture built from docs/global/contract.md \u00a711\u2013\u00a716 (Agent D). Example values, not real backend output.",
+ "items": [
+  {
+   "id": "planter",
+   "label": "Planter"
+  },
+  {
+   "id": "grain_drill",
+   "label": "Grain drill"
+  },
+  {
+   "id": "no_till_drill",
+   "label": "No till drill"
+  },
+  {
+   "id": "broadcast_seeder",
+   "label": "Broadcast seeder"
+  },
+  {
+   "id": "sprayer",
+   "label": "Sprayer"
+  },
+  {
+   "id": "roller_crimper",
+   "label": "Roller crimper"
+  },
+  {
+   "id": "disk",
+   "label": "Disk"
+  },
+  {
+   "id": "chisel_plow",
+   "label": "Chisel plow"
+  },
+  {
+   "id": "field_cultivator",
+   "label": "Field cultivator"
+  },
+  {
+   "id": "combine",
+   "label": "Combine"
+  },
+  {
+   "id": "forage_harvester",
+   "label": "Forage harvester"
+  },
+  {
+   "id": "irrigation_pivot",
+   "label": "Irrigation pivot"
+  },
+  {
+   "id": "irrigation_drip",
+   "label": "Irrigation drip"
+  },
+  {
+   "id": "irrigation_none",
+   "label": "Irrigation none"
+  }
+ ]
+}

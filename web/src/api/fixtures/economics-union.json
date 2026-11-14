@@ -1,0 +1,148 @@
+{
+ "meta": {
+  "request_id": "fixture",
+  "snapshot_hash": null
+ },
+ "_fixture": "Synthetic fixture built from docs/global/contract.md \u00a711\u2013\u00a716 (Agent D). Example values, not real backend output.",
+ "currency": "USD",
+ "area_unit": "acre",
+ "crops": [
+  {
+   "crop_id": "soybean",
+   "status": "complete",
+   "price": {
+    "low": 9.5,
+    "typical": 11.2,
+    "high": 13.6,
+    "unit": "USD/bu",
+    "origin": "verified_source",
+    "source": {
+     "title": "USDA NASS Agricultural Prices",
+     "url": "https://www.nass.usda.gov/Publications/Todays_Reports/reports/agpr0525.pdf",
+     "years": "2021-2025"
+    }
+   },
+   "yield": {
+    "value": 44,
+    "unit": "bu/acre",
+    "origin": "dataset_estimate",
+    "source": {
+     "title": "USDA NASS county yields",
+     "url": "https://quickstats.nass.usda.gov/",
+     "year": 2024
+    }
+   },
+   "costs": {
+    "items": [
+     {
+      "item": "seed",
+      "value": 62,
+      "unit": "USD/acre",
+      "origin": "verified_source",
+      "source": {
+       "title": "USDA ERS Commodity Costs and Returns",
+       "url": "https://www.ers.usda.gov/data-products/commodity-costs-and-returns/"
+      }
+     },
+     {
+      "item": "fertilizer",
+      "value": 28,
+      "unit": "USD/acre",
+      "origin": "verified_source",
+      "source": {
+       "title": "USDA ERS Commodity Costs and Returns",
+       "url": "https://www.ers.usda.gov/data-products/commodity-costs-and-returns/"
+      }
+     }
+    ],
+    "total_per_area": {
+     "value": 410,
+     "unit": "USD/acre"
+    }
+   }
+  },
+  {
+   "crop_id": "field_corn",
+   "status": "complete",
+   "price": {
+    "low": 3.9,
+    "typical": 4.6,
+    "high": 6.1,
+    "unit": "USD/bu",
+    "origin": "verified_source",
+    "source": {
+     "title": "USDA NASS Agricultural Prices",
+     "url": "https://www.nass.usda.gov/",
+     "years": "2021-2025"
+    }
+   },
+   "yield": {
+    "value": 128,
+    "unit": "bu/acre",
+    "origin": "dataset_estimate",
+    "source": {
+     "title": "USDA NASS county yields",
+     "url": "https://quickstats.nass.usda.gov/",
+     "year": 2024
+    }
+   },
+   "costs": {
+    "items": [
+     {
+      "item": "seed",
+      "value": 112,
+      "unit": "USD/acre",
+      "origin": "verified_source",
+      "source": {
+       "title": "USDA ERS Commodity Costs and Returns",
+       "url": "https://www.ers.usda.gov/"
+      }
+     }
+    ],
+    "total_per_area": {
+     "value": 640,
+     "unit": "USD/acre"
+    }
+   }
+  },
+  {
+   "crop_id": "cereal_rye",
+   "status": "unavailable",
+   "reason_text": "A cover crop is not sold; only its seed and passes are costed.",
+   "price": null,
+   "yield": null,
+   "costs": {
+    "items": [
+     {
+      "item": "seed",
+      "value": 24,
+      "unit": "USD/acre",
+      "origin": "verified_source",
+      "source": {
+       "title": "NC State cover crop budget",
+       "url": "https://content.ces.ncsu.edu/"
+      }
+     }
+    ],
+    "total_per_area": {
+     "value": 24,
+     "unit": "USD/acre"
+    }
+   }
+  }
+ ],
+ "equipment_costs": [
+  {
+   "equipment": "grain_drill",
+   "pass": "drill",
+   "value": 18.5,
+   "unit": "USD/acre",
+   "origin": "verified_source",
+   "source": {
+    "title": "NC State custom rates survey",
+    "url": "https://ag-econ.ncsu.edu/"
+   }
+  }
+ ],
+ "gaps": []
+}

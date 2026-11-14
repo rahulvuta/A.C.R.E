@@ -1,0 +1,60 @@
+{
+ "meta": {
+  "request_id": "fixture",
+  "snapshot_hash": null
+ },
+ "_fixture": "Synthetic fixture built from docs/global/contract.md \u00a711\u2013\u00a716 (Agent D). Example values, not real backend output.",
+ "plan": {
+  "plan_id": "autofill",
+  "label": "Typical dates",
+  "previous_crop_id": "field_corn",
+  "prev_harvest": "09-20",
+  "winter": {
+   "kind": "cover",
+   "crop_id": "cereal_rye",
+   "seed": "09-27",
+   "terminate": "04-08"
+  },
+  "next_crop_id": "soybean",
+  "next_plant": "05-10"
+ },
+ "dates": [
+  {
+   "field": "prev_harvest",
+   "value": "09-20",
+   "origin": "verified_source",
+   "source": {
+    "title": "NC State Corn Production Guide",
+    "url": "https://content.ces.ncsu.edu/"
+   }
+  },
+  {
+   "field": "winter.seed",
+   "value": "09-27",
+   "origin": "verified_source",
+   "source": {
+    "title": "NC State cover crop guide",
+    "url": "https://content.ces.ncsu.edu/"
+   }
+  },
+  {
+   "field": "winter.terminate",
+   "value": "04-08",
+   "origin": "verified_source",
+   "source": {
+    "title": "NC State cover crop guide",
+    "url": "https://content.ces.ncsu.edu/"
+   }
+  },
+  {
+   "field": "next_plant",
+   "value": "05-10",
+   "origin": "dataset_estimate",
+   "source": {
+    "title": "SAGE crop calendar",
+    "url": "https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/"
+   }
+  }
+ ],
+ "gaps": []
+}
