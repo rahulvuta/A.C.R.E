@@ -57,14 +57,14 @@ function Section({ id, title, children }: { id: string; title: string; children:
 export function MethodsPage() {
   return (
     <DocPage
-      title="How Fieldback works"
-      lede="Fieldback replays a grower's planned winter dates against past springs recorded by NASA and checks them against NC State guidance. It compares plans; it does not forecast next spring or measure a field."
+      title="How A.C.R.E works"
+      lede="A.C.R.E replays a grower's planned winter dates against past springs recorded by NASA and checks them against NC State guidance. It compares plans; it does not forecast next spring or measure a field."
     >
       <Section id="m-question" title="The question it answers">
         <p>
           A corn grower in the North Carolina Piedmont is planning soybeans. Over winter they can leave no planted cover, plant cereal rye
           as a cover crop, or grow winter wheat for grain. Rye protects the soil but uses water while it grows, so in a dry spring ending
-          it too close to planting can leave the seedbed dry. Fieldback shows how each plan would have fared across every past spring on
+          it too close to planting can leave the seedbed dry. A.C.R.E shows how each plan would have fared across every past spring on
           record for this area.
         </p>
       </Section>
@@ -96,7 +96,7 @@ export function MethodsPage() {
             The dry cutoff is the 20th percentile of complete springs for that window, computed once and shared by every plan. Springs at or
             below it are labeled among the driest 20%. Ties at the cutoff count as dry.
           </li>
-          <li>With fewer than 15 complete springs, Fieldback withholds the typical, dry and rank labels and shows only the record.</li>
+          <li>With fewer than 15 complete springs, A.C.R.E withholds the typical, dry and rank labels and shows only the record.</li>
           <li>This 20% line is a label for comparing past years, not a drought declaration.</li>
         </ul>
       </Section>
@@ -107,7 +107,7 @@ export function MethodsPage() {
           <a href={SOURCES["ncs-soy-4"].url} target="_blank" rel="noreferrer">
             NC Soybean Production Guide, ch. 4
           </a>
-          ). Fieldback flags a spring when the gap between ending rye and planting is under 14 days and either that spring was in the
+          ). A.C.R.E flags a spring when the gap between ending rye and planting is under 14 days and either that spring was in the
           driest 20% or the grower reported a moisture concern. The 20% line and the 14-day guidance are separate thresholds from
           separate sources.
         </p>
@@ -119,7 +119,7 @@ export function MethodsPage() {
 
       <Section id="m-winter" title="Rain on ground with no living cover">
         <p>
-          For each winter from corn harvest to planting, Fieldback adds up the rain that fell on days with no planned living cover, and
+          For each winter from corn harvest to planting, A.C.R.E adds up the rain that fell on days with no planned living cover, and
           shows the median across winters. It measures rain and calendar overlap, not erosion: crop residue may still cover the ground,
           and actual cover depends on how the crop established. A heavy-rain day count will be added once its definition is confirmed.
         </p>
@@ -143,12 +143,12 @@ export function MethodsPage() {
       <Section id="m-ground" title="Satellites and models vs. your field">
         <p>
           NASA's estimates show what the region around the grid point was like. A soil check in your own field tells you what your
-          seedbed is like this year. Fieldback keeps the two apart: your own report is labeled as yours, and it can trigger the NC State
+          seedbed is like this year. A.C.R.E keeps the two apart: your own report is labeled as yours, and it can trigger the NC State
           guidance on its own.
         </p>
       </Section>
 
-      <Section id="m-limits" title="What Fieldback does not claim">
+      <Section id="m-limits" title="What A.C.R.E does not claim">
         <ul>
           <li>It does not forecast next spring.</li>
           <li>It does not measure soil moisture, crop growth, erosion or yield on your field.</li>
@@ -180,7 +180,7 @@ export function CreditsPage() {
   return (
     <DocPage
       title="Credits and disclosures"
-      lede="Everything Fieldback uses, where it comes from, and what to know about how it was built."
+      lede="Everything A.C.R.E uses, where it comes from, and what to know about how it was built."
     >
       <Section id="c-data" title="Data and guidance">
         <ul className="st-doc-credits">
@@ -246,9 +246,9 @@ export function PrivacyPage() {
   return (
     <DocPage
       title="Privacy and terms"
-      lede="What Fieldback keeps, what it sends and to whom, and the terms for using what it shows."
+      lede="What A.C.R.E keeps, what it sends and to whom, and the terms for using what it shows."
     >
-      <Section id="p-keep" title="What Fieldback keeps">
+      <Section id="p-keep" title="What A.C.R.E keeps">
         <p>
           Nothing about you. There are no accounts, no cookies, no analytics and no browser storage. Your farm dates live only in
           this page while it is open; closing the tab clears them.
@@ -268,12 +268,12 @@ export function PrivacyPage() {
       <Section id="p-terms" title="Terms of use">
         <ul>
           <li>
-            Fieldback replays past weather to support a conversation with your Extension agent. It is not a forecast, a field
+            A.C.R.E replays past weather to support a conversation with your Extension agent. It is not a forecast, a field
             measurement or professional advice, and it makes no promise about yields, costs or outcomes.
           </li>
           <li>It is provided as is, without warranty, as a NASA Space Apps Challenge 2026 project.</li>
           <li>
-            NASA does not endorse Fieldback. NASA POWER data is used under NASA's open data terms; NC State Extension guidance is
+            NASA does not endorse A.C.R.E. NASA POWER data is used under NASA's open data terms; NC State Extension guidance is
             linked to its source and summarized, not copied.
           </li>
           <li>Every source and library, with its license, is listed on the Credits page.</li>

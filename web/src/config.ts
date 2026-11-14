@@ -1,5 +1,5 @@
 // Product-level constants. Change the name here and it changes everywhere.
-export const APP_NAME = "Fieldback";
+export const APP_NAME = "A.C.R.E";
 export const TASK_TITLE = "Compare winter crop plans";
 export const TAGLINE = "Compare three winter plans for this farm against past springs recorded by NASA.";
 export const CHALLENGE_LABEL = "NASA Space Apps 2026 · Field Shift";

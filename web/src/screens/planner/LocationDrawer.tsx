@@ -88,7 +88,7 @@ export function LocationDrawer({
       >
         <p className="form-intro">
           Union County is the saved sample and always loads. Another place shows results only if the live service has NASA
-          weather history for its grid cell; otherwise you see your dates only. Fieldback never borrows another place's weather.
+          weather history for its grid cell; otherwise you see your dates only. A.C.R.E never borrows another place's weather.
         </p>
         {!hasLiveApi ? (
           <Banner kind="info">The live service is not connected in this build, so places other than Union County show dates only.</Banner>

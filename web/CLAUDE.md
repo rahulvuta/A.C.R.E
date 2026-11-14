@@ -1,10 +1,10 @@
-# Fieldback frontend: working rules
+# A.C.R.E frontend: working rules
 
 These rules cover everything in `web/`. The root `CLAUDE.md` also applies here and wins on git, ownership and the remote: Agents C and D build the frontend on `frontend/dev` (plan: `docs/global/plan.md`). The backend owns the data and every calculation. Geometry measured for display (area, centroid with turf) is allowed; the backend recomputes it for any calculation.
 
 ## What the app is
 
-Fieldback (NASA Space Apps 2026, Field Shift, Charlotte) compares three two-winter rotations for a Union County, NC corn and soybean farm against every past spring recorded by NASA (1981–2025), and shows where NC State guidance applies. Presets and plan IDs are defined by the backend in `docs/api/presets.md` on the `backend` branch.
+A.C.R.E (NASA Space Apps 2026, Field Shift, Charlotte) compares three two-winter rotations for a Union County, NC corn and soybean farm against every past spring recorded by NASA (1981–2025), and shows where NC State guidance applies. Presets and plan IDs are defined by the backend in `docs/api/presets.md` on the `backend` branch.
 
 ## Hard rules
 
@@ -36,7 +36,7 @@ Fieldback (NASA Space Apps 2026, Field Shift, Charlotte) compares three two-wint
 - `src/view/build.ts`: the only place that turns responses into what screens show.
 - `src/content`: card names, sourced headings, glossary, credits.
 - `src/state`: selection (card, year, winter, rye date, priorities), form, links.
-- `src/site`: the marketing site in front of the planner. `Landing.tsx` and `pages.tsx` (Product, Who it's for, Evidence, Resources, About) follow the tabs.com page templates with Fieldback's own words and numbers; `demo/` holds the Loom-style recordings, which drive the real planner screens with a scripted pointer (the hero's `TourScene` shows the whole dashboard, using the planner's own sidebar from `planner/SideNav.tsx`); the reading pages in `screens/Pages.tsx` (how it works, credits, privacy) sit inside the same site shell, one topic per row with its heading on the left; styles in `styles/site.css` (`st-` and `demo-` classes). Type sizes come from the `--t-*` steps on `.st`, which match the reference page's scale (hero 72, headings 48 and 36, card titles 28, body 16); use those instead of new font sizes. Routes: `./` is the landing page, `?view=app` is the planner, and a link with planner state in its hash still opens the planner.
+- `src/site`: the marketing site in front of the planner. `Landing.tsx` and `pages.tsx` (Product, Who it's for, Evidence, Resources, About) follow the tabs.com page templates with A.C.R.E's own words and numbers; `demo/` holds the Loom-style recordings, which drive the real planner screens with a scripted pointer (the hero's `TourScene` shows the whole dashboard, using the planner's own sidebar from `planner/SideNav.tsx`); the reading pages in `screens/Pages.tsx` (how it works, credits, privacy) sit inside the same site shell, one topic per row with its heading on the left; styles in `styles/site.css` (`st-` and `demo-` classes). Type sizes come from the `--t-*` steps on `.st`, which match the reference page's scale (hero 72, headings 48 and 36, card titles 28, body 16); use those instead of new font sizes. Routes: `./` is the landing page, `?view=app` is the planner, and a link with planner state in its hash still opens the planner.
 - `src/screens`, `src/ui` (kit pieces: `Roll`, `Accordion`, `components`), `src/scene` (3D), `src/styles` (`tokens.css`, `fieldback.css` = the kit).
 - `scripts/fetch-backend.mjs`: saves the real responses from a running backend into `public/data/nasa/` (`npm run data`).
 - `scripts/make-sample.mjs` and `public/data/sample/`: the old synthetic draft, kept only as a fixture for the view-builder tests.

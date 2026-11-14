@@ -8,7 +8,7 @@ import type { SiteData } from "./useSiteData";
   Shared pieces of the marketing site (Nov 13). Its structure and motion follow the
   tabs.com pages Abhi recorded: announcement bar, slim nav with menus, two-line headings
   with a grey second line, hairline grids, a dark closing band and a dark footer.
-  The words, numbers and pictures are Fieldback's own; nothing of theirs is reused.
+  The words, numbers and pictures are A.C.R.E's own; nothing of theirs is reused.
 */
 
 export type SiteView = "home" | "product" | "growers" | "evidence" | "resources" | "about";
