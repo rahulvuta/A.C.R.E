@@ -1,0 +1,1932 @@
+{
+  "context": {
+    "soil": null,
+    "soil_note": null
+  },
+  "dominated": [
+    {
+      "candidate_id": "c_d306ccf54e",
+      "dominated_by": [
+        "c_0abaf6b764",
+        "c_2b9926fed6",
+        "c_863a11414b"
+      ],
+      "indicators": {
+        "bare_soil_days": {
+          "definition": "Off-season days with no planned living cover.",
+          "direction": "lower_better",
+          "in_priorities": true,
+          "origin": "calculation",
+          "per_leg": [
+            23,
+            15
+          ],
+          "rationale": "The same principle as living cover days, seen from the other side.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "days per year",
+          "value": 19.0
+        },
+        "crop_family_diversity": {
+          "definition": "Distinct plant families among every crop in the candidate.",
+          "detail": {
+            "families": {
+              "cereal_rye": "Poaceae",
+              "field_corn": "Poaceae",
+              "soybean": "Fabaceae"
+            },
+            "family_source": {
+              "title": "Botanical family by genus (APG IV; USDA PLANTS Database)",
+              "url": "https://plants.usda.gov"
+            }
+          },
+          "direction": "higher_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [],
+          "rationale": "Species diversification through varied crop sequences.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "botanical families",
+          "value": 2
+        },
+        "dry_pre_plant_frequency": {
+          "definition": "Share of evaluable seasons whose 30 days before planting were dry (bottom 20% of this cell's own totals for that window).",
+          "direction": "lower_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [
+            {
+              "dry_seasons": 9,
+              "eligible_seasons": 45,
+              "value": 0.2
+            },
+            {
+              "dry_seasons": 9,
+              "eligible_seasons": 45,
+              "value": 0.2
+            }
+          ],
+          "rationale": "How often this planting window started dry in this cell's history; it describes the window's weather, not the plan's effect on it.",
+          "reason": null,
+          "source": {
+            "title": "Field Shift dry pre-plant window: bottom 20% of this cell's own 1981-2025 30-day totals (calculation)",
+            "url": null
+          },
+          "status": "complete",
+          "unit": "share of seasons",
+          "value": 0.2
+        },
+        "heavy_rain_days_on_bare_soil": {
+          "definition": "Median per-season count of heavy-rain days with no planned living cover (NC: 76.2 mm; elsewhere the cell's ETCCDI R95p value).",
+          "direction": "lower_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [
+            0.0,
+            0.0
+          ],
+          "rationale": "Intense rain on uncovered soil; a count of weather events, not damage.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "days per season",
+          "value": 0.0
+        },
+        "irrigation_dependence": {
+          "definition": "Not computed: there is no sourced crop water-need table yet.",
+          "direction": "lower_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [],
+          "rationale": "Listed so the gap is visible; never used for a shortlist.",
+          "reason": "no sourced crop water-need data",
+          "source": {
+            "title": "Field Shift indicator definitions (backend/docs/indicators.md)",
+            "url": null
+          },
+          "status": "unknown",
+          "unit": "none",
+          "value": null
+        },
+        "living_cover_days": {
+          "definition": "Planned living-cover days (cover crop seed to termination, or growing winter grain). Planned; establishment uncertain.",
+          "direction": "higher_better",
+          "in_priorities": true,
+          "origin": "calculation",
+          "per_leg": [
+            211,
+            167
+          ],
+          "rationale": "Keep the soil covered and living roots in it as long as possible.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "days per year",
+          "value": 189.0
+        },
+        "management_operations": {
+          "definition": "Planned field operations per season: previous harvest and next planting, plus cover seed and termination or winter-grain planting and harvest.",
+          "direction": "lower_better",
+          "in_priorities": true,
+          "origin": "calculation",
+          "per_leg": [
+            4,
+            4
+          ],
+          "rationale": "A plain count used only for the management-simplicity priority; not a cost or labour estimate.",
+          "reason": null,
+          "source": {
+            "title": "Field Shift indicator definitions (backend/docs/indicators.md)",
+            "url": null
+          },
+          "status": "complete",
+          "unit": "operations per season",
+          "value": 4.0
+        },
+        "modeled_root_zone_wetness_at_planting": {
+          "definition": "Median over seasons of mean modeled root-zone wetness (GWETROOT) in the 30 days before planting.",
+          "direction": "higher_better",
+          "in_priorities": false,
+          "origin": "nasa_modeled",
+          "per_leg": [
+            0.7117,
+            0.7883
+          ],
+          "rationale": "Modeled soil water near planting. The same for any plan with the same planting date; not a water saving.",
+          "reason": null,
+          "source": {
+            "title": "NASA POWER parameter GWETROOT (MERRA-2 root-zone soil wetness)",
+            "url": "https://power.larc.nasa.gov/api/system/manager/parameters/GWETROOT"
+          },
+          "status": "complete",
+          "unit": "fraction (0-1)",
+          "value": 0.75
+        },
+        "rain_on_bare_soil_mm": {
+          "definition": "Median per-season rain on off-season days with no planned living cover.",
+          "direction": "lower_better",
+          "in_priorities": true,
+          "origin": "calculation",
+          "per_leg": [
+            78.14,
+            35.015
+          ],
+          "rationale": "Rain on uncovered soil is what soil cover is meant to intercept. Rainfall depth only: not erosion, runoff or soil loss.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "mm per season",
+          "value": 56.6
+        },
+        "rule_flags": {
+          "definition": "Per leg, the distinct catalog rule checks that flagged in at least one past season plus the rule lines that need a manual check (the winter-wheat path's lines included); mean over legs. Unevaluable rules are listed, not counted. Each rule cites its own source.",
+          "detail": {
+            "rule_ids": [
+              "cr_nut_01",
+              "cr_pw_01",
+              "cr_soil_01",
+              "cr_trait_01",
+              "cr_trait_02",
+              "cr_tt_03",
+              "cr_tt_05",
+              "cr_wt_01",
+              "fc_nut_01",
+              "fc_pw_06",
+              "fc_soil_01",
+              "fc_wt_02",
+              "sb_nut_01",
+              "sb_pw_02",
+              "sb_pw_03",
+              "sb_pw_05",
+              "sb_soil_01",
+              "sb_soil_02",
+              "sb_soil_03",
+              "sb_wd_01",
+              "sb_wt_01",
+              "sb_wt_02"
+            ],
+            "unknown_rule_ids": [
+              "fc_nut_02",
+              "fc_pw_01",
+              "fc_pw_02",
+              "fc_pw_03",
+              "fc_pw_04",
+              "fc_pw_05",
+              "fc_pw_07",
+              "fc_wt_01",
+              "sb_wd_07"
+            ]
+          },
+          "direction": "lower_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [
+            16,
+            10
+          ],
+          "rationale": "Published guidance that would have asked for a check or a change.",
+          "reason": "some rules could not be evaluated (unknown)",
+          "source": {
+            "title": "Field Shift indicator definitions (backend/docs/indicators.md)",
+            "url": null
+          },
+          "status": "partial",
+          "unit": "checks per season",
+          "value": 13.0
+        }
+      },
+      "label": "Field corn \u2192 Cereal rye \u2192 Soybean \u2192 Cereal rye \u2192 Field corn",
+      "leg_status": [
+        "complete",
+        "complete"
+      ],
+      "origin": "generated",
+      "plans": [
+        {
+          "grower": {
+            "low_moisture_concern": null,
+            "observations": [],
+            "residue_report": null
+          },
+          "label": "Season 1: Field corn, Cereal rye cover, then Soybean",
+          "next_crop_id": "soybean",
+          "next_plant": "05-12",
+          "plan_id": "c_d306ccf54e_s1",
+          "prev_harvest": "09-20",
+          "previous_crop_id": "field_corn",
+          "production_system": null,
+          "region": "NC Piedmont",
+          "winter": {
+            "crop_id": "cereal_rye",
+            "harvest": null,
+            "kind": "cover",
+            "plant": null,
+            "seed": "10-01",
+            "terminate": "04-30"
+          }
+        },
+        {
+          "grower": {
+            "low_moisture_concern": null,
+            "observations": [],
+            "residue_report": null
+          },
+          "label": "Season 2: Soybean, Cereal rye cover, then Field corn",
+          "next_crop_id": "field_corn",
+          "next_plant": "04-15",
+          "plan_id": "c_d306ccf54e_s2",
+          "prev_harvest": "10-15",
+          "previous_crop_id": "soybean",
+          "production_system": null,
+          "region": "NC Piedmont",
+          "winter": {
+            "crop_id": "cereal_rye",
+            "harvest": null,
+            "kind": "cover",
+            "plant": null,
+            "seed": "10-20",
+            "terminate": "04-05"
+          }
+        }
+      ]
+    }
+  ],
+  "gaps": [],
+  "generation_log": [
+    {
+      "examples": [],
+      "kind": "cap",
+      "name": "max_candidates",
+      "pruned": 9,
+      "reason_text": "Only the first 50 candidates (in the order above) are returned."
+    },
+    {
+      "examples": [],
+      "kind": "note",
+      "name": "nc_dates",
+      "pruned": 0,
+      "reason_text": "North Carolina dates are the demo presets' typical Piedmont dates (assumed); edit them to this field's dates."
+    },
+    {
+      "examples": [
+        "maize > soybean > crimson_clover > maize",
+        "maize > cereal_rye > soybean > crimson_clover > maize",
+        "maize > crimson_clover > soybean > crimson_clover > maize"
+      ],
+      "kind": "rule",
+      "name": "chronology",
+      "pruned": 25,
+      "reason_text": "Dates out of order (e.g. seeding before harvest) dropped the sequence."
+    }
+  ],
+  "hemisphere": "north",
+  "meta": {
+    "catalog_version": "v2:8eeb5bf961eb",
+    "plan_version": "497d06654362c6d8",
+    "request_id": "req_example",
+    "snapshot_hash": "5ce131cfcd1f07d3738ecb9afaec6c3ef6a4764b6a3528bdd2b64debe7ba5f4e"
+  },
+  "method": {
+    "definitions": "backend/docs/indicators.md",
+    "indicators_used": [
+      "living_cover_days",
+      "bare_soil_days",
+      "rain_on_bare_soil_mm",
+      "management_operations"
+    ],
+    "note": "Not universally optimal: depends on these priorities and this weather history.",
+    "ordering": "weighted_rank_positions",
+    "ordering_text": "For each indicator the shortlisted plans are ranked (1 = best, ties share a rank); they are listed by the sum of weight x rank position. Raw values of different indicators are never combined.",
+    "shortlist": "pareto_non_dominated",
+    "weights": {
+      "bare_soil_days": 3,
+      "living_cover_days": 3,
+      "management_operations": 1,
+      "rain_on_bare_soil_mm": 3
+    }
+  },
+  "not_comparable": [],
+  "result_id": "497d06654362c6d8",
+  "shortlist": [
+    {
+      "candidate_id": "c_0abaf6b764",
+      "historical_vulnerabilities": [
+        {
+          "field": "rain_outside_cover_mm",
+          "indicator": "rain_on_bare_soil_mm",
+          "plan_id": "c_0abaf6b764_s1",
+          "replay": {
+            "body": {
+              "location_id": "union",
+              "plan": {
+                "grower": {
+                  "low_moisture_concern": null,
+                  "observations": [],
+                  "residue_report": null
+                },
+                "label": "Season 1: Field corn, Cereal rye cover, then Field corn",
+                "next_crop_id": "field_corn",
+                "next_plant": "04-15",
+                "plan_id": "c_0abaf6b764_s1",
+                "prev_harvest": "09-20",
+                "previous_crop_id": "field_corn",
+                "production_system": null,
+                "region": "NC Piedmont",
+                "winter": {
+                  "crop_id": "cereal_rye",
+                  "harvest": null,
+                  "kind": "cover",
+                  "plant": null,
+                  "seed": "09-27",
+                  "terminate": "04-08"
+                }
+              }
+            },
+            "method": "POST",
+            "path": "/v1/seasons/1990/replay"
+          },
+          "text": "1990: rain outside cover mm 117.96 for c_0abaf6b764_s1.",
+          "value": 117.96,
+          "year": "1990"
+        },
+        {
+          "field": "rain_outside_cover_mm",
+          "indicator": "rain_on_bare_soil_mm",
+          "plan_id": "c_0abaf6b764_s2",
+          "replay": {
+            "body": {
+              "location_id": "union",
+              "plan": {
+                "grower": {
+                  "low_moisture_concern": null,
+                  "observations": [],
+                  "residue_report": null
+                },
+                "label": "Season 2: Field corn, Cereal rye cover, then Field corn",
+                "next_crop_id": "field_corn",
+                "next_plant": "04-15",
+                "plan_id": "c_0abaf6b764_s2",
+                "prev_harvest": "09-20",
+                "previous_crop_id": "field_corn",
+                "production_system": null,
+                "region": "NC Piedmont",
+                "winter": {
+                  "crop_id": "cereal_rye",
+                  "harvest": null,
+                  "kind": "cover",
+                  "plant": null,
+                  "seed": "09-27",
+                  "terminate": "04-08"
+                }
+              }
+            },
+            "method": "POST",
+            "path": "/v1/seasons/1990/replay"
+          },
+          "text": "1990: rain outside cover mm 117.96 for c_0abaf6b764_s2.",
+          "value": 117.96,
+          "year": "1990"
+        },
+        {
+          "field": "rain_outside_cover_mm",
+          "indicator": "rain_on_bare_soil_mm",
+          "plan_id": "c_0abaf6b764_s1",
+          "replay": {
+            "body": {
+              "location_id": "union",
+              "plan": {
+                "grower": {
+                  "low_moisture_concern": null,
+                  "observations": [],
+                  "residue_report": null
+                },
+                "label": "Season 1: Field corn, Cereal rye cover, then Field corn",
+                "next_crop_id": "field_corn",
+                "next_plant": "04-15",
+                "plan_id": "c_0abaf6b764_s1",
+                "prev_harvest": "09-20",
+                "previous_crop_id": "field_corn",
+                "production_system": null,
+                "region": "NC Piedmont",
+                "winter": {
+                  "crop_id": "cereal_rye",
+                  "harvest": null,
+                  "kind": "cover",
+                  "plant": null,
+                  "seed": "09-27",
+                  "terminate": "04-08"
+                }
+              }
+            },
+            "method": "POST",
+            "path": "/v1/seasons/2003/replay"
+          },
+          "text": "2003: rain outside cover mm 113.13 for c_0abaf6b764_s1.",
+          "value": 113.13,
+          "year": "2003"
+        }
+      ],
+      "indicators": {
+        "bare_soil_days": {
+          "definition": "Off-season days with no planned living cover.",
+          "direction": "lower_better",
+          "in_priorities": true,
+          "origin": "calculation",
+          "per_leg": [
+            14,
+            14
+          ],
+          "rationale": "The same principle as living cover days, seen from the other side.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "days per year",
+          "value": 14.0
+        },
+        "crop_family_diversity": {
+          "definition": "Distinct plant families among every crop in the candidate.",
+          "detail": {
+            "families": {
+              "cereal_rye": "Poaceae",
+              "field_corn": "Poaceae"
+            },
+            "family_source": {
+              "title": "Botanical family by genus (APG IV; USDA PLANTS Database)",
+              "url": "https://plants.usda.gov"
+            }
+          },
+          "direction": "higher_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [],
+          "rationale": "Species diversification through varied crop sequences.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "botanical families",
+          "value": 1
+        },
+        "dry_pre_plant_frequency": {
+          "definition": "Share of evaluable seasons whose 30 days before planting were dry (bottom 20% of this cell's own totals for that window).",
+          "direction": "lower_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [
+            {
+              "dry_seasons": 9,
+              "eligible_seasons": 45,
+              "value": 0.2
+            },
+            {
+              "dry_seasons": 9,
+              "eligible_seasons": 45,
+              "value": 0.2
+            }
+          ],
+          "rationale": "How often this planting window started dry in this cell's history; it describes the window's weather, not the plan's effect on it.",
+          "reason": null,
+          "source": {
+            "title": "Field Shift dry pre-plant window: bottom 20% of this cell's own 1981-2025 30-day totals (calculation)",
+            "url": null
+          },
+          "status": "complete",
+          "unit": "share of seasons",
+          "value": 0.2
+        },
+        "heavy_rain_days_on_bare_soil": {
+          "definition": "Median per-season count of heavy-rain days with no planned living cover (NC: 76.2 mm; elsewhere the cell's ETCCDI R95p value).",
+          "direction": "lower_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [
+            0.0,
+            0.0
+          ],
+          "rationale": "Intense rain on uncovered soil; a count of weather events, not damage.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "days per season",
+          "value": 0.0
+        },
+        "irrigation_dependence": {
+          "definition": "Not computed: there is no sourced crop water-need table yet.",
+          "direction": "lower_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [],
+          "rationale": "Listed so the gap is visible; never used for a shortlist.",
+          "reason": "no sourced crop water-need data",
+          "source": {
+            "title": "Field Shift indicator definitions (backend/docs/indicators.md)",
+            "url": null
+          },
+          "status": "unknown",
+          "unit": "none",
+          "value": null
+        },
+        "living_cover_days": {
+          "definition": "Planned living-cover days (cover crop seed to termination, or growing winter grain). Planned; establishment uncertain.",
+          "direction": "higher_better",
+          "in_priorities": true,
+          "origin": "calculation",
+          "per_leg": [
+            193,
+            193
+          ],
+          "rationale": "Keep the soil covered and living roots in it as long as possible.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "days per year",
+          "value": 193.0
+        },
+        "management_operations": {
+          "definition": "Planned field operations per season: previous harvest and next planting, plus cover seed and termination or winter-grain planting and harvest.",
+          "direction": "lower_better",
+          "in_priorities": true,
+          "origin": "calculation",
+          "per_leg": [
+            4,
+            4
+          ],
+          "rationale": "A plain count used only for the management-simplicity priority; not a cost or labour estimate.",
+          "reason": null,
+          "source": {
+            "title": "Field Shift indicator definitions (backend/docs/indicators.md)",
+            "url": null
+          },
+          "status": "complete",
+          "unit": "operations per season",
+          "value": 4.0
+        },
+        "modeled_root_zone_wetness_at_planting": {
+          "definition": "Median over seasons of mean modeled root-zone wetness (GWETROOT) in the 30 days before planting.",
+          "direction": "higher_better",
+          "in_priorities": false,
+          "origin": "nasa_modeled",
+          "per_leg": [
+            0.7883,
+            0.7883
+          ],
+          "rationale": "Modeled soil water near planting. The same for any plan with the same planting date; not a water saving.",
+          "reason": null,
+          "source": {
+            "title": "NASA POWER parameter GWETROOT (MERRA-2 root-zone soil wetness)",
+            "url": "https://power.larc.nasa.gov/api/system/manager/parameters/GWETROOT"
+          },
+          "status": "complete",
+          "unit": "fraction (0-1)",
+          "value": 0.7883
+        },
+        "rain_on_bare_soil_mm": {
+          "definition": "Median per-season rain on off-season days with no planned living cover.",
+          "direction": "lower_better",
+          "in_priorities": true,
+          "origin": "calculation",
+          "per_leg": [
+            40.645,
+            40.645
+          ],
+          "rationale": "Rain on uncovered soil is what soil cover is meant to intercept. Rainfall depth only: not erosion, runoff or soil loss.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "mm per season",
+          "value": 40.6
+        },
+        "rule_flags": {
+          "definition": "Per leg, the distinct catalog rule checks that flagged in at least one past season plus the rule lines that need a manual check (the winter-wheat path's lines included); mean over legs. Unevaluable rules are listed, not counted. Each rule cites its own source.",
+          "detail": {
+            "rule_ids": [
+              "cr_nut_01",
+              "cr_soil_01",
+              "cr_trait_01",
+              "cr_trait_02",
+              "cr_wt_01",
+              "fc_nut_01",
+              "fc_pw_06",
+              "fc_soil_01",
+              "fc_wt_02"
+            ],
+            "unknown_rule_ids": [
+              "fc_nut_02",
+              "fc_pw_01",
+              "fc_pw_02",
+              "fc_pw_03",
+              "fc_pw_04",
+              "fc_pw_05",
+              "fc_pw_07",
+              "fc_wt_01"
+            ]
+          },
+          "direction": "lower_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [
+            9,
+            9
+          ],
+          "rationale": "Published guidance that would have asked for a check or a change.",
+          "reason": "some rules could not be evaluated (unknown)",
+          "source": {
+            "title": "Field Shift indicator definitions (backend/docs/indicators.md)",
+            "url": null
+          },
+          "status": "partial",
+          "unit": "checks per season",
+          "value": 9.0
+        }
+      },
+      "label": "Field corn \u2192 Cereal rye \u2192 Field corn \u2192 Cereal rye \u2192 Field corn",
+      "leg_status": [
+        "complete",
+        "complete"
+      ],
+      "loses": [
+        "management_operations"
+      ],
+      "origin": "generated",
+      "plans": [
+        {
+          "grower": {
+            "low_moisture_concern": null,
+            "observations": [],
+            "residue_report": null
+          },
+          "label": "Season 1: Field corn, Cereal rye cover, then Field corn",
+          "next_crop_id": "field_corn",
+          "next_plant": "04-15",
+          "plan_id": "c_0abaf6b764_s1",
+          "prev_harvest": "09-20",
+          "previous_crop_id": "field_corn",
+          "production_system": null,
+          "region": "NC Piedmont",
+          "winter": {
+            "crop_id": "cereal_rye",
+            "harvest": null,
+            "kind": "cover",
+            "plant": null,
+            "seed": "09-27",
+            "terminate": "04-08"
+          }
+        },
+        {
+          "grower": {
+            "low_moisture_concern": null,
+            "observations": [],
+            "residue_report": null
+          },
+          "label": "Season 2: Field corn, Cereal rye cover, then Field corn",
+          "next_crop_id": "field_corn",
+          "next_plant": "04-15",
+          "plan_id": "c_0abaf6b764_s2",
+          "prev_harvest": "09-20",
+          "previous_crop_id": "field_corn",
+          "production_system": null,
+          "region": "NC Piedmont",
+          "winter": {
+            "crop_id": "cereal_rye",
+            "harvest": null,
+            "kind": "cover",
+            "plant": null,
+            "seed": "09-27",
+            "terminate": "04-08"
+          }
+        }
+      ],
+      "rank_positions": {
+        "bare_soil_days": 1,
+        "living_cover_days": 3,
+        "management_operations": 8,
+        "rain_on_bare_soil_mm": 2
+      },
+      "trade_offs": [
+        {
+          "text": "Compared with c_794e5fa30f, it is worse on: rain on bare soil mm 40.6 mm per season vs 37.8 mm per season; crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_794e5fa30f",
+          "worse_on": [
+            {
+              "in_priorities": true,
+              "indicator": "rain_on_bare_soil_mm",
+              "value": 40.6,
+              "versus_value": 37.8
+            },
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_d6f9f1b8bc, it is worse on: living cover days 193.0 days per year vs 202.0 days per year; crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_d6f9f1b8bc",
+          "worse_on": [
+            {
+              "in_priorities": true,
+              "indicator": "living_cover_days",
+              "value": 193.0,
+              "versus_value": 202.0
+            },
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_a8e458e6fc, it is worse on: living cover days 193.0 days per year vs 208.0 days per year; crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); rule flags 9.0 checks per season vs 8.5 checks per season (not in your priorities).",
+          "versus": "c_a8e458e6fc",
+          "worse_on": [
+            {
+              "in_priorities": true,
+              "indicator": "living_cover_days",
+              "value": 193.0,
+              "versus_value": 208.0
+            },
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": false,
+              "indicator": "rule_flags",
+              "value": 9.0,
+              "versus_value": 8.5
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_497bc2dd6a, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_497bc2dd6a",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_78d8def70c, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_78d8def70c",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_6a4063b038, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); rule flags 9.0 checks per season vs 6.0 checks per season (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_6a4063b038",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": false,
+              "indicator": "rule_flags",
+              "value": 9.0,
+              "versus_value": 6.0
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_cb141d5c8f, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); rule flags 9.0 checks per season vs 6.0 checks per season (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_cb141d5c8f",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": false,
+              "indicator": "rule_flags",
+              "value": 9.0,
+              "versus_value": 6.0
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_73110fbcbf, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); rule flags 9.0 checks per season vs 7.0 checks per season (not in your priorities); management operations 4.0 operations per season vs 2.0 operations per season.",
+          "versus": "c_73110fbcbf",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": false,
+              "indicator": "rule_flags",
+              "value": 9.0,
+              "versus_value": 7.0
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 2.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_ebd391e164, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); rule flags 9.0 checks per season vs 7.0 checks per season (not in your priorities); management operations 4.0 operations per season vs 2.0 operations per season.",
+          "versus": "c_ebd391e164",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": false,
+              "indicator": "rule_flags",
+              "value": 9.0,
+              "versus_value": 7.0
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 2.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_780c511e13, it is worse on: rule flags 9.0 checks per season vs 4.0 checks per season (not in your priorities); management operations 4.0 operations per season vs 2.0 operations per season.",
+          "versus": "c_780c511e13",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "rule_flags",
+              "value": 9.0,
+              "versus_value": 4.0
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 2.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_d306ccf54e, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_d306ccf54e",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_50852eee2c, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_50852eee2c",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_e4f668700f, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_e4f668700f",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_ccaa5c0f76, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_ccaa5c0f76",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_539900e551, it is worse on: living cover days 193.0 days per year vs 195.0 days per year; crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_539900e551",
+          "worse_on": [
+            {
+              "in_priorities": true,
+              "indicator": "living_cover_days",
+              "value": 193.0,
+              "versus_value": 195.0
+            },
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_458ad919ee, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_458ad919ee",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_5bf40e12bf, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_5bf40e12bf",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_4d3fd5989a, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_4d3fd5989a",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_b22ef90e11, it is worse on: living cover days 193.0 days per year vs 195.0 days per year; crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_b22ef90e11",
+          "worse_on": [
+            {
+              "in_priorities": true,
+              "indicator": "living_cover_days",
+              "value": 193.0,
+              "versus_value": 195.0
+            },
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_35b30d0f13, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_35b30d0f13",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_2b9926fed6, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_2b9926fed6",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_f8d175449b, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_f8d175449b",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_5a3a0c61df, it is worse on: rule flags 9.0 checks per season vs 6.5 checks per season (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_5a3a0c61df",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "rule_flags",
+              "value": 9.0,
+              "versus_value": 6.5
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_19c384074d, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_19c384074d",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_e368393320, it is worse on: living cover days 193.0 days per year vs 199.5 days per year; crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_e368393320",
+          "worse_on": [
+            {
+              "in_priorities": true,
+              "indicator": "living_cover_days",
+              "value": 193.0,
+              "versus_value": 199.5
+            },
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_c11d6cb1b1, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_c11d6cb1b1",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_863a11414b, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_863a11414b",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_599f6faf2c, it is worse on: living cover days 193.0 days per year vs 198.5 days per year; crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_599f6faf2c",
+          "worse_on": [
+            {
+              "in_priorities": true,
+              "indicator": "living_cover_days",
+              "value": 193.0,
+              "versus_value": 198.5
+            },
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_6459f1446c, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_6459f1446c",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_01e96e2cfd, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_01e96e2cfd",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_0db15e4859, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_0db15e4859",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_d47a73f15e, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_d47a73f15e",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_4536504016, it is worse on: living cover days 193.0 days per year vs 204.5 days per year; crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_4536504016",
+          "worse_on": [
+            {
+              "in_priorities": true,
+              "indicator": "living_cover_days",
+              "value": 193.0,
+              "versus_value": 204.5
+            },
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_3849d10041, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_3849d10041",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_a6d3cb093d, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_a6d3cb093d",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_d52dafc24a, it is worse on: rule flags 9.0 checks per season vs 6.5 checks per season (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_d52dafc24a",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "rule_flags",
+              "value": 9.0,
+              "versus_value": 6.5
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_621e22de1a, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_621e22de1a",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_f0fe2648dc, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_f0fe2648dc",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_f610a3c0cf, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_f610a3c0cf",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_5a0a784dfb, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); rule flags 9.0 checks per season vs 7.0 checks per season (not in your priorities); management operations 4.0 operations per season vs 2.0 operations per season.",
+          "versus": "c_5a0a784dfb",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": false,
+              "indicator": "rule_flags",
+              "value": 9.0,
+              "versus_value": 7.0
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 2.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_dc9277e98c, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); rule flags 9.0 checks per season vs 6.0 checks per season (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_dc9277e98c",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": false,
+              "indicator": "rule_flags",
+              "value": 9.0,
+              "versus_value": 6.0
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_81f45f547d, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_81f45f547d",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_41c715f622, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); management operations 4.0 operations per season vs 2.0 operations per season.",
+          "versus": "c_41c715f622",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 2.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_c4351723e4, it is worse on: living cover days 193.0 days per year vs 205.5 days per year; crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_c4351723e4",
+          "worse_on": [
+            {
+              "in_priorities": true,
+              "indicator": "living_cover_days",
+              "value": 193.0,
+              "versus_value": 205.5
+            },
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_7e242f42d4, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_7e242f42d4",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_ba7b778642, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_ba7b778642",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_761ba28df3, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities); rule flags 9.0 checks per season vs 7.0 checks per season (not in your priorities); management operations 4.0 operations per season vs 3.0 operations per season.",
+          "versus": "c_761ba28df3",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            },
+            {
+              "in_priorities": false,
+              "indicator": "rule_flags",
+              "value": 9.0,
+              "versus_value": 7.0
+            },
+            {
+              "in_priorities": true,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 3.0
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_8c3d220382, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_8c3d220382",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        },
+        {
+          "text": "Compared with c_150c0ff2ab, it is worse on: crop family diversity 1 botanical families vs 2 botanical families (not in your priorities).",
+          "versus": "c_150c0ff2ab",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "crop_family_diversity",
+              "value": 1,
+              "versus_value": 2
+            }
+          ]
+        }
+      ],
+      "uncertainties": [
+        {
+          "origin": "nasa_modeled",
+          "text": "Weather is NASA POWER daily reanalysis for one ~0.5 x 0.625 degree grid cell, not a field measurement; every field in the cell shares this series."
+        },
+        {
+          "origin": "nasa_modeled",
+          "text": "Root-zone wetness is modeled (MERRA-2 GWETROOT), not observed."
+        },
+        {
+          "origin": "assumed",
+          "text": "Living cover is planned; establishment is uncertain."
+        },
+        {
+          "origin": "assumed",
+          "text": "Some of this plan's dates or rules is assumed, not sourced."
+        }
+      ],
+      "why": [
+        {
+          "audit_id": "b2c8bca87885",
+          "indicator": "bare_soil_days",
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "text": "Lowest bare soil days of the compared plans: 14.0 days per year (others: 19.0 days per year, 208.0 days per year, 112.0 days per year, 102.5 days per year, 31.0 days per year, 114.5 days per year, 124.5 days per year, 28.5 days per year, 19.0 days per year, 31.0 days per year, 124.5 days per year, 28.5 days per year, 102.5 days per year, 114.5 days per year, 208.0 days per year, 112.0 days per year, 18.5 days per year, 17.5 days per year, 30.5 days per year, 110.5 days per year, 124.0 days per year, 28.0 days per year, 22.0 days per year, 116.0 days per year, 17.5 days per year, 22.0 days per year, 21.0 days per year, 34.0 days per year, 114.0 days per year, 127.5 days per year, 31.5 days per year, 34.0 days per year, 128.0 days per year, 110.5 days per year, 115.0 days per year, 114.0 days per year, 127.0 days per year, 207.0 days per year, 220.5 days per year, 124.5 days per year, 127.5 days per year, 221.5 days per year, 31.5 days per year, 125.5 days per year, 14.5 days per year, 18.0 days per year, 111.0 days per year, 18.0 days per year, 21.0 days per year). The same principle as living cover days, seen from the other side.",
+          "value": 14.0
+        }
+      ],
+      "wins": [
+        "bare_soil_days"
+      ]
+    }
+  ],
+  "status": "complete",
+  "thresholds": {
+    "baseline": "1981-01-01..2025-06-30 daily record of this location's snapshot",
+    "dry_spring": {
+      "04-15": {
+        "location": "cell_+35.000_-80.625",
+        "method": "bottom_20pct_order_statistic",
+        "n_reference": 45,
+        "name": "spring_dry_mm@04-15",
+        "note": null,
+        "origin": "calculation",
+        "parameters": {
+          "eligible_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "excluded_years": [],
+          "fraction": 0.2,
+          "k": 9,
+          "plant_md": "04-15",
+          "tie_rule": "total <= cutoff counts as dry",
+          "window_days": 30
+        },
+        "reference_span": "1981..2025",
+        "source": null,
+        "status": "complete",
+        "unit": "mm",
+        "value": 53.51
+      },
+      "05-12": {
+        "location": "cell_+35.000_-80.625",
+        "method": "bottom_20pct_order_statistic",
+        "n_reference": 45,
+        "name": "spring_dry_mm@05-12",
+        "note": null,
+        "origin": "calculation",
+        "parameters": {
+          "eligible_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "excluded_years": [],
+          "fraction": 0.2,
+          "k": 9,
+          "plant_md": "05-12",
+          "tie_rule": "total <= cutoff counts as dry",
+          "window_days": 30
+        },
+        "reference_span": "1981..2025",
+        "source": null,
+        "status": "complete",
+        "unit": "mm",
+        "value": 64.18
+      },
+      "06-12": {
+        "location": "cell_+35.000_-80.625",
+        "method": "bottom_20pct_order_statistic",
+        "n_reference": 45,
+        "name": "spring_dry_mm@06-12",
+        "note": null,
+        "origin": "calculation",
+        "parameters": {
+          "eligible_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "excluded_years": [],
+          "fraction": 0.2,
+          "k": 9,
+          "plant_md": "06-12",
+          "tie_rule": "total <= cutoff counts as dry",
+          "window_days": 30
+        },
+        "reference_span": "1981..2025",
+        "source": null,
+        "status": "complete",
+        "unit": "mm",
+        "value": 58.06
+      }
+    },
+    "heavy_rain": {
+      "location": "cell_+35.000_-80.625",
+      "method": "published_fixed",
+      "n_reference": 16252,
+      "name": "heavy_rain_mm",
+      "note": "Applied to NASA POWER daily values, which are Local Solar Time days (time_standard=LST), not a rolling 24-hour window; a storm split across two solar days can fall below the value on each day. Rainfall-depth weather metric only: not erosion, runoff or soil loss. Zero-count winters are valid results.",
+      "origin": "verified_source",
+      "parameters": {
+        "assumed": false,
+        "comparison": "daily precip_mm >= value",
+        "daily_value_basis": "NASA POWER PRECTOTCORR, time_standard=LST (solar day)",
+        "depth_in": 3.0,
+        "inclusive": true,
+        "reference_duration_h": 24.0,
+        "scope": "rainfall depth only; not erosion or soil loss"
+      },
+      "reference_span": "1981-01-01..2025-06-30",
+      "source": {
+        "locator": "PDF p. 4, precipitation discussion",
+        "rule_id": "fc_v2_ref_very_heavy_rain",
+        "title": "North Carolina Climate Science Report: Plain Language Summary; March 2020",
+        "url": "https://files.nc.gov/ncdeq/climate-change/climate-scinece-report/NC-Climate-Science-Report_Plain_Language_Summary.pdf",
+        "verified_date": "2026-11-13"
+      },
+      "status": "complete",
+      "unit": "mm/day",
+      "value": 76.2
+    },
+    "location_id": "union",
+    "location_name": "Union County",
+    "threshold_set_id": "0823af244148ab8e"
+  },
+  "weather_location": {
+    "cell_id": "cell_+35.000_-80.625",
+    "code": null,
+    "first_date": "1981-01-01",
+    "grid_cell": {
+      "center_latitude": 35.0,
+      "center_longitude": -80.625
+    },
+    "id": "union",
+    "last_date": "2025-06-30",
+    "name": "Union County",
+    "point": {
+      "latitude": 34.98,
+      "longitude": -80.55
+    },
+    "reason": null,
+    "reason_text": null,
+    "region": "piedmont",
+    "region_basis": "county table: the place's region as listed in the snapshot index",
+    "requested_point": null,
+    "shares_snapshot_with": null,
+    "snapshot_hash": "5ce131cfcd1f07d3738ecb9afaec6c3ef6a4764b6a3528bdd2b64debe7ba5f4e",
+    "status": "complete",
+    "thresholds_from": "Dry-spring cutoffs come from Union County's own 1981-2025 weather baseline (snapshot 5ce131cfcd1f); heavy rain is the fixed 76.2 mm daily value. Thresholds are never shared across locations."
+  }
+}
