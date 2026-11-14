@@ -28,6 +28,20 @@ REASON_TEXT: dict[str, str] = {
         "There is no weather history for this place yet."
     ),
     "plan_unavailable": "This plan is not available.",
+    "weather_not_prepared": (
+        "The NASA weather history for this place has not been prepared yet; prepare it first, "
+        "then ask again."
+    ),
+    "offline_no_snapshot": (
+        "The server is in offline mode and has no stored weather for this place."
+    ),
+    "candidate_generator_failed": (
+        "The plan generator failed for this place; send your own candidate plans to compare."
+    ),
+    "no_regional_catalog": (
+        "No regional guidance is loaded for this place yet, so no rule is checked; the weather "
+        "results still apply."
+    ),
     "not_evaluable": "This season could not be evaluated.",
     "no_result_for_year": "This season has no result.",
 }

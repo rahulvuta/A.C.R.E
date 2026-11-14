@@ -46,16 +46,62 @@
       "tolerance_note": "approximate NC outline (about 10 km tolerance at the border); not a legal boundary",
       "west": -84.32
     },
-    "cell_id": null,
-    "code": "unsupported_location",
-    "grid_cell": null,
-    "guidance": null,
+    "cell_id": "cell_+40.500_-73.750",
+    "climate": {
+      "coastal_neighbour": false,
+      "koppen": "Cfa",
+      "label": "Humid subtropical",
+      "origin": "dataset_estimate",
+      "resolution_km": 11.1,
+      "source": "Beck et al. 2023, Koppen-Geiger 1991-2020"
+    },
+    "code": null,
+    "grid_cell": {
+      "basis": "derived from the MERRA-2 native grid; POWER does not return the cell",
+      "center_latitude": 40.5,
+      "center_longitude": -73.75,
+      "lat_step_deg": 0.5,
+      "lon_step_deg": 0.625
+    },
+    "guidance": {
+      "basis": "none",
+      "reason": "North Carolina guidance does not apply here; guidance for this place comes from its regional profile (GET /v1/regions/{region_key}/profile)",
+      "region": null,
+      "status": "unknown",
+      "supported": false
+    },
+    "hemisphere": "north",
     "latitude": 40.7,
     "longitude": -74.0,
-    "notes": [],
-    "reason": "the point is outside North Carolina; guidance and history cover NC only",
-    "status": "unsupported",
-    "weather": null
+    "nc_region": null,
+    "notes": [
+      "weather history is not available for this grid cell yet"
+    ],
+    "on_land": true,
+    "place": {
+      "admin1": null,
+      "admin1_name": null,
+      "admin2_name": null,
+      "country": null,
+      "country_name": null,
+      "display": null
+    },
+    "reason": null,
+    "region_keys": [
+      "koppen:Cfa"
+    ],
+    "status": "partial",
+    "weather": {
+      "first_date": null,
+      "freshness": "unavailable",
+      "last_date": null,
+      "location_id": null,
+      "reason": "no committed weather snapshot covers this grid cell",
+      "snapshot_hash": null,
+      "source": "none",
+      "status": "unavailable",
+      "supported": false
+    }
   },
   "meta": {
     "catalog_version": "v2:8eeb5bf961eb",
@@ -66,7 +112,9 @@
   "plans": [
     {
       "calendar": null,
+      "catalog": null,
       "conflicts": [],
+      "coverage": null,
       "dates_assumed": null,
       "dates_assumed_for_region": null,
       "dates_basis": null,
@@ -74,6 +122,7 @@
       "editable": [],
       "eras": {},
       "eras_shared_years": {},
+      "hemisphere": null,
       "label": "Cereal rye before soybean",
       "label_generated": false,
       "leg": null,
@@ -103,8 +152,8 @@
         }
       },
       "plan_id": "corn_soy__rye",
-      "reason": "unsupported_location: the point is outside North Carolina; guidance and history cover NC only",
-      "reason_text": "This place is outside North Carolina, so it is not evaluated: guidance and weather history cover North Carolina only.",
+      "reason": "offline_no_snapshot: no stored weather for grid cell cell_+40.500_-73.750; prepare it with POST /v1/weather/prepare",
+      "reason_text": "The server is in offline mode and has no stored weather for this place.",
       "region_note": null,
       "residue_context": [],
       "rotation_id": "winter_cover",
@@ -114,7 +163,7 @@
       "seasons": [],
       "spring": null,
       "spring_checks": [],
-      "status": "unsupported",
+      "status": "unavailable",
       "winter": null
     }
   ],
@@ -130,7 +179,7 @@
   "result_id": "5cc3fbf0f9ce81eb",
   "shared_eligible_years": {
     "full_season": [],
-    "note": "unsupported_location: the point is outside North Carolina; guidance and history cover NC only",
+    "note": "offline_no_snapshot: no stored weather for grid cell cell_+40.500_-73.750; prepare it with POST /v1/weather/prepare",
     "spring": [],
     "winter": []
   },
@@ -155,10 +204,12 @@
     "baseline": null,
     "dry_spring": {
       "05-12": {
+        "location": "cell_+35.000_-80.625",
         "method": "bottom_20pct_order_statistic",
         "n_reference": 45,
         "name": "spring_dry_mm@05-12",
         "note": null,
+        "origin": "calculation",
         "parameters": {
           "eligible_years": [
             1981,
@@ -222,10 +273,12 @@
       }
     },
     "heavy_rain": {
+      "location": "cell_+35.000_-80.625",
       "method": "published_fixed",
       "n_reference": 16252,
       "name": "heavy_rain_mm",
       "note": "Applied to NASA POWER daily values, which are Local Solar Time days (time_standard=LST), not a rolling 24-hour window; a storm split across two solar days can fall below the value on each day. Rainfall-depth weather metric only: not erosion, runoff or soil loss. Zero-count winters are valid results.",
+      "origin": "verified_source",
       "parameters": {
         "assumed": false,
         "comparison": "daily precip_mm >= value",
@@ -253,15 +306,15 @@
   },
   "weather_location": {
     "cell_id": "cell_+40.500_-73.750",
-    "code": "unsupported_location",
+    "code": "offline_no_snapshot",
     "first_date": null,
     "grid_cell": null,
     "id": null,
     "last_date": null,
     "name": null,
     "point": null,
-    "reason": "unsupported_location: the point is outside North Carolina; guidance and history cover NC only",
-    "reason_text": "This place is outside North Carolina, so it is not evaluated: guidance and weather history cover North Carolina only.",
+    "reason": "offline_no_snapshot: no stored weather for grid cell cell_+40.500_-73.750; prepare it with POST /v1/weather/prepare",
+    "reason_text": "The server is in offline mode and has no stored weather for this place.",
     "region": null,
     "region_basis": null,
     "requested_point": {
@@ -270,7 +323,7 @@
     },
     "shares_snapshot_with": null,
     "snapshot_hash": null,
-    "status": "unsupported",
+    "status": "unavailable",
     "thresholds_from": "No plan was evaluated for this place. The thresholds shown only keep the response shape; they are Union County's and apply to nothing here."
   }
 }

@@ -25,6 +25,7 @@ Nothing here logs a coordinate or a cell id.
 from __future__ import annotations
 
 import calendar
+import contextvars
 import json
 import logging
 import math
@@ -33,8 +34,10 @@ import re
 import shutil
 import threading
 import uuid
+from collections.abc import Iterator
 from concurrent.futures import Future, ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FutureTimeout
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import UTC, date, datetime, timedelta
 from functools import lru_cache
@@ -188,8 +191,39 @@ def _read_json(path: Path) -> dict[str, Any] | None:
     return doc if isinstance(doc, dict) else None
 
 
+_PIN: contextvars.ContextVar[dict[str, Stored | None] | None] = contextvars.ContextVar(
+    "fieldshift_pinned_weather", default=None)
+
+
+@contextmanager
+def pinned() -> Iterator[None]:
+    """Inside the block every ``stored(cell)`` answer is remembered per cell, so a batch (a farm)
+    sees one snapshot per cell even if a refresh lands meanwhile."""
+    token = _PIN.set({})
+    try:
+        yield
+    finally:
+        _PIN.reset(token)
+
+
+def repin(cell: Cell, s: Stored | None) -> None:
+    """Inside :func:`pinned`, make ``s`` the snapshot this batch uses for ``cell``."""
+    pin = _PIN.get()
+    if pin is not None:
+        pin[cell.cell_id] = s
+
+
 def stored(cell: Cell) -> Stored | None:
     """The stored weather for a cell, committed first. Reads files only."""
+    pin = _PIN.get()
+    if pin is not None:
+        if cell.cell_id not in pin:
+            pin[cell.cell_id] = _stored(cell)
+        return pin[cell.cell_id]
+    return _stored(cell)
+
+
+def _stored(cell: Cell) -> Stored | None:
     entry = get_index().by_cell(cell.cell_id)
     if entry is not None:
         manifest = _read_json(entry.directory / MANIFEST_NAME) or {}

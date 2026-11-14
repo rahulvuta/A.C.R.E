@@ -243,6 +243,11 @@ class Threshold(_Model):
     status: Status = Status.COMPLETE
     note: str | None = None
     source: ThresholdSource | None = None  # set for published (non-computed) thresholds
+    # A2: the POWER grid cell whose weather the threshold belongs to, and its provenance
+    # (``verified_source`` for the published NC value, ``calculation`` for computed ones).
+    # Both follow from the snapshot and the method, so they are left out of threshold_set_id.
+    location: str | None = None
+    origin: str | None = None
 
 
 class ThresholdSet(_Model):
@@ -253,7 +258,11 @@ class ThresholdSet(_Model):
 
     @property
     def threshold_set_id(self) -> str:
-        blob = json.dumps(self.model_dump(mode="json"), sort_keys=True, separators=(",", ":"))
+        doc = self.model_dump(mode="json")
+        for t in doc["thresholds"].values():  # labels derived from snapshot + method (A2)
+            t.pop("location", None)
+            t.pop("origin", None)
+        blob = json.dumps(doc, sort_keys=True, separators=(",", ":"))
         return hashlib.sha256(blob.encode()).hexdigest()[:16]
 
     def get(self, name: str) -> Threshold:

@@ -1,5 +1,6 @@
 {
   "base_plan_id": "corn_soy__rye",
+  "catalog": null,
   "check_id": "rye_soy_short_gap_moisture",
   "denominator": 45,
   "dry_years": [
@@ -2625,15 +2626,18 @@
   "rule_ids": [
     "cr_tt_03"
   ],
+  "season_label": "Winter",
   "status": "complete",
   "thresholds": {
     "baseline": "1981-01-01..2025-06-30 daily record of this location's snapshot",
     "dry_spring": {
       "05-12": {
+        "location": "cell_+35.000_-80.625",
         "method": "bottom_20pct_order_statistic",
         "n_reference": 45,
         "name": "spring_dry_mm@05-12",
         "note": null,
+        "origin": "calculation",
         "parameters": {
           "eligible_years": [
             1981,
@@ -2697,10 +2701,12 @@
       }
     },
     "heavy_rain": {
+      "location": "cell_+35.000_-80.625",
       "method": "published_fixed",
       "n_reference": 16252,
       "name": "heavy_rain_mm",
       "note": "Applied to NASA POWER daily values, which are Local Solar Time days (time_standard=LST), not a rolling 24-hour window; a storm split across two solar days can fall below the value on each day. Rainfall-depth weather metric only: not erosion, runoff or soil loss. Zero-count winters are valid results.",
+      "origin": "verified_source",
       "parameters": {
         "assumed": false,
         "comparison": "daily precip_mm >= value",

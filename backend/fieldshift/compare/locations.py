@@ -27,6 +27,8 @@ from fieldshift.weather.locations import LocationEntry, cell_id_for, get_index
 
 NO_SNAPSHOT = "no_weather_snapshot"
 UNSUPPORTED = "unsupported_location"
+NOT_PREPARED = "weather_not_prepared"
+OFFLINE_NO_SNAPSHOT = "offline_no_snapshot"
 
 Kind = Literal["ok", "unsupported", "no_snapshot", "invalid"]
 
@@ -51,13 +53,83 @@ def _issue(field_: str, code: str, message: str) -> dict[str, str]:
     return {"field": field_, "code": code, "message": message}
 
 
+def hemisphere_of(latitude: float) -> str:
+    """``south`` below the equator, else ``north`` (a point on the equator counts as north)."""
+    return "south" if latitude < 0 else "north"
+
+
+def _cell_entry(cell_id: str, directory: Any, snapshot_hash: str, region: str) -> LocationEntry:
+    """An index-like row for a cell served outside the NC place table (A1 cache or a committed
+    cell used for a point outside NC). Its name is the cell, never a county."""
+    import json as _json
+
+    from fieldshift.weather.snapshot import MANIFEST_NAME
+    from fieldshift.weather.sources import derive_grid_cell
+
+    manifest = _json.loads((directory / MANIFEST_NAME).read_text(encoding="utf-8"))
+    cov = manifest["coverage"]
+    lat, lon = (float(x) for x in cell_id.removeprefix("cell_").split("_"))
+    return LocationEntry(
+        id=cell_id, name=f"POWER grid cell {cell_id}", latitude=lat, longitude=lon,
+        region=region, cell_id=cell_id, grid_cell=derive_grid_cell(lat, lon),
+        snapshot_dir=str(directory), snapshot_hash=snapshot_hash,
+        first_date=cov["first_date"], last_date=cov["last_date"], shares_snapshot_with=None,
+    )  # fmt: skip
+
+
+def _global_choice(cell_id: str, lat: float, lon: float, in_nc: bool,
+                   requested: dict[str, Any]) -> Choice | None:  # fmt: skip
+    """A cell outside the NC place table: the committed snapshot of its cell (a point outside NC
+    in a committed cell) or the on-demand cache. ``None`` when nothing is stored."""
+    from fieldshift.compare.context import context_for_cell
+    from fieldshift.compare.regional import catalog_for
+    from fieldshift.weather import ondemand
+
+    cell = ondemand.Cell.parse(cell_id)
+    stored = ondemand.stored(cell)
+    if stored is None:
+        return None
+    region = "outside_nc"
+    if in_nc:
+        from fieldshift.field.location import approximate_region
+
+        region = approximate_region(lat, lon) or "unknown"
+    entry = _cell_entry(cell_id, stored.directory, stored.snapshot_hash, region)
+    index, state = catalog_for(lat, lon, in_nc=in_nc)
+    ctx = context_for_cell(entry, scope="nc" if in_nc else "global",
+                           hemisphere=hemisphere_of(lat), index=index,
+                           catalog_state=state)  # fmt: skip
+    return Choice("ok", ctx=ctx, entry=entry, requested=requested, cell_id=cell_id)
+
+
 def choose(
     location_id: str | None = None,
     latitude: float | None = None,
     longitude: float | None = None,
+    cell_id: str | None = None,
 ) -> Choice:
-    """Resolve a place. Never raises; the result says what to return."""
+    """Resolve a place. Never raises; the result says what to return.
+
+    Order: a ``location_id`` from the index; a point in North Carolina whose cell has a committed
+    snapshot (unchanged NC behaviour); otherwise the cell's stored weather (A1: committed cell or
+    cache) with the scope of the point (NC rules only in NC). Nothing stored is ``no_snapshot``:
+    ``no_weather_snapshot`` in NC (as before), ``weather_not_prepared`` (or
+    ``offline_no_snapshot``) elsewhere. ``cell_id`` stands in for a point at the cell centre.
+    """
     requested = {"location_id": location_id, "latitude": latitude, "longitude": longitude}
+    if cell_id is not None:
+        requested["cell_id"] = cell_id
+        if latitude is not None or longitude is not None:
+            return Choice("invalid", requested=requested, issues=[_issue(
+                "location", "location_conflict", "give a point or a cell_id, not both")])  # fmt: skip
+        from fieldshift.weather.ondemand import Cell, CellIdError
+
+        try:
+            cell = Cell.parse(cell_id)
+        except CellIdError as exc:
+            return Choice("invalid", requested=requested,
+                          issues=[_issue("location.cell_id", "invalid_cell", str(exc))])  # fmt: skip
+        latitude, longitude = cell.center_latitude, cell.center_longitude
     index = get_index()
     have_point = latitude is not None and longitude is not None
     if (latitude is None) != (longitude is None):
@@ -82,39 +154,60 @@ def choose(
             return Choice("invalid", requested=requested, issues=[_issue(
                 "location_id", "unknown_location",
                 f"unknown location '{location_id}'; known locations: {known}")])  # fmt: skip
-    if have_point:
-        assert latitude is not None and longitude is not None
-        cid = cell_id_for(latitude, longitude)
-        if not in_nc_bounds(latitude, longitude):  # also when an id is given
+    if not have_point:
+        if entry_by_id is not None:
+            return Choice("ok", ctx=context_for(entry_by_id), entry=entry_by_id,
+                          requested=requested, cell_id=entry_by_id.cell_id)  # fmt: skip
+        return Choice("ok", ctx=get_context(), entry=None, requested=requested)
+    assert latitude is not None and longitude is not None
+    cid = cell_id_for(latitude, longitude)
+    in_nc = in_nc_bounds(latitude, longitude)
+    if entry_by_id is not None and (cid != entry_by_id.cell_id or not in_nc):
+        if not in_nc:
             return Choice(
                 "unsupported", requested=requested, code=UNSUPPORTED, cell_id=cid,
-                reason=f"{UNSUPPORTED}: the point is outside North Carolina; guidance and "
-                "history cover NC only",
+                reason=f"{UNSUPPORTED}: the point is outside North Carolina, so it cannot use "
+                f"{entry_by_id.name}'s place; send the point without location_id",
             )  # fmt: skip
-        if entry_by_id is not None and cid != entry_by_id.cell_id:
-            return Choice("invalid", requested=requested, issues=[_issue(
-                "location", "location_conflict",
-                f"the point is not in {entry_by_id.name}'s grid cell; give location_id or a "
-                "point, not both")])  # fmt: skip
+        return Choice("invalid", requested=requested, issues=[_issue(
+            "location", "location_conflict",
+            f"the point is not in {entry_by_id.name}'s grid cell; give location_id or a "
+            "point, not both")])  # fmt: skip
     if entry_by_id is not None:
         return Choice("ok", ctx=context_for(entry_by_id), entry=entry_by_id,
                       requested=requested, cell_id=entry_by_id.cell_id)  # fmt: skip
-    if not have_point:
-        return Choice("ok", ctx=get_context(), entry=None, requested=requested)
-    assert latitude is not None and longitude is not None
     entry = index.by_cell(cid)
-    if entry is None:
+    if in_nc and entry is not None:
+        return Choice("ok", ctx=context_for(entry), entry=entry, requested=requested, cell_id=cid)
+    found = _global_choice(cid, latitude, longitude, in_nc, requested)
+    if found is not None:
+        return found
+    if in_nc:
         return Choice(
             "no_snapshot", requested=requested, code=NO_SNAPSHOT, cell_id=cid,
             reason=f"{NO_SNAPSHOT}: no committed weather snapshot for grid cell {cid}",
         )  # fmt: skip
-    return Choice("ok", ctx=context_for(entry), entry=entry, requested=requested, cell_id=cid)
+    from fieldshift.weather.power_client import is_offline
+
+    code = OFFLINE_NO_SNAPSHOT if is_offline() else NOT_PREPARED
+    return Choice(
+        "no_snapshot", requested=requested, code=code, cell_id=cid,
+        reason=f"{code}: no stored weather for grid cell {cid}; prepare it with "
+        "POST /v1/weather/prepare",
+    )  # fmt: skip
 
 
 def thresholds_sentence(entry: LocationEntry | None, ctx: Context) -> str:
     place = entry or ctx.place
     name = place.name if place else "this location"
     cov = ctx.manifest["coverage"]
+    if not ctx.is_nc:
+        return (
+            f"Dry-spring cutoffs come from {name}'s own {cov['first_date'][:4]}-"
+            f"{cov['last_date'][:4]} weather baseline (snapshot {ctx.snapshot_hash[:12]}); heavy "
+            "rain is this cell's own 95th percentile of wet days over 1981-2010 (ETCCDI R95p). "
+            "Thresholds are never shared across locations."
+        )
     return (
         f"Dry-spring cutoffs come from {name}'s own {cov['first_date'][:4]}-"
         f"{cov['last_date'][:4]} weather baseline (snapshot {ctx.snapshot_hash[:12]}); heavy rain "
@@ -139,7 +232,12 @@ def weather_location(choice: Choice, reason_text: str | None = None) -> WeatherL
             id=e.id,
             name=e.name,
             region=e.region,
-            region_basis="county table: the place's region as listed in the snapshot index",
+            region_basis=(
+                "county table: the place's region as listed in the snapshot index"
+                if e.id != e.cell_id
+                else "grid cell outside the county table: approximate NC region from the point, "
+                "or outside_nc"
+            ),
             point={"latitude": e.latitude, "longitude": e.longitude},
             requested_point=requested_point,
             grid_cell={k: e.grid_cell[k] for k in ("center_latitude", "center_longitude")},

@@ -34,10 +34,53 @@ ADDED_THRESHOLDS = ("location_id", "location_name", "baseline")
 ADDED_PLAN = ("region_note", "dates_assumed_for_region")
 
 
+#: Keys added by A2 (location-generic analysis), stripped wherever they sit.
+A2_PLAN = ("hemisphere", "coverage", "catalog")
+A2_TOP = ("hemisphere", "catalog", "season_label")  # replay / sensitivity
+A2_THRESHOLD = ("location", "origin")
+
+
+def _strip_a2(body: dict[str, Any]) -> dict[str, Any]:
+    out = {k: v for k, v in body.items() if k not in A2_TOP}
+    for block in ("winter", "spring"):
+        if isinstance(out.get(block), dict):
+            out[block] = {k: v for k, v in out[block].items() if k != "season_label"}
+    th = out.get("thresholds")
+    if isinstance(th, dict):
+        th = dict(th)
+        if isinstance(th.get("heavy_rain"), dict):
+            th["heavy_rain"] = {k: v for k, v in th["heavy_rain"].items() if k not in A2_THRESHOLD}
+        if isinstance(th.get("dry_spring"), dict):
+            th["dry_spring"] = {md: {k: v for k, v in t.items() if k not in A2_THRESHOLD}
+                                for md, t in th["dry_spring"].items()}  # fmt: skip
+        out["thresholds"] = th
+    if isinstance(out.get("plans"), list):
+        plans = []
+        for p in out["plans"]:
+            if isinstance(p, dict):
+                p = {k: v for k, v in p.items() if k not in A2_PLAN}
+                if isinstance(p.get("other_checks"), list):  # P2: rule lines carry `origin`
+                    p["other_checks"] = [{k: v for k, v in r.items() if k != "origin"}
+                                         for r in p["other_checks"]]  # fmt: skip
+                for block in ("winter", "spring"):
+                    if isinstance(p.get(block), dict):
+                        p[block] = {k: v for k, v in p[block].items() if k != "season_label"}
+                dc = p.get("double_crop")
+                we = dc.get("winter_exposure") if isinstance(dc, dict) else None
+                if isinstance(we, dict) and isinstance(we.get("heavy_rain_threshold"), dict):
+                    t = {k: v for k, v in we["heavy_rain_threshold"].items()
+                         if k not in A2_THRESHOLD}  # fmt: skip
+                    p["double_crop"] = {**dc, "winter_exposure": {**we, "heavy_rain_threshold": t}}
+            plans.append(p)
+        out["plans"] = plans
+    return out
+
+
 def strip_additions(body: Any) -> Any:
     """``body`` without the keys that did not exist before per-location snapshots."""
     if not isinstance(body, dict):
         return body
+    body = _strip_a2(body)
     out = {k: v for k, v in body.items() if k not in ADDED_TOP}
     if isinstance(out.get("thresholds"), dict):
         out["thresholds"] = {k: v for k, v in out["thresholds"].items()

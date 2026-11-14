@@ -47,6 +47,14 @@
       "west": -84.32
     },
     "cell_id": "cell_+36.000_-78.750",
+    "climate": {
+      "coastal_neighbour": false,
+      "koppen": "Cfa",
+      "label": "Humid subtropical",
+      "origin": "dataset_estimate",
+      "resolution_km": 11.1,
+      "source": "Beck et al. 2023, Koppen-Geiger 1991-2020"
+    },
     "code": null,
     "grid_cell": {
       "basis": "derived from the MERRA-2 native grid; POWER does not return the cell",
@@ -62,12 +70,28 @@
       "status": "unknown",
       "supported": false
     },
+    "hemisphere": "north",
     "latitude": 35.78,
     "longitude": -78.64,
+    "nc_region": null,
     "notes": [
       "weather history is not available for this grid cell yet"
     ],
+    "on_land": true,
+    "place": {
+      "admin1": "US-NC",
+      "admin1_name": "North Carolina",
+      "admin2_name": null,
+      "country": "US",
+      "country_name": "United States",
+      "display": "North Carolina, United States"
+    },
     "reason": null,
+    "region_keys": [
+      "US-NC",
+      "US",
+      "koppen:Cfa"
+    ],
     "status": "partial",
     "weather": {
       "first_date": null,
@@ -90,7 +114,9 @@
   "plans": [
     {
       "calendar": null,
+      "catalog": null,
       "conflicts": [],
+      "coverage": null,
       "dates_assumed": null,
       "dates_assumed_for_region": null,
       "dates_basis": null,
@@ -98,6 +124,7 @@
       "editable": [],
       "eras": {},
       "eras_shared_years": {},
+      "hemisphere": null,
       "label": "Cereal rye before soybean",
       "label_generated": false,
       "leg": null,
@@ -179,10 +206,12 @@
     "baseline": null,
     "dry_spring": {
       "05-12": {
+        "location": "cell_+35.000_-80.625",
         "method": "bottom_20pct_order_statistic",
         "n_reference": 45,
         "name": "spring_dry_mm@05-12",
         "note": null,
+        "origin": "calculation",
         "parameters": {
           "eligible_years": [
             1981,
@@ -246,10 +275,12 @@
       }
     },
     "heavy_rain": {
+      "location": "cell_+35.000_-80.625",
       "method": "published_fixed",
       "n_reference": 16252,
       "name": "heavy_rain_mm",
       "note": "Applied to NASA POWER daily values, which are Local Solar Time days (time_standard=LST), not a rolling 24-hour window; a storm split across two solar days can fall below the value on each day. Rainfall-depth weather metric only: not erosion, runoff or soil loss. Zero-count winters are valid results.",
+      "origin": "verified_source",
       "parameters": {
         "assumed": false,
         "comparison": "daily precip_mm >= value",

@@ -158,11 +158,21 @@ def test_nc_cell_without_a_snapshot_is_unavailable_with_code_and_text(client):
     assert "unsupported_location" not in json.dumps(body["plans"])
 
 
-def test_outside_nc_stays_unsupported_location(client):
+NOT_STORED = {"weather_not_prepared", "offline_no_snapshot"}
+
+
+@pytest.fixture
+def empty_cache(tmp_path, monkeypatch):
+    monkeypatch.setenv("FIELDSHIFT_CACHE_DIR", str(tmp_path / "cache"))
+
+
+def test_outside_nc_without_stored_weather_is_unavailable(client, empty_cache):
+    """A2: outside NC is analysed once its cell's weather is prepared; before that it is
+    unavailable with a code (never Union County's data, never NC rules)."""
     body = compare(client, location={"latitude": 40.7, "longitude": -74.0})
-    assert body["weather_location"]["status"] == "unsupported"
-    assert body["weather_location"]["code"] == "unsupported_location"
-    assert all(p["status"] == "unsupported" and "unsupported_location" in p["reason"]
+    assert body["weather_location"]["status"] == "unavailable"
+    assert body["weather_location"]["code"] in NOT_STORED
+    assert all(p["status"] == "unavailable" and p["reason"].split(":")[0] in NOT_STORED
                for p in body["plans"])  # fmt: skip
     assert body["meta"]["snapshot_hash"] is None
 
@@ -184,9 +194,13 @@ def test_every_endpoint_reports_no_weather_snapshot_the_same_way(client, req):
     assert j["weather_location"]["code"] == "no_weather_snapshot"
 
 
-def test_outside_nc_on_other_endpoints_is_unsupported_location(client):
+def test_outside_nc_on_other_endpoints(client, empty_cache):
     j = client.get("/v1/years?latitude=40.7&longitude=-74.0").json()
-    assert j["status"] == "unsupported" and j["code"] == "unsupported_location"
+    assert j["status"] == "unavailable" and j["code"] in NOT_STORED
+    # B's NC-only routes (behind get_context) keep unsupported_location outside NC
+    k = client.post("/v1/plans/calendar", json={"plan_id": "corn_soy__rye", "year": 2025,
+                                                "location": {"latitude": 40.7, "longitude": -74.0}})
+    assert k.json()["code"] == "unsupported_location"
 
 
 def test_unknown_location_id_and_conflicting_inputs_are_invalid_input(client):

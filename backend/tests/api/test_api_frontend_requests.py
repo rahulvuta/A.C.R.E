@@ -174,10 +174,12 @@ def test_given_and_sample_labels_are_kept_and_not_marked_generated(client):
 
 
 def test_reason_codes_get_a_plain_sentence_and_keep_the_code(client):
-    body = compare(client, {"plan_ids": ["corn_soy__rye"], "location": {"latitude": 40.0, "longitude": -100.0}})
+    # Raleigh: in NC, but its grid cell has no committed snapshot (A2: outside NC is no longer
+    # unsupported, so the NC no-snapshot code is the stable example here)
+    body = compare(client, {"plan_ids": ["corn_soy__rye"], "location": {"latitude": 35.78, "longitude": -78.64}})
     res = plan_of(body, "corn_soy__rye")
-    assert res["status"] == "unsupported" and res["reason"].startswith("unsupported_location")
-    assert res["reason_text"] and not res["reason_text"].startswith("unsupported_location")
+    assert res["status"] == "unavailable" and res["reason"].startswith("no_weather_snapshot")
+    assert res["reason_text"] and not res["reason_text"].startswith("no_weather_snapshot")
 
 
 def test_catalog_v1_wheat_reason_code_has_text():

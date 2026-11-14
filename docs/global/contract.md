@@ -90,7 +90,7 @@ Existing endpoints that take `location` keep their old behaviour when it is omit
   "tools":        {"irrigation": "complete", "fertilizer": "partial"}}}
 ```
 
-## 5. Farm and field batch analysis (A3)
+## 5. Farm and field batch analysis (A3, shipped)
 
 `POST /v1/farms/analyze`:
 ```json
@@ -99,34 +99,53 @@ Existing endpoints that take `location` keep their old behaviour when it is omit
    "geometry": {"type": "Polygon", "coordinates": [[[-60.58, -33.88], [-60.57, -33.88], [-60.57, -33.89], [-60.58, -33.89], [-60.58, -33.88]]]},
    "plan": {"plan_id": "fld_1_plan", "previous_crop_id": "maize", "next_crop_id": "soybean", "prev_harvest": "04-20",
             "winter": {"kind": "cover", "crop_id": "cereal_rye", "seed": "05-01", "terminate": "10-20"},
-            "next_plant": "11-15", "grower": {"low_moisture_concern": null}}}]},
- "options": {"include_soil": true, "prepare_weather": true}}
+            "next_plant": "11-15", "grower": {"low_moisture_concern": null}},
+   "goals": null}]},
+ "options": {"prepare_weather": true, "wait_s": 0, "include_capabilities": true, "include_soil": false, "recommend": false}}
 ```
+- 1–50 fields. `geometry` is a GeoJSON `Polygon` or `MultiPolygon` (holes allowed). `goals` is the §8 goals object (optional); with `options.recommend: true` a field with goals also gets `recommendation` (the §9 body without `meta`).
+- `prepare_weather: true` starts one POWER fetch per cell with no stored weather; `wait_s` (0–120) waits for it. With 0 those fields come back `pending`; call again (or poll `GET /v1/weather/{cell_id}`) to get results.
+
 Response:
 ```json
-{"meta": {}, "status": "partial",
- "fields": [{"field_id": "fld_1", "name": "North 40", "area_ha": 101.3, "area_ac": 250.3,
+{"meta": {"plan_version": null, "catalog_version": "…", "snapshot_hash": null, "request_id": "…"},
+ "farm_id": "f_7c1", "status": "complete",
+ "fields": [{"field_id": "fld_1", "name": "North 40", "area_ha": 102.87, "area_ac": 254.2,
              "centroid": {"latitude": -33.89, "longitude": -60.58},
-             "cell_id": "cell_-34.000_-60.625", "job_status": "ready",
-             "capabilities": {},
+             "cell_id": "cell_-34.000_-60.625", "job_status": "ready", "status": "complete",
+             "reason": null, "reason_text": null, "poll": null, "scope": "global", "snapshot_hash": "…",
+             "capabilities": {"weather": {}, "catalog": {}, "soil": {}, "live_weather": {}, "drought": {}, "tools": {}},
              "result": {}}],
- "weather_cells": [{"cell_id": "cell_-34.000_-60.625", "field_ids": ["fld_1"],
-                    "note": "These fields share one NASA weather series; differences between them come from their plans, not their weather."}],
- "totals": {"area_ha": 101.3, "area_ac": 250.3}}
+ "weather_cells": [{"cell_id": "cell_-34.000_-60.625", "field_ids": ["fld_1"], "job_status": "ready", "snapshot_hash": "…",
+                    "cell": {"center": {"latitude": -34.0, "longitude": -60.625}, "size_deg": [0.5, 0.625], "note": "…"},
+                    "note": "One NASA POWER weather series covers this whole cell."}],
+ "totals": {"area_ha": 102.87, "area_ac": 254.2},
+ "notes": ["A field is assigned to the weather cell that contains its centroid, …", "Only area is totalled. …"]}
 ```
-- `capabilities` is the §4 `features` object.
-- `result` has the same shape as one entry of `plans[]` in `POST /v1/plans/compare`, plus `hemisphere` and `season_label`.
-- A field whose weather is still pending has `job_status: "pending"` and `result: null`.
+- Area is geodesic, computed server-side with turf's formula (WGS84 radius 6378137 m); `area_ha`, `area_ac` and the centroid are rounded to 2 decimals. Geometry is never echoed or logged.
+- `weather_cells[].note` is "These fields share one NASA weather series; differences between them come from their plans, not their weather." when a cell holds 2 or more fields.
+- `capabilities` is B1's §4 `features` object (null when `include_capabilities: false`).
+- `result` is the field's own compare entry (one item of `plans[]` in `POST /v1/plans/compare`, with the A2 fields `hemisphere`, `coverage`, `catalog`, `winter.season_label`, `spring.season_label`). It is null when the weather is `pending` or unavailable.
+- Field `status`: the result's status; `unknown` while `job_status: pending`; `unavailable` with `reason` / `reason_text` (e.g. `offline_no_snapshot`, `power_unreachable`) when there is no weather. `scope` is `nc` (NC rules, 76.2 mm) or `global`.
+- Top-level `status`: `complete` (every field complete), `unavailable` (none has weather), else `partial`. `meta.snapshot_hash` is null (a farm can span several snapshots; each field carries its own).
 - `totals` holds area only. There is never a metric total.
+- Invalid input is HTTP 400 `invalid_input` with issues naming the field: `farm.fields[<i>].geometry` with codes `self_intersection` ("Field 'Bowtie' crosses itself; redraw its boundary."), `invalid_geometry`, `invalid_ring`, `invalid_position`, `ring_not_closed`, `hole_outside`, `zero_area`, `too_many_vertices`, `crosses_antimeridian`; `farm.fields[<i>].field_id` `duplicate_field_id`; `farm.fields[<i>].plan.<field>` for plan errors.
 
-The per-field drill-down uses existing endpoints with a `location` added: `POST /v1/plans/sensitivity`, `GET /v1/years?plan=&lat=&lon=`, `GET|POST /v1/seasons/{year}/replay`, `POST /v1/plans/calendar|backup|note`, `POST /v1/plans/check|find`.
+The per-field drill-down uses existing endpoints with a `location` (`{latitude, longitude}` or `{cell_id}`; use the field's centroid or its `cell_id`): `POST /v1/plans/sensitivity`, `POST /v1/years` (`{plan, location}`) or `GET /v1/years?plan=&lat=&lon=` (sample plans), `GET|POST /v1/seasons/{year}/replay`. These work anywhere with stored weather. `POST /v1/plans/calendar|backup|note` and `POST /v1/plans/check|find` (Agent B) are still NC-only: outside NC they answer `status: unsupported`, `code: unsupported_location` until B generalises them.
 
-Fields added to compare output (A2):
-- `hemisphere: "north|south"`.
-- `winter.season_label` (e.g. "Off-season (May–Oct)"; it stays "Winter" for NC) and `spring.season_label` ("30 days before planting").
-- `thresholds.*.location`, `thresholds.*.origin` and `thresholds.heavy_rain.method` (`fixed_published` | `etccdi_r95p`).
-- `eras[].status` can be `insufficient_data`.
-- `coverage.available_years`.
+Fields added by A2 (shipped). Everything else in the NC responses is byte-identical:
+- Per plan (`plans[]` in compare): `hemisphere: "north" | "south"` (from the latitude), `coverage: {first_date, last_date, available_years, spring_available_years, off_season_available_years, cell_id}` (planting years whose full season / pre-plant window / off-season window are complete at this cell), and `catalog` (null in NC; outside NC the regional catalog state, today `{status: "unknown", reason: "no_regional_catalog", reason_text, origin: null, region_key: null}` until B2 lands).
+- `plans[].winter.season_label`: `"Winter"` in NC, else `"Off-season (Apr–Nov)"` (months of `[previous harvest, planting)`). `plans[].spring.season_label`: `"30 days before planting"`. The field names stay `winter` / `spring`.
+- Every threshold (`thresholds.heavy_rain`, `thresholds.dry_spring.*`) gains `location` (the cell id) and `origin` (`verified_source` for NC's published 76.2 mm, `calculation` otherwise). `threshold_set_id` is unchanged by these labels.
+- `thresholds.heavy_rain.method`: `published_fixed` (NC, unchanged string) or `etccdi_r95p` outside NC: the cell's 95th percentile of wet days (≥ 1 mm), base 1981–2010, all months; `parameters.base_period`, `base_valid_days`, `base_expected_days`. If fewer than 25 of the 30 base years are present it is `status: insufficient_data`, `value: null`.
+- `eras.*.status` is `insufficient_data` when an era has < 15 evaluable seasons (unchanged rule; now reachable for short records).
+- Replay gains `hemisphere`, `winter.season_label`, `spring.season_label`. Sensitivity gains `catalog` and `season_label`; outside NC with no regional catalog it sweeps the weather only: `status: "unknown"`, `check_id: null`, `rule_ids: []`, and `checks_count` / `denominator` are `null` (never 0).
+- `meta.catalog_version` outside NC is the regional catalog's (`none:…` while there is none), never NC's.
+
+Location handling (A2):
+- `location` accepts `{latitude, longitude}` or `{cell_id}` on compare, replay (POST), sensitivity and the new `POST /v1/years` (`{plan, location}`, for a field's own plan). `GET /v1/years` and `GET /v1/seasons/{year}/replay` accept `latitude`/`longitude`, the aliases `lat`/`lon`, or `cell_id`.
+- A point in NC in a committed county cell behaves as before. Any other point uses its cell's stored weather (committed or A1 cache). A point outside NC is never given NC rules or NC's heavy-rain value, even inside an NC county's cell (a border cell: same weather series, different rules).
+- No stored weather: NC keeps `no_weather_snapshot`; outside NC it is `status: unavailable` with `code`/`reason` `weather_not_prepared` (or `offline_no_snapshot` offline) and a `reason_text`. Call `POST /v1/weather/prepare` first. `unsupported_location` is now only for a `location_id` combined with a point outside NC (and, with B1, water or invalid points).
 
 ## 6. Regional profile and research (B2, B3)
 
@@ -166,27 +185,47 @@ Fields added to compare output (A2):
 ```
 → `{meta, status, candidates: [Plan + {candidate_id, seasons[], origins, checks_summary}], generation_log: [{rule|constraint, pruned, reason_text}], gaps: []}`
 
-## 9. Recommendation (P2)
+## 9. Recommendation (P2, shipped)
 
-`POST /v1/plans/recommend`: the same body as §8 plus an optional `candidates` (farmer-edited), giving:
+`POST /v1/plans/recommend`. Body: `{location? | location_id?, field?: {field_id, area_ha, crop_history, soil}, goals?: {priorities, constraints, preferences}, candidates?: [{candidate_id, label?, plans: [Plan, …1–4]}]}`.
+- `goals.priorities`: only the six §8 names, integer weights 0–3 (an unknown name is a 400). With no non-zero priority every indicator is used with weight 1.
+- Without `candidates`, candidates come from B's generator (P1). Until P1 lands: the NC preset rotations in NC (pruned by `excluded_crops`, `allowed_crops`, `must_include`, logged in `generation_log`), and `status: insufficient_data` with `gaps[]` elsewhere.
+- Definitions, sources and the priority → indicator table: `backend/docs/indicators.md`.
 
 ```json
-{"meta": {}, "status": "complete",
+{"meta": {"plan_version": "<result_id>", "catalog_version": "…", "snapshot_hash": "…", "request_id": "…"},
+ "status": "complete", "result_id": "…", "hemisphere": "north",
  "method": {"shortlist": "pareto_non_dominated", "ordering": "weighted_rank_positions",
-            "indicators_used": ["rain_on_bare_soil_mm", "living_cover_days", "dry_pre_plant_frequency"],
-            "note": "Not universally optimal: depends on these priorities and this weather history."},
- "shortlist": [{"candidate_id": "c3", "plan": {},
-   "indicators": {"rain_on_bare_soil_mm": {"value": 78.0, "unit": "mm", "direction": "lower_better", "origin": "calculation",
-                                           "definition": "…", "source": {"title": "…", "url": "…"}}},
-   "wins": ["rain_on_bare_soil_mm", "living_cover_days"], "loses": ["dry_pre_plant_frequency"],
-   "why": [{"text": "…", "indicator": "rain_on_bare_soil_mm", "audit_id": "…"}],
-   "trade_offs": [{"text": "…", "versus": "c1"}],
+            "indicators_used": ["living_cover_days", "bare_soil_days", "rain_on_bare_soil_mm"],
+            "weights": {"living_cover_days": 3, "bare_soil_days": 3, "rain_on_bare_soil_mm": 3},
+            "ordering_text": "…", "note": "Not universally optimal: depends on these priorities and this weather history.",
+            "definitions": "backend/docs/indicators.md"},
+ "shortlist": [{"candidate_id": "winter_cover", "label": "…", "origin": "assumed|grower|generated",
+   "plans": [Plan, …], "leg_status": ["complete", "complete"],
+   "indicators": {"rain_on_bare_soil_mm": {"value": 56.6, "unit": "mm per season", "direction": "lower_better",
+        "origin": "calculation", "status": "complete", "reason": null, "definition": "…", "rationale": "…",
+        "source": {"title": "…", "url": "…"}, "per_leg": [50.1, 63.1], "in_priorities": true}},
+   "rank_positions": {"living_cover_days": 1, "bare_soil_days": 1, "rain_on_bare_soil_mm": 1},
+   "wins": ["rain_on_bare_soil_mm", …], "loses": [],
+   "why": [{"indicator": "rain_on_bare_soil_mm", "text": "…", "value": 56.6, "source": {}, "audit_id": "…"}],
+   "trade_offs": [{"versus": "current_practice", "text": "…",
+                   "worse_on": [{"indicator": "rule_flags", "value": 22, "versus_value": 14, "in_priorities": false}]}],
    "uncertainties": [{"text": "…", "origin": "nasa_modeled"}],
-   "historical_vulnerabilities": [{"year": "2007", "indicator": "dry_pre_plant_frequency", "text": "…", "replay": "/v1/seasons/2007/replay?plan=…"}]}],
- "not_comparable": [{"candidate_id": "c9", "status": "partial", "missing": ["modeled_root_zone_wetness_at_planting"]}],
- "dominated": [{"candidate_id": "c2", "dominated_by": ["c3"]}]}
+   "historical_vulnerabilities": [{"year": "2025", "indicator": "rain_on_bare_soil_mm", "plan_id": "corn_soy__rye",
+        "value": 208.2, "field": "rain_outside_cover_mm", "text": "…",
+        "replay": {"method": "POST", "path": "/v1/seasons/2025/replay", "body": {"plan": {}, "location_id": "union"}}}]}],
+ "not_comparable": [{"candidate_id": "c9", "status": "partial", "missing": ["rule_flags"], "indicators": {}, "plans": []}],
+ "dominated": [{"candidate_id": "current_practice", "dominated_by": ["add_grain_crop", "winter_cover"], "indicators": {}, "plans": []}],
+ "thresholds": {}, "context": {"soil": null, "soil_note": null},
+ "generation_log": [{"constraint": "crops", "pruned": "add_grain_crop", "reason_text": "…"}], "gaps": [],
+ "weather_location": {}}
 ```
-There is no score field anywhere.
+- Indicator names: `rain_on_bare_soil_mm`, `heavy_rain_days_on_bare_soil`, `dry_pre_plant_frequency` (its `per_leg` items are `{value, dry_seasons, eligible_seasons}`), `modeled_root_zone_wetness_at_planting` (`origin: nasa_modeled`), `living_cover_days`, `bare_soil_days`, `crop_family_diversity` (`detail.families`), `rule_flags` (`detail.rule_ids`; `null` + `status: unknown` where no rules are loaded), `management_operations`, `irrigation_dependence` (always `null`, `status: unknown`: no sourced data yet).
+- A multi-season candidate's value is the mean of its legs (`per_leg` lists them). Never a sum, never a score: no field anywhere is a composite number. `rank_positions` are per indicator, within the shortlist.
+- `wins` / `loses` / `why` compare with every comparable candidate (shortlisted and dominated). `trade_offs` include indicators outside the priorities, marked `in_priorities: false`.
+- `historical_vulnerabilities[].replay` is a ready request: `{method: "POST", path, body: {plan, location_id | location}}` with the same place as the recommendation (NC place id, cell id, or a 2-decimal point).
+- `rule_flags` is checks **per season** (mean over legs); `detail.rule_ids` and `detail.unknown_rule_ids` list them. A requested indicator that is unknown makes that candidate `not_comparable`.
+- `status`: `complete`, `partial` (some candidates not comparable), `insufficient_data` (no candidates / none comparable, see `gaps`), or `unavailable` (no stored weather: `code`, `reason_text`, `weather_location`, as for compare).
 
 ## 10. Future farm plan (P3)
 

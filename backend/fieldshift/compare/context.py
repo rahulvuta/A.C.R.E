@@ -28,6 +28,21 @@ class Context:
     manifest: dict[str, Any]
     index: CatalogIndex
     location: LocationEntry | None = None  # None: the Union County default, no lookup made
+    # A2: "nc" = North Carolina (NC catalog, published 76.2 mm heavy rain, "Winter" labels);
+    # "global" = anywhere else (regional catalog, ETCCDI R95p, hemisphere-neutral labels).
+    scope: str = "nc"
+    hemisphere: str = "north"
+    # the regional catalog's state outside NC (``catalog_for_location``); None in NC
+    catalog_state: dict[str, Any] | None = None
+
+    @property
+    def cell_id(self) -> str | None:
+        place = self.place
+        return place.cell_id if place is not None else None
+
+    @property
+    def is_nc(self) -> bool:
+        return self.scope == "nc"
 
     @property
     def location_id(self) -> str:
@@ -72,3 +87,30 @@ def context_for(entry: LocationEntry) -> Context:
         raise RuntimeError(f"{entry.id}: index hash differs from the loaded snapshot")
     return Context(series=ctx.series, snapshot_hash=ctx.snapshot_hash, manifest=ctx.manifest,
                    index=ctx.index, location=entry)  # fmt: skip
+
+
+def context_for_cell(entry: LocationEntry, *, scope: str, hemisphere: str,
+                     index: CatalogIndex, catalog_state: dict[str, Any] | None) -> Context:  # fmt: skip
+    """The context of a cell served from the on-demand cache (A1) or of a committed cell used for
+    a point outside NC. ``entry`` describes the cell; the snapshot is loaded once per hash."""
+    from fieldshift.weather.snapshot import load_snapshot as _load
+
+    snap = _cell_snapshot(str(entry.directory), entry.snapshot_hash, _load)
+    return Context(series=snap[0], snapshot_hash=entry.snapshot_hash, manifest=snap[1],
+                   index=index, location=entry, scope=scope, hemisphere=hemisphere,
+                   catalog_state=catalog_state)  # fmt: skip
+
+
+_CELL_CACHE: dict[tuple[str, str], tuple[DailySeries, dict[str, Any]]] = {}
+
+
+def _cell_snapshot(directory: str, snapshot_hash: str, load: Any) -> tuple[DailySeries, dict]:
+    key = (directory, snapshot_hash)
+    if key not in _CELL_CACHE:
+        snap = load(directory)
+        if snap.snapshot_hash != snapshot_hash:
+            raise RuntimeError("cell snapshot hash differs from its pointer")
+        if len(_CELL_CACHE) >= 32:
+            _CELL_CACHE.pop(next(iter(_CELL_CACHE)))
+        _CELL_CACHE[key] = (DailySeries(snap.daily), snap.manifest)
+    return _CELL_CACHE[key]
