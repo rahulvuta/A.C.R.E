@@ -54,7 +54,20 @@ def _query_from_location(loc: dict[str, Any], crops: tuple[str, ...]
     place = d.place or {}
     return RegionQuery(key, place.get("country"), place.get("admin1"), place.get("admin1_name"),
                        place.get("country_name"), d.climate.koppen if d.climate else None,
-                       crops), []  # fmt: skip
+                       crops, sage=_sage_windows(*pt)), []  # fmt: skip
+
+
+def _sage_windows(lat: float, lon: float) -> dict[str, Any]:
+    """The cell's SAGE windows, for the guardrails only (never sent to the model)."""
+    from fieldshift.catalogs import sage
+
+    try:
+        cals, _ = sage.calendars_at(lat, lon)
+    except sage.SageUnavailable:
+        return {}
+    return {c.crop_id: {"plant": c.plant.as_dict(),
+                        "harvest": c.harvest.as_dict() if c.harvest else None}
+            for c in cals if not c.extrapolated}  # fmt: skip
 
 
 @router.post("/regions/research")

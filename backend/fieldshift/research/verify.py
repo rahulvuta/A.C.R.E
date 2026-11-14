@@ -146,10 +146,14 @@ class CheckLog:
     downgraded: list[dict[str, Any]] = field(default_factory=list)
     checked: int = 0
     found: int = 0
+    guardrails: dict[str, Any] | None = None
 
     def as_dict(self) -> dict[str, Any]:
-        return {"items_checked": self.checked, "quotes_found": self.found,
-                "dropped": self.dropped, "downgraded": self.downgraded}  # fmt: skip
+        out = {"items_checked": self.checked, "quotes_found": self.found,
+               "dropped": self.dropped, "downgraded": self.downgraded}  # fmt: skip
+        if self.guardrails is not None:
+            out["guardrails"] = self.guardrails
+        return out
 
 
 def _evidence_origin(item: dict[str, Any], pages: dict[str, Page], log: CheckLog,
@@ -170,6 +174,8 @@ def _evidence_origin(item: dict[str, Any], pages: dict[str, Page], log: CheckLog
         return None
     if page.text and normalise(quote) in page.text:
         log.found += 1
+        if item.get("_domain_ok") is False:  # guardrails: off-allowlist domains stay suggestions
+            return "ai_suggested"
         return "source_checked"
     return "ai_suggested"
 
@@ -204,7 +210,7 @@ def check_answer(answer: dict[str, Any], region: dict[str, Any],
         if origin is None:
             continue
         seen.add(rid)
-        row = {**r, "crop_id": cid, "origin": origin, "region_key": key,
+        row = {**{k: v for k, v in r.items() if not k.startswith("_")}, "crop_id": cid, "origin": origin, "region_key": key,
                "country": region.get("country"), "admin1": region.get("admin1"),
                "koppen": region.get("koppen")}  # fmt: skip
         unresolved = [f for f in ("previous_crop_id", "next_crop_id")
@@ -244,7 +250,8 @@ def check_answer(answer: dict[str, Any], region: dict[str, Any],
                 continue
             src = {"title": e.get("source_title"), "url": e.get("source_url"),
                    "locator": e.get("source_locator"), "evidence_quote": e.get("evidence_quote")}  # fmt: skip
-            out.append({**{k: v for k, v in e.items() if k not in _EVIDENCE_KEYS},
+            out.append({**{k: v for k, v in e.items()
+                           if k not in _EVIDENCE_KEYS and not k.startswith("_")},
                         "origin": origin, "sources": [src]})  # fmt: skip
         return out
 
@@ -265,12 +272,17 @@ def check_answer(answer: dict[str, Any], region: dict[str, Any],
                 out[path[0]] = None
         return out
 
-    crops = []
+    crops, flagged = [], []
     for c in entries("crops", "crop_id"):
         cid = crop_ids.canonical(c["crop_id"])
         c = strip_unsupported("crops", c, (), ("plant.start", "plant.end", "harvest.start",
                                                 "harvest.end"), c["sources"][0]["evidence_quote"])  # fmt: skip
         if not (isinstance(c.get("plant"), dict) and c["plant"].get("start")):
+            continue
+        if c.get("review") == "manual_check":  # guardrails: disagrees with SAGE; SAGE is served
+            flagged.append({"crop_id": cid, "plant": c.get("plant"), "harvest": c.get("harvest"),
+                            "origin": c["origin"], "review": "manual_check",
+                            "limitations": c.get("limitations"), "source": c["sources"][0]})  # fmt: skip
             continue
         crops.append({"crop_id": cid, "name": crop_ids.info(cid).name,  # type: ignore[union-attr]
                       "roles": [crop_ids.info(cid).role.replace("_crop", "")],  # type: ignore[union-attr]
@@ -278,6 +290,7 @@ def check_answer(answer: dict[str, Any], region: dict[str, Any],
                                    "origin": c["origin"], "source": c["sources"][0]}})  # fmt: skip
     profile = {
         "crops": crops,
+        "flagged_crops": flagged,
         "cover_crops": [strip_unsupported("cover_crops", {**c, "crop_id": crop_ids.canonical(
             c["crop_id"])}, ("gap_days",), ("seed.start", "seed.end"),
             c["sources"][0]["evidence_quote"]) for c in entries("cover_crops", "crop_id")],
