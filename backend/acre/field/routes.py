@@ -244,3 +244,8 @@ def get_vocab_readings() -> Any:
     return {"meta": response_meta(weather=False), "readings": vocab_readings(),
             "note": "Readings are yours (origin: grower); they are shown beside modeled values "
             "and never mixed into NASA numbers."}  # fmt: skip
+
+# Card S3: economics estimate.
+from acre.economics.routes import router as _economics_router  # noqa: E402
+
+router.include_router(_economics_router)

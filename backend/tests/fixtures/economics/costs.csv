@@ -1,0 +1,6 @@
+region_key,crop_id,item,value,unit,currency,year,source_title,source_url,locator,retrieved
+US,soybean,seed,62,USD/acre,USD,2024,SYNTHETIC fixture cost and returns,https://fixture.invalid/ers,soy,2026-11-01
+US,soybean,fertilizer,30,USD/acre,USD,2024,SYNTHETIC fixture cost and returns,https://fixture.invalid/ers,soy,2026-11-01
+US,soybean,other,318,USD/acre,USD,2024,SYNTHETIC fixture cost and returns,https://fixture.invalid/ers,soy,2026-11-01
+US,soybean,seed,55,USD/acre,USD,2019,SYNTHETIC older budget,https://fixture.invalid/ers-old,soy,2026-11-01
+US,maize,seed,abc,USD/acre,USD,2024,SYNTHETIC bad number,https://fixture.invalid/ers,maize,2026-11-01
