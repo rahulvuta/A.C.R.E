@@ -72,9 +72,11 @@ export function MethodsPage() {
       <Section id="m-data" title="The weather data">
         <ul>
           <li>
-            NASA POWER daily estimates for a reference point near Monroe, Union County, NC: corrected precipitation (PRECTOTCORR) and
-            root-zone soil wetness (GWETROOT, from the MERRA-2 model), 1981 to 2025.
+            NASA POWER daily estimates for a reference point in each of eight North Carolina counties (the sample is near Monroe,
+            Union County): corrected precipitation (PRECTOTCORR) and root-zone soil wetness (GWETROOT, from the MERRA-2 model), 1981
+            to 2025.
           </li>
+          <li>Each county is compared with its own past springs and its own dry cutoff. Wayne and Johnston share one NASA grid cell.</li>
           <li>Values describe a grid cell roughly 50 km across, not one farm. Local storms can make a field wetter or drier.</li>
           <li>The record is saved with the app, so the comparison works offline. The screen says when data is a saved record, live, or draft.</li>
           <li>A day with no rain counts as 0.0 mm. A missing day makes that spring incomplete; incomplete springs are left out and listed.</li>
@@ -153,8 +155,8 @@ export function MethodsPage() {
           <li>It does not forecast next spring.</li>
           <li>It does not measure soil moisture, crop growth, erosion or yield on your field.</li>
           <li>It does not estimate water savings, costs or profit, and does not name a "best" rotation.</li>
-          <li>Wheat planting and harvest windows are not yet sourced, so that timing check shows unknown.</li>
-          <li>The second winter of each two-year rotation (soybeans to corn) is not evaluated yet.</li>
+          <li>The guidance catalog has no fixed Piedmont dates for wheat, so the wheat plan uses the dates entered for it.</li>
+          <li>The sample dates were assumed for the Piedmont. In a Coastal Plain county the planner says so; check them against local timing.</li>
         </ul>
         <p>
           <strong>It supports, not replaces, local advice.</strong> Take the comparison to your NC State Extension agent before changing a
@@ -256,12 +258,12 @@ export function PrivacyPage() {
       </Section>
       <Section id="p-send" title="What is sent, and where">
         <ul>
-          <li>The Union County sample is stored with this site. Opening it sends nothing anywhere.</li>
+          <li>The record for each county in the place picker is stored with this site. Opening one sends nothing anywhere.</li>
           <li>
             When the live service is connected, applying dates sends your plan dates to it so it can replay them against past
-            springs. Choosing another place sends that place's coordinates so it can find the NASA POWER grid cell.
+            springs. Typing your own point sends its coordinates so it can find the NASA POWER grid cell.
           </li>
-          <li>The service asks NASA for the grid cell's center, not your exact point.</li>
+          <li>The service reads the NASA record it already holds for that grid cell. It does not pass your point on to NASA.</li>
           <li>Shared links hold view choices only (plan, year, winter, priorities, listed place). Never your dates or typed coordinates.</li>
         </ul>
       </Section>
