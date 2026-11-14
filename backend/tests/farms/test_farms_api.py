@@ -295,3 +295,58 @@ def test_farm_recommendation_replay_keeps_a_border_fields_scope(client, monkeypa
     hv = fld["recommendation"]["shortlist"][0]["historical_vulnerabilities"][0]["replay"]
     rep = client.post(hv["path"], json=hv["body"]).json()
     assert rep["thresholds"]["heavy_rain"]["method"] == "etccdi_r95p"
+
+
+# ---- public-deploy limits (synthetic shapes) ---------------------------------------------------
+
+def _circle(n: int) -> dict:
+    import math
+
+    ring = [[-60.5 + 0.01 * math.cos(2 * math.pi * i / n), -33.9 + 0.01 * math.sin(2 * math.pi * i / n)]
+            for i in range(n)]  # fmt: skip
+    return {"type": "Polygon", "coordinates": [ring + [ring[0]]]}
+
+
+def _raw_field(fid: str, geometry: dict) -> dict:
+    return {"field_id": fid, "name": fid, "geometry": geometry,
+            "plan": {**PERG_PLAN, "plan_id": f"{fid}_plan"}}  # fmt: skip
+
+
+def test_at_most_50_fields_per_farm(client):
+    fields = [_raw_field(f"f{i}", _circle(8)) for i in range(51)]
+    r = _analyze(client, fields)
+    assert r.status_code == 400
+    assert r.json()["status"] == "invalid_input"
+    assert any(i["field"].startswith("farm.fields") for i in r.json()["issues"])
+
+
+def test_at_most_5000_vertices_per_field_and_the_issue_names_the_field(client):
+    import time
+
+    t = time.perf_counter()
+    assert parse_field(_circle(4999)).area_ha > 0  # the largest allowed field is fast to check
+    assert time.perf_counter() - t < 1.0
+    r = _analyze(client, [_raw_field("ok", _circle(8)), _raw_field("big", _circle(5001))])
+    assert r.status_code == 400
+    (bad,) = r.json()["issues"]
+    assert bad["field"] == "farm.fields[1].geometry" and bad["code"] == "too_many_vertices"
+
+
+@pytest.mark.parametrize("pos", [[-60.5, 95.0], [190.0, -33.9], [float("nan"), 0.0]])
+def test_coordinates_out_of_range_are_invalid(pos):
+    ring = [[-60.5, -33.9], [-60.49, -33.9], pos, [-60.5, -33.9]]
+    with pytest.raises(GeometryError) as e:
+        parse_field({"type": "Polygon", "coordinates": [ring]})
+    assert e.value.code == "invalid_position"
+
+
+def test_the_sweep_still_finds_a_bowtie_and_touching_holes():
+    bow = [[0, 0], [1, 1], [1, 0], [0, 1], [0, 0]]
+    with pytest.raises(GeometryError) as e:
+        parse_field({"type": "Polygon", "coordinates": [bow]})
+    assert e.value.code == "self_intersection"
+    outer = [[0, 0], [4, 0], [4, 4], [0, 4], [0, 0]]
+    hole = [[0, 1], [1, 1], [1, 2], [0, 2], [0, 1]]  # touches the outer edge
+    with pytest.raises(GeometryError) as e:
+        parse_field({"type": "Polygon", "coordinates": [outer, hole]})
+    assert e.value.code == "hole_outside"

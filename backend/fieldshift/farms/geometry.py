@@ -101,24 +101,45 @@ def segments_intersect(p1, p2, q1, q2) -> bool:  # noqa: ANN001
             or (d3 == 0 and _on_segment(p1, p2, q1)) or (d4 == 0 and _on_segment(p1, p2, q2)))  # fmt: skip
 
 
+Edge = tuple[tuple[float, float], tuple[float, float]]
+
+
+def _overlapping_pairs(edges: list[tuple[int, Edge]]):  # noqa: ANN202
+    """Pairs of edges whose bounding boxes overlap: a sweep over x, so a 5,000-vertex field costs
+    about n log n plus the real near pairs instead of n² segment tests."""
+    items = sorted(edges, key=lambda e: min(e[1][0][0], e[1][1][0]))
+    active: list[tuple[float, int, Edge, float, float]] = []
+    for tag, e in items:
+        x0 = min(e[0][0], e[1][0])
+        x1 = max(e[0][0], e[1][0])
+        y0 = min(e[0][1], e[1][1])
+        y1 = max(e[0][1], e[1][1])
+        active = [a for a in active if a[0] >= x0]
+        for _ax1, atag, ae, ay0, ay1 in active:
+            if ay0 <= y1 and y0 <= ay1:
+                yield (atag, ae), (tag, e)
+        active.append((x1, tag, e, y0, y1))
+
+
 def self_intersects(ring: Ring) -> bool:
     """True when two non-adjacent edges of the ring touch or cross (planar test in lon/lat)."""
     edges = list(zip(ring[:-1], ring[1:], strict=True))
     n = len(edges)
-    for i in range(n):
-        for j in range(i + 1, n):
-            if j == i + 1 or (i == 0 and j == n - 1):
-                continue  # adjacent edges share a vertex
-            if segments_intersect(*edges[i], *edges[j]):
-                return True
+    for (i, ei), (j, ej) in _overlapping_pairs(list(enumerate(edges))):
+        i, j = min(i, j), max(i, j)
+        if j == i + 1 or (i == 0 and j == n - 1):
+            continue  # adjacent edges share a vertex
+        if segments_intersect(*ei, *ej):
+            return True
     return False
 
 
 def rings_touch(a: Ring, b: Ring) -> bool:
     """True when any edge of ``a`` touches or crosses any edge of ``b``."""
-    ea = list(zip(a[:-1], a[1:], strict=True))
-    eb = list(zip(b[:-1], b[1:], strict=True))
-    return any(segments_intersect(p1, p2, q1, q2) for p1, p2 in ea for q1, q2 in eb)
+    ea = [(0, e) for e in zip(a[:-1], a[1:], strict=True)]
+    eb = [(1, e) for e in zip(b[:-1], b[1:], strict=True)]
+    return any(ta != tb and segments_intersect(*e1, *e2)
+               for (ta, e1), (tb, e2) in _overlapping_pairs(ea + eb))  # fmt: skip
 
 
 def _point_in_ring(pt: tuple[float, float], ring: Ring) -> bool:
@@ -168,6 +189,8 @@ def parse_field(geometry: Any) -> FieldShape:
         raise GeometryError("invalid_geometry", "geometry must be a Polygon or a MultiPolygon")
     if not raw_polys or not all(isinstance(p, list) and p for p in raw_polys):
         raise GeometryError("invalid_geometry", "the geometry has no rings")
+    if sum(len(r) if isinstance(r, list) else 0 for p in raw_polys for r in p) > MAX_VERTICES:
+        raise GeometryError("too_many_vertices", f"at most {MAX_VERTICES} positions per field")
     polys = [[_ring(r) for r in p] for p in raw_polys]
     if sum(len(r) for p in polys for r in p) > MAX_VERTICES:
         raise GeometryError("too_many_vertices", f"at most {MAX_VERTICES} positions per field")

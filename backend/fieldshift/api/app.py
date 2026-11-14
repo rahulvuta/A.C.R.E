@@ -27,6 +27,12 @@ from fieldshift.api.schemas import (
     ServerErrorResponse,
     WeatherUnavailableResponse,
 )
+from fieldshift.api.security import (
+    HeadersMiddleware,
+    LimitsMiddleware,
+    cors_settings,
+    is_production,
+)
 from fieldshift.api.weather_routes import router as weather_router
 from fieldshift.compare import locations as places
 from fieldshift.compare.context import Context, get_context
@@ -53,10 +59,14 @@ DEFAULT_CORS_ORIGINS = (
 
 
 def cors_origins() -> list[str]:
+    """The allowed browser origins. In production only ``FIELDSHIFT_CORS_ORIGINS`` counts (the
+    development defaults never apply there); a ``*`` is always dropped."""
     raw = os.environ.get("FIELDSHIFT_CORS_ORIGINS")
     if raw:
-        return [o.strip() for o in raw.split(",") if o.strip()]
-    return list(DEFAULT_CORS_ORIGINS)
+        origins = [o.strip() for o in raw.split(",") if o.strip()]
+    else:
+        origins = [] if is_production() else list(DEFAULT_CORS_ORIGINS)
+    return cors_settings(origins, is_production())
 
 
 class LocationProblem(Exception):
@@ -208,16 +218,22 @@ def _safe_msg(msg: str) -> str:
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="Field Shift backend", version="1.0.0")
+    prod = is_production()
+    # Production hides the interactive docs; /openapi.json stays (the contract tests read it).
+    app = FastAPI(title="Field Shift backend", version="1.0.0", debug=False,
+                  docs_url=None if prod else "/docs", redoc_url=None if prod else "/redoc")
     install_scrub_filter()
     app.add_middleware(AccessLogMiddleware)
     app.add_middleware(ErrorEnvelopeMiddleware)  # inside CORS (added below) so 500s get CORS headers
+    app.add_middleware(LimitsMiddleware)  # inside CORS too, so a 429 or 413 is readable
     app.add_middleware(
         CORSMiddleware,
         allow_origins=cors_origins(),
         allow_methods=["GET", "POST", "OPTIONS"],
-        allow_headers=["Content-Type"],
+        allow_headers=["Content-Type", "X-Admin-Token"],
+        expose_headers=["Retry-After"],
     )
+    app.add_middleware(HeadersMiddleware, production=prod)  # outermost: every response
 
     @app.exception_handler(RequestValidationError)
     async def _invalid_input(_: Request, exc: RequestValidationError) -> JSONResponse:
