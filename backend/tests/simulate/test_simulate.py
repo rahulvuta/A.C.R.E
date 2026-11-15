@@ -485,3 +485,19 @@ def test_monthly_calendar_adds_up_to_the_yearly_money_and_marks_timing_assumed(c
 def test_monthly_calendar_is_null_without_money(client):
     body = _sim(client, years=3)  # no area or economics
     assert all(sc["monthly"] is None for sc in body["scenarios"])
+
+
+def test_monthly_running_totals_and_field_conditions(client):
+    body = _sim(client, years=5, field={"area_ha": 16.2}, economics={"overrides": ECON})
+    months = body["scenarios"][0]["monthly"]["months"]
+    last = months[-1]
+    # costs are fixed per season, so the running cost is the sum of the monthly costs
+    # (each month is rounded to whole currency units, so allow one unit per month)
+    assert abs(last["cumulative_costs"]["median"] - sum(m["costs"]["median"] for m in months)) <= len(months)
+    assert last["cumulative_revenue"]["median"] >= months[0]["cumulative_revenue"]["median"]
+    cond = body["field_conditions"]
+    assert cond["origin"] == "nasa_modeled"
+    assert [m["month"] for m in cond["months"]] == list(range(1, 13))
+    june = cond["months"][5]
+    assert 0 <= june["soil_wetness_top"]["p10"] <= june["soil_wetness_top"]["median"] <= 1
+    assert june["rain_mm"]["median"] > 0
