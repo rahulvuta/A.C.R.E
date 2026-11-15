@@ -101,6 +101,7 @@ class SimulateRequest(BaseModel):
     runs: Annotated[int, Field(ge=50, le=500)] = 200
     seed: Annotated[int, Field(ge=0, le=2**31 - 1)] = 7
     start_season: Annotated[str, Field(pattern=r"^\d{4}$")] = "2027"
+    climate: Literal["none", "trend"] = "none"  # "trend": opt-in observed-trend scenario
 
 
 def _result_id(body: SimulateRequest) -> str:
@@ -168,7 +169,7 @@ def simulate_scenarios(body: SimulateRequest) -> Any:
     loc = (body.location.model_dump(exclude_none=True) if body.location else {})
     inp = Inputs(scs, body.years, body.runs, body.seed, int(body.start_season), area,
                  list(f.equipment), body.economics.overrides,
-                 body.economics.loss_assumptions.model_dump(), loc)  # fmt: skip
+                 body.economics.loss_assumptions.model_dump(), loc, body.climate)  # fmt: skip
     try:
         out = simulate(ctx, inp)
     except MoneyInputError as exc:

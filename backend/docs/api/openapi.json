@@ -6908,6 +6908,15 @@
       "SimulateRequest": {
         "additionalProperties": false,
         "properties": {
+          "climate": {
+            "default": "none",
+            "enum": [
+              "none",
+              "trend"
+            ],
+            "title": "Climate",
+            "type": "string"
+          },
           "economics": {
             "$ref": "#/components/schemas/EconomicsIn"
           },

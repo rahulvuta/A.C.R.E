@@ -24,6 +24,8 @@ from acre.compare.indicators import family_of
 from acre.contracts import Plan
 from acre.simulate import money as mon
 from acre.simulate.seasons import LegSeasons, leg_seasons, plan_key
+from acre.weather import trend as climate_trend
+from acre.weather.series import DailySeries
 
 MIN_POOL = 15
 NOTE = "Replays real past weather in new orders; not a forecast."
@@ -51,6 +53,7 @@ class Inputs:
     overrides: dict[str, Any] = field(default_factory=dict)
     loss: dict[str, float | None] = field(default_factory=dict)
     location: dict[str, Any] = field(default_factory=dict)
+    climate: str = "none"  # "none" | "trend" (acre.weather.trend)
 
 
 _DAY = timedelta(days=1)
@@ -473,13 +476,19 @@ def field_conditions(ctx: Context) -> dict[str, Any] | None:
 def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
     plans = {plan_key(p): p for sc in inp.scenarios for p in sc.rotation[:inp.years]}
     ts = engine.threshold_set_for(ctx, [p.next_plant for p in plans.values()])
-    legs = {k: leg_seasons(p, ctx, ts) for k, p in plans.items()}
+    adjusted, climate = None, None
+    if inp.climate == "trend":
+        target = inp.start_season + (inp.years - 1) // 2
+        frame, climate = climate_trend.adjust(ctx.series.frame, target)
+        adjusted = DailySeries(frame.reset_index()) if frame is not None else None
+    legs = {k: leg_seasons(p, ctx, ts, adjusted) for k, p in plans.items()}
     d = draws(list(legs.values()), inp.runs, inp.years, inp.seed)
     method = {"origin": "calculation", "weather": "historical_resampling", "runs": inp.runs, "seed": inp.seed,
               "years": inp.years, "start_season": str(inp.start_season),
               "source_years": f"{engine.YEARS[0]}-{engine.YEARS[-1]}",
               "pool_years": len(d.pool), "note": NOTE, "draws": CRN_NOTE,
               "threshold_set_id": ts.threshold_set_id,
+              "climate_adjustment": climate or {"mode": "none"},
               "resolution": "One NASA POWER cell (~0.5 x 0.625 degrees): fields in one cell share "
                             "one weather series."}  # fmt: skip
     if len(d.pool) < MIN_POOL:

@@ -451,11 +451,14 @@
   },
   "meta": {
     "catalog_version": "v2:8eeb5bf961eb",
-    "plan_version": "sim_b766d16d9e5b22cd",
+    "plan_version": "sim_87675d5fc3c45bd1",
     "request_id": "req_example",
     "snapshot_hash": "5ce131cfcd1f07d3738ecb9afaec6c3ef6a4764b6a3528bdd2b64debe7ba5f4e"
   },
   "method": {
+    "climate_adjustment": {
+      "mode": "none"
+    },
     "draws": "Every scenario replays the same sequence of past seasons in each run, so differences come from the plans, not from the draw.",
     "money_source": "economics_library",
     "note": "Replays real past weather in new orders; not a forecast.",
