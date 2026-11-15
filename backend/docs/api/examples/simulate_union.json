@@ -501,7 +501,17 @@
       "money_gaps": [],
       "money_status": "complete",
       "monthly": {
+        "break_even_month": "2034-10",
         "currency": "USD",
+        "funding_gap": {
+          "currency": "USD",
+          "deepest_month": "2028-04",
+          "median": 22914,
+          "origin": "calculation",
+          "p10": 22914,
+          "p90": 26142,
+          "text": "The most money this plan is out of pocket at any point: the lowest the running net goes below zero before sales bring it back. Follows the assumed timing of costs and sales."
+        },
         "includes_assumption": "dry_spring_pct",
         "months": [
           {
@@ -4907,6 +4917,14 @@
           "p10": 24272,
           "p90": 38550
         },
+        "margin_per_area_per_year": {
+          "area_unit": "acre",
+          "currency": "USD",
+          "median": 80,
+          "origin": "calculation",
+          "p10": 61,
+          "p90": 96
+        },
         "operations_per_year": 2.0,
         "origins": {
           "crop_families": "calculation",
@@ -5557,7 +5575,17 @@
       "money_gaps": [],
       "money_status": "complete",
       "monthly": {
+        "break_even_month": "2036-10",
         "currency": "USD",
+        "funding_gap": {
+          "currency": "USD",
+          "deepest_month": "2028-04",
+          "median": 26517,
+          "origin": "calculation",
+          "p10": 26517,
+          "p90": 29745,
+          "text": "The most money this plan is out of pocket at any point: the lowest the running net goes below zero before sales bring it back. Follows the assumed timing of costs and sales."
+        },
         "includes_assumption": "dry_spring_pct",
         "months": [
           {
@@ -10256,6 +10284,14 @@
           "origin": "calculation",
           "p10": 6258,
           "p90": 20536
+        },
+        "margin_per_area_per_year": {
+          "area_unit": "acre",
+          "currency": "USD",
+          "median": 35,
+          "origin": "calculation",
+          "p10": 16,
+          "p90": 51
         },
         "operations_per_year": 4.0,
         "origins": {

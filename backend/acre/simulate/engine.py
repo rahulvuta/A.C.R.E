@@ -245,6 +245,12 @@ def _money(sc: Scenario, m: Matrices, inp: Inputs, crops: dict[str, mon.CropMone
                               # money spent and earned over the whole horizon, per run
                               "costs_total": money(cost.sum(axis=1)),
                               "revenue_total": money(rev.sum(axis=1), all_flags)}  # fmt: skip
+    units = {crops[c].area_unit for c in used if crops[c].area_unit}
+    if len(units) == 1 and inp.area_ha and inp.years:
+        unit = next(iter(units))
+        per = margin.sum(axis=1) / (mon.area_in(unit, inp.area_ha) * inp.years)
+        totals["margin_per_area_per_year"] = {**q(per, 0), "currency": cur, "area_unit": unit,
+                                              "origin": "calculation"}  # fmt: skip
     rev_crops = sorted({c for r in need_rev for c in r})
     if all(crops[c].price_low is not None and crops[c].price_high is not None for c in rev_crops):
         cases = {}
@@ -373,6 +379,7 @@ def _monthly(sc: Scenario, m: Matrices, inp: Inputs, parts: list[tuple[int, str,
     cum = np.zeros(runs)
     cum_c = np.zeros(runs)
     cum_r = np.zeros(runs)
+    lowest = np.zeros(runs)  # the deepest the running net goes below zero, per run
     y, mo = first
     zero = np.zeros(runs)
     while (y, mo) <= last:
@@ -381,14 +388,28 @@ def _monthly(sc: Scenario, m: Matrices, inp: Inputs, parts: list[tuple[int, str,
         cum = cum + net
         cum_c = cum_c + c
         cum_r = cum_r + r
+        lowest = np.minimum(lowest, cum)
         months.append({"month": f"{y:04d}-{mo:02d}", "costs": q(c, 0), "revenue": q(r, 0),
                        "net": q(net, 0), "cumulative_net": q(cum, 0),
                        "cumulative_costs": q(cum_c, 0), "cumulative_revenue": q(cum_r, 0),
                        "operations": ops.get((y, mo), []),
                        "risks": risks.get((y, mo), [])})  # fmt: skip
         y, mo = (y + 1, 1) if mo == 12 else (y, mo + 1)
+    medians = [mth["cumulative_net"]["median"] for mth in months]
+    deepest = min(range(len(months)), key=lambda i: medians[i])
+    # the first month from which the typical running net never drops below zero again
+    even = next((months[i]["month"] for i in range(len(months))
+                 if all(v >= 0 for v in medians[i:]) and (i == 0 or medians[i - 1] < 0)), None)  # fmt: skip
+    if all(v >= 0 for v in medians):
+        even = months[0]["month"]
     return {"currency": cur, "origin": "calculation", "timing_origin": "assumed",
             "timing_text": TIMING_TEXT, "includes_assumption": "+".join(assumption) or None,
+            "funding_gap": {**q(-lowest, 0), "currency": cur, "origin": "calculation",
+                            "deepest_month": months[deepest]["month"] if medians[deepest] < 0 else None,
+                            "text": "The most money this plan is out of pocket at any point: the "
+                                    "lowest the running net goes below zero before sales bring "
+                                    "it back. Follows the assumed timing of costs and sales."},
+            "break_even_month": even,
             "months": months}  # fmt: skip
 
 

@@ -501,3 +501,22 @@ def test_monthly_running_totals_and_field_conditions(client):
     june = cond["months"][5]
     assert 0 <= june["soil_wetness_top"]["p10"] <= june["soil_wetness_top"]["median"] <= 1
     assert june["rain_mm"]["median"] > 0
+
+
+def test_funding_gap_break_even_and_margin_per_area(client):
+    body = _sim(client, years=5, field={"area_ha": 16.2}, economics={"overrides": ECON})
+    for sc in body["scenarios"]:
+        cal, months = sc["monthly"], sc["monthly"]["months"]
+        low = min(m["cumulative_net"]["median"] for m in months)
+        gap = cal["funding_gap"]
+        assert gap["median"] == max(0, -low) and gap["origin"] == "calculation"
+        if low < 0:
+            assert gap["deepest_month"] in {m["month"] for m in months}
+        even = cal["break_even_month"]
+        if even is not None:
+            after = [m["cumulative_net"]["median"] for m in months if m["month"] >= even]
+            assert all(v >= 0 for v in after)
+        per = sc["totals"]["margin_per_area_per_year"]
+        assert per["area_unit"] == "acre"
+        acres = 16.2 / 0.40468564224
+        assert abs(per["median"] - sc["totals"]["margin_10y"]["median"] / acres / 5) <= 1
