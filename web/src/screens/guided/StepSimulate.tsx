@@ -15,7 +15,7 @@ export function SimStatus({ sim, onRetry, what }: { sim: SimState; onRetry: () =
   if (sim.state === "loading" || sim.state === "idle")
     return (
       <p className="gf-running" role="status">
-        Replaying {what} over past weather…
+        {sim.state === "loading" && sim.note ? sim.note : `Replaying ${what} over past weather… This can take up to a minute on the first run.`}
       </p>
     );
   if (sim.state === "error")

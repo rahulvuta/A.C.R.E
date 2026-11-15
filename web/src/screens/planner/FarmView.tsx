@@ -103,6 +103,7 @@ export function FarmView({
   const [playing, setPlaying] = useState(false);
   const [intro, setIntro] = useState(!reducedMotion);
   const [preset, setPreset] = useState<CameraPreset>("overview");
+  const [resetKey, setResetKey] = useState(0);
   const [mounted, setMounted] = useState(false);
   const palette = useMemo(readPalette, []);
 
@@ -187,7 +188,7 @@ export function FarmView({
         }
       >
         <Suspense fallback={loading}>
-          <FarmWorld strips={strips} layout={layout} day={shown} preset={preset} animate={!reducedMotion} palette={palette} onSelect={onSelectCard} />
+          <FarmWorld strips={strips} layout={layout} day={shown} preset={preset} animate={!reducedMotion} palette={palette} onSelect={onSelectCard} resetKey={resetKey} />
         </Suspense>
       </SceneBoundary>
     );
@@ -201,6 +202,12 @@ export function FarmView({
         {canvas}
 
         <p className="fb-stage-tag">{tag}</p>
+        <div className="fb-stage-nav">
+          <span className="fb-stage-hint">Drag to rotate · scroll or pinch to zoom · right-drag to move</span>
+          <button type="button" onClick={() => setResetKey((n) => n + 1)}>
+            Reset view
+          </button>
+        </div>
         {spring ? (
           <button type="button" className={`fb-stage-spring${spring.dry ? " is-dry" : ""}`} onClick={onSpring}>
             <span className="fb-stage-spring-text">

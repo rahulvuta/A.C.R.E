@@ -1,6 +1,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useLayoutEffect, useMemo, useRef, type ReactNode } from "react";
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import type { CardKey } from "../content/strategies";
 import type { StripVM } from "../view/build";
@@ -53,6 +54,13 @@ const FIELD_D = 7.4;
 const GAP = 1.1;
 const SOIL_H = 1.6;
 const X = [-(FIELD_W + GAP), 0, FIELD_W + GAP];
+/*
+  A real field is hundreds of metres across and a crop is a metre or two tall, so true scale
+  would make the plants invisible. Plants are drawn small (about a tenth of the field's width
+  at most, for full-grown corn) and in denser rows so the field reads as a crop, not as trees.
+  Zoom in to see the individual plants.
+*/
+const PLANT_SCALE = 0.32;
 
 function seeded(seed: number) {
   return () => {
@@ -228,8 +236,8 @@ function Crop({
       const wind = time ? Math.sin(time * 1.5 + x * 0.9 + z * 0.6 + r * 6) * sway : 0;
       tmp.position.set(x, 0, z);
       tmp.rotation.set(t * (r - 0.5) + wind, r * Math.PI * 2, t * (0.5 - r) + wind * 0.6);
-      const girth = 0.55 + 0.45 * Math.min(1, h0 * 1.4);
-      tmp.scale.set(girth, size * h, girth);
+      const girth = (0.55 + 0.45 * Math.min(1, h0 * 1.4)) * PLANT_SCALE;
+      tmp.scale.set(girth, size * PLANT_SCALE * h, girth);
       tmp.updateMatrix();
       mesh.setMatrixAt(i, tmp.matrix);
     });
@@ -267,7 +275,7 @@ function Crop({
 
 function Residue({ amount, color, seed, shape }: { amount: number; color: string; seed: number; shape?: StageShape | null }) {
   const ref = useRef<THREE.InstancedMesh>(null);
-  const count = 320;
+  const count = 640;
   const geo = useMemo(() => {
     const g = new THREE.CylinderGeometry(0.022, 0.03, 0.46, 6);
     g.rotateZ(Math.PI / 2);
@@ -282,7 +290,7 @@ function Residue({ amount, color, seed, shape }: { amount: number; color: string
       tmp.position.set((r() - 0.5) * (FIELD_W - 0.5), 0.03, (r() - 0.5) * (FIELD_D - 0.5));
       tmp.rotation.set(0, r() * Math.PI, (r() - 0.5) * 0.25);
       // Straw that would fall outside a drawn outline (or in a hole) is not drawn.
-      tmp.scale.setScalar(shape && !insideStage(shape, tmp.position.x, -tmp.position.z) ? 0 : 0.75 + r() * 0.6);
+      tmp.scale.setScalar(shape && !insideStage(shape, tmp.position.x, -tmp.position.z) ? 0 : (0.75 + r() * 0.6) * 0.5);
       tmp.updateMatrix();
       mesh.setMatrixAt(i, tmp.matrix);
     }
@@ -476,10 +484,10 @@ function Field({
     // Plants only grow inside the drawn outline (stage z points south, so north is -z).
     const keep = (g: Array<[number, number, number]>) => (shape ? g.filter(([x, z]) => insideStage(shape, x, -z)) : g);
     return {
-      corn: keep(grid(8, 12, 11 + index, 0.06)),
-      tuft: keep(grid(22, 22, 21 + index, 0.2)),
-      wheat: keep(grid(20, 22, 31 + index, 0.14)),
-      soy: keep(grid(9, 20, 41 + index, 0.05)),
+      corn: keep(grid(16, 26, 11 + index, 0.04)),
+      tuft: keep(grid(34, 34, 21 + index, 0.12)),
+      wheat: keep(grid(32, 36, 31 + index, 0.08)),
+      soy: keep(grid(18, 40, 41 + index, 0.03)),
     };
   }, [index, shape]);
 
@@ -700,29 +708,64 @@ const STRIP_FOCUS = (x: number): Focus => ({ x, z: 0, halfW: SCENE_HALF_W + 0.3,
 
 function presetFor(preset: CameraPreset, f: Focus, aspect: number, sway = 0) {
   // One field: close and a little lower, so the plants' shapes and height are the subject.
-  if (preset === "field") return fit([f.x, 0.1, f.z + 0.4], FIELD_W / 2 + 0.2, FIELD_D / 2 + 0.2, 2.7, 24, -34 + sway, aspect);
+  if (preset === "field") return fit([f.x, 0.1, f.z + 0.4], FIELD_W / 2 + 0.2, FIELD_D / 2 + 0.2, 1.8, 26, -34 + sway, aspect);
   // Soil: straight at the cut face, almost level, so the layers, roots and water line fill the view.
   if (preset === "cutaway") return fit([f.x, -0.55, f.z + FIELD_D / 2], FIELD_W / 2 + 0.2, 0, 1.45, 3, 0, aspect);
   return fit([0, -0.9, 0], f.halfW, f.halfD, f.halfH, 33, -20 + sway, aspect);
 }
 
-function CameraRig({ preset, focus, animate }: { preset: CameraPreset; focus: Focus; animate: boolean }) {
-  const { camera, invalidate, size } = useThree();
+/**
+ * Moves the camera to the chosen view, then hands it to the reader: drag to rotate, scroll or
+ * pinch to zoom, right-drag (or two fingers) to pan. Choosing a view, or resetKey changing,
+ * flies back to that view's framing.
+ */
+function CameraRig({ preset, focus, animate, resetKey = 0 }: { preset: CameraPreset; focus: Focus; animate: boolean; resetKey?: number }) {
+  const { camera, gl, invalidate, size } = useThree();
   const aspect = size.width / Math.max(1, size.height);
-  // With animation off the canvas renders on demand, so a new view must ask for a frame.
   const fx = focus.x, fz = focus.z, fw = focus.halfW, fd = focus.halfD, fh = focus.halfH;
-  useEffect(() => invalidate(), [preset, fx, fz, fw, fd, fh, aspect, invalidate]);
-  const look = useRef(new THREE.Vector3(...presetFor(preset, focus, aspect).look));
+  const controls = useMemo(() => {
+    const c = new OrbitControls(camera, gl.domElement);
+    c.enableDamping = animate;
+    c.dampingFactor = 0.12;
+    c.screenSpacePanning = true;
+    c.minDistance = 1.5;
+    c.maxDistance = 90;
+    // Never under the ground.
+    c.maxPolarAngle = Math.PI / 2 - 0.02;
+    return c;
+  }, [camera, gl, animate]);
+  const flying = useRef(true);
   const first = useRef(true);
-  useFrame((state, dt) => {
-    // A slow few-degree drift keeps the scene alive without moving anything the reader is reading.
-    const sway = animate && preset !== "cutaway" ? Math.sin(state.clock.elapsedTime * 0.28) * 2.2 : 0;
-    const target = presetFor(preset, focus, aspect, sway);
-    const k = animate && !first.current ? 1 - Math.pow(0.0015, dt) : 1;
-    first.current = false;
-    camera.position.lerp(new THREE.Vector3(...target.pos), k);
-    look.current.lerp(new THREE.Vector3(...target.look), k);
-    camera.lookAt(look.current);
+  useEffect(() => {
+    const stop = () => (flying.current = false);
+    const change = () => invalidate();
+    controls.addEventListener("start", stop);
+    controls.addEventListener("change", change);
+    return () => {
+      controls.removeEventListener("start", stop);
+      controls.removeEventListener("change", change);
+      controls.dispose();
+    };
+  }, [controls, invalidate]);
+  useEffect(() => {
+    flying.current = true;
+    invalidate();
+  }, [preset, fx, fz, fw, fd, fh, aspect, resetKey, invalidate]);
+  const goal = useRef(new THREE.Vector3());
+  const goalLook = useRef(new THREE.Vector3());
+  useFrame((_, dt) => {
+    if (flying.current) {
+      const target = presetFor(preset, focus, aspect);
+      goal.current.set(...target.pos);
+      goalLook.current.set(...target.look);
+      const k = animate && !first.current ? 1 - Math.pow(0.0015, dt) : 1;
+      first.current = false;
+      camera.position.lerp(goal.current, k);
+      controls.target.lerp(goalLook.current, k);
+      if (camera.position.distanceTo(goal.current) < 0.005 && controls.target.distanceTo(goalLook.current) < 0.005) flying.current = false;
+      else if (!animate) invalidate();
+    }
+    controls.update();
   });
   return null;
 }
@@ -737,7 +780,10 @@ export default function FarmWorld({
   children,
   outlines,
   layout,
+  resetKey,
 }: {
+  /** Changing this flies the camera back to the chosen view after the reader moved it. */
+  resetKey?: number;
   strips: StripVM[];
   /**
    * Farm layout (field workspace): each strip is a field drawn at its real shape, size and
@@ -808,6 +854,7 @@ export default function FarmWorld({
             : STRIP_FOCUS(X[selectedIndex]!)
         }
         animate={animate}
+        resetKey={resetKey}
       />
       {children}
     </Canvas>
