@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MAX_ROTATION_LEGS } from "../api/limits";
 export const statusSchema = z.enum(["complete", "partial", "unavailable", "unknown", "inapplicable", "unsupported", "invalid_input", "manual_check", "insufficient_data"]);
 export const originSchema = z.enum(["nasa_measured", "nasa_modeled", "calculation", "verified_source", "source_checked", "ai_suggested", "grower", "assumed", "dataset_estimate"]);
 export type Origin = z.infer<typeof originSchema>;
@@ -258,9 +259,9 @@ export const futureRequestSchema = z.object({
   }),
   candidate: generatedCandidateSchema.optional(),
   plan: planSchema.optional(),
-  plans: z.array(planSchema).min(1).max(4).optional(),
+  plans: z.array(planSchema).min(1).max(MAX_ROTATION_LEGS).optional(),
   start_season: z.string().regex(/^\d{4}$/),
-  seasons: z.number().int().min(1).max(4),
+  seasons: z.number().int().min(1).max(MAX_ROTATION_LEGS),
   edits: z.array(editSchema).optional(),
   priorities: z.record(z.enum(priorityIds), weight).optional()
 }).refine(r => [r.candidate, r.plan, r.plans].filter(Boolean).length === 1, "Send one candidate, plan, or plans list");

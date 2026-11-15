@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fetchFuturePlan, futureResponseSchema, generatePlans, generateResponseSchema, goalsSchema, PlanningApiError, recommendPlans, recommendResponseSchema } from "./api";
+import { fetchFuturePlan, futureResponseSchema, generatePlans, generateResponseSchema, goalsSchema, PlanningApiError, futureRequestSchema, recommendPlans, recommendResponseSchema } from "./api";
 import { createGoalsPanelValue } from "./GoalsPanel";
 import { candidate, generated, jsonResponse, plans, point, recommendation } from "./test-fixtures";
 import realGenerate from "./fixtures/union-generate.json";
@@ -98,5 +98,15 @@ describe("planning contracts", () => {
     await expect(recommendPlans({
       location: point
     })).rejects.toThrow(/required and excluded/);
+  });
+});
+
+describe("future plan length", () => {
+  it("accepts up to 10 manual plans and 10 seasons, like the backend, and refuses 11", () => {
+    const many = (n: number) => Array.from({ length: n }, (_, i) => ({ ...plans[0]!, plan_id: `season_${i + 1}` }));
+    const base = { location: point, start_season: "2027" };
+    expect(futureRequestSchema.safeParse({ ...base, plans: many(10), seasons: 10 }).success).toBe(true);
+    expect(futureRequestSchema.safeParse({ ...base, plans: many(11), seasons: 10 }).success).toBe(false);
+    expect(futureRequestSchema.safeParse({ ...base, plans: many(10), seasons: 11 }).success).toBe(false);
   });
 });

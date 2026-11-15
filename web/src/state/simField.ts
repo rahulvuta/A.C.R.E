@@ -1,3 +1,4 @@
+import { parseSaved } from "./storageBackup";
 import type { EconomicsValue, PlanEditorValue } from "../inputs";
 import { useSyncExternalStore } from "react";
 import type { FieldPlan } from "../farm/types";
@@ -55,7 +56,7 @@ export const emptySimField = (): SimField => ({
 function load(): Record<string, SimField> {
   try {
     const raw = window.localStorage.getItem(KEY);
-    const parsed = raw ? (JSON.parse(raw) as { fields?: Record<string, SimField> }) : null;
+    const parsed = raw ? (parseSaved(KEY, raw) as { fields?: Record<string, SimField> }) : null;
     return parsed?.fields ?? {};
   } catch {
     return {};

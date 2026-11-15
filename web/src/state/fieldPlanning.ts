@@ -1,3 +1,4 @@
+import { parseSaved } from "./storageBackup";
 import { useSyncExternalStore } from "react";
 import type { GoalsPanelValue } from "../planning/GoalsPanel";
 import type { RecommendationCandidate } from "../planning/api";
@@ -17,7 +18,7 @@ const KEY = "acre.fieldplanning.v1";
 function load(): Record<string, FieldPlanning> {
   try {
     const raw = window.localStorage.getItem(KEY);
-    const parsed = raw ? (JSON.parse(raw) as { fields?: Record<string, FieldPlanning> }) : null;
+    const parsed = raw ? (parseSaved(KEY, raw) as { fields?: Record<string, FieldPlanning> }) : null;
     return parsed?.fields ?? {};
   } catch {
     return {};

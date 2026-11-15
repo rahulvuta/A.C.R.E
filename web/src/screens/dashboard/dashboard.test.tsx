@@ -34,4 +34,27 @@ describe("dashboard", () => {
     expect(screen.getByRole("heading", { name: "No fields available" })).toBeInTheDocument();
     expect(within(screen.getByRole("list", { name: "Demo fields" })).getAllByRole("listitem")).toHaveLength(1);
   });
+
+  it("shows the empty state wording with Add Field first and Explore Demo Farm second, and loads nothing by itself", () => {
+    render(<Dashboard />);
+    expect(screen.getByRole("heading", { name: "No fields available" })).toBeInTheDocument();
+    expect(screen.getByText("Add a field to begin managing your farm, planning crop rotations, and analyzing agricultural conditions.")).toBeInTheDocument();
+    const empty = screen.getByRole("region", { name: "No fields" });
+    const buttons = within(empty).getAllByRole("button").map((b) => b.textContent);
+    expect(buttons).toEqual(["Add Field", "Explore Demo Farm"]);
+    expect(screen.queryByRole("list", { name: "Demo fields" })).toBeNull();
+    expect(screen.queryByText(/log ?in|sign ?(in|up)|password/i)).toBeNull();
+  });
+
+  it("a field card shows name, acreage, coordinates when no place is known, crop status and an Open button", () => {
+    const mine = farmActions.createFarm("My farm", { latitude: 40, longitude: 1 });
+    farmActions.addField(mine.farm_id, square(1), "East");
+    render(<Dashboard />);
+    const card = within(screen.getByRole("list", { name: "Your fields" })).getByRole("listitem");
+    expect(within(card).getByRole("heading", { name: "East" })).toBeInTheDocument();
+    expect(within(card).getByText("Acreage")).toBeInTheDocument();
+    expect(card.textContent).toMatch(/Location\s*(Looking up…|40\.00\d, 1\.00\d)/);
+    expect(within(card).getByText("Needs a rotation")).toBeInTheDocument();
+    expect(within(card).getByRole("button", { name: "Open East" })).toBeInTheDocument();
+  });
 });

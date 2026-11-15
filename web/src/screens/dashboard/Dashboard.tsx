@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { APP_NAME } from "../../config";
 import { farmActions, putFarm, selectField, useFarms } from "../../farm/hooks";
-import { formatArea } from "../../farm/geometry";
+import { centroid, formatArea } from "../../farm/geometry";
 import type { Farm, Field } from "../../farm/types";
 import { FarmMap } from "../../map/FarmMap";
 import { useFieldPlace } from "../../state/useFieldPlace";
@@ -64,8 +64,14 @@ export function copyToMyFields(demoFarm: Farm, field: Field, mine: Farm | null):
 export function Dashboard({ api: given }: { api?: GlobalApi }) {
   const fallback = useGlobalApi();
   const api = given ?? fallback;
-  const { farms, notice } = useFarms();
+  const { farms, notice, selectedFarm } = useFarms();
   const [route, go] = useRoute();
+  // However the add page is reached (button, reload, shared link), the map editor never
+  // starts on a demo farm: a new field goes into the grower's own farm.
+  const ownFarmId = farms.find((f) => !f.demo)?.farm_id ?? null;
+  useEffect(() => {
+    if (route.page === "add" && selectedFarm?.demo) farmActions.selectFarm(ownFarmId);
+  }, [route.page, selectedFarm, ownFarmId]);
   const [demo, setDemo] = useState<{ state: "idle" } | { state: "loading"; which: string } | { state: "error"; message: string }>({ state: "idle" });
   const mine = farms.filter((f) => !f.demo);
   const demos = farms.filter((f) => f.demo);
@@ -219,6 +225,8 @@ function FieldCard({ api, farm, field, onOpen }: { api: GlobalApi; farm: Farm; f
   const place = useFieldPlace(api.client, field);
   const area = formatArea(field.geometry);
   const loc = place?.place.state === "ready" ? [place.place.data.admin2Name, place.place.data.admin1Name, place.place.data.countryName].filter(Boolean).join(", ") : "";
+  const c = centroid(field.geometry);
+  const coords = `${c.latitude.toFixed(3)}, ${c.longitude.toFixed(3)}`;
   const crops = sim.rotation.length ? cropsOf(sim.rotation).map(cropLabel).join(" → ") : field.plan ? cropsOf([field.plan]).map(cropLabel).join(" → ") : "";
   const status = !sim.rotation.length && !field.plan ? "Needs a rotation" : sim.chosenId ? "Plan chosen" : rotationReady(sim.rotation.length ? sim.rotation : field.plan ? [field.plan] : []) ? "Rotation set" : "Rotation incomplete";
   return (
@@ -229,7 +237,7 @@ function FieldCard({ api, farm, field, onOpen }: { api: GlobalApi; farm: Farm; f
       </div>
       <dl>
         <div><dt>Acreage</dt><dd>{area.ac} <span className="dash-muted">({area.ha})</span></dd></div>
-        <div><dt>Location</dt><dd>{loc || (place?.place.state === "loading" ? "Looking up…" : farm.name)}</dd></div>
+        <div><dt>Location</dt><dd>{loc || (place?.place.state === "loading" ? "Looking up…" : coords)}</dd></div>
         <div><dt>Crop rotation</dt><dd>{crops || "Not set"}</dd></div>
         <div><dt>Planning status</dt><dd>{status}</dd></div>
       </dl>
