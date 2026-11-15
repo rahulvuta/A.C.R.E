@@ -1,3 +1,4 @@
+import { ConfidenceBadge } from "../ui/ConfidenceBadge";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { inputsApi, type InputsApi } from "./api";
 import type { CropEconomics, CropOverrides, EconomicsSuggestion, EconomicsValue, InputArea, InputLocation, PriceCase, Quantity } from "./schema";
@@ -140,7 +141,7 @@ export function EconomicsEditor({ location, crops, area, value, onChange, api = 
     else update(cropId, { ...overrides, costs: { ...overrides.costs, [suggestion.item || "total"]: quantity } });
   }
   return <section className="acre-inputs acre-input-card" aria-label={prices ? "Prices, yields and costs" : "Weather losses"}>{prices && <><h2>Your prices, yields and costs</h2>
-    <p>We filled these in from published sources for your area, so you don't have to look them up. Change any number that is different on your farm; your numbers are labelled "You entered". Blanks mean no published source was found: enter yours if you know it, or leave it blank and the simulation runs without money results for that crop. Where nothing is published in our tables, the app looks up official sources for your crop and area and fills in what it can check.</p>
+    <p>Demo defaults may use mock prices, yields and seed costs. Replace them with your own values. Confidence circles show historical coverage or the share of inputs supplied by you or traceable sources; mock inputs do not count. These percentages are not probabilities of accuracy or success.</p>
     {request.loading && <p role="status">Looking up regional references…</p>}
     {request.error && <ErrorNotice error={request.error} retry={request.retry} />}
     {!uniqueCrops.length && <p>Choose crops to enter their prices, yields and costs.</p>}
@@ -156,7 +157,7 @@ export function EconomicsEditor({ location, crops, area, value, onChange, api = 
       const nothingFound = phase?.state === "finished" && !request.refreshing && !!defaults && missing.length > 0 && !suggestions.length;
       const canRepeat = !!regionKey && !!defaults && !running && !waiting && phase?.state !== "failed" && missing.length > 0 && (!!defaults.economics_research?.researched_at || startedLookups.has(lookupKey(cropId)));
       const name = readable(cropId);
-      return <section key={cropId} className="acre-input-economics-crop" aria-label={`${readable(cropId)} economics`}><h3>{readable(cropId)}</h3>
+      return <section key={cropId} className="acre-input-economics-crop" aria-label={`${readable(cropId)} economics`}><h3>{readable(cropId)} <ConfidenceBadge value={defaults?.confidence} label="Default input support" /></h3>
         {defaults && isChecked(defaults) && <p className="acre-input-help">Found by AI research and checked against the cited page. Change any number that is different on your farm.</p>}
         {running && <div role="status" className="acre-input-research-status"><p>Looking up published prices, yields and costs for {name}… This usually takes under a minute. You can keep going; values fill in when it finishes.</p><button type="button" aria-label={`Stop looking up ${name}`} onClick={() => stopLookup(cropId)}>Stop</button></div>}
         {waiting && <p role="status" className="acre-input-help">Waiting to look up {name}.</p>}

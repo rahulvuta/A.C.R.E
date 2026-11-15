@@ -70,6 +70,7 @@ export const economicsSuggestionSchema = z.object({
 }).passthrough();
 export type EconomicsSuggestion = z.infer<typeof economicsSuggestionSchema>;
 export const economicsCropSchema = z.object({
+  confidence: z.object({ percent: z.number().min(0).max(100), level: z.string(), basis: z.string(), note: z.string() }).optional(),
   crop_id: z.string(), aliases: z.array(z.string()).default([]), price: priceSchema.nullable(), yield: quantitySchema.nullable(),
   costs: z.object({ items: z.array(quantitySchema.extend({ item: z.string() })), total_per_area: quantitySchema.partial({ origin: true }).nullable().optional() }),
   status: statusSchema, reason_text: z.string().nullable().optional(),
