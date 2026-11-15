@@ -40,6 +40,21 @@ export const readingSchema = z.object({
   modeled_same_day: z.object({ gwettop: blankNumber, ...evidence }).passthrough().nullable().optional(),
 }).passthrough();
 export type Reading = z.infer<typeof readingSchema>;
+const monthDist = z.object({ p10: blankNumber, median: blankNumber, p90: blankNumber }).passthrough();
+export const monthlySchema = z.object({
+  currency: z.string().optional(), origin: originSchema.nullable().optional(),
+  timing_origin: originSchema.nullable().optional(), timing_text: z.string().nullable().optional(),
+  includes_assumption: z.union([z.string(), z.array(z.string())]).nullable().optional(),
+  months: z.array(z.object({
+    month: z.string().regex(/^\d{4}-\d{2}$/),
+    costs: monthDist.nullable().optional(), revenue: monthDist.nullable().optional(),
+    net: monthDist.nullable().optional(), cumulative_net: monthDist.nullable().optional(),
+    operations: z.array(z.object({ kind: z.string(), crop_id: z.string().nullable().optional() }).passthrough()).default([]),
+    risks: z.array(z.object({ kind: z.string(), probability: number.min(0).max(1).nullable().optional(), text: z.string().nullable().optional() }).passthrough()).default([]),
+  }).passthrough()).default([]),
+}).passthrough();
+export type ScenarioMonthly = z.infer<typeof monthlySchema>;
+export type MonthlyMonth = ScenarioMonthly["months"][number];
 export const scenarioSchema = z.object({
   scenario_id: z.string(), label: z.string(), status: statusSchema,
   example_label: z.string().optional(), reason_text: z.string().nullable().optional(),
@@ -59,6 +74,8 @@ export const scenarioSchema = z.object({
   events: z.array(eventSchema).default([]),
   money_status: statusSchema,
   money_gaps: z.array(reasonSchema).default([]),
+  /** Month-by-month money (null when money is not complete); absent in older responses. */
+  monthly: monthlySchema.nullable().optional(),
   readings_context: z.array(readingSchema).default([]),
 }).passthrough();
 export type Scenario = z.infer<typeof scenarioSchema>;

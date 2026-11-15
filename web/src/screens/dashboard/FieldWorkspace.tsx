@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
 import { areaHa, formatArea } from "../../farm/geometry";
 import { farmActions } from "../../farm/hooks";
-import type { Farm, Field } from "../../farm/types";
+import type { Farm, Field, FieldPlan } from "../../farm/types";
 import { fieldPoint, useFieldPlace } from "../../state/useFieldPlace";
 import type { GlobalApi } from "../../state/useGlobal";
 import { hasSimField, removeSimField, updateSimField, useSimField } from "../../state/simField";
@@ -15,6 +15,7 @@ import { StepNow } from "../guided/StepNow";
 import { ReadingsLog, StepPlan } from "../guided/StepPlan";
 import { StepSimulate } from "../guided/StepSimulate";
 import { StepTry } from "../guided/StepTry";
+import { StrategyView } from "./StrategyBoxes";
 import { ResearchPanel } from "../workspace/ResearchPanel";
 // The 3D farm (three.js) loads only when the Overview shows it.
 const FarmScene = lazy(() => import("./FarmScene").then((m) => ({ default: m.FarmScene })));
@@ -101,12 +102,28 @@ export function FieldWorkspace({ api, farm, field, tab, onTab, onClose, onCopy, 
   );
 }
 
+/** The 3D farm, mounted only once the grower opens it. */
+function ThreeDCard({ farm, fieldId, rotation, onOpen }: { farm: Farm; fieldId: string; rotation: FieldPlan[]; onOpen: (id: string) => void }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <details className="db-card" onToggle={(e) => setOpen(e.currentTarget.open)}>
+      <summary>See the farm in 3D</summary>
+      {open ? (
+        <Suspense fallback={<p className="dash-muted" role="status">Loading the 3D farm…</p>}>
+          <FarmScene farm={farm} fieldId={fieldId} rotation={rotation} onOpen={onOpen} />
+        </Suspense>
+      ) : null}
+    </details>
+  );
+}
+
 function Overview({ ctx, farm, field, onTab, onClose, onOpenField }: { ctx: StepContext; farm: Farm; field: Field; onTab: (t: string) => void; onClose: () => void; onOpenField: (id: string) => void }) {
   const { sim } = ctx;
   const crops = cropsOf(sim.rotation).map(cropLabel).join(" → ");
   const ha = areaHa(field.geometry);
   return (
     <div className="gf-now">
+      <StrategyView ctx={ctx} onTab={onTab} />
       <section className="db-card" aria-label="Field details">
         <div className="db-card-head"><h2>Field details</h2></div>
         <label className="fw-name">
@@ -127,9 +144,7 @@ function Overview({ ctx, farm, field, onTab, onClose, onOpenField }: { ctx: Step
           </button>
         </div>
       </section>
-      <Suspense fallback={null}>
-        <FarmScene farm={farm} fieldId={field.field_id} rotation={sim.rotation} onOpen={onOpenField} />
-      </Suspense>
+      <ThreeDCard farm={farm} fieldId={field.field_id} rotation={sim.rotation} onOpen={onOpenField} />
     </div>
   );
 }
