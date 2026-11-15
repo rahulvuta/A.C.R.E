@@ -77,6 +77,7 @@ test.describe("guided live demo farms", () => {
       expect(compared.comparison.caveat).toMatch(/scenarios you compared/i);
       await expect(page.getByRole("region", { name: "Compare scenario plans", exact: true })).toBeVisible();
       await page.evaluate(async () => { await document.fonts.ready; window.scrollTo(0, 0); });
+      await page.mouse.move(0, 0);
       await page.screenshot({ path: `/private/tmp/acre-demo-${demo.id}-comparison.png` });
       await page.getByText("Compare crop calendars", { exact: true }).click();
       const calendars = page.getByRole("region", { name: "Plans compared over 10 years", exact: true });
@@ -91,6 +92,7 @@ test.describe("guided live demo farms", () => {
       await expect(timeline.locator(".tl-rows > li")).toHaveCount(10);
       await expect(timeline.getByText(/not a forecast/i)).toBeVisible();
       await page.evaluate(async () => { await document.fonts.ready; window.scrollTo(0, 0); });
+      await page.mouse.move(0, 0);
       await page.screenshot({ path: `/private/tmp/acre-demo-${demo.id}-timeline.png` });
 
       const readings = page.getByRole("region", { name: "Field readings", exact: true });
@@ -102,8 +104,8 @@ test.describe("guided live demo farms", () => {
       await readings.getByRole("button", { name: "Add reading", exact: true }).click();
       await expect(readings.getByRole("list", { name: "Recorded readings", exact: true }).getByText("Volumetric soil moisture: 0 m³/m³", { exact: true })).toBeVisible();
       await expect(readings.getByRole("list", { name: "Recorded readings", exact: true }).locator("li").filter({ hasText: "Volumetric soil moisture: 0 m³/m³" }).getByText("Depth: 10 cm", { exact: true })).toBeVisible();
-      const updated = await replayWithReading;
       await steps.getByRole("button", { name: /^Compare/ }).click();
+      const updated = await replayWithReading;
       await expectOk(updated);
       const sentReading = updated.request().postDataJSON().field.readings.find((reading: { kind: string }) => reading.kind === "soil_moisture_vwc");
       expect(sentReading).toMatchObject({ value: 0, depth_cm: 10 });
