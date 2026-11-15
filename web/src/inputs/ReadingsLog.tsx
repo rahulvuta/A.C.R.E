@@ -45,7 +45,7 @@ export function ReadingsLog({ value, onChange }: ReadingsLogProps) {
     onChange([...value, parsed.data]); setNumber(""); setNote(""); setError(undefined);
     if (kind !== "note") setChartKind(kind);
   }
-  return <section className="acre-inputs acre-input-card" aria-label="Field readings"><h2>Your field readings</h2><p>These entries are saved by the parent screen in this browser. They sit beside NASA data and never replace it.</p>
+  return <section className="acre-inputs acre-input-card" aria-label="Field readings"><h2>Your field readings</h2><p>Your readings are saved in this browser. They sit beside NASA data and never replace it.</p>
     <fieldset><legend>Add a reading <OriginLabel origin="grower" /></legend><div className="acre-input-reading-fields">
       <label>Date<input type="date" value={date} onChange={event => setDate(event.target.value)} /></label>
       <label>Reading type<select value={kind} onChange={event => { setKind(event.target.value as ReadingKind); setNumber(""); setError(undefined); }}>{readingKinds.map(item => <option key={item} value={item}>{readingLabels[item].label}{readingLabels[item].unit ? ` (${readingLabels[item].unit})` : ""}</option>)}</select></label>

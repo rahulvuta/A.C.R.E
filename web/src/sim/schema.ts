@@ -54,6 +54,7 @@ export const scenarioSchema = z.object({
     living_cover_days_per_year: summarySchema.optional(),
     rain_on_bare_soil_mm_per_year: summarySchema.optional(),
     crop_families: summarySchema.optional(), operations_per_year: summarySchema.optional(),
+    origins: z.record(originSchema).optional(),
   }).passthrough().nullable().optional(),
   events: z.array(eventSchema).default([]),
   money_status: statusSchema,

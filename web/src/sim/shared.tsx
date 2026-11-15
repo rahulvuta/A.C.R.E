@@ -24,9 +24,9 @@ export function asDistribution(value?: SummaryValue): Distribution | undefined {
   if (value == null) return undefined;
   return typeof value === "number" ? { median: value } : value;
 }
-export function SummaryMetric({ label, value, unit, caption }: { label: string; value?: SummaryValue; unit?: string; caption: string }) {
+export function SummaryMetric({ label, value, unit, caption, origin }: { label: string; value?: SummaryValue; unit?: string; caption: string; origin?: Origin }) {
   const data = asDistribution(value);
-  return <div className="sim-metric"><dt>{label}</dt><dd><Value value={data?.median !== undefined ? data.median : data?.value} unit={data?.unit ?? unit} origin={data?.origin} /></dd><p>{caption}</p>{data?.reason_text && <p>{data.reason_text}</p>}<SourceLink source={data?.source} /></div>;
+  return <div className="sim-metric"><dt>{label}</dt><dd><Value value={data?.median !== undefined ? data.median : data?.value} unit={data?.unit ?? unit} origin={data?.origin ?? origin} /></dd><p>{caption}</p>{data?.reason_text && <p>{data.reason_text}</p>}<SourceLink source={data?.source} /></div>;
 }
 export function ReasonText({ reason }: { reason: Reason }) {
   if (typeof reason === "string") return <>{reason}<OriginLabel /></>;
