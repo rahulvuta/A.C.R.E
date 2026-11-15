@@ -4,7 +4,7 @@ import { GLOSSARY } from "../../content/glossary";
 import { putFarm, selectField, useFarms, useSelectedField } from "../../farm/hooks";
 import { fieldPoint, useFieldPlace } from "../../state/useFieldPlace";
 import { useGlobalApi, type GlobalApi } from "../../state/useGlobal";
-import { loadDemoFields, useSimField } from "../../state/simField";
+import { hasSimField, loadDemoFields, updateSimField, useSimField } from "../../state/simField";
 import { peekSimulation } from "../../state/useSimulation";
 import { Banner, Term } from "../../ui/components";
 import { navIcon } from "../planner/SideNav";
@@ -95,6 +95,16 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
     window.addEventListener("hashchange", on);
     return () => window.removeEventListener("hashchange", on);
   }, []);
+  // A field this browser has not simulated yet starts from what the field itself carries
+  // (its saved plan, and the equipment and readings C's demo loader or an import put on it).
+  useEffect(() => {
+    if (!field || hasSimField(field.field_id)) return;
+    updateSimField(field.field_id, {
+      rotation: field.plan ? [field.plan] : [],
+      equipment: field.equipment ?? [],
+      readings: (field.readings ?? []).map((r) => ({ date: r.date, kind: r.kind, value: r.value, depthCm: r.depth_cm ?? null, note: r.note ?? null })),
+    });
+  }, [field]);
   // A step past "Your farm" needs a field.
   useEffect(() => {
     if (!field && step !== "farm") setStepState("farm");

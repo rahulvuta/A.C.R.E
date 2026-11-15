@@ -77,6 +77,7 @@ function persist() {
 export function getSimField(fieldId: string): SimField {
   return get()[fieldId] ?? emptySimField();
 }
+export const hasSimField = (fieldId: string) => fieldId in get();
 export function updateSimField(fieldId: string, patch: Partial<SimField> | ((cur: SimField) => Partial<SimField>)) {
   const cur = getSimField(fieldId);
   const p = typeof patch === "function" ? patch(cur) : patch;

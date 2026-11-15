@@ -7,7 +7,8 @@ import { OriginBadge } from "../../ui/OriginBadge";
 import { simulateRequest, type StepContext } from "./context";
 import { cropLabel, NA } from "./format";
 import { SimStatus } from "./StepSimulate";
-import { pick, useInputsModule, useTimelineModule } from "./slots";
+import { pick, useInputsModule } from "./slots";
+import { TenYearTimeline, withRotations, type ScenarioResult as TimelineResult } from "../../timeline";
 
 /*
   Step 6: the chosen plan as a 10-year timeline (U4's TenYearTimeline when merged), then
@@ -127,8 +128,11 @@ export function StepPlan({ ctx }: { ctx: StepContext }) {
   const req = simulateRequest(ctx, inCompare ? sim.scenarios : []);
   const { sim: result, run } = useSimulation(ctx.api.client, req, true);
   const res = result.state === "ready" ? result.data.scenarios.find((s) => s.scenarioId === scenario.scenarioId) : undefined;
-  const timeline = useTimelineModule();
-  const U4 = pick(timeline, "TenYearTimeline");
+  // U4's timeline reads the §11 scenario in the backend's shape plus the rotation it was simulated from (for dates).
+  const u4 =
+    result.state === "ready" && req
+      ? withRotations(result.data.raw as unknown as { scenarios: TimelineResult[] }, { scenarios: req.scenarios.map((x) => ({ scenario_id: x.scenarioId, rotation: x.rotation, is_baseline: x.isBaseline })) }).find((x) => x.scenario_id === scenario.scenarioId)
+      : undefined;
   const plans = scenario.rotation.map((p) => planSchema.safeParse(p)).flatMap((r) => (r.success ? [r.data as Plan] : []));
   if (!field) return null;
 
@@ -167,8 +171,7 @@ export function StepPlan({ ctx }: { ctx: StepContext }) {
           </p>
         ) : null}
         <SimStatus sim={result} onRetry={run} what="your chosen plan" />
-        {res ? U4 ? <U4 scenario={res} rotation={scenario.rotation} startSeason={sim.startSeason} method={result.state === "ready" ? result.data.method : null} /> : <TimelineTable s={res} /> : null}
-        {result.state === "ready" ? <p className="gf-muted">{result.data.method.note}</p> : null}
+        {u4 && result.state === "ready" ? <TenYearTimeline scenario={u4} note={result.data.method.note} compact /> : res ? <TimelineTable s={res} /> : null}
       </section>
       {point && plans.length && ctx.api.source !== "live" ? (
         <section className="db-card" aria-label="Actions and deadlines">

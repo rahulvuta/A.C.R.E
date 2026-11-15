@@ -3,16 +3,18 @@ import { useSimulation } from "../../state/useSimulation";
 import { simulateRequest, type StepContext } from "./context";
 import { CompareColumns, MethodNote } from "./SimViews";
 import { SimStatus } from "./StepSimulate";
-import { pick, useSimModule } from "./slots";
+import { ScenarioCompare, simulationResultSchema } from "../../sim";
+import { BASELINE_ID } from "../../state/simField";
 
 /* Step 5: every plan side by side over the same resampled past weather (§11 with all scenarios). */
 export function StepCompare({ ctx }: { ctx: StepContext }) {
   const { sim, field } = ctx;
   const req = simulateRequest(ctx, sim.scenarios);
   const { sim: result, run } = useSimulation(ctx.api.client, sim.scenarios.length ? req : null, true);
-  const mod = useSimModule();
-  const U2 = pick(mod, "ComparisonView");
-  const choose = (id: string) => updateSimField(field!.field_id, { chosenId: id });
+  const choose = (id: string) => {
+    updateSimField(field!.field_id, { chosenId: id });
+    ctx.go("plan");
+  };
   if (!sim.scenarios.length)
     return (
       <section className="db-card">
@@ -28,7 +30,10 @@ export function StepCompare({ ctx }: { ctx: StepContext }) {
       {result.state === "ready" ? (
         <section className="db-card" aria-label="Comparison">
           <MethodNote sim={result.data} />
-          {U2 ? <U2 simulation={result.data} chosenId={sim.chosenId} onChoose={choose} /> : <CompareColumns sim={result.data} chosenId={sim.chosenId} onChoose={(id) => (choose(id), ctx.go("plan"))} />}
+          {(() => {
+            const parsed = simulationResultSchema.safeParse(result.data.raw);
+            return parsed.success ? <ScenarioCompare result={parsed.data} baselineId={BASELINE_ID} onChoose={choose} /> : <CompareColumns sim={result.data} chosenId={sim.chosenId} onChoose={choose} />;
+          })()}
         </section>
       ) : null}
     </div>

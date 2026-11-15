@@ -10,8 +10,16 @@ describe("routes", () => {
     vi.unstubAllGlobals();
   });
 
-  it("?view=app opens the map with the demo next to it", () => {
+  it("?view=app opens the guided simulator at step 1, with the demo farms and the deep-dive", () => {
     go("/?view=app");
+    render(<App />);
+    expect(screen.getByRole("heading", { name: "Where is your farm?" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Try a demo farm" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Union County deep-dive/ })).toHaveAttribute("href", "?view=demo");
+  });
+
+  it("?view=fields still opens the per-field workspace", () => {
+    go("/?view=fields");
     render(<App />);
     expect(screen.getByRole("heading", { name: "Find your farm" })).toBeInTheDocument();
     expect(screen.getAllByRole("link", { name: /Union County demo/ })[0]).toHaveAttribute("href", "?view=demo");

@@ -5,7 +5,7 @@ import { Banner } from "../../ui/components";
 import { G } from "../../ui/Glossary";
 import { simulateRequest, type StepContext } from "./context";
 import { MethodNote, ReadingsBeside, ScenarioSummary, YearTable } from "./SimViews";
-import { pick, useSimModule } from "./slots";
+import { ScenarioResults, simulationResultSchema } from "../../sim";
 
 /*
   Step 3: the current plan alone, over 10 years of resampled past weather (§11 with only the
@@ -73,10 +73,11 @@ function LossEditor({ ctx }: { ctx: StepContext }) {
 }
 
 export function SimulationResult({ data }: { data: Simulation }) {
-  const mod = useSimModule();
-  const U2 = pick(mod, "SimulationView");
+  // U2's view reads the response in the backend's shape; a response its stricter schema
+  // rejects falls back to D's view of the adapted model, so the step never goes blank.
+  const parsed = simulationResultSchema.safeParse(data.raw);
+  const u2 = parsed.success ? parsed.data.scenarios[0] : undefined;
   const s = data.scenarios[0];
-  if (U2) return <U2 simulation={data} />;
   if (!s) return <p className="gf-muted">The service returned no result for this plan.</p>;
   return (
     <>
@@ -85,18 +86,20 @@ export function SimulationResult({ data }: { data: Simulation }) {
           <h2>{s.label}: 10 years</h2>
         </div>
         <MethodNote sim={data} />
-        <ScenarioSummary s={s} />
+        {u2 ? <ScenarioResults scenario={u2} /> : <ScenarioSummary s={s} />}
         <p className="gf-muted">
           Each value is the middle of all replays, with its <G id="band">typical range</G>. <G id="margin">Margin</G> uses your numbers where you gave them.
         </p>
       </section>
-      <section className="db-card" aria-label="Year by year">
-        <div className="db-card-head">
-          <h2>Year by year</h2>
-        </div>
-        <YearTable s={s} />
-        <ReadingsBeside s={s} />
-      </section>
+      {u2 ? null : (
+        <section className="db-card" aria-label="Year by year">
+          <div className="db-card-head">
+            <h2>Year by year</h2>
+          </div>
+          <YearTable s={s} />
+          <ReadingsBeside s={s} />
+        </section>
+      )}
     </>
   );
 }
