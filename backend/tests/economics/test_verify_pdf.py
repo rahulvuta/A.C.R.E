@@ -100,11 +100,11 @@ def test_one_retry_on_a_network_error_or_a_server_error_then_give_up():
             raise httpx.ConnectError("boom")
         if len(calls) == 2:
             return httpx.Response(503)
-        return httpx.Response(200, text="<p>ok</p>")
+        return httpx.Response(404)  # the archive has no copy either
 
     with httpx.Client(transport=httpx.MockTransport(flaky)) as c:
         assert verify.fetch_page("https://x.example.edu/a", c).reason == "http_503"
-    assert len(calls) == 2  # one retry only
+    assert len(calls) == 3  # one retry of the live page, then one look in the archive
     calls.clear()
 
     def once(request):
@@ -127,7 +127,7 @@ def test_one_retry_on_a_network_error_or_a_server_error_then_give_up():
     calls.clear()
     with httpx.Client(transport=httpx.MockTransport(notfound)) as c:
         assert verify.fetch_page("https://x.example.edu/a", c).reason == "http_404"
-    assert calls == [2]  # a 4xx is final
+    assert calls == [2, 2]  # a 4xx is not retried; the archive is asked once
 
 
 def test_the_user_agent_is_a_generic_browser_string():
@@ -167,3 +167,20 @@ def test_the_allowlist_additions_are_official_sources_only():
     for url in ("https://www.ambrook.com/x", "https://gc.ca.evil.example.com/",
                 "https://notgc.ca.example.com/", "https://europa.eu.example.org/"):  # fmt: skip
         assert not domain_allowed(url), url
+
+
+def test_a_dead_or_blocked_page_is_read_from_the_archive():
+    seen = []
+
+    def handler(request):
+        seen.append(str(request.url))
+        if str(request.url).startswith(verify.ARCHIVE_PREFIX):
+            return httpx.Response(200, text="<p>Sorghum " + QUOTE + "</p>")
+        return httpx.Response(404 if "moved" in str(request.url) else 403)
+
+    with httpx.Client(transport=httpx.MockTransport(handler)) as c:
+        moved = verify.fetch_page("https://www.example.gov/moved.html", c)
+        blocked = verify.fetch_page("https://www.example.edu/blocked.html", c)
+    assert moved.ok and moved.reason == "archived" and QUOTE in moved.text
+    assert blocked.ok and blocked.reason == "archived"
+    assert seen[1] == verify.ARCHIVE_PREFIX + "https://www.example.gov/moved.html"

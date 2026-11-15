@@ -95,36 +95,55 @@ def quote_in(quote: str, text: str) -> bool:
     return q.replace("- ", "").replace("-", "") in text.replace("- ", "").replace("-", "")
 
 
+ARCHIVE_PREFIX = "https://web.archive.org/web/2id_/"  # the archived copy of a page, unmodified
+
+
+def _get(c: httpx.Client, url: str) -> httpx.Response | None:
+    r: httpx.Response | None = None
+    for _attempt in (1, 2):  # one retry on a network error or a 5xx
+        try:
+            r = c.get(url)
+        except httpx.HTTPError:
+            r = None
+            continue
+        if r.status_code < 500:
+            break
+    return r
+
+
+def _page(r: httpx.Response, url: str, archived: bool) -> Page:
+    tag = "archived_" if archived else ""
+    ctype = r.headers.get("content-type", "")
+    if "pdf" in ctype or url.lower().split("?")[0].endswith(".pdf"):
+        text = pdf_text(r.content)
+        if text is None:  # reachable, quote not checkable
+            return Page(True, text="", reason=f"{tag}pdf_not_checked")
+        return Page(True, text=text, reason=f"{tag}pdf")
+    return Page(True, text=normalise(r.text[:MAX_PAGE_BYTES]), reason="archived" if archived else None)
+
+
 def fetch_page(url: str, client: httpx.Client | None = None) -> Page:
+    """The cited page. When the live address is gone, moved or refuses this server (official
+    reports are often moved, and some university sites block data-centre addresses), the same
+    address is read from the Internet Archive instead; ``reason`` then starts with "archived"."""
     if not url.startswith(("https://", "http://")):
         return Page(False, reason="not_a_web_url")
     own = client is None
     c = client or httpx.Client(timeout=FETCH_TIMEOUT_S, follow_redirects=True,
                                headers={"User-Agent": USER_AGENT})  # fmt: skip
-    r: httpx.Response | None = None
     try:
-        for _attempt in (1, 2):  # one retry on a network error or a 5xx
-            try:
-                r = c.get(url)
-            except httpx.HTTPError:
-                r = None
-                continue
-            if r.status_code < 500:
-                break
+        r = _get(c, url)
+        if r is not None and r.status_code < 400:
+            return _page(r, url, False)
+        live = "unreachable" if r is None else f"http_{r.status_code}"
+        if not url.startswith(ARCHIVE_PREFIX):
+            a = _get(c, ARCHIVE_PREFIX + url)
+            if a is not None and a.status_code < 400:
+                return _page(a, url, True)
+        return Page(False, reason=live)
     finally:
         if own:
             c.close()
-    if r is None:
-        return Page(False, reason="unreachable")
-    if r.status_code >= 400:
-        return Page(False, reason=f"http_{r.status_code}")
-    ctype = r.headers.get("content-type", "")
-    if "pdf" in ctype or url.lower().split("?")[0].endswith(".pdf"):
-        text = pdf_text(r.content)
-        if text is None:
-            return Page(True, text="", reason="pdf_not_checked")  # reachable, quote not checkable
-        return Page(True, text=text, reason="pdf")
-    return Page(True, text=normalise(r.text[:MAX_PAGE_BYTES]))
 
 
 def _num_forms(x: float) -> set[str]:
