@@ -42,3 +42,69 @@
   :root .db-top { position: static; }
   :root .db-main { padding-left: 16px; padding-right: 16px; }
 }
+
+/* Overview decision view: up to three strategies side by side, stacked on narrow screens. */
+.sb { display: grid; gap: 16px; container-type: inline-size; container-name: sb; }
+.sb-head h2 { margin: 0; font-size: 18px; font-weight: 500; letter-spacing: -0.01em; }
+.sb-head p { margin: 4px 0 0; font-size: 14px; max-width: 70ch; }
+.sb-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
+.sb-box { display: grid; gap: 12px; align-content: start; }
+.sb-box .db-card-head { margin-bottom: 0; }
+.sb-box .db-card-head h3, .sb-verdict-cell h3 { margin: 0; font-size: 16px; font-weight: 500; letter-spacing: -0.01em; }
+.sb-best { border-color: var(--action); box-shadow: 0 0 0 1px var(--action); }
+.sb-empty { justify-items: start; }
+.sb-empty p, .sb-box p { margin: 0; }
+.sb-badges { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.sb-badges li { padding: 2px 8px; border-radius: 6px; background: var(--accent-soft); color: var(--action); font-size: 13px; }
+.sb-money { display: grid; gap: 8px; justify-items: start; }
+.sb-money-grid { margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; }
+.sb-money-grid > div { display: grid; gap: 2px; align-content: start; }
+.sb-money-grid dt { font-size: 13px; color: var(--ink-muted); }
+.sb-money-grid dd { margin: 0; font-size: 18px; font-weight: 500; letter-spacing: -0.01em; overflow-wrap: anywhere; }
+.sb-money-grid dd.sb-prov { font-size: 11px; font-weight: 400; }
+.sb-money-grid .sb-prov .sim-origin { margin-left: 0; }
+.sb-range { font-size: 14px; }
+.sb-prov { white-space: nowrap; }
+.sb-small { font-size: 13px; }
+.sb-gap-title { font-weight: 500; }
+.sb-gaps { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14px; }
+.sb-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.sb-chart { margin: 0; display: grid; gap: 8px; }
+.sb-chart svg { width: 100%; height: auto; display: block; border: 1px solid var(--line); border-radius: var(--radius-md); }
+.sb-bg { fill: var(--surface); }
+.sb-zero { stroke: var(--line-strong); stroke-width: 1; }
+.sb-axis-label { font-size: 11px; fill: var(--ink-muted); }
+.sb-tick { font-size: 11px; fill: var(--ink-muted); }
+.sb-rev { fill: var(--cover); }
+.sb-cost { fill: var(--check); }
+.sb-line { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
+.sb-band { fill: var(--rain); fill-opacity: 0.16; stroke: none; }
+.sb-risk { fill: var(--check-soft); stroke: var(--check); stroke-width: 0.5; stroke-dasharray: 3 2; }
+.sb-risk-mark { font-size: 12px; font-weight: 700; fill: var(--check); }
+.sb-op { fill: var(--ink); stroke: var(--ink); stroke-width: 1; }
+.sb-op-open { fill: var(--surface); }
+.sb-hit { fill: transparent; outline: none; }
+.sb-hit.is-active { fill: rgb(0 70 86 / 0.07); }
+.sb-hit:focus-visible { stroke: var(--focus); stroke-width: 2; }
+.sb-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--ink-muted); }
+.sb-legend span { display: inline-flex; align-items: center; gap: 4px; }
+.sb-key { display: inline-block; width: 12px; height: 10px; }
+.sb-key-rev { background: var(--cover); }
+.sb-key-cost { background: var(--check); }
+.sb-key-line { height: 0; border-top: 2px solid var(--ink); }
+.sb-key-band { background: var(--rain); opacity: 0.25; }
+.sb-key-risk { background: var(--check-soft); border: 1px dashed var(--check); }
+.sb-detail { min-height: 3em; font-size: 13px; }
+.sb-list summary { cursor: pointer; font-size: 13px; }
+.sb-list ul, .sb-risks { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; font-size: 13px; }
+.sb-risks { margin: 0; }
+.sb-verdict-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.sb-verdict-cell { display: grid; gap: 6px; align-content: start; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius-md); font-size: 14px; }
+.sb-verdict-cell p { margin: 0; }
+/* Three side by side once the content area (not the window) is 1000px wide. */
+@container sb (min-width: 1000px) {
+  .sb-grid, .sb-verdict-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.sb-summary { margin: 0; padding: 12px 16px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--accent-soft); color: var(--accent-ink); font-size: 14px; }
+.sb-suggested { display: grid; gap: 8px; justify-items: start; }
+.sb-money-grid dd { font-size: 17px; }
