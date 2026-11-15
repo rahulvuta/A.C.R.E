@@ -238,6 +238,7 @@
         }
       ],
       "money_status": "partial",
+      "monthly": null,
       "readings_context": [],
       "replayed_seasons_sample": [
         2023,
@@ -592,6 +593,7 @@
         }
       ],
       "money_status": "partial",
+      "monthly": null,
       "readings_context": [],
       "replayed_seasons_sample": [
         2023,
