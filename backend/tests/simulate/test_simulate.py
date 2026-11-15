@@ -444,3 +444,44 @@ def test_replay_readings_stay_separate_from_weather(client):
     assert out["readings_context"][0]["origin"] == "grower"
     assert out["readings_context"][0]["modeled_same_day"]["origin"] == "nasa_modeled"
     assert out["daily"] == baseline["daily"] and out["spring"] == baseline["spring"]
+
+
+# --------------------------------------------------------------------------- month by month (cash calendar)
+
+
+def test_monthly_calendar_adds_up_to_the_yearly_money_and_marks_timing_assumed(client):
+    body = _sim(client, years=5, field={"area_ha": 16.2},
+                economics={"overrides": ECON, "loss_assumptions": {"dry_spring_pct": 20}})  # fmt: skip
+    for sc in body["scenarios"]:
+        cal = sc["monthly"]
+        assert cal["timing_origin"] == "assumed" and cal["origin"] == "calculation"
+        assert "harvest month" in cal["timing_text"]
+        months = [m["month"] for m in cal["months"]]
+        # consecutive months, no gaps
+        ys = [int(m[:4]) * 12 + int(m[5:]) - 1 for m in months]
+        assert ys == list(range(ys[0], ys[0] + len(ys)))
+        # costs are fixed per season, so their monthly medians sum to the yearly medians
+        assert sum(m["costs"]["median"] for m in cal["months"]) == pytest.approx(
+            sum(y["money"]["costs"]["median"] for y in sc["yearly"]), abs=len(months))
+        # the last cumulative net is the horizon margin (same runs, same medians)
+        assert cal["months"][-1]["cumulative_net"]["median"] == pytest.approx(
+            sc["totals"]["margin_10y"]["median"], abs=2)
+        tot = sc["totals"]
+        assert tot["costs_total"]["median"] == pytest.approx(
+            sum(m["costs"]["median"] for m in cal["months"]), abs=len(months))
+        assert tot["revenue_total"]["origin"] == "calculation"
+        ops = {(o["kind"], o["crop_id"]) for m in cal["months"] for o in m["operations"]}
+        assert ("plant", "soybean") in ops and ("harvest", "field_corn") in ops
+        # soybean planted 05-12 in 2027: costs land in May 2027, sales in that autumn's harvest
+        may = next(m for m in cal["months"] if m["month"] == "2027-05")
+        assert may["costs"]["median"] > 0 and may["revenue"]["median"] == 0
+    rye = next(s for s in body["scenarios"] if s["scenario_id"] == "rye")
+    kinds = {o["kind"] for m in rye["monthly"]["months"] for o in m["operations"]}
+    assert {"seed_cover", "end_cover"} <= kinds
+    risk = [r for m in rye["monthly"]["months"] for r in m["risks"]]
+    assert all(0 < r["probability"] <= 1 and r["text"] for r in risk)
+
+
+def test_monthly_calendar_is_null_without_money(client):
+    body = _sim(client, years=3)  # no area or economics
+    assert all(sc["monthly"] is None for sc in body["scenarios"])
