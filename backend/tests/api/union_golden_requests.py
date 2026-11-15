@@ -29,7 +29,7 @@ REQUESTS: dict[str, tuple[str, str, dict[str, Any] | None]] = {
 
 
 #: Keys added after d7d3367 (per-location snapshots). Everything else must be unchanged.
-ADDED_TOP = ("weather_location",)
+ADDED_TOP = ("weather_location", "readings_context")  # S5 adds context, never weather inputs
 ADDED_THRESHOLDS = ("location_id", "location_name", "baseline")
 ADDED_PLAN = ("region_note", "dates_assumed_for_region")
 
