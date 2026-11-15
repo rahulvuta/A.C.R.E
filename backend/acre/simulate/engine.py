@@ -1,6 +1,6 @@
 """10-year scenario runs by historical resampling (S1) with money (S2; ``money.py``).
 
-* A scenario's rotation (1-4 plans, one per season) is cycled from ``start_season``.
+* A scenario's rotation (1-10 plans, one per season) is cycled from ``start_season``.
 * Each run draws ``years`` whole past seasons, with replacement, from the cell's 1981-2025
   record (numpy ``default_rng(seed)``). Every scenario sees the SAME draws in a run (common random
   numbers), so differences between scenarios come from the plans, not from the luck of the draw.

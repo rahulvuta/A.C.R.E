@@ -16,7 +16,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from acre.api.routes import LocationIn, _invalid_for, _issues_from_plan_error, _loc_args, _meta
 from acre.compare import engine, text
 from acre.compare import locations as places
-from acre.contracts import InvalidPlanError, Plan
+from acre.contracts import MAX_ROTATION_LEGS, InvalidPlanError, Plan
 from acre.farms.geometry import GeometryError, parse_field
 from acre.field.equipment import Reading, check_equipment
 from acre.report.http import issue
@@ -86,7 +86,7 @@ class ScenarioIn(BaseModel):
     scenario_id: Annotated[str, Field(min_length=1, max_length=64)]
     label: Annotated[str | None, Field(max_length=120)] = None
     is_baseline: bool = False
-    rotation: Annotated[list[Plan], Field(min_length=1, max_length=4)]
+    rotation: Annotated[list[Plan], Field(min_length=1, max_length=MAX_ROTATION_LEGS)]
 
 
 class SimulateRequest(BaseModel):

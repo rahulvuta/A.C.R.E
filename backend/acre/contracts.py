@@ -156,6 +156,9 @@ class GrowerInputs(_Model):
     observations: list[str] = Field(default_factory=list)
 
 
+MAX_ROTATION_LEGS = 10  # one leg per season, up to the 10-year planning horizon
+
+
 class Plan(_Model):
     """One crop sequence: previous crop -> winter management -> next crop."""
 
