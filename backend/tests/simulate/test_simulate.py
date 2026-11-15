@@ -320,9 +320,23 @@ def test_readings_sit_beside_modeled_values(client):
     assert b["modeled_same_day"] is None and "outside the weather record" in b["modeled_same_day_reason"]
     t = b["modeled_typical_for_date"]
     assert t["variable"] == "precip_mm" and t["origin"] == "nasa_modeled"
-    # readings never enter the run: the same request without them gives the same indicators
+    # Uncalibrated moisture and rain outside the replay record leave historical indicators alone.
     plain = _sim(client)
     assert plain["scenarios"][0]["yearly"] == out["scenarios"][0]["yearly"]
+
+
+def test_dated_grower_rain_overrides_simulation_without_leaking_between_fields(client):
+    plain = _sim(client, climate="none")
+    readings = [{"date": f"{y}-02-01", "kind": "rainfall_mm", "value": 999}
+                for y in range(1981, 2026)]
+    changed = _sim(client, climate="none", field={"field_id": "synthetic-measured", "readings": readings})
+    metric = "rain_on_bare_soil_mm_per_year"
+    assert changed["scenarios"][0]["totals"][metric]["median"] > plain["scenarios"][0]["totals"][metric]["median"] + 900
+    assert len(changed["method"]["measurement_overrides"]) == 45
+    assert changed["meta"]["plan_version"] != plain["meta"]["plan_version"]
+    assert changed["method"]["threshold_set_id"] == plain["method"]["threshold_set_id"]
+    restored = _sim(client, climate="none")
+    assert restored["scenarios"][0]["totals"] == plain["scenarios"][0]["totals"]
 
 
 def test_pergamino_runs_on_the_prepared_cell(client):

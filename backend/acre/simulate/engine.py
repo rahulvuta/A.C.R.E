@@ -486,7 +486,7 @@ READING_VARS = {"soil_moisture_pct": "gwettop", "soil_moisture_vwc": "gwettop",
                 "rainfall_mm": "precip_mm", "soil_temp_c": "tmean_c"}  # fmt: skip
 READING_NOTES = {
     "gwettop": "NASA modeled surface soil wetness (0-1, top ~5 cm). A different measure from a "
-               "probe reading: shown for context, never mixed.",
+               "VWC or uncalibrated probe reading. Only matching saturation measurements can replace it.",
     "precip_mm": "NASA POWER daily precipitation for the ~50 km cell.",
     "tmean_c": "NASA POWER daily mean AIR temperature at 2 m; there is no modeled soil "
                "temperature here.",
@@ -495,7 +495,7 @@ READING_NOTES = {
 
 def readings_context(readings: list[dict[str, Any]], ctx: Context) -> list[dict[str, Any]]:
     """Each farmer reading next to NASA's modeled value for the same day (when the record covers
-    it) and the cell's 1981-2025 spread for that calendar day. Never combined with the run."""
+    it) and the cell's 1981-2025 spread for that calendar day. Originals stay available for comparison."""
     frame = ctx.series.frame
     out = []
     for r in readings:
@@ -569,7 +569,7 @@ def _zone_info(sc: Scenario, parts: list[Zone], inp: Inputs) -> list[dict[str, A
             for z in parts]  # fmt: skip
 
 
-def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
+def simulate(ctx: Context, inp: Inputs, *, readings: list[Any] | None = None) -> dict[str, Any]:
     plans = {plan_key(p): p for sc in inp.scenarios for rot in sc.all_rotations()
              for p in rot[:inp.years]}
     ts = engine.threshold_set_for(ctx, [p.next_plant for p in plans.values()])
@@ -578,6 +578,14 @@ def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
         target = inp.start_season + (inp.years - 1) // 2
         frame, climate = climate_trend.adjust(ctx.series.frame, target)
         adjusted = DailySeries(frame.reset_index()) if frame is not None else None
+    from dataclasses import replace
+
+    from acre.field.conditions import weather_overrides
+
+    replay_ctx, used_readings = weather_overrides(
+        replace(ctx, series=adjusted or ctx.series), readings or [])
+    if used_readings:
+        adjusted = replay_ctx.series
     legs = {k: leg_seasons(p, ctx, ts, adjusted) for k, p in plans.items()}
     d = draws(list(legs.values()), inp.runs, inp.years, inp.seed)
     source_years = f"{engine.YEARS[0]}-{engine.YEARS[-1]}"
@@ -593,6 +601,9 @@ def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
               "pool_years": len(d.pool), "note": note, "draws": CRN_NOTE,
               "threshold_set_id": ts.threshold_set_id,
               "climate_adjustment": climate or {"mode": "none"},
+              "measurement_overrides": used_readings,
+              "measurement_note": ("Your compatible measurements replace estimates on their recorded dates. "
+                                   "Other dates use the regional record. Soil temperature and VWC are kept in their own units."),
               "resolution": "One NASA POWER cell (~0.5 x 0.625 degrees): fields in one cell share "
                             "one weather series."}  # fmt: skip
     if len(d.pool) < MIN_POOL:
@@ -669,6 +680,10 @@ def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
                     "monthly": money["monthly"],
                     "money_gaps": money["money_gaps"],
                     "replayed_seasons_sample": [int(y) for y in m.seasons[0]]})  # fmt: skip
+    conditions = field_conditions(replay_ctx if used_readings else ctx)
+    if used_readings and conditions:
+        conditions.update(origin="calculation", measurement_overrides=used_readings,
+                          text="Historical weather with your compatible measurements on their recorded dates. Other dates use the regional record.")
     return {"status": "complete", "method": {**method, "money_source": money_source},
-            "scenarios": out, "_matrices": mats, "field_conditions": field_conditions(ctx),
+            "scenarios": out, "_matrices": mats, "field_conditions": conditions,
             "crop_money": {c: v.public() for c, v in cm.items()}}  # fmt: skip

@@ -2,8 +2,8 @@
 
 * ``equipment[]`` comes from a fixed vocabulary (plus ``other:<text>``). It drives the generator's
   feasibility check and the economics pass costs. An empty list means "not given", never "none".
-* ``readings[]`` are the farmer's own dated observations (``origin: grower``). They are returned
-  beside modeled values and never mixed into NASA numbers.
+* ``readings[]`` are dated grower measurements. Field conditions prefer these to estimates;
+  compatible dated measurements also override the request's weather replay.
 
 Both travel with each request and are never stored on the server.
 """
@@ -41,6 +41,10 @@ READINGS: dict[str, tuple[str, str | None, float | None, float | None]] = {
     "soil_moisture_vwc": ("Soil moisture (volumetric water content, m³/m³)", "m3/m3", 0.0, 1.0),
     "rainfall_mm": ("Rainfall (mm, own gauge)", "mm", 0.0, 1000.0),
     "soil_temp_c": ("Soil temperature (°C)", "degC", -30.0, 60.0),
+    "soil_ph": ("Soil pH / acidity", "pH", 0.0, 14.0),
+    "organic_matter_pct": ("Soil organic matter", "%", 0.0, 100.0),
+    "salinity_ds_m": ("Soil salinity (ECe)", "dS/m", 0.0, 100.0),
+    "custom": ("Other field condition", None, None, None),
     "note": ("Note", None, None, None),
 }
 MAX_READINGS = 500
@@ -59,10 +63,14 @@ class Reading(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     date: Date
-    kind: Literal["soil_moisture_pct", "soil_moisture_vwc", "rainfall_mm", "soil_temp_c", "note"]
-    value: float | None = None
+    kind: Literal["soil_moisture_pct", "soil_moisture_vwc", "rainfall_mm", "soil_temp_c",
+                  "soil_ph", "organic_matter_pct", "salinity_ds_m", "custom", "note"]
+    value: float | None = Field(default=None, allow_inf_nan=False)
     depth_cm: float | None = Field(default=None, ge=0, le=300)
     note: str | None = Field(default=None, max_length=500)
+    name: str | None = Field(default=None, max_length=80)
+    unit: str | None = Field(default=None, max_length=30)
+    moisture_basis: Literal["saturation", "volumetric", "sensor_percent"] | None = None
 
     @model_validator(mode="after")
     def _value(self) -> Reading:
@@ -75,7 +83,10 @@ class Reading(BaseModel):
             return self
         if self.value is None:  # blank is not zero: a measurement must say its value
             raise ValueError(f"{self.kind} needs a value")
-        if not lo <= self.value <= hi:  # type: ignore[operator]
+        if self.kind == "custom":
+            if not (self.name or "").strip() or not (self.unit or "").strip():
+                raise ValueError("a custom condition needs a name and unit")
+        elif not lo <= self.value <= hi:  # type: ignore[operator]
             raise ValueError(f"{self.kind} must be within {lo:g}..{hi:g}")
         return self
 
@@ -87,6 +98,10 @@ class Reading(BaseModel):
             out["depth_cm"] = self.depth_cm
         if self.note:
             out["note"] = self.note
+        if self.kind == "custom":
+            out.update(name=self.name, unit=self.unit)
+        if self.moisture_basis:
+            out["moisture_basis"] = self.moisture_basis
         return out
 
 

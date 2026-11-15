@@ -97,49 +97,245 @@
       }
     ]
   },
+  "condition_assessment": {
+    "impacts": [
+      {
+        "context": "",
+        "crop_id": "cereal_rye",
+        "effect": "No supported crop-specific range is available for this measurement.",
+        "key": "soil_moisture_pct",
+        "normal_max": null,
+        "normal_min": null,
+        "origin": null,
+        "rating": "unknown",
+        "source": null,
+        "unit": "%"
+      },
+      {
+        "context": "",
+        "crop_id": "maize",
+        "effect": "No supported crop-specific range is available for this measurement.",
+        "key": "soil_moisture_pct",
+        "normal_max": null,
+        "normal_min": null,
+        "origin": null,
+        "rating": "unknown",
+        "source": null,
+        "unit": "%"
+      },
+      {
+        "context": "",
+        "crop_id": "soybean",
+        "effect": "No supported crop-specific range is available for this measurement.",
+        "key": "soil_moisture_pct",
+        "normal_max": null,
+        "normal_min": null,
+        "origin": null,
+        "rating": "unknown",
+        "source": null,
+        "unit": "%"
+      },
+      {
+        "context": "",
+        "crop_id": "cereal_rye",
+        "effect": "No supported crop-specific range is available for this measurement.",
+        "key": "rainfall_mm",
+        "normal_max": null,
+        "normal_min": null,
+        "origin": null,
+        "rating": "unknown",
+        "source": null,
+        "unit": "mm"
+      },
+      {
+        "context": "",
+        "crop_id": "maize",
+        "effect": "No supported crop-specific range is available for this measurement.",
+        "key": "rainfall_mm",
+        "normal_max": null,
+        "normal_min": null,
+        "origin": null,
+        "rating": "unknown",
+        "source": null,
+        "unit": "mm"
+      },
+      {
+        "context": "",
+        "crop_id": "soybean",
+        "effect": "No supported crop-specific range is available for this measurement.",
+        "key": "rainfall_mm",
+        "normal_max": null,
+        "normal_min": null,
+        "origin": null,
+        "rating": "unknown",
+        "source": null,
+        "unit": "mm"
+      }
+    ],
+    "note": "Crop effects are qualitative; no yield or margin penalty is assumed. Published ranges are used only after their source quotes have been checked.",
+    "reason_text": "Crop impacts have not been assessed yet.",
+    "status": "unavailable"
+  },
   "crop_money": {
     "cereal_rye": {
       "costs_per_area": {
-        "area_unit": null,
-        "origin": null,
-        "value": null
+        "area_unit": "ha",
+        "origin": "assumed",
+        "value": 86.49
       },
       "crop_id": "cereal_rye",
-      "currency": null,
+      "currency": "USD",
       "price": {
         "high": null,
         "low": null,
-        "origin": null,
-        "typical": null
+        "origin": "assumed",
+        "typical": 0.0
       },
-      "status": "unavailable",
+      "status": "complete",
       "yield_per_area": {
-        "area_unit": null,
-        "origin": null,
-        "value": null
+        "area_unit": "ha",
+        "origin": "assumed",
+        "value": 0.0
       }
     },
     "soybean": {
       "costs_per_area": {
         "area_unit": "ha",
-        "origin": null,
-        "value": null
+        "origin": "assumed",
+        "value": 160.62
       },
       "crop_id": "soybean",
-      "currency": null,
+      "currency": "USD",
       "price": {
-        "high": null,
-        "low": null,
-        "origin": null,
-        "typical": null
+        "high": 540.0,
+        "low": 360.0,
+        "origin": "assumed",
+        "typical": 450.0
       },
-      "status": "unavailable",
+      "status": "complete",
       "yield_per_area": {
         "area_unit": "ha",
-        "origin": "verified_source",
-        "value": 2.945
+        "origin": "assumed",
+        "value": 3.089
       }
     }
+  },
+  "effective_field_conditions": {
+    "as_of": "2025-12-31",
+    "note": "Regional estimate used where no field measurement was entered.",
+    "values": [
+      {
+        "baseline": null,
+        "date": null,
+        "depth_cm": null,
+        "key": "soil_ph",
+        "kind": "soil_ph",
+        "label": "Soil pH / acidity",
+        "moisture_basis": null,
+        "note": "No local baseline available; enter a measurement.",
+        "origin": null,
+        "unit": "pH",
+        "value": null
+      },
+      {
+        "baseline": {
+          "label": "Surface wetness (% saturation)",
+          "moisture_basis": "saturation",
+          "note": "Estimate for this date.",
+          "origin": "nasa_modeled",
+          "source": {
+            "title": "NASA POWER",
+            "url": "https://power.larc.nasa.gov/"
+          },
+          "value": 53.0
+        },
+        "date": null,
+        "depth_cm": null,
+        "key": "soil_moisture_pct",
+        "kind": "soil_moisture_pct",
+        "label": "Soil moisture (% of saturation or sensor %)",
+        "moisture_basis": "saturation",
+        "note": "Estimate for this date.",
+        "origin": "nasa_modeled",
+        "unit": "%",
+        "value": 53.0
+      },
+      {
+        "baseline": null,
+        "date": null,
+        "depth_cm": null,
+        "key": "soil_moisture_vwc",
+        "kind": "soil_moisture_vwc",
+        "label": "Soil moisture (volumetric water content, m\u00b3/m\u00b3)",
+        "moisture_basis": null,
+        "note": "No local baseline available; enter a measurement.",
+        "origin": null,
+        "unit": "m3/m3",
+        "value": null
+      },
+      {
+        "baseline": {
+          "label": "Daily rainfall",
+          "moisture_basis": null,
+          "note": "Estimate for this date.",
+          "origin": "nasa_modeled",
+          "source": {
+            "title": "NASA POWER",
+            "url": "https://power.larc.nasa.gov/"
+          },
+          "value": 0.51
+        },
+        "date": null,
+        "depth_cm": null,
+        "key": "rainfall_mm",
+        "kind": "rainfall_mm",
+        "label": "Rainfall (mm, own gauge)",
+        "moisture_basis": null,
+        "note": "Estimate for this date.",
+        "origin": "nasa_modeled",
+        "unit": "mm",
+        "value": 0.51
+      },
+      {
+        "baseline": null,
+        "date": null,
+        "depth_cm": null,
+        "key": "soil_temp_c",
+        "kind": "soil_temp_c",
+        "label": "Soil temperature (\u00b0C)",
+        "moisture_basis": null,
+        "note": "No local baseline available; enter a measurement.",
+        "origin": null,
+        "unit": "degC",
+        "value": null
+      },
+      {
+        "baseline": null,
+        "date": null,
+        "depth_cm": null,
+        "key": "organic_matter_pct",
+        "kind": "organic_matter_pct",
+        "label": "Soil organic matter",
+        "moisture_basis": null,
+        "note": "No local baseline available; enter a measurement.",
+        "origin": null,
+        "unit": "%",
+        "value": null
+      },
+      {
+        "baseline": null,
+        "date": null,
+        "depth_cm": null,
+        "key": "salinity_ds_m",
+        "kind": "salinity_ds_m",
+        "label": "Soil salinity (ECe)",
+        "moisture_basis": null,
+        "note": "No local baseline available; enter a measurement.",
+        "origin": null,
+        "unit": "dS/m",
+        "value": null
+      }
+    ]
   },
   "field": {
     "area_ha": null,
@@ -433,7 +629,7 @@
   },
   "meta": {
     "catalog_version": "v3:AR-B:sage_-33.75_-60.75:3edf141b9da9",
-    "plan_version": "sim_3036036117d879e4",
+    "plan_version": "sim_a6929757e474f0a4",
     "request_id": "req_example",
     "snapshot_hash": "7c57f2ea32036ecff67ee1c6e7dece00415f16358b0f4bdc4488fb663953abeb"
   },
@@ -467,7 +663,15 @@
       },
       "text": "No statistically clear trend in yearly rain at this field since 1981 (about -0.6% per decade, within normal year-to-year variation), so rain is used as recorded. Temperature has risen about 0.02 C per decade; it is shown as context and does not change the results."
     },
+    "confidence": {
+      "basis": "Share of historical candidate seasons evaluable for every compared plan. This measures historical data coverage, not forecast skill.",
+      "level": "High",
+      "note": "Data support only; not a calibrated probability of accuracy or success.",
+      "percent": 100
+    },
     "draws": "Every scenario replays the same sequence of past seasons in each run, so differences come from the plans, not from the draw.",
+    "measurement_note": "Your compatible measurements replace estimates on their recorded dates. Other dates use the regional record. Soil temperature and VWC are kept in their own units.",
+    "measurement_overrides": [],
     "money_source": "economics_library",
     "note": "An evidence-based outlook: this field's real past seasons (1981-2025) replayed in new orders over the next 5 seasons. It shows what to plan for under conditions seen here; it cannot say what any single year will bring.",
     "origin": "calculation",
@@ -483,6 +687,18 @@
   },
   "scenarios": [
     {
+      "confidence": {
+        "basis": "Share of historical candidate seasons evaluable for every compared plan. This measures historical data coverage, not forecast skill.",
+        "level": "High",
+        "note": "Data support only; not a calibrated probability of accuracy or success.",
+        "percent": 100
+      },
+      "estimate_confidence": {
+        "basis": "Share of crop price, yield and cost inputs supplied by the grower or traceable sources; mock inputs score zero.",
+        "level": "Low",
+        "note": "Data support only; not a calibrated probability of accuracy or success.",
+        "percent": 0
+      },
       "events": [
         {
           "event": "dry_springs_ge_3_in_5y",
@@ -814,6 +1030,18 @@
       "zones": null
     },
     {
+      "confidence": {
+        "basis": "Share of historical candidate seasons evaluable for every compared plan. This measures historical data coverage, not forecast skill.",
+        "level": "High",
+        "note": "Data support only; not a calibrated probability of accuracy or success.",
+        "percent": 100
+      },
+      "estimate_confidence": {
+        "basis": "Share of crop price, yield and cost inputs supplied by the grower or traceable sources; mock inputs score zero.",
+        "level": "Low",
+        "note": "Data support only; not a calibrated probability of accuracy or success.",
+        "percent": 0
+      },
       "events": [
         {
           "event": "dry_springs_ge_3_in_5y",

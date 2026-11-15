@@ -242,8 +242,8 @@ def get_vocab_readings() -> Any:
     from acre.field.equipment import vocab_readings
 
     return {"meta": response_meta(weather=False), "readings": vocab_readings(),
-            "note": "Readings are yours (origin: grower); they are shown beside modeled values "
-            "and never mixed into NASA numbers."}  # fmt: skip
+            "note": "Your readings take precedence for field conditions. Compatible dated "
+            "measurements override estimates in the field's simulation; the original dataset is retained."}  # fmt: skip
 
 # Card S3: economics estimate.
 from acre.economics.routes import router as _economics_router  # noqa: E402

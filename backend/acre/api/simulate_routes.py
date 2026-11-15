@@ -18,6 +18,8 @@ from acre.compare import engine, text
 from acre.compare import locations as places
 from acre.contracts import MAX_ROTATION_LEGS, InvalidPlanError, Plan
 from acre.farms.geometry import GeometryError, parse_field
+from acre.field.conditions import effective_conditions
+from acre.field.conditions_research import assess
 from acre.field.equipment import Reading, check_equipment
 from acre.report.http import issue
 from acre.report.meta import response_meta
@@ -48,7 +50,7 @@ class SimGoalsIn(BaseModel):
 
 
 class ReadingIn(Reading):
-    """Contract §14. A farmer's own reading: shown beside modeled values, never mixed in."""
+    """A grower's measurement, preferred to a compatible estimate for this field."""
 
     model_config = ConfigDict(extra="ignore")
 
@@ -71,6 +73,7 @@ class ZoneIn(BaseModel):
 class FieldSimIn(BaseModel):
     model_config = ConfigDict(extra="ignore")
     field_id: Annotated[str | None, Field(max_length=100)] = None
+    region_key: str = Field(default="unknown", max_length=120)
     name: Annotated[str | None, Field(max_length=200)] = None
     area_ha: Annotated[float | None, Field(gt=0, le=1_000_000)] = None
     geometry: dict[str, Any] | None = None
@@ -129,7 +132,12 @@ def _result_id(body: SimulateRequest) -> str:
     for z in doc["field"]["zones"]:
         z.pop("geometry", None)
         z.pop("name", None)
-    for k in ("readings", "geometry", "name"):
+    doc["field"]["readings"] = [
+        {k: v for k, v in r.items() if k != "note"}
+        for r in doc["field"]["readings"] if r["kind"] != "note"]
+    if not doc["field"]["readings"]:
+        doc["field"].pop("readings")
+    for k in ("geometry", "name"):
         doc["field"].pop(k, None)
     return "sim_" + hashlib.sha256(json.dumps(doc, sort_keys=True).encode()).hexdigest()[:16]
 
@@ -278,10 +286,15 @@ def simulate_scenarios(body: SimulateRequest) -> Any:
                  list(f.equipment), body.economics.overrides,
                  body.economics.loss_assumptions.model_dump(), loc, body.climate)  # fmt: skip
     try:
-        out = simulate(ctx, inp)
+        out = simulate(ctx, inp, readings=list(f.readings))
     except MoneyInputError as exc:
         return _invalid_for([issue(f"economics.{exc.field}", exc.code, str(exc))], choice)
     out.pop("_matrices", None)
+    effective = effective_conditions(list(f.readings), ctx=ctx)
+    crops = sorted({c for sc in scs for rot in sc.all_rotations() for p in rot
+                    for c in (p.previous_crop_id, p.next_crop_id, p.winter.crop_id) if c})
+    out["effective_field_conditions"] = effective
+    out["condition_assessment"] = assess(effective, crops, f.region_key)
     readings = readings_context([r.model_dump(mode="json") for r in f.readings], ctx)
     for sc in out["scenarios"]:
         sc["readings_context"] = readings
