@@ -7,6 +7,7 @@ export function EquipmentEditor({ value, onChange, api = inputsApi }: EquipmentE
   const loader = useCallback((signal: AbortSignal) => api.equipment(signal), [api]);
   const request = useInputRequest("equipment", loader);
   const [other, setOther] = useState("");
+  const otherValid = /^[\w .,/()+-]{1,40}$/.test(other.trim());
   const known = request.data?.equipment.filter(item => item.id !== "other" && !item.id.startsWith("other:")) ?? [];
   const extras = value.filter(id => !known.some(item => item.id === id));
   return <section className="acre-inputs acre-input-card" aria-label="Equipment"><h2>Equipment you can use</h2><p>Check equipment you own or can hire. Leaving it unchecked does not confirm it is unavailable.</p>
@@ -15,6 +16,6 @@ export function EquipmentEditor({ value, onChange, api = inputsApi }: EquipmentE
       {!request.loading && !request.error && !known.length && <p>Equipment choices: Not available. Add equipment below.</p>}
     </fieldset>
     {!!extras.length && <ul className="acre-input-other-list">{extras.map(id => <li key={id}><span>{id.startsWith("other:") ? id.slice(6) : readable(id)}</span><OriginLabel origin="grower" /><button type="button" onClick={() => onChange(value.filter(item => item !== id))}>Remove {id.startsWith("other:") ? id.slice(6) : readable(id)}</button></li>)}</ul>}
-    <div className="acre-input-inline"><label>Other equipment<input value={other} placeholder="Equipment name" onChange={event => setOther(event.target.value)} /></label><button type="button" disabled={!other.trim()} onClick={() => { onChange([...new Set([...value, `other:${other.trim()}`])]); setOther(""); }}>Add equipment</button></div>
+    <div className="acre-input-inline"><label>Other equipment<input value={other} placeholder="Equipment name" maxLength={40} onChange={event => setOther(event.target.value)} /></label><button type="button" disabled={!otherValid} onClick={() => { onChange([...new Set([...value, `other:${other.trim()}`])]); setOther(""); }}>Add equipment</button></div>{other.trim() && !otherValid && <p role="alert">Use up to 40 letters, numbers, spaces or . , / ( ) + -.</p>}
   </section>;
 }

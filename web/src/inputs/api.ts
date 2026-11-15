@@ -26,7 +26,7 @@ export function createInputsApi(base = import.meta.env.VITE_API_BASE ?? "http://
     researchJob: (jobId: string, signal?: AbortSignal) => request(`/v1/crops/research/${encodeURIComponent(jobId)}`, researchJobSchema, signal),
     crop: (cropId: string, regionKey: string, signal?: AbortSignal) => request(`/v1/crops/${encodeURIComponent(cropId)}?${new URLSearchParams({ region_key: regionKey })}`, cropSchema, signal),
     autofill: (body: AutofillRequest, signal?: AbortSignal) => request("/v1/plans/autofill", autofillResponseSchema, signal, autofillRequestSchema.parse(body)),
-    estimate: (body: EconomicsRequest, signal?: AbortSignal) => request("/v1/economics/estimate", economicsResponseSchema, signal, economicsRequestSchema.parse(body)),
+    estimate: (body: EconomicsRequest, signal?: AbortSignal) => request("/v1/economics/estimate", economicsResponseSchema, signal, economicsRequestSchema.parse({ ...body, area: body.area?.value != null && body.area.value > 0 ? body.area : null })),
     equipment: (signal?: AbortSignal) => request("/v1/vocab/equipment", equipmentResponseSchema, signal),
   };
 }

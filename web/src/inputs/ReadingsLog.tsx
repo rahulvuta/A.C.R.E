@@ -5,6 +5,7 @@ import { OriginLabel, display } from "./shared";
 export interface ReadingsLogProps { value: Reading[]; onChange: (value: Reading[]) => void }
 export const readingLabels: Record<ReadingKind, { label: string; unit: string; explanation: string }> = {
   soil_moisture_pct: { label: "Soil moisture", unit: "%", explanation: "Percent soil moisture as reported by your instrument; check its measurement method." },
+  soil_moisture_vwc: { label: "Volumetric soil moisture", unit: "m³/m³", explanation: "Volumetric water content reported by your instrument, between 0 and 1." },
   rainfall_mm: { label: "Rainfall", unit: "mm", explanation: "Millimetres of rainfall you recorded for this date." },
   soil_temp_c: { label: "Soil temperature", unit: "°C", explanation: "Soil temperature you measured in degrees Celsius." },
   note: { label: "Field note", unit: "", explanation: "An observation you wrote about the field." },
@@ -34,24 +35,26 @@ export function ReadingsLog({ value, onChange }: ReadingsLogProps) {
   const [date, setDate] = useState("");
   const [kind, setKind] = useState<ReadingKind>("soil_moisture_pct");
   const [number, setNumber] = useState("");
+  const [depth, setDepth] = useState("");
   const [note, setNote] = useState("");
   const [chartKind, setChartKind] = useState<ReadingKind>("soil_moisture_pct");
   const [error, setError] = useState<string>();
   function add() {
-    const parsed = readingSchema.safeParse({ date, kind, value: kind === "note" || number === "" ? null : Number(number), note: note.trim() || undefined, origin: "grower" });
+    const parsed = readingSchema.safeParse({ date, kind, value: kind === "note" || number === "" ? null : Number(number), depth_cm: depth === "" ? null : Number(depth), note: note.trim() || undefined, origin: "grower" });
     if (!parsed.success) { setError(parsed.error.issues.map(issue => issue.message).join(" ")); return; }
     onChange([...value, parsed.data]); setNumber(""); setNote(""); setError(undefined);
     if (kind !== "note") setChartKind(kind);
   }
-  return <section className="acre-inputs acre-input-card" aria-label="Field readings"><h2>Your field readings</h2><p>These entries stay in this browser session. They sit beside NASA data and never replace it.</p>
+  return <section className="acre-inputs acre-input-card" aria-label="Field readings"><h2>Your field readings</h2><p>These entries are saved by the parent screen in this browser. They sit beside NASA data and never replace it.</p>
     <fieldset><legend>Add a reading <OriginLabel origin="grower" /></legend><div className="acre-input-reading-fields">
       <label>Date<input type="date" value={date} onChange={event => setDate(event.target.value)} /></label>
       <label>Reading type<select value={kind} onChange={event => { setKind(event.target.value as ReadingKind); setNumber(""); setError(undefined); }}>{readingKinds.map(item => <option key={item} value={item}>{readingLabels[item].label}{readingLabels[item].unit ? ` (${readingLabels[item].unit})` : ""}</option>)}</select></label>
       {kind !== "note" && <label>{readingLabels[kind].label} ({readingLabels[kind].unit})<input type="number" step="any" min={kind === "soil_temp_c" ? undefined : 0} max={kind === "soil_moisture_pct" ? 100 : undefined} value={number} placeholder="Not available" onChange={event => setNumber(event.target.value)} aria-describedby={`${id}-explain`} /></label>}
-      <label>Note{kind !== "note" ? " (optional)" : ""}<textarea value={note} onChange={event => setNote(event.target.value)} /></label>
+      {kind !== "note" && <label>Depth (cm, optional)<input type="number" min="0" max="300" step="any" value={depth} onChange={event => setDepth(event.target.value)} /></label>}
+      <label>Note{kind !== "note" ? " (optional)" : ""}<textarea maxLength={500} value={note} onChange={event => setNote(event.target.value)} /></label>
     </div><p className="acre-input-help" id={`${id}-explain`}>{readingLabels[kind].explanation}</p>{error && <p role="alert">{error}</p>}<button type="button" className="acre-input-primary" onClick={add}>Add reading</button></fieldset>
     <label>Chart reading<select value={chartKind} onChange={event => setChartKind(event.target.value as ReadingKind)}>{readingKinds.filter(item => item !== "note").map(item => <option key={item} value={item}>{readingLabels[item].label} ({readingLabels[item].unit})</option>)}</select></label>
     <ReadingsChart readings={value} kind={chartKind} />
-    {value.length ? <ul className="acre-input-readings-list" aria-label="Recorded readings">{value.map((reading, index) => <li key={index}><div><strong>{reading.date}</strong> <OriginLabel origin={reading.origin} /><p>{readingLabels[reading.kind].label}: {reading.kind === "note" ? display(reading.note) : <>{display(reading.value)}{reading.value !== null && ` ${readingLabels[reading.kind].unit}`}</>}</p>{reading.kind !== "note" && reading.note && <p>{reading.note}</p>}</div><button type="button" aria-label={`Remove ${readingLabels[reading.kind].label.toLowerCase()} on ${reading.date}`} onClick={() => onChange(value.filter((_, i) => i !== index))}>Remove</button></li>)}</ul> : <p>No readings yet. Unknown readings can stay blank.</p>}
+    {value.length ? <ul className="acre-input-readings-list" aria-label="Recorded readings">{value.map((reading, index) => <li key={index}><div><strong>{reading.date}</strong> <OriginLabel origin={reading.origin} /><p>{readingLabels[reading.kind].label}: {reading.kind === "note" ? display(reading.note) : <>{display(reading.value)}{reading.value !== null && ` ${readingLabels[reading.kind].unit}`}</>}</p>{reading.depth_cm != null && <p>Depth: {reading.depth_cm} cm</p>}{reading.kind !== "note" && reading.note && <p>{reading.note}</p>}</div><button type="button" aria-label={`Remove ${readingLabels[reading.kind].label.toLowerCase()} on ${reading.date}`} onClick={() => onChange(value.filter((_, i) => i !== index))}>Remove</button></li>)}</ul> : <p>No readings yet. Unknown readings can stay blank.</p>}
   </section>;
 }

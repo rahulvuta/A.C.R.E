@@ -47,16 +47,16 @@ export type PlanDraft = z.infer<typeof planDraftSchema>;
 export type PlanEditorValue = { plan: PlanDraft; dates: DateEvidence[]; cropDetails: Crop[] };
 export const autofillRequestSchema = z.object({ location: locationSchema, crops: z.array(z.object({ role: z.enum(["previous", "cover", "next"]), crop_id: z.string().min(1) })).min(1) });
 export type AutofillRequest = z.infer<typeof autofillRequestSchema>;
-export const autofillResponseSchema = z.object({ meta, plan: planDraftSchema, dates: z.array(dateEvidenceSchema), gaps: z.array(z.string()) });
+export const autofillResponseSchema = z.object({ meta, plan: planDraftSchema.nullable(), dates: z.array(dateEvidenceSchema), gaps: z.array(z.union([z.string(), z.object({ text: z.string() }).passthrough()]).transform(gap => typeof gap === "string" ? gap : gap.text)) });
 export const quantitySchema = z.object({ value: z.number().finite().nullable(), unit: z.string(), origin: originSchema, source: sourceSchema.nullable().optional() });
 export type Quantity = z.infer<typeof quantitySchema>;
 export const priceSchema = z.object({ low: z.number().finite().nullable(), typical: z.number().finite().nullable(), high: z.number().finite().nullable(), unit: z.string(), origin: originSchema, source: sourceSchema.nullable().optional() });
 export const economicsCropSchema = z.object({
-  crop_id: z.string(), price: priceSchema, yield: quantitySchema,
-  costs: z.object({ items: z.array(quantitySchema.extend({ item: z.string() })), total_per_area: quantitySchema.partial({ origin: true }).optional() }),
+  crop_id: z.string(), price: priceSchema.nullable(), yield: quantitySchema.nullable(),
+  costs: z.object({ items: z.array(quantitySchema.extend({ item: z.string() })), total_per_area: quantitySchema.partial({ origin: true }).nullable().optional() }),
   status: statusSchema, reason_text: z.string().nullable().optional(),
 });
-export const economicsResponseSchema = z.object({ meta, status: statusSchema.optional(), currency: z.string(), area_unit: z.enum(["acre", "ha"]), crops: z.array(economicsCropSchema), equipment_costs: z.array(quantitySchema.extend({ equipment: z.string(), pass: z.string() })).default([]), gaps: z.array(z.string()) });
+export const economicsResponseSchema = z.object({ meta, status: statusSchema.optional(), currency: z.string().nullable(), area_unit: z.enum(["acre", "ha"]), crops: z.array(economicsCropSchema), equipment_costs: z.array(quantitySchema.extend({ equipment: z.string(), pass: z.string() })).default([]), gaps: z.array(z.string()) });
 export type EconomicsDefaults = z.infer<typeof economicsResponseSchema>;
 export type CropEconomics = z.infer<typeof economicsCropSchema>;
 export type PriceCase = "low" | "typical" | "high";
@@ -65,20 +65,23 @@ export type EconomicsValue = {
   overrides: Record<string, CropOverrides>;
   loss_assumptions: { dry_spring_pct: number | null; heavy_rain_pct: number | null };
 };
-export const economicsRequestSchema = z.object({ location: locationSchema, crops: z.array(z.string().min(1)).min(1), area: areaSchema, equipment: z.array(z.string()), overrides: z.record(z.unknown()) });
+export const economicsRequestSchema = z.object({ location: locationSchema, crops: z.array(z.string().min(1)).min(1), area: areaSchema.nullable(), equipment: z.array(z.string()), overrides: z.record(z.unknown()) });
 export type EconomicsRequest = z.infer<typeof economicsRequestSchema>;
 export const equipmentResponseSchema = z.object({ meta, equipment: z.array(z.object({ id: z.string().min(1), label: z.string().min(1) })) });
 export type EquipmentOption = z.infer<typeof equipmentResponseSchema>["equipment"][number];
-export const readingKinds = ["soil_moisture_pct", "rainfall_mm", "soil_temp_c", "note"] as const;
+export const readingKinds = ["soil_moisture_pct", "soil_moisture_vwc", "rainfall_mm", "soil_temp_c", "note"] as const;
 export type ReadingKind = typeof readingKinds[number];
 const calendarDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(v => {
   const date = new Date(`${v}T00:00:00Z`);
   return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === v;
 }, "Choose a valid date.");
-export const readingSchema = z.object({ date: calendarDateSchema, kind: z.enum(readingKinds), value: z.number().finite().nullable(), note: z.string().optional(), origin: z.literal("grower") }).superRefine((reading, ctx) => {
+export const readingSchema = z.object({ date: calendarDateSchema, kind: z.enum(readingKinds), value: z.number().finite().nullable(), depth_cm: z.number().finite().min(0).max(300).nullable().optional(), note: z.string().max(500).nullable().optional(), origin: z.literal("grower") }).superRefine((reading, ctx) => {
   if (reading.kind === "note") {
+    if (reading.value !== null) ctx.addIssue({ code: "custom", path: ["value"], message: "A field note has no numeric value." });
     if (!reading.note?.trim()) ctx.addIssue({ code: "custom", path: ["note"], message: "Write a note." });
   } else if (reading.value === null) ctx.addIssue({ code: "custom", path: ["value"], message: "Enter a reading; leave it blank if you do not know it." });
-  if (reading.value !== null && (reading.kind === "soil_moisture_pct" && (reading.value < 0 || reading.value > 100) || reading.kind === "rainfall_mm" && reading.value < 0)) ctx.addIssue({ code: "custom", path: ["value"], message: "Moisture must be 0–100%; rainfall cannot be negative." });
+  const bounds: Partial<Record<ReadingKind, [number, number]>> = { soil_moisture_pct: [0, 100], soil_moisture_vwc: [0, 1], rainfall_mm: [0, 1000], soil_temp_c: [-30, 60] };
+  const range = bounds[reading.kind];
+  if (reading.value !== null && range && (reading.value < range[0] || reading.value > range[1])) ctx.addIssue({ code: "custom", path: ["value"], message: `Enter a value between ${range[0]} and ${range[1]}.` });
 });
 export type Reading = z.infer<typeof readingSchema>;

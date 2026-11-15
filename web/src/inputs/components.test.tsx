@@ -132,6 +132,24 @@ describe("farmer inputs", () => {
     expect(screen.getByRole("spinbutton", { name: "Price · typical value" })).toHaveValue(13);
     expect(screen.getByRole("spinbutton", { name: "Yield value" })).toHaveValue(48);
   });
+  it("leaves unavailable references editable without replacing them with zero", async () => {
+    const api = { ...exampleApi, estimate: async () => ({ ...exampleEconomics, currency: null, crops: [{ crop_id: "soybean", price: null, yield: null, costs: { items: [], total_per_area: null }, status: "unavailable" as const, reason_text: "No regional references." }] }) };
+    render(<ControlledEconomics api={api} />);
+    await screen.findByText("No regional references.");
+    expect(screen.getByRole("spinbutton", { name: "Price · typical value" })).toHaveValue(null);
+    fireEvent.change(screen.getByRole("spinbutton", { name: "Yield value" }), { target: { value: "0" } });
+    expect(screen.getByRole("spinbutton", { name: "Yield value" })).toHaveValue(0);
+  });
+  it("adds volumetric readings and preserves measurement depth", () => {
+    const onChange = vi.fn();
+    render(<ReadingsLog value={[]} onChange={onChange} />);
+    fireEvent.change(screen.getByLabelText("Date"), { target: { value: "2026-04-02" } });
+    fireEvent.change(screen.getByRole("combobox", { name: "Reading type" }), { target: { value: "soil_moisture_vwc" } });
+    fireEvent.change(screen.getByRole("spinbutton", { name: "Volumetric soil moisture (m³/m³)" }), { target: { value: "0.3" } });
+    fireEvent.change(screen.getByRole("spinbutton", { name: "Depth (cm, optional)" }), { target: { value: "10" } });
+    fireEvent.click(screen.getByRole("button", { name: "Add reading" }));
+    expect(onChange).toHaveBeenCalledWith([{ date: "2026-04-02", kind: "soil_moisture_vwc", value: 0.3, depth_cm: 10, origin: "grower" }]);
+  });
   it("uses the equipment vocabulary and supports named other equipment", async () => {
     function Equipment() { const [value, setValue] = useState<string[]>([]); return <EquipmentEditor value={value} onChange={setValue} api={exampleApi} />; }
     render(<Equipment />);
