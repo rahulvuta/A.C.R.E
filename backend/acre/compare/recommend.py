@@ -413,6 +413,17 @@ def recommend(cands: list[Candidate], ctx: Context, priorities: dict[str, int],
     # unevaluable rules) makes the candidate not comparable on that indicator, never a number
     vectors = {cid: {n: (i.value if i.status == "complete" else None) for n, i in v.items()}
                for cid, v in inds.items()}  # fmt: skip
+    # an indicator no candidate has fully evaluated cannot separate any of them: it leaves the
+    # ranking (reported in method.excluded_indicators) instead of making every plan not
+    # comparable; its partial values are still shown on each card, never ranked
+    excluded = {n: "no candidate has a complete value" for n in list(weights)
+                if vectors and all(vectors[c].get(n) is None for c in vectors)}  # fmt: skip
+    if len(excluded) < len(weights):
+        for n in excluded:
+            weights.pop(n)
+            directions.pop(n)
+    else:
+        excluded = {}
     res = pareto(vectors, directions, weights)
     by_id = {c.candidate_id: c for c in cands}
     cat = ctx.index.catalog
@@ -453,6 +464,7 @@ def recommend(cands: list[Candidate], ctx: Context, priorities: dict[str, int],
             "shortlist": "pareto_non_dominated",
             "ordering": "weighted_rank_positions",
             "indicators_used": list(weights),
+            "excluded_indicators": excluded,
             "weights": weights,
             "ordering_text": "For each indicator the shortlisted plans are ranked (1 = best, ties "
                              "share a rank); they are listed by the sum of weight x rank "

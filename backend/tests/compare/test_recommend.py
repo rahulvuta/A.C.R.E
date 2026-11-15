@@ -231,8 +231,25 @@ def test_requested_rule_flags_unknown_outside_nc_make_candidates_not_comparable(
                          "candidates": [{"candidate_id": "rye", "plans": [PLAN]}]})  # fmt: skip
     rye = _all_cards(body)[0]
     if rye["indicators"]["rule_flags"]["status"] == "unknown":  # no regional rules loaded
-        assert body["shortlist"] == [] and body["not_comparable"][0]["missing"] == ["rule_flags"]
-        assert body["status"] == "insufficient_data"
+        # no candidate has a complete value, so it cannot separate them: it leaves the ranking,
+        # is reported as excluded, and is never ranked as a number
+        assert body["method"]["excluded_indicators"] == {
+            "rule_flags": "no candidate has a complete value"}
+        assert "rule_flags" not in body["method"]["weights"]
+        assert rye["indicators"]["rule_flags"]["value"] is None
+        assert not rye["indicators"]["rule_flags"]["in_priorities"]
+
+
+def test_an_indicator_partial_for_every_candidate_leaves_the_ranking(client):
+    # Union County corn plans always carry some unevaluable rules (partial rule flags); the
+    # shortlist must not go empty because of that, and the exclusion must be reported
+    body = _rec(client, {"goals": {"priorities": {"weather_resilience": 3, "soil_cover": 2}},
+                         "candidates": [{"candidate_id": "rye", "plans": [NC_RYE]}]})  # fmt: skip
+    rye = _all_cards(body)[0]
+    if rye["indicators"]["rule_flags"]["status"] != "complete":
+        assert body["shortlist"] and body["method"]["excluded_indicators"] == {
+            "rule_flags": "no candidate has a complete value"}
+        assert rye["indicators"]["rule_flags"]["status"] in {"partial", "unknown"}
 
 
 # --------------------------------------------------------------------------- review r2 fixes (P2-r2.md)
@@ -267,7 +284,11 @@ def test_partial_indicators_never_enter_dominance(client):
     wheat = next(c for c in _all_cards(body) if c["candidate_id"] == "add_grain_crop")
     assert wheat["indicators"]["rule_flags"]["status"] == "partial"
     nc = {c["candidate_id"]: c["missing"] for c in body["not_comparable"]}
-    assert "rule_flags" in nc["add_grain_crop"]
+    if "rule_flags" in body["method"]["excluded_indicators"]:
+        # no candidate is complete on it: it is out of the ranking for every plan
+        assert all("rule_flags" not in c["rank_positions"] for c in body["shortlist"])
+    else:
+        assert "rule_flags" in nc["add_grain_crop"]
 
 
 def test_unprepared_outside_nc_compare_shows_nothing_of_union(client):

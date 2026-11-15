@@ -10,8 +10,15 @@ from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
 from acre.catalogs import regional
+from acre.contracts import MAX_ROTATION_LEGS
 from acre.planner.generator import MAX_CANDIDATES, generate_candidates
-from acre.planner.goals import PRIORITY_IDS, Constraints, FieldContext, Goals
+from acre.planner.goals import (
+    MAX_GENERATED_SEASONS,
+    PRIORITY_IDS,
+    Constraints,
+    FieldContext,
+    Goals,
+)
 from acre.report.meta import get_index
 from tests.catalogs.test_regional import V3_ROW, write_profile
 
@@ -378,3 +385,12 @@ def test_generator_checks_each_semantic_leg_and_year_once(monkeypatch):
     result = gen(goals={"constraints": {"seasons": 2}})
     assert result.candidates
     assert len(seen) == len(set(seen))
+
+
+def test_generated_seasons_are_capped_because_the_search_is_exhaustive():
+    # Searching grows ~10x per season, so the cap is below the 10-season rotation limit that
+    # simulate, recommend and the future plan accept.
+    assert MAX_GENERATED_SEASONS < MAX_ROTATION_LEGS
+    assert Constraints(seasons=MAX_GENERATED_SEASONS).seasons == MAX_GENERATED_SEASONS
+    with pytest.raises(ValidationError):
+        Constraints(seasons=MAX_GENERATED_SEASONS + 1)
