@@ -11,7 +11,7 @@ afterEach(cleanup);
 it("renders returned badges, why, indicators, deltas, trade-offs, and choice callbacks", () => {
   const onChoose = vi.fn();
   const { container } = render(<ScenarioCompare result={simulationExample} baselineId="current" onChoose={onChoose} />);
-  for (const badge of ["Best for profit", "Most sustainable", "Lowest weather risk", "Best for your priorities"]) expect(screen.getByRole("heading", { name: badge })).toBeVisible();
+  for (const badge of ["Highest estimated margin of these plans", "Most sustainable", "Lowest weather risk", "Best for your priorities"]) expect(screen.getByRole("heading", { name: badge })).toBeVisible();
   expect(screen.getByText(/Highest median 10-year margin/)).toBeVisible();
   const rye = screen.getByRole("article", { name: "Add cereal rye" });
   expect(within(rye).getByText("$142,000")).toBeVisible();
@@ -28,7 +28,7 @@ it("renders returned badges, why, indicators, deltas, trade-offs, and choice cal
 
 it("displays not_decided reasons and never invents omitted badges for partial money", () => {
   render(<ScenarioCompare result={partialSimulationExample} baselineId="current" onChoose={vi.fn()} />);
-  expect(screen.queryByRole("heading", { name: "Best for profit" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("heading", { name: "Highest estimated margin of these plans" })).not.toBeInTheDocument();
   expect(screen.getByText(/Clover price and harvest cost are missing/)).toBeVisible();
   const diverse = screen.getByRole("article", { name: "Add wheat and clover" });
   expect(within(diverse).queryByText("$0")).not.toBeInTheDocument();

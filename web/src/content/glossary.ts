@@ -89,7 +89,7 @@ export const GLOSSARY: Record<TermId, { term: string; definition: string }> = {
   },
   "comparison-badge": {
     term: "Badges",
-    definition: "Best for profit, most sustainable, lowest weather risk and best for your priorities. Each is the best of the plans you compared, given these numbers and past weather; a badge is left out when it cannot be decided fairly.",
+    definition: "Highest estimated margin of these plans, most sustainable, lowest weather risk and best for your priorities. Each is the best of the plans you compared (not of every possible plan), given these numbers and past weather; a badge is left out when it cannot be decided fairly.",
   },
   "ten-year-plan": {
     term: "Your 10-year plan",

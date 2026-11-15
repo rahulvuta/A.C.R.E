@@ -122,16 +122,17 @@ export function StrategySim({ title, rotation, geometry, monthly, conditions, at
     <div className="ss" aria-label={`${title}: simulation at ${monthTitle(at)}`}>
       <dl className="ss-hud">
         <div>
-          <dt>Spent so far</dt>
+          <dt title="All money spent since the start of the timeline">Spent so far</dt>
           <dd>{fmt(spent)}</dd>
         </div>
         <div>
-          <dt>Earned so far</dt>
+          <dt title="All money earned since the start of the timeline">Earned so far</dt>
           <dd>{fmt(earned)}</dd>
         </div>
         <div className={net != null && net < 0 ? "ss-neg" : "ss-pos"}>
-          <dt>Net so far</dt>
+          <dt title="Running total: earned minus spent, added up month by month since the start of the timeline">Running total</dt>
           <dd>{fmt(net)}</dd>
+          <dd className="ss-range">since the start</dd>
           {!before && cur?.cumulative_net?.p10 != null && cur.cumulative_net.p90 != null && cur.cumulative_net.p10 !== cur.cumulative_net.p90 ? (
             <dd className="ss-range">
               bad year {fmt(cur.cumulative_net.p10)} · good year {fmt(cur.cumulative_net.p90)}
@@ -174,7 +175,7 @@ export function StrategySim({ title, rotation, geometry, monthly, conditions, at
         </li>
         {cond ? (
           <li className="ss-cond">
-            <strong>Soil in a typical {monthShort(month)}:</strong>{" "}
+            <strong>Expected conditions for {monthShort(month)} (same for every plan):</strong>{" "}
             {wet != null ? (
               <>
                 <span className="ss-wet" role="img" aria-label={`Topsoil wetness ${pctOf(wet)}`}>
@@ -188,6 +189,7 @@ export function StrategySim({ title, rotation, geometry, monthly, conditions, at
             {cond.rain_mm?.median != null ? ` · rain ${Math.round(cond.rain_mm.median)} mm` : ""}
             {cond.air_temp_c?.median != null ? ` · ${Math.round(cond.air_temp_c.median)}°C` : ""}
             <span className="ss-src"> NASA model, ~50 km area{conditions?.years ? `, ${conditions.years}` : ""}</span>
+            <small className="ss-note">From this field's weather record: what the month is usually like, not what this plan does to the soil.</small>
           </li>
         ) : null}
       </ul>

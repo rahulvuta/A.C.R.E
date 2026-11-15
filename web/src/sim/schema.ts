@@ -45,6 +45,10 @@ export const monthlySchema = z.object({
   currency: z.string().optional(), origin: originSchema.nullable().optional(),
   timing_origin: originSchema.nullable().optional(), timing_text: z.string().nullable().optional(),
   includes_assumption: z.union([z.string(), z.array(z.string())]).nullable().optional(),
+  /** The most the plan is out of pocket at any point (median is a positive number, 0 when the running total never goes below zero). */
+  funding_gap: z.object({ p10: blankNumber, median: blankNumber, p90: blankNumber, currency: z.string().optional(), origin: originSchema.nullable().optional(), deepest_month: z.string().regex(/^\d{4}-\d{2}$/).nullable().optional(), text: z.string().nullable().optional() }).passthrough().nullable().optional(),
+  /** The first month from which the typical running total stays at or above zero; null when it ends below zero. */
+  break_even_month: z.string().regex(/^\d{4}-\d{2}$/).nullable().optional(),
   months: z.array(z.object({
     month: z.string().regex(/^\d{4}-\d{2}$/),
     costs: monthDist.nullable().optional(), revenue: monthDist.nullable().optional(),
