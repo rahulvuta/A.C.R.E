@@ -482,7 +482,7 @@ def generate_candidates(location: Any, field_context: FieldContext | None = None
     check_cache: dict[str, CheckResult] = {}
 
     def check(plan: Plan, year: int) -> CheckResult:
-        key = plan.model_dump_json() + str(year)
+        key = plan.model_dump_json(exclude={"plan_id", "label"}) + str(year)
         if key not in check_cache:
             check_cache[key] = check_plan(plan, idx, year=year)
         return check_cache[key]

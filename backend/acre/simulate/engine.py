@@ -300,7 +300,7 @@ def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
     ts = engine.threshold_set_for(ctx, [p.next_plant for p in plans.values()])
     legs = {k: leg_seasons(p, ctx, ts) for k, p in plans.items()}
     d = draws(list(legs.values()), inp.runs, inp.years, inp.seed)
-    method = {"weather": "historical_resampling", "runs": inp.runs, "seed": inp.seed,
+    method = {"origin": "calculation", "weather": "historical_resampling", "runs": inp.runs, "seed": inp.seed,
               "years": inp.years, "start_season": str(inp.start_season),
               "source_years": f"{engine.YEARS[0]}-{engine.YEARS[-1]}",
               "pool_years": len(d.pool), "note": NOTE, "draws": CRN_NOTE,
@@ -356,6 +356,7 @@ def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
                                             "on bare soil"},
             "crop_families": fam_n,
             "crop_families_detail": fams,
+            "origins": {"crop_families": "calculation", "operations_per_year": "calculation"},
             "operations_per_year": round(float(m.ops.mean()), 2),
             **(money["totals"] or {}),
         }  # fmt: skip

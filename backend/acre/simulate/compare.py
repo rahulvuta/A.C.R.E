@@ -245,4 +245,10 @@ def compare(scenarios: list[dict[str, Any]], priorities: dict[str, int], years: 
             txt += (", but worse on " + ", ".join(worse) if worse else "") + "."
             out["trade_offs"].append({"scenario_id": s["scenario_id"], "better": better,
                                       "worse": worse, "text": txt})  # fmt: skip
+    for key in ("badges", "not_decided", "trade_offs"):
+        for item in out[key]:
+            item["origin"] = "calculation"
+    for delta in out["deltas"]:
+        for change in delta["changes"]:
+            change["origin"] = "calculation"
     return out

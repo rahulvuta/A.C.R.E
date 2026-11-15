@@ -361,3 +361,20 @@ def test_cover_seed_dates_take_the_window_provenance_only_inside_it():
             if s.origins.get("winter.seed") == "verified_source":
                 src = s.sources["winter.seed"]
                 assert src.get("rule_id")
+
+
+def test_generator_checks_each_semantic_leg_and_year_once(monkeypatch):
+    import acre.planner.generator as generator
+
+    original = generator.check_plan
+    seen = []
+
+    def counted(plan, index, *, year):
+        key = (plan.model_dump_json(exclude={"plan_id", "label"}), year)
+        seen.append(key)
+        return original(plan, index, year=year)
+
+    monkeypatch.setattr(generator, "check_plan", counted)
+    result = gen(goals={"constraints": {"seasons": 2}})
+    assert result.candidates
+    assert len(seen) == len(set(seen))

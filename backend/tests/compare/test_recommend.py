@@ -276,3 +276,66 @@ def test_unprepared_outside_nc_compare_shows_nothing_of_union(client):
     body = r.json()
     assert body["thresholds"]["heavy_rain"]["value"] is None
     assert body["thresholds"]["dry_spring"] == {} and body["meta"]["catalog_version"] is None
+
+
+def test_semantic_leg_cache_reuses_calculations_and_keeps_each_plan_identity(monkeypatch):
+    from acre.compare import engine, locations
+    from acre.compare import recommend as rec
+    from acre.compare.models import PlanComparison
+    from acre.contracts import Plan, Status
+
+    ctx = locations.choose(None, latitude=34.98, longitude=-80.55).ctx
+    assert ctx is not None
+    rec._LEG_CACHE.clear()
+    from acre.api.samples import load_samples
+
+    original = load_samples().plans["corn_soy__no_cover"].plan
+    assert original is not None
+    first = original.model_copy(update={"plan_id": "first", "label": "First field"})
+    second = original.model_copy(update={"plan_id": "second", "label": "Second field"})
+    calls = []
+
+    def analyze(plan, context, thresholds, *, full_season_plan):
+        calls.append(plan)
+        return PlanComparison(plan_id=plan.plan_id, label=plan.label,
+                              status=Status.COMPLETE, plan=plan), {}
+
+    monkeypatch.setattr(engine, "analyze_plan", analyze)
+    cands = [rec.Candidate("a", [first]), rec.Candidate("b", [second])]
+    try:
+        legs, _ = rec.analyze_candidates(cands, ctx)
+        assert len(calls) == 1
+        for key, expected in (("a", first), ("b", second)):
+            result = legs[key][0]
+            assert result.plan_id == expected.plan_id and result.label == expected.label
+            assert result.plan == expected and result.plan is not expected
+        legs["a"][0].plan = legs["a"][0].plan.model_copy(update={"label": "mutated result"})
+        again, _ = rec.analyze_candidates(cands, ctx)
+        assert again["a"][0].plan.label == "First field"
+        assert again["b"][0].plan.label == "Second field" and len(calls) == 1
+        changed = Plan.model_validate({**second.model_dump(), "next_plant": "05-13"})
+        rec.analyze_candidates([rec.Candidate("changed", [changed])], ctx)
+        assert len(calls) == 2
+    finally:
+        rec._LEG_CACHE.clear()
+
+
+def test_cached_wheat_rebinds_its_plan_and_cross_calendar_baseline():
+    from acre.api.samples import load_samples
+    from acre.compare import recommend as rec
+    from acre.compare.models import PlanComparison
+    from acre.contracts import Status
+
+    original = load_samples().plans["corn_soy__no_cover"].plan
+    plan = original.model_copy(update={"plan_id": "wheat_request", "label": "My wheat"})
+    full = original.model_copy(update={"plan_id": "baseline_request"})
+    cached = PlanComparison(
+        plan_id="cached", label=None, status=Status.PARTIAL, plan=original,
+        double_crop={"plan_id": "cached", "cross_calendar": {
+            "full_season": {"plan_id": "cached_baseline"},
+            "double_crop": {"plan_id": "cached"}}})
+    result = rec._candidate_leg(cached, plan, full)
+    assert result.double_crop["plan_id"] == "wheat_request"
+    assert result.double_crop["cross_calendar"]["full_season"]["plan_id"] == "baseline_request"
+    assert result.double_crop["cross_calendar"]["double_crop"]["plan_id"] == "wheat_request"
+    assert cached.double_crop["plan_id"] == "cached"
