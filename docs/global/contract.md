@@ -259,13 +259,13 @@ Common: every response has `meta`, the 9 status words, `origin` on every value, 
    {"scenario_id": "current", "label": "What I do now", "is_baseline": true,
     "rotation": [/* 1..4 Plan objects (one per season of the rotation), cycled over the years */]},
    {"scenario_id": "s2", "label": "Add cereal rye", "rotation": []}],
- "years": 10, "runs": 200, "seed": 7, "start_season": "2027"}
+ "years": 10, "runs": 200, "seed": 7, "start_season": "2027", "climate": "trend"}
 ```
 Response:
 ```json
 {"meta": {}, "status": "complete",
  "method": {"weather": "historical_resampling", "runs": 200, "seed": 7, "source_years": "1981-2025",
-            "note": "Replays real past weather in new orders; not a forecast."},
+            "note": "An evidence-based outlook: this field's real past seasons (1981-2025) replayed in new orders over the next 10 seasons. Rain is adjusted for the trend observed in this record. It shows what to plan for under conditions seen here; it cannot say what any single year will bring."},
  "scenarios": [{"scenario_id": "current", "label": "What I do now", "status": "complete",
    "timeline": [{"year": 2027, "season": "2027", "crop_sequence": ["field_corn", "cereal_rye", "soybean"], "plan_id": "…"}],
    "yearly": [{"year": 2027,
@@ -291,7 +291,7 @@ Response:
               {"badge": "best_for_priorities", "scenario_id": "s2", "why": "…"}],
    "deltas": [{"scenario_id": "s2", "versus": "current", "changes": [{"indicator": "margin_10y", "median_delta": 11000, "currency": "USD", "text": "+$11,000 over 10 years (median)"}]}],
    "trade_offs": [{"scenario_id": "s2", "text": "More cover days but one more field operation a year."}],
-   "caveat": "Best of the scenarios you compared, given these numbers and past weather. Not a forecast."}}
+   "caveat": "The stronger of the plans you compared, given these numbers and the conditions seen at this field. An evidence-based outlook, not a guarantee."}}
 ```
 - A badge is omitted when it can't be decided fairly. For example, `best_profit` needs money for every scenario; otherwise it is left out and the reason goes in `comparison.not_decided[]`.
 - At most 6 scenarios, 1–10 years and 50–500 runs. Rate class: analysis.
@@ -306,6 +306,7 @@ Response:
 - `method`:
   - `{weather: "historical_resampling", runs, seed, years, start_season, source_years, pool_years, note, draws, threshold_set_id, resolution, money_source}`.
   - `pool_years` is the number of past seasons in which every plan of every scenario can be evaluated. Fewer than 15: `status: "insufficient_data"` with an empty `scenarios`.
+  - `climate_adjustment`: from the request field `climate`, `"trend"` (default) or `"none"`. With `"none"` it is `{mode: "none"}`. With `"trend"` it is `{mode: "trend", target_year, alpha, applied, reason, precip_trend, temperature_trend, factor_range, note, text, origin}`: the Theil-Sen trend in this field's own record (Mann-Kendall test), carried to the middle of the outlook. Rain in every replayed season is rescaled by it only when the rain trend is statistically clear (`applied: true`); the temperature trend is context only. `text` says in plain language what was found and done. `reason` is `insufficient_years` or `no_significant_precip_trend` when nothing was applied. The simulator is an evidence-based outlook (what was observed at the field plus its trend, carried through the next N seasons), not a forecast of any single year; `note` says so, and adds a rain-adjustment sentence when `applied` is true.
   - `draws` says that every scenario replays the same past seasons in each run (common random numbers).
   - `money_source` is `economics_library` (B's S3: your values first, then sourced references) or `grower_only`.
 - `scenarios[]` adds `is_baseline`, `money_status` (`complete | partial | unavailable`), `money_gaps[{crop_id?, field, reason, text}]` and `replayed_seasons_sample` (the past years replayed in run 0).

@@ -27,7 +27,7 @@
       }
     ],
     "baseline": "current",
-    "caveat": "Best of the scenarios you compared, given these numbers and past weather. Not a forecast.",
+    "caveat": "The stronger of the plans you compared, given these numbers and the conditions seen at this field. An evidence-based outlook, not a guarantee.",
     "deltas": [
       {
         "changes": [
@@ -165,7 +165,9 @@
   "field": {
     "area_ha": 16.2,
     "area_origin": "grower",
-    "field_id": "fld_example"
+    "field_id": "fld_example",
+    "unzoned_ha": null,
+    "zones": null
   },
   "field_conditions": {
     "months": [
@@ -452,14 +454,43 @@
   },
   "meta": {
     "catalog_version": "v2:8eeb5bf961eb",
-    "plan_version": "sim_7030f168d2612fd3",
+    "plan_version": "sim_d7e03cb300745005",
     "request_id": "req_example",
     "snapshot_hash": "5ce131cfcd1f07d3738ecb9afaec6c3ef6a4764b6a3528bdd2b64debe7ba5f4e"
   },
   "method": {
+    "climate_adjustment": {
+      "alpha": 0.1,
+      "applied": false,
+      "factor_range": null,
+      "mode": "trend",
+      "note": "The trend observed in this field's own record, carried forward to the middle of the outlook. Rain in every replayed season is rescaled by it when the trend is statistically clear; temperature is reported as context only.",
+      "origin": "calculation",
+      "precip_trend": {
+        "origin": "calculation",
+        "p_value": 0.6932,
+        "pct_per_decade": -1.11,
+        "significant": false,
+        "slope_per_decade": -12.937,
+        "unit": "mm/yr per decade",
+        "years": 44
+      },
+      "reason": "no_significant_precip_trend",
+      "target_year": 2031,
+      "temperature_trend": {
+        "origin": "calculation",
+        "p_value": 0.0,
+        "pct_per_decade": null,
+        "significant": true,
+        "slope_per_decade": 0.453,
+        "unit": "C per decade",
+        "years": 44
+      },
+      "text": "No statistically clear trend in yearly rain at this field since 1981 (about -1.1% per decade, within normal year-to-year variation), so rain is used as recorded. Temperature has risen about 0.45 C per decade; it is shown as context and does not change the results."
+    },
     "draws": "Every scenario replays the same sequence of past seasons in each run, so differences come from the plans, not from the draw.",
     "money_source": "economics_library",
-    "note": "Replays real past weather in new orders; not a forecast.",
+    "note": "An evidence-based outlook: this field's real past seasons (1981-2025) replayed in new orders over the next 10 seasons. It shows what to plan for under conditions seen here; it cannot say what any single year will bring.",
     "origin": "calculation",
     "pool_years": 44,
     "resolution": "One NASA POWER cell (~0.5 x 0.625 degrees): fields in one cell share one weather series.",
@@ -498,7 +529,17 @@
       "money_gaps": [],
       "money_status": "complete",
       "monthly": {
+        "break_even_month": "2034-10",
         "currency": "USD",
+        "funding_gap": {
+          "currency": "USD",
+          "deepest_month": "2028-04",
+          "median": 22914,
+          "origin": "calculation",
+          "p10": 22914,
+          "p90": 26142,
+          "text": "The most money this plan is out of pocket at any point: the lowest the running net goes below zero before sales bring it back. Follows the assumed timing of costs and sales."
+        },
         "includes_assumption": "dry_spring_pct",
         "months": [
           {
@@ -4904,6 +4945,14 @@
           "p10": 24272,
           "p90": 38550
         },
+        "margin_per_area_per_year": {
+          "area_unit": "acre",
+          "currency": "USD",
+          "median": 80,
+          "origin": "calculation",
+          "p10": 61,
+          "p90": 96
+        },
         "operations_per_year": 2.0,
         "origins": {
           "crop_families": "calculation",
@@ -5526,7 +5575,8 @@
           },
           "year": 2036
         }
-      ]
+      ],
+      "zones": null
     },
     {
       "events": [
@@ -5554,7 +5604,17 @@
       "money_gaps": [],
       "money_status": "complete",
       "monthly": {
+        "break_even_month": "2036-10",
         "currency": "USD",
+        "funding_gap": {
+          "currency": "USD",
+          "deepest_month": "2028-04",
+          "median": 26517,
+          "origin": "calculation",
+          "p10": 26517,
+          "p90": 29745,
+          "text": "The most money this plan is out of pocket at any point: the lowest the running net goes below zero before sales bring it back. Follows the assumed timing of costs and sales."
+        },
         "includes_assumption": "dry_spring_pct",
         "months": [
           {
@@ -10254,6 +10314,14 @@
           "p10": 6258,
           "p90": 20536
         },
+        "margin_per_area_per_year": {
+          "area_unit": "acre",
+          "currency": "USD",
+          "median": 35,
+          "origin": "calculation",
+          "p10": 16,
+          "p90": 51
+        },
         "operations_per_year": 4.0,
         "origins": {
           "crop_families": "calculation",
@@ -10876,7 +10944,8 @@
           },
           "year": 2036
         }
-      ]
+      ],
+      "zones": null
     }
   ],
   "status": "complete",

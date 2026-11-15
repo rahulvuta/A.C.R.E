@@ -152,7 +152,7 @@ def test_demo_farm_is_deterministic_synthetic_and_simulates(client, scenario):
            {k: v for k, v in other.items() if k != "meta"}
     assert out["label"] == "Demo farm (example values)"
     assert out["synthetic"] and "not sourced" in out["economics_note"]
-    assert "not a forecast" in out["note"]
+    assert "evidence-based outlook" in out["note"] and "forecast" not in out["note"]
     assert len(out["farm"]["fields"]) == 2
     if scenario == "pergamino":
         _prepare()

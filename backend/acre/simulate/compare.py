@@ -12,8 +12,8 @@ from typing import Any
 
 from acre.compare.pareto import pareto
 
-CAVEAT = ("Best of the scenarios you compared, given these numbers and past weather. "
-          "Not a forecast.")  # fmt: skip
+CAVEAT = ("The stronger of the plans you compared, given these numbers and the conditions seen at "
+          "this field. An evidence-based outlook, not a guarantee.")  # fmt: skip
 LOWER, HIGHER = "lower_better", "higher_better"
 
 #: comparison indicator -> (how to read it from totals, direction, label, unit)
@@ -245,6 +245,18 @@ def compare(scenarios: list[dict[str, Any]], priorities: dict[str, int], years: 
             txt += (", but worse on " + ", ".join(worse) if worse else "") + "."
             out["trade_offs"].append({"scenario_id": s["scenario_id"], "better": better,
                                       "worse": worse, "text": txt})  # fmt: skip
+    if years != 10:
+        # the wording follows the horizon that was actually run
+        def fix(v: Any) -> Any:
+            if isinstance(v, str):
+                return v.replace("10-year margin", f"{years}-season crop margin")
+            if isinstance(v, list):
+                return [fix(x) for x in v]
+            if isinstance(v, dict):
+                return {k: fix(x) for k, x in v.items()}
+            return v
+        for key in ("badges", "not_decided", "trade_offs", "deltas"):
+            out[key] = fix(out[key])
     for key in ("badges", "not_decided", "trade_offs"):
         for item in out[key]:
             item["origin"] = "calculation"

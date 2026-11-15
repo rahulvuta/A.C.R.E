@@ -3366,6 +3366,14 @@
             "maxItems": 500,
             "title": "Readings",
             "type": "array"
+          },
+          "zones": {
+            "items": {
+              "$ref": "#/components/schemas/ZoneIn"
+            },
+            "maxItems": 20,
+            "title": "Zones",
+            "type": "array"
           }
         },
         "title": "FieldSimIn",
@@ -6105,24 +6113,42 @@
             "title": "Label"
           },
           "rotation": {
-            "items": {
-              "$ref": "#/components/schemas/Plan"
-            },
-            "maxItems": 10,
-            "minItems": 1,
-            "title": "Rotation",
-            "type": "array"
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Plan"
+                },
+                "maxItems": 10,
+                "minItems": 1,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rotation"
           },
           "scenario_id": {
             "maxLength": 64,
             "minLength": 1,
             "title": "Scenario Id",
             "type": "string"
+          },
+          "zone_rotations": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/Plan"
+              },
+              "maxItems": 10,
+              "minItems": 1,
+              "type": "array"
+            },
+            "title": "Zone Rotations",
+            "type": "object"
           }
         },
         "required": [
-          "scenario_id",
-          "rotation"
+          "scenario_id"
         ],
         "title": "ScenarioIn",
         "type": "object"
@@ -6908,6 +6934,15 @@
       "SimulateRequest": {
         "additionalProperties": false,
         "properties": {
+          "climate": {
+            "default": "trend",
+            "enum": [
+              "none",
+              "trend"
+            ],
+            "title": "Climate",
+            "type": "string"
+          },
           "economics": {
             "$ref": "#/components/schemas/EconomicsIn"
           },
@@ -9054,6 +9089,72 @@
           "eras"
         ],
         "title": "YearsResponse",
+        "type": "object"
+      },
+      "ZoneIn": {
+        "description": "One part of the field with its own plan. Give its size as ``share`` (of the field),\n``area_ha`` or a drawn ``geometry`` (all zones of a field use the same one).",
+        "properties": {
+          "area_ha": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "maximum": 1000000.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Area Ha"
+          },
+          "geometry": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Geometry"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "share": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "maximum": 1.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Share"
+          },
+          "zone_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Zone Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "zone_id"
+        ],
+        "title": "ZoneIn",
         "type": "object"
       }
     }

@@ -244,7 +244,7 @@
     "request_id": "req_example",
     "snapshot_hash": null
   },
-  "note": "Synthetic boundaries, crop dates, equipment, readings and economics for a demo, not a real farm. Money values are example inputs, not sourced references. Replays real past NASA weather in new orders; not a forecast.",
+  "note": "Synthetic boundaries, crop dates, equipment, readings and economics for a demo, not a real farm. Money values are example inputs, not sourced references. An evidence-based outlook from this field's real past seasons. It shows what to plan for under conditions seen here; it cannot say what any single year will bring.",
   "origin": "assumed",
   "resolution_note": "These fields share one NASA POWER weather cell (about 0.5 x 0.625 degrees) and the same historical weather series.",
   "status": "complete",
