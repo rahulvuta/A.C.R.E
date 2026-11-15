@@ -146,3 +146,59 @@ def test_route():
     assert r.status_code == 200 and "meta" in body and body["crops"][0]["status"] == "complete"
     bad = api.post("/v1/economics/estimate", json={"location": UNION, "crops": []})
     assert bad.status_code == 400 and bad.json()["issues"][0]["field"] == "crops"
+
+
+@pytest.mark.parametrize("yield_basis,cost_basis,has_margin", [
+    ("harvested", "planted", False), ("planted", "harvested", False),
+    ("planted", "planted", True), ("unknown", "planted", True),
+    ("harvested", "", True), ("harvested", "unknown", True),
+])
+def test_sourced_area_basis_is_retained_and_conflicts_block_margin(
+        tmp_path, monkeypatch, yield_basis, cost_basis, has_margin):
+    import csv
+
+    for name in data.FILES:
+        with (FIX / f"{name}.csv").open() as f:
+            reader = csv.DictReader(f)
+            fields = list(reader.fieldnames)
+            rows = list(reader)
+        if name in {"yields", "costs"}:
+            fields.append("area_basis")
+            for row in rows:
+                row["area_basis"] = yield_basis if name == "yields" else cost_basis
+        with (tmp_path / f"{name}.csv").open("w", newline="") as f:
+            writer = csv.DictWriter(f, fields)
+            writer.writeheader()
+            writer.writerows(rows)
+    monkeypatch.setenv("ACRE_ECONOMICS_DIR", str(tmp_path))
+    out = crop(estimate_economics(UNION, ["soybean"]), "soybean")
+    assert out["yield"]["area_basis"] == yield_basis
+    assert data.load().yields[0]["area_basis"] == yield_basis
+    total = out["costs"]["total_per_area"]
+    assert total.get("area_basis") == (cost_basis or None)
+    assert (out["margin_per_area"] is not None) is has_margin
+    assert out["revenue_per_area"] is not None
+    if not has_margin:
+        assert out["status"] == "partial"
+        assert "no margin without a sourced area-basis conversion" in out["reason_text"]
+    # Grower inputs carry no invented planted/harvested conversion.
+    grower = crop(estimate_economics(UNION, ["soybean"], overrides={
+        "soybean": {"yield": {"value": 50, "unit": "bu/acre"}}}), "soybean")
+    assert grower["margin_per_area"] is not None
+
+
+@pytest.mark.parametrize("price", [
+    {"value": 1, "unit": 42}, {"value": 1, "unit": "USD/"},
+    {"value": float("nan"), "unit": "USD/bu"},
+    {"value": float("inf"), "unit": "USD/bu"},
+    {"low": 1, "unit": "USD/bu"},
+    {"low": 8, "typical": 4, "high": 1, "unit": "USD/bu"},
+])
+def test_malformed_money_overrides_have_typed_errors(price):
+    with pytest.raises(EconomicsInputError):
+        estimate_economics(UNION, ["soybean"], overrides={"soybean": {"price": price}})
+
+
+def test_nonfinite_area_has_a_typed_error():
+    with pytest.raises(EconomicsInputError):
+        estimate_economics(UNION, ["soybean"], area={"value": float("inf"), "unit": "acre"})

@@ -17,6 +17,7 @@ region's number is borrowed.
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
 from acre.catalogs import crop_ids
@@ -42,10 +43,10 @@ class EconomicsInputError(ValueError):
 
 
 def _split(unit: str | None) -> tuple[str, str] | None:
-    if not unit or "/" not in unit:
+    if not isinstance(unit, str) or "/" not in unit:
         return None
     a, b = unit.split("/", 1)
-    return a.strip(), b.strip()
+    return (a.strip(), b.strip()) if a.strip() and b.strip() else None
 
 
 def _area_factor(src: str, dst: str) -> float | None:
@@ -97,7 +98,8 @@ def _area(area: dict[str, Any] | None) -> tuple[float, str] | None:
     if not isinstance(area, dict):
         raise EconomicsInputError("area", "invalid_area", "area must be {value, unit}")
     v, u = area.get("value"), area.get("unit")
-    if isinstance(v, bool) or not isinstance(v, int | float) or not v > 0 or u not in AREAS:
+    if (isinstance(v, bool) or not isinstance(v, int | float) or
+            not math.isfinite(v) or not v > 0 or not isinstance(u, str) or u not in AREAS):
         raise EconomicsInputError("area", "invalid_area",
                                   "area needs a positive value and unit acre or ha")  # fmt: skip
     return float(v), str(u)
@@ -110,9 +112,13 @@ def _value_unit(x: Any, field: str, *, cases: bool = False) -> dict[str, Any]:
     keys = [k for k in CASES if k in x] if cases else []
     vals = {k: x[k] for k in keys} if keys else {"value": x.get("value")}
     for k, v in vals.items():
-        if isinstance(v, bool) or not isinstance(v, int | float) or v < 0:
+        if (isinstance(v, bool) or not isinstance(v, int | float) or
+                not math.isfinite(v) or v < 0):
             raise EconomicsInputError(f"{field}.{k}", "invalid_override",
                                       f"{field} must be a non-negative number")  # fmt: skip
+    if keys and ("typical" not in vals or list(vals.values()) != sorted(vals.values())):
+        raise EconomicsInputError(field, "invalid_override",
+                                  "price cases need typical and low <= typical <= high")
     return {**{k: float(v) for k, v in vals.items()}, "unit": str(x["unit"])}
 
 
@@ -250,7 +256,8 @@ def _crop(cid: str, chain: list[str], t: data.Tables, ov: dict[str, Any], area_u
         if rows:
             r = rows[0]
             yld = {"value": r["value"], "unit": r["unit"], "origin": r["origin"],
-                   "source": data.source_of(r)}  # fmt: skip
+                   "source": data.source_of(r),
+                   **({"area_basis": r["area_basis"]} if r.get("area_basis") else {})}  # fmt: skip
         else:
             reasons.append("no sourced yield for this region")
     if yld is not None and _split(yld["unit"]) is not None:
@@ -271,6 +278,7 @@ def _crop(cid: str, chain: list[str], t: data.Tables, ov: dict[str, Any], area_u
                     and r.get("year") == first.get("year")]  # fmt: skip
             cost_rows = [{"item": r["item"], "value": r["value"], "unit": r["unit"],
                           "currency": r["currency"], "origin": r["origin"],
+                          **({"area_basis": r["area_basis"]} if r.get("area_basis") else {}),
                           "source": data.source_of(r)} for r in sorted(same, key=lambda r: r["item"])]  # fmt: skip
         else:
             cost_rows = []
@@ -288,10 +296,18 @@ def _crop(cid: str, chain: list[str], t: data.Tables, ov: dict[str, Any], area_u
         total += v
         costs["items"].append({**{k: v2 for k, v2 in c.items() if k != "currency"},
                                "value": _r(v), "unit": unit})  # fmt: skip
+    bases = {c["area_basis"] for c in cost_rows
+             if c.get("area_basis") in {"harvested", "planted"}}
+    if len(bases) > 1:
+        ok = False
+        reasons.append("cost items use conflicting planted and harvested area bases")
     if ok and len(cur_set) == 1:
         cur = next(iter(cur_set))
+        basis = next(iter(bases)) if bases else (
+            "unknown" if any(c.get("area_basis") == "unknown" for c in cost_rows) else None)
         costs["total_per_area"] = {"value": _r(total), "unit": f"{cur}/{area_unit}",
-                                   "currency": cur, "origin": "calculation"}  # fmt: skip
+                                   "currency": cur, "origin": "calculation",
+                                   **({"area_basis": basis} if basis else {})}  # fmt: skip
     elif cost_rows:
         reasons.append("costs could not be totalled (units or currencies differ)")
 
@@ -309,7 +325,13 @@ def _crop(cid: str, chain: list[str], t: data.Tables, ov: dict[str, Any], area_u
                        for k in CASES}  # fmt: skip
             revenue.update(unit=f"{p_cur}/{area_unit}", currency=p_cur, origin="calculation")
             tot = costs["total_per_area"]
-            if tot is not None and tot["currency"] == p_cur:
+            y_basis = yld.get("area_basis")
+            c_basis = (tot or {}).get("area_basis")
+            if (y_basis in {"harvested", "planted"} and
+                    c_basis in {"harvested", "planted"} and y_basis != c_basis):
+                reasons.append(f"yield uses {y_basis} area and costs use {c_basis} area; "
+                               "no margin without a sourced area-basis conversion")
+            elif tot is not None and tot["currency"] == p_cur:
                 margin = {k: _r(revenue[k] - tot["value"]) if revenue[k] is not None else None
                           for k in CASES}  # fmt: skip
                 margin.update(unit=f"{p_cur}/{area_unit}", currency=p_cur, origin="calculation")

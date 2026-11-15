@@ -103,8 +103,47 @@ def test_generator_reports_feasibility_from_field_equipment(api):
         for s in covers:  # no drill and no broadcast seeder: covers need a person to check
             assert s["status"] == "manual_check"
         if not covers:
-            assert f["status"] == "complete"
+            winter_grain = any(x.get("kind") == "winter_grain"
+                               for s in f["seasons"] for x in s["steps"])
+            assert f["status"] == ("manual_check" if winter_grain else "complete")
     plain = api.post("/v1/plans/generate", json={**body, "field": {"field_id": "f1"}}).json()
     assert {c["feasibility"]["status"] for c in plain["candidates"]} == {"unknown"}
     bad = api.post("/v1/plans/generate", json={**body, "field": {"equipment": ["jetpack"]}})
     assert bad.status_code == 400
+
+
+@pytest.mark.parametrize("rule", [
+    _Rule(management_action="seed_after_harvest", guidance="Do not broadcast"),
+    _Rule(management_action="seed_after_harvest", guidance="Overseeding needs local confirmation"),
+    _Rule(management_action="broadcast", review="manual_check"),
+    _Rule(management_action="broadcast", suitability="avoid"),
+])
+def test_broadcast_needs_a_positive_unflagged_method_rule(rule):
+    assert eq.broadcast_rule([rule]) is None
+
+
+def test_generator_broadcast_does_not_borrow_coastal_or_cultivar_rules(api):
+    body = {"location": {"latitude": 34.98, "longitude": -80.55},
+            "field": {"equipment": ["planter", "broadcast_seeder", "sprayer"]},
+            "goals": {"constraints": {"seasons": 1, "must_include": ["crimson_clover"]}}}
+    result = api.post("/v1/plans/generate", json=body).json()
+    assert result["candidates"]
+    for candidate in result["candidates"]:
+        for season in candidate["feasibility"]["seasons"]:
+            for step in season["steps"]:
+                if step["step"] == "cover_seeding":
+                    assert step["status"] == "manual_check"
+
+
+def test_winter_grain_needs_its_own_drill_check(api):
+    result = api.post("/v1/plans/generate", json={
+        "location": {"latitude": 34.98, "longitude": -80.55},
+        "field": {"equipment": ["planter", "sprayer"]},
+        "goals": {"constraints": {"seasons": 1, "must_include": ["winter_wheat"]}},
+    }).json()
+    assert result["candidates"]
+    for candidate in result["candidates"]:
+        assert candidate["feasibility"]["status"] == "manual_check"
+        steps = candidate["feasibility"]["seasons"][0]["steps"]
+        wheat = next(s for s in steps if s["crop_id"] == "winter_wheat")
+        assert wheat["status"] == "manual_check" and wheat["equipment"] == []

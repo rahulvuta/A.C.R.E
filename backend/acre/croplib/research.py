@@ -151,7 +151,8 @@ def _origin(item: dict[str, Any], page: verify.Page | None) -> str | None:
     """``source_checked`` (quote on an allowed page), ``ai_suggested``, or None (dead page)."""
     if page is None or not page.ok:
         return None
-    found = bool(page.text) and verify.normalise(item.get("evidence_quote") or "") in page.text
+    quote = verify.normalise(item.get("evidence_quote") or "")
+    found = bool(page.text) and bool(quote) and quote in page.text
     return "source_checked" if found and guardrails.domain_allowed(item["source_url"]) else (
         "ai_suggested")
 
@@ -259,6 +260,13 @@ def check(answer: dict[str, Any], name: str, region_key: str, sage: dict[str, An
                                  "reason_text": "SAGE has no calendar for this crop here."}  # fmt: skip
         cals.append(cal)
     if len(cals) > 1:  # one calendar per region: keep the best-supported, deterministic order
+        for i, cal in enumerate(cals):
+            if any(any(guardrails.overlaps_sage(cal[k], other.get(k)) is False
+                       for k in ("plant", "harvest"))
+                   for j, other in enumerate(cals) if i != j):
+                cal["review"] = "manual_check"
+                g["flagged"].append({"item": "calendar", "reason":
+                                     "published calendar windows disagree; local confirmation needed"})
         cals.sort(key=lambda x: (x["review"] is not None, x["origin"] != "source_checked",
                                  x["harvest"] is None, str(x["source"]["url"])))  # fmt: skip
         for extra in cals[1:]:
@@ -390,7 +398,7 @@ def start(name: str, region_key: str, *, sage: dict[str, Any] | None = None, ref
         job = CropJob("cj_" + uuid.uuid4().hex[:16], name.strip(), region_key)
         _JOBS[job.job_id] = job
         known = known_crop(name)
-        if known and not crop_ids.EXTRA.get(known):
+        if known and not (library.get_crop(known) or {}).get("researched"):
             job.job_status, job.status, job.reason, job.crop_id = "ready", "complete", "known_crop", known
             job.finished_at = _now()
             return job

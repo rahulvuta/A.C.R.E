@@ -13,6 +13,7 @@ reported, never guessed):
   source_title, source_url, locator, retrieved
 
 An optional ``origin`` column may say ``verified_source`` (default) or ``dataset_estimate``.
+Yield and cost rows may add ``area_basis``: ``harvested``, ``planted`` or ``unknown``.
 ``ACRE_ECONOMICS_DIR`` points elsewhere (tests use labelled synthetic fixtures).
 """
 
@@ -95,6 +96,12 @@ def _row(name: str, n: int, raw: dict[str, str], t: Tables) -> dict[str, Any] | 
         bad(f"origin must be one of {sorted(ORIGINS)}; row dropped")
         return None
     out["origin"] = origin
+    if name in {"yields", "costs"} and r.get("area_basis"):
+        basis = r["area_basis"].lower()
+        if basis not in {"harvested", "planted", "unknown"}:
+            bad("area_basis must be harvested, planted or unknown; row dropped")
+            return None
+        out["area_basis"] = basis
     if name == "prices":
         vals = [out[k] for k in ("low", "typical", "high")]
         if out["typical"] is None:

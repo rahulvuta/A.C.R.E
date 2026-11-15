@@ -155,22 +155,25 @@ def vocab_readings() -> list[dict[str, Any]]:
 
 # --------------------------------------------------------------------------- feasibility
 
-_BROADCAST = re.compile(r"broadcast|overseed|over-seed|aerial", re.I)
+_BROADCAST_METHODS = {"broadcast", "broadcast_seed", "broadcast_seeding", "overseed",
+                      "overseeding", "aerial_overseed", "aerial_overseeding"}
 
 
 def broadcast_rule(rules: list[Any]) -> Any | None:
     """A sourced catalog rule that allows broadcasting (or overseeding) this cover, if any."""
     for r in rules:
-        text = " ".join(str(getattr(r, f, None) or "") for f in
-                        ("management_action", "value_text", "guidance", "applies_when"))  # fmt: skip
-        if _BROADCAST.search(text) and getattr(r, "origin", None) in (
-                "verified_source", "source_checked") and getattr(r, "source_url", None):  # fmt: skip
+        method = str(getattr(r, "management_action", None) or "").strip().lower()
+        if (method in _BROADCAST_METHODS and getattr(r, "origin", None) in (
+                "verified_source", "source_checked") and getattr(r, "source_url", None)
+                and getattr(r, "review", None) != "manual_check"
+                and getattr(r, "suitability", None) not in {"unsuitable", "avoid", "caution"}):
             return r
     return None
 
 
 def season_feasibility(equipment: list[str], next_crop: str, cover: str | None,
-                       cover_rules: list[Any]) -> dict[str, Any]:  # fmt: skip
+                       cover_rules: list[Any], *, grain_crop: str | None = None
+                       ) -> dict[str, Any]:  # fmt: skip
     """What this field's equipment can do for one season: planting, cover seeding, termination.
 
     ``status`` is ``complete`` when every step has equipment, ``manual_check`` when a step needs a
@@ -185,6 +188,12 @@ def season_feasibility(equipment: list[str], next_crop: str, cover: str | None,
                   "status": "complete" if plant_with else "manual_check",
                   "equipment": plant_with[:1],
                   "reason_text": None if plant_with else "No planter or drill is listed."})  # fmt: skip
+    if grain_crop:
+        drills = [e for e in DRILLS if e in have]
+        steps.append({"step": "plant", "crop_id": grain_crop, "kind": "winter_grain",
+                      "status": "complete" if drills else "manual_check",
+                      "equipment": drills[:1],
+                      "reason_text": None if drills else "No grain drill is listed for winter grain."})  # fmt: skip
     if cover:
         drill = [e for e in DRILLS if e in have]
         if drill:

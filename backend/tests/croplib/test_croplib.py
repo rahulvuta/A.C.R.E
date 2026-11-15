@@ -233,3 +233,75 @@ def test_schema_retry_and_failures(api):
 def test_bad_input_is_typed(api, body, field):
     r = api.post("/v1/crops/research", json=body)
     assert r.status_code == 400 and r.json()["issues"][0]["field"] == field
+
+
+def test_version_is_cached_and_writes_invalidate_even_with_same_timestamp(monkeypatch):
+    calls_to(answer())
+    assert research.start("Okra", "US-NC", wait_s=10).job_status == "ready"
+    first = library.version()
+    original = library.connect
+    opens = []
+
+    def counted(*args, **kwargs):
+        opens.append(1)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(library, "connect", counted)
+    assert library.version() == first and opens == []
+    with library.connect() as con:
+        con.execute("UPDATE crops SET name='New okra name' WHERE crop_id='okra'")
+    second = library.version()
+    assert second != first and len(opens) == 2
+    assert library.version() == second and len(opens) == 2
+    # Another process's writes are visible when the short cache expires.
+    import sqlite3
+
+    with sqlite3.connect(library.db_path()) as con:
+        con.execute("UPDATE meta SET value=CAST(value AS INTEGER)+1 WHERE key='revision'")
+    assert library.version() == second
+    monkeypatch.setattr(library.time, "monotonic", lambda: 10**20)
+    assert library.version() != second
+
+
+def test_empty_evidence_is_never_source_checked():
+    a = answer()
+    a["crop"]["evidence_quote"] = ""
+    crop, *_ = research.check(a, "Okra", "US-NC", {}, fake_fetch)
+    assert crop["origin"] == "ai_suggested"
+
+
+def test_conflicting_source_calendars_require_manual_check():
+    a = answer()
+    second_url = "https://second.example.edu/okra"
+    quote = "plant september 1 to october 1 and harvest december 1 to february 1"
+    a["calendars"].append({
+        "plant": {"start": "09-01", "end": "10-01"},
+        "harvest": {"start": "12-01", "end": "02-01"}, **ev(second_url, quote)})
+
+    def fetch(url):
+        return verify.Page(True, text=verify.normalise(quote)) if url == second_url else fake_fetch(url)
+
+    _, calendars, _, guard = research.check(a, "Okra", "US-NC", {}, fetch)
+    assert calendars[0]["review"] == "manual_check"
+    assert any("disagree" in f["reason"] for f in guard["flagged"])
+
+
+def test_economics_only_crops_are_seeded_and_not_researched(api, monkeypatch):
+    from acre.economics import data
+
+    row = {"region_key": "US", "crop_id": "synthetic_econ_crop", "unit": "USD/kg",
+           "currency": "USD", "low": 1, "typical": 2, "high": 3,
+           "origin": "verified_source", "source_title": "Synthetic economics fixture",
+           "source_url": "https://fixture.invalid/economics", "year": "2025"}
+    monkeypatch.setattr(library, "_economics_rows", lambda: [{
+        "crop_id": row["crop_id"], "region_key": "US", "kind": "price", "value": 2,
+        "unit": "USD/kg", "currency": "USD", "year": "2025", "origin": "verified_source",
+        "source": data.source_of(row)}])
+    with library.connect():
+        pass
+    hits = library.search("synthetic econ crop", "US")
+    assert hits[0]["crop_id"] == row["crop_id"] and hits[0]["has_economics"]
+    assert crop_ids.canonical(row["crop_id"]) == row["crop_id"]
+    seen = calls_to(answer())
+    job = research.start("Synthetic econ crop", "US", wait_s=10)
+    assert job.reason == "known_crop" and seen == []

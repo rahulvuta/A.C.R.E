@@ -632,15 +632,27 @@ def _feasibility(idx: RegionalIndex, equipment: list[str], seasons: list[SeasonL
                  ) -> dict[str, Any]:  # fmt: skip
     """S5: per-season equipment feasibility (planting, cover seeding, termination)."""
     from acre.field.equipment import season_feasibility
+    from acre.field.regions import region_match
 
     per = []
     for s in seasons:
         w = s.plan.winter
         cover = w.crop_id if w.kind == "cover" else None
         rules = idx.rules_for_crop(idx.catalog_id(cover) or cover) if cover else []
+        # Equipment availability cannot make a rule for another place or system applicable.
+        rules = [r for r in rules
+                 if (r.region_key != "US-NC" or region_match(r.region, s.plan.region)[0] == "match")
+                 and (not r.previous_crop_id or r.previous_crop_id == s.plan.previous_crop_id)
+                 and (not r.next_crop_id or r.next_crop_id == s.plan.next_crop_id)
+                 and (not r.production_system or r.production_system == s.plan.production_system)
+                 and not r.cultivar_or_maturity_group
+                 and (not r.window_start_mm_dd or not r.window_end_mm_dd or
+                      (w.seed is not None and
+                       _after(r.window_start_mm_dd, w.seed) <=
+                       _after(r.window_start_mm_dd, r.window_end_mm_dd)))]
         per.append({"season": s.season, **season_feasibility(
             equipment, crop_ids.canonical(s.plan.next_crop_id) or s.plan.next_crop_id, cover,
-            rules)})  # fmt: skip
+            rules, grain_crop=w.crop_id if w.kind == "winter_grain" else None)})  # fmt: skip
     statuses = {p["status"] for p in per}
     status = ("unknown" if "unknown" in statuses else
               "manual_check" if "manual_check" in statuses else "complete")  # fmt: skip

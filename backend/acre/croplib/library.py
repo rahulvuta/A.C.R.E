@@ -15,6 +15,7 @@ import hashlib
 import json
 import sqlite3
 import threading
+import time
 from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
@@ -27,6 +28,8 @@ DB_FILE = "croplib.sqlite"
 SCHEMA_VERSION = "1"
 _LOCK = threading.RLock()
 _SEEDED: dict[str, str] = {}  # db path -> seed stamp
+_VERSIONS: dict[str, tuple[float, str]] = {}
+VERSION_TTL_SECONDS = 2.0
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT);
@@ -71,7 +74,12 @@ def connect(seed: bool = True):
             if seed:
                 _seed(con, path)
             yield con
+            if con.total_changes:
+                con.execute("INSERT INTO meta (key, value) VALUES ('revision', '1') "
+                            "ON CONFLICT(key) DO UPDATE SET value=CAST(value AS INTEGER)+1")
             con.commit()
+            if con.total_changes:
+                _VERSIONS.pop(str(path), None)
         finally:
             con.close()
 
@@ -155,6 +163,11 @@ def _seed(con: sqlite3.Connection, path: Path) -> None:
         con.execute("DELETE FROM economics_refs WHERE from_research=0")
         for e in _economics_rows():
             con.execute(
+                "INSERT OR IGNORE INTO crops (crop_id, name, roles, aliases, origin, sources, "
+                "cached_at) VALUES (?,?,?,?,?,?,?)",
+                (e["crop_id"], e["crop_id"].replace("_", " ").capitalize(),
+                 json.dumps(["cash_crop"]), "[]", e["origin"], json.dumps([e["source"]]), now))
+            con.execute(
                 "INSERT INTO economics_refs (crop_id, region_key, kind, value, unit, currency, "
                 "year, origin, source, from_research) VALUES (?,?,?,?,?,?,?,?,?,0)",
                 (e["crop_id"], e["region_key"], e["kind"], e["value"], e["unit"], e["currency"],
@@ -168,6 +181,7 @@ def reset() -> None:
     """Tests: forget what was seeded and loaded in this process."""
     with _LOCK:
         _SEEDED.clear()
+        _VERSIONS.clear()
         crop_ids.clear_extra()
 
 
@@ -176,12 +190,22 @@ def reset() -> None:
 
 def version() -> str:
     """Changes whenever a researched crop or calendar is stored (part of regional cache keys)."""
-    if not db_path().exists():
-        return "empty"
-    with connect(seed=False) as con:
-        r = con.execute("SELECT COUNT(*) n, MAX(cached_at) m FROM calendars").fetchone()
-        c = con.execute("SELECT COUNT(*) n FROM crops WHERE researched=1").fetchone()
-    return f"{r['n']}:{r['m']}:{c['n']}"
+    path = db_path()
+    with _LOCK:
+        if not path.exists():
+            _VERSIONS.pop(str(path), None)
+            return "empty"
+        cached = _VERSIONS.get(str(path))
+        now = time.monotonic()
+        if cached and now - cached[0] < VERSION_TTL_SECONDS:
+            return cached[1]
+        with connect(seed=False) as con:
+            revision = con.execute("SELECT value FROM meta WHERE key='revision'").fetchone()
+            r = con.execute("SELECT COUNT(*) n, MAX(cached_at) m FROM calendars").fetchone()
+            c = con.execute("SELECT COUNT(*) n FROM crops WHERE researched=1").fetchone()
+        value = f"{revision['value'] if revision else '0'}:{r['n']}:{r['m']}:{c['n']}"
+        _VERSIONS[str(path)] = (now, value)
+        return value
 
 
 def load_extras(loaded: list[str]) -> bool:
@@ -192,9 +216,10 @@ def load_extras(loaded: list[str]) -> bool:
     if loaded and loaded[0] == v:
         return False
     with connect(seed=False) as con:
-        rows = con.execute("SELECT * FROM crops WHERE researched=1").fetchall()
+        rows = con.execute("SELECT * FROM crops").fetchall()
     for r in rows:
-        crop_ids.register(_crop_id_obj(r))
+        if r["crop_id"] not in crop_ids.BY_ID:
+            crop_ids.register(_crop_id_obj(r))
     loaded[:] = [v]
     return True
 
