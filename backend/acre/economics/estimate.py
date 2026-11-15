@@ -386,6 +386,45 @@ def _crop(cid: str, chain: list[str], t: data.Tables, ov: dict[str, Any], area_u
           us: bool, area: tuple[float, str] | None,
           refs: list[dict[str, Any]] = ()) -> dict[str, Any]:  # type: ignore[assignment]  # fmt: skip
     reasons: list[str] = []
+    # Owner-requested presentation samples. Never label these as sourced values.
+    mock_fields = set()
+    ov = dict(ov)
+    info = crop_ids.info(cid)
+    cover = info is not None and info.role == "cover_crop"
+    samples = {
+        "maize": (0.20, 4200, 110), "maize_second": (0.20, 3300, 95),
+        "soybean": (0.45, 1250, 65), "winter_wheat": (0.24, 2400, 40),
+        "spring_wheat": (0.25, 2000, 40), "barley": (0.22, 2200, 35),
+        "winter_barley": (0.22, 2400, 35), "winter_rye": (0.23, 1800, 35),
+        "rice": (0.30, 3500, 80), "cotton": (1.60, 400, 100),
+        "potato": (0.25, 14000, 450), "groundnut": (0.55, 1800, 100),
+        "sunflower": (0.45, 1000, 45), "winter_rapeseed": (0.48, 1300, 45),
+    }
+    sample_price, sample_yield, seed = samples.get(cid, (0.28, 2000, 45))
+    if cover:
+        sample_price, sample_yield, seed = 0.0, 0.0, 35
+    qty = _split(ov.get("price", {}).get("unit"))
+    yqty = _split(ov.get("yield", {}).get("unit"))
+    quantity = qty[1] if qty else yqty[0] if yqty else "kg"
+    currency = qty[0] if qty else "USD"
+    if quantity == "bu":
+        sample_price, sample_yield = (5.0, 100.0) if not cover else (0.0, 0.0)
+    elif quantity == "t":
+        sample_price, sample_yield = sample_price * 1000, sample_yield / 1000
+    elif quantity == "lb":
+        sample_price, sample_yield = sample_price / 2.20462262, sample_yield * 2.20462262
+    if "price" not in ov:
+        mock_fields.add("price")
+        ov["price"] = {"low": sample_price * 0.8, "typical": sample_price,
+                       "high": sample_price * 1.2, "unit": f"{currency}/{quantity}"}
+    if "yield" not in ov:
+        mock_fields.add("yield")
+        ov["yield"] = {"value": sample_yield * (ACRES_PER_HA if area_unit == "ha" else 1),
+                       "unit": f"{quantity}/{area_unit}"}
+    if "costs" not in ov:
+        mock_fields.add("costs")
+        ov["costs"] = {"items": [{"item": "seed", "value": seed,
+                                   "unit": f"{currency}/acre"}]}
     # price
     price: dict[str, Any] | None = None
     if "price" in ov:
@@ -506,6 +545,14 @@ def _crop(cid: str, chain: list[str], t: data.Tables, ov: dict[str, Any], area_u
     out: dict[str, Any] = {"crop_id": cid, "name": _name(cid), "status": status, "price": price,
                            "yield": yld, "costs": costs, "revenue_per_area": revenue,
                            "margin_per_area": margin}  # fmt: skip
+    if mock_fields:
+        for key in ("price", "yield"):
+            if key in mock_fields and out[key]:
+                out[key]["origin"] = "assumed"
+        if "costs" in mock_fields:
+            for item in out["costs"]["items"]:
+                item["origin"] = "assumed"
+        out["reason_text"] = "Demo mock values: rough illustrative inputs, not sourced estimates. Margin is crop sales minus the costs listed; seed-only samples exclude other production costs."
     crop_info = crop_ids.info(cid)
     out["aliases"] = list(crop_info.aliases) if crop_info else []
     out["suggestions"] = _suggestions(refs)
