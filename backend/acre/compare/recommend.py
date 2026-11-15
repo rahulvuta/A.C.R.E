@@ -151,7 +151,26 @@ def _from_generated(raw: Any, i: int) -> Candidate:
 
 
 def _plan_key(p: Plan) -> str:
-    return hashlib.sha256(json.dumps(p.model_dump(mode="json"), sort_keys=True).encode()).hexdigest()
+    return hashlib.sha256(json.dumps(
+        p.model_dump(mode="json", exclude={"plan_id", "label"}), sort_keys=True).encode()).hexdigest()
+
+
+def _analysis_plan(plan: Plan) -> Plan:
+    """Presentation does not affect agronomy; keep caller objects outside the shared cache."""
+    return plan.model_copy(deep=True, update={"plan_id": _plan_key(plan), "label": None})
+
+
+def _candidate_leg(cached: PlanComparison, plan: Plan, full: Plan | None) -> PlanComparison:
+    result = cached.model_copy(deep=True, update={
+        "plan_id": plan.plan_id, "label": plan.label, "plan": plan.model_copy(deep=True)})
+    if result.double_crop is not None:
+        result.double_crop["plan_id"] = plan.plan_id
+        cross = result.double_crop.get("cross_calendar", {})
+        if "full_season" in cross and full is not None:
+            cross["full_season"]["plan_id"] = full.plan_id
+        if "double_crop" in cross:
+            cross["double_crop"]["plan_id"] = plan.plan_id
+    return result
 
 
 def analyze_candidates(cands: list[Candidate], ctx: Context) -> tuple[dict[str, list[PlanComparison]],
@@ -177,8 +196,10 @@ def analyze_candidates(cands: list[Candidate], ctx: Context) -> tuple[dict[str, 
             if k not in _LEG_CACHE:
                 if len(_LEG_CACHE) >= _LEG_CACHE_MAX:
                     _LEG_CACHE.pop(next(iter(_LEG_CACHE)))
-                _LEG_CACHE[k] = engine.analyze_plan(p, ctx, ts, full_season_plan=full)[0]
-            out.append(_LEG_CACHE[k])  # read-only here: recommendation never edits a leg
+                _LEG_CACHE[k] = engine.analyze_plan(
+                    _analysis_plan(p), ctx, ts,
+                    full_season_plan=_analysis_plan(full) if full else None)[0]
+            out.append(_candidate_leg(_LEG_CACHE[k], p, full))
         legs[c.candidate_id] = out
     return legs, ts
 
