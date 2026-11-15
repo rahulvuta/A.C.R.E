@@ -582,7 +582,12 @@ def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
     d = draws(list(legs.values()), inp.runs, inp.years, inp.seed)
     source_years = f"{engine.YEARS[0]}-{engine.YEARS[-1]}"
     note = method_note(source_years, inp.years, bool(climate and climate.get("applied")))
-    method = {"origin": "calculation", "weather": "historical_resampling", "runs": inp.runs, "seed": inp.seed,
+    from acre.confidence import rating
+
+    confidence = rating(len(d.pool), len(engine.YEARS),
+                        "Share of historical candidate seasons evaluable for every compared "
+                        "plan. This measures historical data coverage, not forecast skill.")
+    method = {"confidence": confidence, "origin": "calculation", "weather": "historical_resampling", "runs": inp.runs, "seed": inp.seed,
               "years": inp.years, "start_season": str(inp.start_season),
               "source_years": source_years,
               "pool_years": len(d.pool), "note": note, "draws": CRN_NOTE,
@@ -603,6 +608,15 @@ def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
     out = []
     mats: dict[str, Matrices] = {}
     for sc in inp.scenarios:
+        from acre.confidence import SUPPORTED
+
+        used = {c for rot in sc.all_rotations() for p in rot[:inp.years]
+                for c in (p.next_crop_id, p.winter.crop_id) if c}
+        supported = sum(cm[c].origins.get(k) in SUPPORTED
+                        for c in used for k in ("price", "yield", "costs"))
+        estimate_confidence = rating(supported, 3 * len(used),
+                                     "Share of crop price, yield and cost inputs supplied by "
+                                     "the grower or traceable sources; mock inputs score zero.")
         parts = _parts(sc, inp)
         part_ms = [matrices(z, legs, d, inp.years) for z in parts]
         m = combine(part_ms, [z.weight for z in parts])
@@ -646,7 +660,8 @@ def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
             "operations_per_year": round(float(m.ops.mean()), 2),
             **(money["totals"] or {}),
         }  # fmt: skip
-        out.append({"scenario_id": sc.scenario_id, "label": sc.label,
+        out.append({"confidence": confidence, "estimate_confidence": estimate_confidence,
+                    "scenario_id": sc.scenario_id, "label": sc.label,
                     "is_baseline": sc.is_baseline, "status": "complete",
                     "timeline": _timeline(max(parts, key=lambda z: z.weight).rotation, inp),
                     "zones": _zone_info(sc, parts, inp), "yearly": yearly, "totals": totals,
