@@ -54,11 +54,11 @@ def set_transport(t: httpx.BaseTransport | None) -> None:
         _TRANSPORT.append(t)
 
 
-def _live(body: dict[str, Any]) -> Reply:
+def _live(body: dict[str, Any], *, timeout_s: float = TIMEOUT_S) -> Reply:
     headers = {"Authorization": f"Bearer {os.environ.get(KEY_ENV, '').strip()}",
                "HTTP-Referer": REFERER, "X-Title": TITLE,
                "Content-Type": "application/json"}  # fmt: skip
-    kw: dict[str, Any] = {"timeout": httpx.Timeout(TIMEOUT_S, connect=20.0)}
+    kw: dict[str, Any] = {"timeout": httpx.Timeout(timeout_s, connect=20.0)}
     if _TRANSPORT:
         kw["transport"] = _TRANSPORT[0]
     try:
@@ -112,7 +112,7 @@ def set_caller(fn: Callable[[dict[str, Any]], Any] | None) -> None:
         _CALLER.append(fn)
 
 
-def call(body: dict[str, Any]) -> Reply:
+def call(body: dict[str, Any], *, timeout_s: float = TIMEOUT_S) -> Reply:
     if _CALLER:
         out = _CALLER[0](body)
         if isinstance(out, Reply):
@@ -120,4 +120,4 @@ def call(body: dict[str, Any]) -> Reply:
         return Reply(out if isinstance(out, str) else json.dumps(out), None)
     if not configured():
         raise ResearchError("research_not_configured")
-    return _live(body)
+    return _live(body, timeout_s=timeout_s)

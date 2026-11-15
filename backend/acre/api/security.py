@@ -43,8 +43,9 @@ _SALT = secrets.token_bytes(16)
 
 CHEAP, ANALYSIS, GEO, WEATHER, RESEARCH = "cheap", "analysis", "geo", "weather_prepare", "research"
 RESEARCH_PATH = "/v1/regions/research"
+CONDITIONS_RESEARCH_PATH = "/v1/field/conditions/assess"
 RESEARCH_PATHS = frozenset({RESEARCH_PATH, "/v1/crops/research", "/v1/economics/research",
-                            "/v1/calendars/research"})  # fmt: skip
+                            "/v1/calendars/research", "/v1/field/conditions/assess"})  # fmt: skip
 REFRESH_PATHS = RESEARCH_PATHS | {"/v1/weather/prepare"}
 # GETs that compute or call an outside service; every other GET is cheap.
 _ANALYSIS_GET = re.compile(r"^/v1/(soil|live|locations/capabilities|seasons/[^/]+/replay"
@@ -108,6 +109,8 @@ def route_class(method: str, path: str) -> str | None:
     if method == "POST":
         if path == "/v1/weather/prepare":
             return WEATHER
+        if path == CONDITIONS_RESEARCH_PATH:
+            return ANALYSIS  # field edits may check several variables in one session
         if path in RESEARCH_PATHS:
             return RESEARCH
         return CHEAP if path in _CHEAP_POST else ANALYSIS
@@ -322,7 +325,7 @@ class LimitsMiddleware:
                     return {"type": "http.request", "body": body, "more_body": False}
                 return await receive()
 
-        if cls == RESEARCH:
+        if cls == RESEARCH or method == "POST" and path == CONDITIONS_RESEARCH_PATH:
             await self._research(scope, inner_receive, send)
             return
         await self.app(scope, inner_receive, send)

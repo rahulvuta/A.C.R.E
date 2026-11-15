@@ -54,7 +54,8 @@ def test_vocab_routes(api):
     assert set(eq.EQUIPMENT) <= set(ids) and all(x["label"] for x in e["equipment"])
     r = api.get("/v1/vocab/readings").json()
     assert {x["kind"] for x in r["readings"]} == {"soil_moisture_pct", "soil_moisture_vwc",
-                                                  "rainfall_mm", "soil_temp_c", "note"}  # fmt: skip
+                                                      "rainfall_mm", "soil_temp_c", "note", "soil_ph",
+                                                      "organic_matter_pct", "salinity_ds_m", "custom"}  # fmt: skip
     assert "meta" in e and "meta" in r
 
 

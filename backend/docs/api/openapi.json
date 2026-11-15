@@ -1686,6 +1686,48 @@
         "title": "CompareResponse",
         "type": "object"
       },
+      "ConditionsRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "as_of": {
+            "format": "date",
+            "title": "As Of",
+            "type": "string"
+          },
+          "crops": {
+            "items": {
+              "maxLength": 80,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 30,
+            "title": "Crops",
+            "type": "array"
+          },
+          "location": {
+            "$ref": "#/components/schemas/LocationIn"
+          },
+          "readings": {
+            "items": {
+              "$ref": "#/components/schemas/Reading"
+            },
+            "maxItems": 500,
+            "title": "Readings",
+            "type": "array"
+          },
+          "region_key": {
+            "default": "unknown",
+            "maxLength": 120,
+            "title": "Region Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "location"
+        ],
+        "title": "ConditionsRequest",
+        "type": "object"
+      },
       "ConflictGroup": {
         "description": "Catalog-declared conflicting rules. Both are shown; no winner is picked.",
         "properties": {
@@ -3366,6 +3408,12 @@
             "maxItems": 500,
             "title": "Readings",
             "type": "array"
+          },
+          "region_key": {
+            "default": "unknown",
+            "maxLength": 120,
+            "title": "Region Key",
+            "type": "string"
           },
           "zones": {
             "items": {
@@ -5079,10 +5127,42 @@
               "soil_moisture_vwc",
               "rainfall_mm",
               "soil_temp_c",
+              "soil_ph",
+              "organic_matter_pct",
+              "salinity_ds_m",
+              "custom",
               "note"
             ],
             "title": "Kind",
             "type": "string"
+          },
+          "moisture_basis": {
+            "anyOf": [
+              {
+                "enum": [
+                  "saturation",
+                  "volumetric",
+                  "sensor_percent"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Moisture Basis"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
           },
           "note": {
             "anyOf": [
@@ -5095,6 +5175,18 @@
               }
             ],
             "title": "Note"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "maxLength": 30,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
           },
           "value": {
             "anyOf": [
@@ -5116,7 +5208,7 @@
         "type": "object"
       },
       "ReadingIn": {
-        "description": "Contract \u00a714. A farmer's own reading: shown beside modeled values, never mixed in.",
+        "description": "A grower's measurement, preferred to a compatible estimate for this field.",
         "properties": {
           "date": {
             "format": "date",
@@ -5142,10 +5234,42 @@
               "soil_moisture_vwc",
               "rainfall_mm",
               "soil_temp_c",
+              "soil_ph",
+              "organic_matter_pct",
+              "salinity_ds_m",
+              "custom",
               "note"
             ],
             "title": "Kind",
             "type": "string"
+          },
+          "moisture_basis": {
+            "anyOf": [
+              {
+                "enum": [
+                  "saturation",
+                  "volumetric",
+                  "sensor_percent"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Moisture Basis"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
           },
           "note": {
             "anyOf": [
@@ -5158,6 +5282,18 @@
               }
             ],
             "title": "Note"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "maxLength": 30,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
           },
           "value": {
             "anyOf": [
@@ -9897,6 +10033,104 @@
         "summary": "Post Fertilizer",
         "tags": [
           "tools"
+        ]
+      }
+    },
+    "/v1/field/conditions": {
+      "post": {
+        "operationId": "conditions_v1_field_conditions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConditionsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Conditions",
+        "tags": [
+          "field"
+        ]
+      }
+    },
+    "/v1/field/conditions/assess": {
+      "post": {
+        "operationId": "assess_conditions_v1_field_conditions_assess_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConditionsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Assess Conditions",
+        "tags": [
+          "field"
         ]
       }
     },

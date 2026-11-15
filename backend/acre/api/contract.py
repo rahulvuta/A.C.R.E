@@ -4,8 +4,9 @@
     python -m acre.api.contract --check  # exit 1 if the committed files are stale
 
 Examples are generated from the real Union County sample by calling the app with the network
-disabled (``ACRE_OFFLINE=1``). Only ``meta.request_id`` is replaced (``req_example``) so
-the files are stable. ``tests/api/test_api_contract.py`` validates every example against the
+disabled (``ACRE_OFFLINE=1``). Current field conditions use the fixed reference date 2025-12-31;
+``meta.request_id`` is replaced with ``req_example`` so the files are stable.
+``tests/api/test_api_contract.py`` validates every example against the
 frozen schema and fails when the committed files drift from the code.
 """
 
@@ -18,8 +19,10 @@ import sys
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 from typing import Any
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 API_DIR = ROOT / "docs" / "api"
@@ -280,7 +283,12 @@ def _normalize(body: Any) -> Any:
 
 
 def build_examples() -> dict[str, tuple[Example, dict[str, Any] | None, Any]]:
-    with seeded_cache(), offline():
+    class ExampleDate(date):
+        @classmethod
+        def today(cls) -> date:
+            return cls(2025, 12, 31)
+
+    with seeded_cache(), offline(), patch("acre.field.conditions.date", ExampleDate):
         return _build_examples()
 
 
