@@ -293,6 +293,7 @@ export function latestOnly() {
 */
 /** A simulation runs ~200 sequences of seasons per plan; on a small server (or one waking up) that can take a minute. */
 export const SIMULATE_TIMEOUT_MS = 120_000;
+export const PLANNING_TIMEOUT_MS = 120_000;
 
 export function createGlobalClient(opts: { apiBase: string | null; timeoutMs: number; fetchImpl?: FetchLike }) {
   const fetchImpl: FetchLike = opts.fetchImpl ?? ((u, init) => fetch(u, init));
@@ -301,24 +302,33 @@ export function createGlobalClient(opts: { apiBase: string | null; timeoutMs: nu
   const offline: Failure = { ok: false, kind: "offline", message: "This needs the A.C.R.E service, which is not connected in this build." };
   const post = (body: unknown) => ({ method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
   const coords = (p: LatLon) => `lat=${encodeURIComponent(p.latitude)}&lon=${encodeURIComponent(p.longitude)}`;
+  const inFlight = new Map<string, Promise<Result<unknown>>>();
 
   async function call<B, T>(
     path: string,
     schema: ZodType<B, ZodTypeDef, unknown>,
     make: (b: B) => T,
     init?: { method?: string; headers?: Record<string, string>; body?: string },
-    timeoutMs = base.timeoutMs,
+    timeoutMs = /^\/v1\/plans\/(generate|recommend|future)$/.test(path) ? Math.max(base.timeoutMs, PLANNING_TIMEOUT_MS) : base.timeoutMs,
   ): Promise<Result<T>> {
     const url = api(path);
     if (!url) return offline;
-    const r = await getJson(url, schema, { ...base, timeoutMs, init });
-    if (!r.ok) return r;
-    try {
-      return { ok: true, data: make(r.data), origin: "live" };
-    } catch (err) {
-      const issue = (err as { issues?: Array<{ path: Array<string | number>; message: string }> }).issues?.[0];
-      return { ok: false, kind: "schema", message: "The data does not match the agreed format.", detail: issue ? `${issue.path.join(".")}: ${issue.message}` : String(err) };
-    }
+    const key = JSON.stringify([url, init, timeoutMs]);
+    const pending = inFlight.get(key);
+    if (pending) return pending as Promise<Result<T>>;
+    const request = (async (): Promise<Result<T>> => {
+      const r = await getJson(url, schema, { ...base, timeoutMs, init });
+      if (!r.ok) return r;
+      try {
+        return { ok: true, data: make(r.data), origin: "live" };
+      } catch (err) {
+        const issue = (err as { issues?: Array<{ path: Array<string | number>; message: string }> }).issues?.[0];
+        return { ok: false, kind: "schema", message: "The data does not match the agreed format.", detail: issue ? `${issue.path.join(".")}: ${issue.message}` : String(err) };
+      }
+    })();
+    inFlight.set(key, request);
+    try { return await request; }
+    finally { inFlight.delete(key); }
   }
 
   return {

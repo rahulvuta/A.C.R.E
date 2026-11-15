@@ -11,7 +11,7 @@ import { BASELINE_ID } from "../../state/simField";
 export function StepCompare({ ctx }: { ctx: StepContext }) {
   const { sim, field } = ctx;
   const req = simulateRequest(ctx, sim.scenarios);
-  const { sim: result, run } = useSimulation(ctx.api.client, sim.scenarios.length ? req : null, true);
+  const { sim: result, run } = useSimulation(ctx.api.client, sim.scenarios.length ? req : null, ctx.active !== false);
   const choose = (id: string) => {
     updateSimField(field!.field_id, { chosenId: id });
     ctx.go("plan");

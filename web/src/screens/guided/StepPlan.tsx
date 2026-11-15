@@ -43,7 +43,7 @@ export function StepPlan({ ctx }: { ctx: StepContext }) {
   const scenario = chosenId === BASELINE_ID ? baselineOf(sim) : (sim.scenarios.find((s) => s.scenarioId === chosenId) ?? baselineOf(sim));
   const inCompare = sim.scenarios.some((s) => s.scenarioId === scenario.scenarioId);
   const req = simulateRequest(ctx, inCompare ? sim.scenarios : []);
-  const { sim: result, run } = useSimulation(ctx.api.client, req, true);
+  const { sim: result, run } = useSimulation(ctx.api.client, req, ctx.active !== false);
   const res = result.state === "ready" ? result.data.scenarios.find((s) => s.scenarioId === scenario.scenarioId) : undefined;
   // U4's timeline reads the §11 scenario in the backend's shape plus the rotation it was simulated from (for dates).
   const u4 =

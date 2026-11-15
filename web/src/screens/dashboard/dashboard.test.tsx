@@ -58,3 +58,23 @@ describe("dashboard", () => {
     expect(within(card).getByRole("button", { name: "Open East" })).toBeInTheDocument();
   });
 });
+
+it("keeps rotation edits on the field and returns Done to its overview", async () => {
+  window.scrollTo = () => {};
+  const farm = farmActions.createFarm("My farm", { latitude: 40, longitude: 1 });
+  const field = farmActions.addField(farm.farm_id, square(1), "Rotation test");
+  const { updateSimField, resetSimFieldsForTests } = await import("../../state/simField");
+  const { fireEvent } = await import("@testing-library/react");
+  resetSimFieldsForTests();
+  updateSimField(field.field_id, { rotation: [{ plan_id: "synthetic", previous_crop_id: "field_corn", prev_harvest: "09-20", winter: { kind: "none" }, next_crop_id: "soybean", next_plant: "05-10" }] });
+  render(<Dashboard />);
+  fireEvent.click(screen.getByRole("button", { name: "Open Rotation test" }));
+  fireEvent.click(screen.getByRole("button", { name: "Edit crop rotation" }));
+  fireEvent.change(screen.getByRole("textbox", { name: "Next planting" }), { target: { value: "05-11" } });
+  fireEvent.click(screen.getByRole("button", { name: "Done, back to field" }));
+  expect(screen.getByRole("tab", { name: "Overview" })).toHaveAttribute("aria-selected", "true");
+  expect(window.location.hash).toBe(`#d=f/${field.field_id}/overview`);
+  expect(screen.queryByRole("heading", { name: "Where is your field?" })).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Edit crop rotation" }));
+  expect(screen.getByRole("textbox", { name: "Next planting" })).toHaveValue("05-11");
+});

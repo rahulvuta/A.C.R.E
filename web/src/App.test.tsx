@@ -19,13 +19,13 @@ describe("routes", () => {
     expect(screen.queryByText(/sign in|log in|sign up/i)).toBeNull();
   });
 
-  it("?view=app opens the guided simulator at step 1, with the demo farms and the deep-dive", async () => {
+  it("?view=app opens the guided simulator at step 1 with the demo farms", async () => {
     go("/?view=app");
     render(<App />);
     // Routes other than the dashboard load on demand.
     expect(await screen.findByRole("heading", { name: "Where is your farm?" }, { timeout: 5000 })).toBeInTheDocument();
     expect(screen.getByRole("region", { name: "Try a demo farm" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Union County deep-dive/ })).toHaveAttribute("href", "?view=demo");
+    expect(screen.queryByRole("link", { name: /Union County deep-dive/ })).toBeNull();
   });
 
   it("?view=fields still opens the per-field workspace", async () => {

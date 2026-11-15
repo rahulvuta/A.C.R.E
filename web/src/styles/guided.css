@@ -45,7 +45,7 @@
 .gf-demo-btn strong { font-size: 17px; color: var(--action); }
 .gf-demo-btn span { font-size: 14px; color: var(--ink-muted); }
 .gf-demo-btn:hover:not(:disabled) { border-color: var(--action); }
-.gf-map { height: max(440px, calc(100vh - 360px)); }
+.gf-map { min-height: max(560px, calc(100dvh - 210px)); }
 .gf-fields { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
 .gf-field { display: grid; gap: 2px; width: 100%; text-align: left; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font: inherit; cursor: pointer; }
 .gf-field[aria-pressed="true"] { border-color: var(--action); background: var(--accent-soft); }

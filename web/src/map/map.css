@@ -2,7 +2,7 @@
 .mp-screen {
   display: grid;
   grid-template-columns: minmax(320px, 380px) 1fr;
-  height: 100%;
+  align-items: stretch;
   min-height: 560px;
   background: var(--surface-2);
 }
@@ -11,7 +11,7 @@
   flex-direction: column;
   gap: var(--sp-4);
   padding: var(--sp-5);
-  overflow-y: auto;
+  overflow: visible;
   background: var(--surface);
   border-right: var(--border);
 }
