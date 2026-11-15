@@ -1,8 +1,13 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { inputsApi, type InputsApi } from "./api";
-import { ErrorNotice, OriginLabel, SourceLabel, display, errorText, readable } from "./shared";
+import { ErrorNotice, OriginLabel, SourceLabel, errorText } from "./shared";
 import type { Crop, ResearchJob } from "./schema";
 
+/*
+  Crop picker: a search box with a dropdown of crops already in the shared library. Typing
+  filters the list; a crop that is not there can be looked up ("researched") and is then saved
+  to the library. Details are shown only for the crop that was picked.
+*/
 export interface CropPickerProps {
   regionKey: string;
   value: Crop | null;
@@ -10,16 +15,16 @@ export interface CropPickerProps {
   api?: InputsApi;
   label?: string;
 }
+const yesNo = (v: boolean | null) => (v === null ? "Not available" : v ? "Yes" : "No");
 function CropFacts({ crop, researched = false }: { crop: Crop; researched?: boolean }) {
   const calendar = crop.has_calendar ?? (crop.calendars ? crop.calendars.length > 0 : null);
   const economics = crop.has_economics ?? (crop.economics_refs ? crop.economics_refs.length > 0 : null);
   return <div className="acre-input-crop-facts">
-    <span>Family: {display(crop.family)}</span><span>Use: {crop.roles.length ? crop.roles.map(readable).join(", ") : "Not available"}</span>
+    {crop.family ? <span>Family: {crop.family}</span> : null}
     <OriginLabel origin={crop.origin} />
     {(researched || crop.origin === "ai_suggested" || crop.origin === "source_checked") && <span className="acre-input-ai">AI-suggested · review before use</span>}
-    <span>Calendar: {calendar === null ? "Not available" : calendar ? "Available" : "Not available"}</span>
-    <span>Prices and costs: {economics === null ? "Not available" : economics ? "Available" : "Not available"}</span>
-    {crop.region_note && <span>{crop.region_note}</span>}
+    {calendar !== null ? <span>Local planting dates: {yesNo(calendar)}</span> : null}
+    {economics !== null ? <span>Local prices: {yesNo(economics)}{economics === false ? " (you can enter yours)" : ""}</span> : null}
     {crop.sources?.map((source, i) => <SourceLabel key={i} source={source} />)}
   </div>;
 }
@@ -30,40 +35,57 @@ function pause(signal: AbortSignal) {
     if (signal.aborted) abort(); else signal.addEventListener("abort", abort, { once: true });
   });
 }
+const norm = (s: string) => s.trim().toLowerCase().replaceAll("_", " ");
+
 export function CropPicker({ regionKey, value, onChange, api = inputsApi, label = "Crop" }: CropPickerProps) {
   const id = useId();
+  const listId = `${id}-list`;
   const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const [changing, setChanging] = useState(false);
+  const [active, setActive] = useState(0);
   const [attempt, setAttempt] = useState(0);
-  const [search, setSearch] = useState<{ loading: boolean; results: Crop[]; canResearch: boolean; error?: string }>({ loading: true, results: [], canResearch: false });
+  const [search, setSearch] = useState<{ loading: boolean; results: Crop[]; canResearch: boolean; error?: string }>({ loading: false, results: [], canResearch: false });
   const [job, setJob] = useState<ResearchJob | null>(null);
   const [researchError, setResearchError] = useState<string>();
   const [researching, setResearching] = useState(false);
+  const [researchName, setResearchName] = useState("");
   const [result, setResult] = useState<Crop | null>(null);
   const researchController = useRef<AbortController>();
+  const input = useRef<HTMLInputElement>(null);
+  const editing = !value || changing;
+
+  useEffect(() => () => researchController.current?.abort(), []);
   useEffect(() => {
-    researchController.current?.abort();
-    setResearching(false); setJob(null); setResult(null); setResearchError(undefined);
     const controller = new AbortController();
-    if (value && !query.trim()) {
-      setSearch({ loading: false, results: [], canResearch: false });
-      return () => { controller.abort(); researchController.current?.abort(); };
-    }
-    setSearch({ loading: true, results: [], canResearch: false });
+    if (!editing) return () => controller.abort();
+    setSearch(s => ({ ...s, loading: true, error: undefined }));
     const timer = setTimeout(() => {
       api.search(query.trim(), regionKey, controller.signal).then(data => {
-        if (!controller.signal.aborted) setSearch({ loading: false, results: data.results, canResearch: data.can_research });
+        if (!controller.signal.aborted) { setSearch({ loading: false, results: data.results, canResearch: data.can_research }); setActive(0); }
       }).catch((error: unknown) => {
         if (!controller.signal.aborted) setSearch({ loading: false, results: [], canResearch: false, error: errorText(error) });
       });
-    }, 250);
-    return () => { clearTimeout(timer); controller.abort(); researchController.current?.abort(); };
-  }, [query, regionKey, attempt, api, value?.crop_id]);
+    }, 200);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [query, regionKey, attempt, api, editing]);
+
+  const typed = query.trim();
+  const exact = search.results.some(c => norm(c.name) === norm(typed) || norm(c.crop_id) === norm(typed));
+  const offerResearch = !!typed && !exact && search.canResearch && !search.loading && !search.error;
+  const options = search.results.slice(0, 12);
+  const count = options.length + (offerResearch ? 1 : 0);
+
+  function pick(crop: Crop) { onChange(crop); setQuery(""); setOpen(false); setChanging(false); setResult(null); }
   async function research() {
+    if (!regionKey) return;
+    setOpen(false);
     researchController.current?.abort();
     const controller = new AbortController(); researchController.current = controller;
-    setResearching(true); setResearchError(undefined); setResult(null); setJob(null);
+    const name = typed;
+    setResearchName(name); setResearching(true); setResearchError(undefined); setResult(null); setJob(null);
     try {
-      let current = await api.research(query.trim(), regionKey, controller.signal);
+      let current = await api.research(name, regionKey, controller.signal);
       for (let poll = 0; !controller.signal.aborted; poll++) {
         setJob(current);
         if (current.job_status === "failed") throw new Error(current.reason_text || "Research did not finish. You can try again.");
@@ -81,24 +103,56 @@ export function CropPicker({ regionKey, value, onChange, api = inputsApi, label 
     } catch (error) { if (!controller.signal.aborted) setResearchError(errorText(error)); }
     finally { if (!controller.signal.aborted) setResearching(false); }
   }
+  function onKey(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "ArrowDown") { event.preventDefault(); setOpen(true); setActive(a => Math.min(a + 1, Math.max(count - 1, 0))); }
+    else if (event.key === "ArrowUp") { event.preventDefault(); setActive(a => Math.max(a - 1, 0)); }
+    else if (event.key === "Enter" && open && count) {
+      event.preventDefault();
+      if (active < options.length) pick(options[active]!); else void research();
+    } else if (event.key === "Escape") { setOpen(false); if (value) { setChanging(false); setQuery(""); } }
+  }
+
   return <section className="acre-inputs acre-input-picker" aria-label={label}>
     <label htmlFor={id}>{label}</label>
-    {value && <div className="acre-input-selected"><strong>{value.name}</strong><CropFacts crop={value} /><button type="button" onClick={() => onChange(null)}>Clear {label.toLowerCase()}</button></div>}
-    <input id={id} type="search" value={query} placeholder="Search by crop name" onChange={event => setQuery(event.target.value)} aria-describedby={`${id}-help`} />
-    <p id={`${id}-help`} className="acre-input-help">Choose a crop to see whether local dates and money references are available.</p>
-    {search.loading && <p role="status">Searching crops…</p>}
-    {search.error && <ErrorNotice error={search.error} retry={() => setAttempt(n => n + 1)} />}
-    {!!search.results.length && <ul className="acre-input-crop-list" aria-label={`${label} results`}>{search.results.map(crop => <li key={crop.crop_id}>
-      <button type="button" aria-pressed={value?.crop_id === crop.crop_id} onClick={() => { onChange(crop); setQuery(""); }}>{crop.name}{value?.crop_id === crop.crop_id ? " · Selected" : ""}</button><CropFacts crop={crop} />
-    </li>)}</ul>}
-    {!search.loading && !search.error && search.results.length === 0 && (!value || query.trim()) && <p>No crops found{query.trim() ? ` for “${query.trim()}”` : ""}.</p>}
-    {!search.loading && !search.error && search.results.length === 0 && !!query.trim() && search.canResearch && !result && <div>
-      <button type="button" className="acre-input-primary" disabled={researching || !regionKey} onClick={() => void research()}>Research '{query.trim()}' with AI</button>
-      <p className="acre-input-help">AI receives only the crop name and region. Check its sources before choosing it.</p>
-      {!regionKey && <p>Select a region before starting research.</p>}
+    {!editing && value ? <div className="acre-input-selected">
+      <div className="acre-input-selected-head"><strong>{value.name}</strong>
+        <button type="button" className="acre-input-change" onClick={() => { setChanging(true); setOpen(true); setTimeout(() => input.current?.focus(), 0); }}>Change {label.toLowerCase()}</button></div>
+      <CropFacts crop={value} />
+    </div> : <div className="acre-input-combo">
+      <input ref={input} id={id} type="text" role="combobox" autoComplete="off" value={query}
+        placeholder={value ? `Replace ${value.name}: type or pick a crop` : "Click to pick a crop, or type to search"}
+        aria-expanded={open} aria-controls={listId} aria-autocomplete="list"
+        aria-activedescendant={open && count ? `${id}-opt-${active}` : undefined}
+        onFocus={() => setOpen(true)} onClick={() => setOpen(true)}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
+        onChange={event => { setQuery(event.target.value); setOpen(true); }}
+        onKeyDown={onKey} />
+      {open && <ul id={listId} role="listbox" className="acre-input-combo-list" aria-label={`${label} choices`}>
+        {search.loading && !options.length && <li className="acre-input-combo-note" role="presentation">Searching crops…</li>}
+        {options.map((crop, i) => <li key={crop.crop_id} id={`${id}-opt-${i}`} role="option" aria-selected={i === active}
+          onMouseDown={event => event.preventDefault()} onMouseEnter={() => setActive(i)} onClick={() => pick(crop)}>
+          <span className="acre-input-combo-name">{crop.name}</span>
+          <span className="acre-input-combo-tags">
+            {crop.has_calendar ? <span>local dates</span> : null}
+            {crop.has_economics ? <span>local prices</span> : null}
+            {crop.origin === "ai_suggested" || crop.origin === "source_checked" ? <span>AI-researched</span> : null}
+          </span>
+        </li>)}
+        {!search.loading && !search.error && !options.length && !offerResearch && <li className="acre-input-combo-note" role="presentation">{typed ? `No crops match “${typed}”.` : "No crops in the library for this area yet. Type a crop name."}</li>}
+        {offerResearch && <li id={`${id}-opt-${options.length}`} role="option" aria-selected={active === options.length} aria-disabled={!regionKey}
+          className="acre-input-combo-research" onMouseDown={event => event.preventDefault()} onMouseEnter={() => setActive(options.length)}
+          onClick={() => void research()}>
+          <span className="acre-input-combo-name">Not listed? Look up “{typed}”</span>
+          <span className="acre-input-combo-hint">{regionKey ? "AI checks published sources (about a minute) and adds it to the library" : "Choose a field with a known region first"}</span>
+        </li>}
+      </ul>}
     </div>}
-    {researching && <div role="status"><p>{job?.progress || "Research in progress: looking for crop references…"}</p><button type="button" onClick={() => { researchController.current?.abort(); setResearching(false); setJob(null); }}>Stop checking</button></div>}
+    {editing && value && changing && <button type="button" className="acre-input-change" onClick={() => { setChanging(false); setOpen(false); setQuery(""); }}>Keep {value.name}</button>}
+    {search.error && editing && <ErrorNotice error={search.error} retry={() => setAttempt(n => n + 1)} />}
+    {researching && <div role="status" className="acre-input-research-status"><p>{job?.progress || `Looking up “${researchName}”: checking published references…`}</p><button type="button" onClick={() => { researchController.current?.abort(); setResearching(false); setJob(null); }}>Stop</button></div>}
     {researchError && <ErrorNotice error={researchError} />}
-    {result && <div className="acre-input-researched"><strong>{result.name}</strong><CropFacts crop={result} researched />{!result.sources?.length && <p>Sources: Not available</p>}<button type="button" onClick={() => { onChange(result); setQuery(""); }}>Use {result.name}</button></div>}
+    {result && <div className="acre-input-researched"><strong>{result.name}</strong><CropFacts crop={result} researched />{!result.sources?.length && <p>Sources: Not available</p>}
+      <p className="acre-input-help">AI received only the crop name and region. Check its sources before using it.</p>
+      <button type="button" className="acre-input-primary" onClick={() => pick(result)}>Use {result.name}</button></div>}
   </section>;
 }

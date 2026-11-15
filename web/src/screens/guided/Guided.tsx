@@ -13,7 +13,7 @@ import { rotationReady, simulateRequest, type StepContext } from "./context";
 import { STEPS, stepIndex, type StepDef, type StepId } from "./steps";
 import { StepFarm } from "./StepFarm";
 import { economicsReady } from "./inputState";
-import { StepNow } from "./StepNow";
+import { NOW_PARTS, StepNow, nowPartReady, type NowPart } from "./StepNow";
 import { StepSimulate } from "./StepSimulate";
 import { StepTry } from "./StepTry";
 import { StepCompare } from "./StepCompare";
@@ -31,6 +31,11 @@ function readStep(): StepId {
   const m = window.location.hash.match(/[#&]u=([a-z]+)/);
   const s = m?.[1] as StepId | undefined;
   return s && STEPS.some((x) => x.id === s) ? s : "farm";
+}
+function readPart(): NowPart {
+  const m = window.location.hash.match(/[#&]p=([a-z]+)/);
+  const p = m?.[1] as NowPart | undefined;
+  return p && NOW_PARTS.some((x) => x.id === p) ? p : "crops";
 }
 
 export type DemoState = { state: "idle" } | { state: "loading"; which: string } | { state: "error"; message: string };
@@ -79,9 +84,11 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
   const field = useSelectedField();
   const sim = useSimField(field?.field_id ?? null);
   const [step, setStepState] = useState<StepId>(readStep);
-  const go = (s: StepId) => {
+  const [part, setPart] = useState<NowPart>(readPart);
+  const go = (s: StepId, p: NowPart = "crops") => {
     setStepState(s);
-    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}#u=${s}`);
+    setPart(p);
+    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}#u=${s}${s === "now" ? `&p=${p}` : ""}`);
     window.scrollTo?.({ top: 0 });
   };
   const place = useFieldPlace(api.client, field);
@@ -92,7 +99,10 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
   const ctx: StepContext = { api, farm, field, sim, point, regionKey, profile, go };
 
   useEffect(() => {
-    const on = () => setStepState(readStep());
+    const on = () => {
+      setStepState(readStep());
+      setPart(readPart());
+    };
     window.addEventListener("hashchange", on);
     return () => window.removeEventListener("hashchange", on);
   }, []);
@@ -127,6 +137,18 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
   const next = STEPS[i + 1];
   const prev = STEPS[i - 1];
   const nextBlocked = next ? !reachable(next.id) : true;
+  // Step 2 is asked one part at a time; Back and Next walk through its parts first.
+  const pi = NOW_PARTS.findIndex((p) => p.id === part);
+  const nextPart = step === "now" ? NOW_PARTS[pi + 1] : undefined;
+  const prevPart = step === "now" ? NOW_PARTS[pi - 1] : undefined;
+  const partReady = nowPartReady(part, sim);
+  const partWhy: Record<NowPart, string> = {
+    crops: "Pick the crops for every season first.",
+    dates: "Fill in every planting and harvest date first.",
+    equipment: "",
+    prices: "Finish or reset the incomplete money entries first.",
+    losses: "Complete your crops, dates and any money entries first.",
+  };
 
   return (
     <div className="db ws gf">
@@ -139,13 +161,24 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
           <ol>
             {STEPS.map((s) => (
               <li key={s.id}>
-                <button type="button" aria-current={step === s.id ? "step" : undefined} disabled={!reachable(s.id)} onClick={() => go(s.id)} data-done={done[s.id] ? "yes" : "no"}>
+                <button type="button" aria-current={step === s.id ? "step" : undefined} disabled={!reachable(s.id)} onClick={() => go(s.id, s.id === "now" && step === "now" ? part : "crops")} data-done={done[s.id] ? "yes" : "no"}>
                   <span className="gf-dot" aria-hidden="true">
                     {done[s.id] ? "✓" : s.n}
                   </span>
                   <span>{s.nav}</span>
                   <span className="sr-only">{done[s.id] ? " (done)" : ""}</span>
                 </button>
+                {s.id === "now" && step === "now" && field ? (
+                  <ol className="gf-parts" aria-label="Parts of this step">
+                    {NOW_PARTS.map((p, k) => (
+                      <li key={p.id}>
+                        <button type="button" aria-current={part === p.id ? "step" : undefined} disabled={k > 0 && !NOW_PARTS.slice(0, k).every((q) => nowPartReady(q.id, sim))} onClick={() => go("now", p.id)}>
+                          {p.nav}
+                        </button>
+                      </li>
+                    ))}
+                  </ol>
+                ) : null}
               </li>
             ))}
           </ol>
@@ -186,7 +219,7 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
           <SourceBanner source={api.source} />
           <StepHeader step={def} />
           {step === "farm" ? <StepFarm ctx={ctx} /> : null}
-          {step === "now" && field ? <StepNow ctx={ctx} /> : null}
+          {step === "now" && field ? <StepNow ctx={ctx} part={part} /> : null}
           {step === "simulate" && field ? <StepSimulate ctx={ctx} /> : null}
           {step === "try" && field ? <StepTry ctx={ctx} /> : null}
           {step === "compare" && field ? <StepCompare ctx={ctx} /> : null}
@@ -194,14 +227,25 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
           {field && step !== "plan" ? <details className="db-card gf-reading-tools gf-no-print"><summary>Log a field reading</summary><ReadingsLog ctx={ctx} /></details> : null}
           {!field && step !== "farm" ? <Banner kind="info">Choose a field first.</Banner> : null}
           <footer className="gf-foot">
-            {prev ? (
-              <button type="button" className="btn btn-secondary" onClick={() => go(prev.id)}>
+            {prevPart ? (
+              <button type="button" className="btn btn-secondary" onClick={() => go("now", prevPart.id)}>
+                Back: {prevPart.nav}
+              </button>
+            ) : prev ? (
+              <button type="button" className="btn btn-secondary" onClick={() => go(prev.id, prev.id === "now" ? "losses" : "crops")}>
                 Back: {prev.nav}
               </button>
             ) : (
               <span />
             )}
-            {next ? (
+            {nextPart ? (
+              <span className="gf-next">
+                {!partReady ? <span className="gf-why">{partWhy[part]}</span> : null}
+                <button type="button" className="btn btn-primary" disabled={!partReady} onClick={() => go("now", nextPart.id)}>
+                  Next: {nextPart.nav}
+                </button>
+              </span>
+            ) : next ? (
               <span className="gf-next">
                 {nextBlocked ? <span className="gf-why">{!field ? "Draw a field or try a demo farm first." : "Complete your crops, dates and any money entries first."}</span> : null}
                 <button type="button" className="btn btn-primary" disabled={nextBlocked} onClick={() => go(next.id)}>

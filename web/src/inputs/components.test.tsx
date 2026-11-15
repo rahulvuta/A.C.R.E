@@ -32,12 +32,13 @@ describe("farmer inputs", () => {
     const onChange = vi.fn(); const api = { ...exampleApi, search: vi.fn(exampleApi.search) };
     function Picker() { const [crop, setCrop] = useState<Crop | null>(null); return <CropPicker regionKey="US-NC" value={crop} onChange={value => { setCrop(value); onChange(value); }} api={api} />; }
     render(<Picker />);
-    fireEvent.change(screen.getByRole("searchbox", { name: "Crop" }), { target: { value: "soy" } });
-    fireEvent.click(await screen.findByRole("button", { name: "Soybean" }));
+    fireEvent.change(screen.getByRole("combobox", { name: "Crop" }), { target: { value: "soy" } });
+    fireEvent.click(await screen.findByRole("option", { name: /^Soybean/ }));
     expect(api.search).toHaveBeenLastCalledWith("soy", "US-NC", expect.any(AbortSignal));
     expect(onChange).toHaveBeenCalledWith(exampleCrops[1]);
     expect(screen.getByText("Family: Fabaceae")).toBeInTheDocument();
-    expect(screen.getByText("Calendar: Available")).toBeInTheDocument();
+    expect(screen.getByText("Local planting dates: Yes")).toBeInTheDocument();
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
     expect(screen.getByText("Published source")).toBeInTheDocument();
   });
   it("polls AI research with progress, shows sources, and lets the grower select the result", async () => {
@@ -45,9 +46,9 @@ describe("farmer inputs", () => {
     const api = { ...exampleApi, research: vi.fn(exampleApi.research), researchJob: vi.fn(exampleApi.researchJob) };
     function Picker() { const [crop, setCrop] = useState<Crop | null>(null); return <CropPicker regionKey="US-NC" value={crop} onChange={setCrop} api={api} />; }
     render(<Picker />);
-    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "okra" } });
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "okra" } });
     await act(async () => { await vi.advanceTimersByTimeAsync(300); });
-    fireEvent.click(screen.getByRole("button", { name: "Research 'okra' with AI" }));
+    fireEvent.click(screen.getByRole("option", { name: /Look up “okra”/ }));
     await act(async () => { await vi.advanceTimersByTimeAsync(1); });
     expect(screen.getByRole("status")).toHaveTextContent("Checking published references");
     await act(async () => { await vi.advanceTimersByTimeAsync(1500); });
@@ -56,7 +57,7 @@ describe("farmer inputs", () => {
     expect(screen.getByRole("link", { name: /Example AI citation/ })).toBeInTheDocument();
     expect(screen.getByText("AI suggestion, not verified")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Use Okra" }));
-    expect(screen.getByRole("button", { name: "Clear crop" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Change crop" })).toBeInTheDocument();
     expect(api.research).toHaveBeenCalledWith("okra", "US-NC", expect.any(AbortSignal));
   });
   it("ignores a stale search after the query changes", async () => {
@@ -64,10 +65,10 @@ describe("farmer inputs", () => {
     const api = { ...exampleApi, search: vi.fn().mockImplementationOnce(() => new Promise(resolve => { finish = resolve; })).mockResolvedValue({ meta: {}, results: [exampleCrops[1]], can_research: true }) };
     render(<CropPicker regionKey="US-NC" value={null} onChange={vi.fn()} api={api} />);
     await waitFor(() => expect(api.search).toHaveBeenCalledTimes(1));
-    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "soy" } });
-    await screen.findByRole("button", { name: "Soybean" });
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "soy" } });
+    await screen.findByRole("option", { name: /^Soybean/ });
     await act(async () => { finish({ meta: {}, results: [exampleCrops[0]!], can_research: true }); });
-    expect(screen.queryByRole("button", { name: "Field corn" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: /^Field corn/ })).not.toBeInTheDocument();
   });
   it("preserves blank dates, fills typical dates with provenance, and marks farmer edits grower", async () => {
     const api = { ...exampleApi, autofill: vi.fn(exampleApi.autofill) };
@@ -200,9 +201,52 @@ describe("farmer inputs", () => {
   it("shows failed research and does not offer a crop to select", async () => {
     const api = { ...exampleApi, research: async () => ({ ...exampleResearchReady, crop: undefined, job_status: "failed" as const, reason_text: "No usable sources found." }) };
     render(<CropPicker regionKey="US-NC" value={null} onChange={vi.fn()} api={api} />);
-    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "okra" } });
-    fireEvent.click(await screen.findByRole("button", { name: "Research 'okra' with AI" }));
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "okra" } });
+    fireEvent.click(await screen.findByRole("option", { name: /Look up “okra”/ }));
     expect(await screen.findByRole("alert")).toHaveTextContent("No usable sources found.");
     expect(screen.queryByRole("button", { name: "Use Okra" })).not.toBeInTheDocument();
+  });
+  it("lists library crops on click, offers research only for a crop that is not listed, and lets a picked crop be changed", async () => {
+    const onChange = vi.fn();
+    function Picker() { const [crop, setCrop] = useState<Crop | null>(null); return <CropPicker regionKey="US-NC" value={crop} onChange={value => { setCrop(value); onChange(value); }} api={exampleApi} />; }
+    render(<Picker />);
+    fireEvent.focus(screen.getByRole("combobox", { name: "Crop" }));
+    expect(await screen.findByRole("option", { name: /^Field corn/ })).toBeInTheDocument();
+    expect(screen.getAllByRole("option")).toHaveLength(3);
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "Soybean" } });
+    await waitFor(() => expect(screen.getAllByRole("option")).toHaveLength(1));
+    expect(screen.queryByRole("option", { name: /Look up/ })).not.toBeInTheDocument();
+    fireEvent.keyDown(screen.getByRole("combobox"), { key: "Enter" });
+    expect(onChange).toHaveBeenLastCalledWith(exampleCrops[1]);
+    fireEvent.click(screen.getByRole("button", { name: "Change crop" }));
+    expect(screen.getByRole("combobox")).toHaveAttribute("placeholder", "Replace Soybean: type or pick a crop");
+    fireEvent.click(screen.getByRole("button", { name: "Keep Soybean" }));
+    expect(screen.getByText("Soybean")).toBeInTheDocument();
+  });
+  it("shows only crop choices, or only dates that fill themselves in once", async () => {
+    const api = { ...exampleApi, autofill: vi.fn(exampleApi.autofill) };
+    const { unmount } = render(<PlanEditor show="crops" location={exampleLocation} regionKey="US-NC" value={examplePlan} onChange={vi.fn()} api={api} />);
+    expect(screen.queryByRole("textbox", { name: /harvest|planting/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "Winter use" })).toBeInTheDocument();
+    unmount();
+    const blank: PlanEditorValue = { ...examplePlan, plan: { ...examplePlan.plan, next_plant: null }, dates: examplePlan.dates.filter(date => date.field !== "next_plant") };
+    function Dates() { const [value, setValue] = useState(blank); return <PlanEditor show="dates" location={exampleLocation} regionKey="US-NC" value={value} onChange={setValue} api={api} />; }
+    render(<Dates />);
+    expect(screen.queryByRole("region", { name: "Previous crop" })).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("textbox", { name: "Planting date" })).toHaveValue("05-05"));
+    expect(api.autofill).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("textbox", { name: "Harvest date" })).toHaveValue("10-10");
+  });
+  it("splits prices from weather-loss estimates and labels the filled-in values", async () => {
+    const { unmount } = render(<EconomicsEditor show="prices" location={exampleLocation} crops={["soybean"]} area={{ value: 16.2, unit: "ha" }} value={createEconomicsValue()} onChange={vi.fn()} api={exampleApi} />);
+    await waitFor(() => expect(screen.getByRole("spinbutton", { name: "Price · typical value" })).toHaveValue(11.2));
+    expect(screen.getByText(/We filled these in from published sources/)).toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: /weather losses/ })).not.toBeInTheDocument();
+    unmount();
+    const estimate = vi.fn(exampleApi.estimate);
+    render(<EconomicsEditor show="losses" location={exampleLocation} crops={["soybean"]} area={{ value: 16.2, unit: "ha" }} value={createEconomicsValue()} onChange={vi.fn()} api={{ ...exampleApi, estimate }} />);
+    expect(screen.getByRole("group", { name: /weather losses/ })).toBeInTheDocument();
+    expect(screen.queryByRole("spinbutton", { name: "Price · typical value" })).not.toBeInTheDocument();
+    expect(estimate).not.toHaveBeenCalled();
   });
 });

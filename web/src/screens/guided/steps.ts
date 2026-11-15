@@ -15,7 +15,7 @@ export interface StepDef {
 }
 export const STEPS: readonly StepDef[] = [
   { id: "farm", n: 1, nav: "Your farm", question: "Where is your farm?", sentence: "Find it on the map and draw each field. Acres show as soon as you finish a field.", term: "farm-field" },
-  { id: "now", n: 2, nav: "What you do now", question: "What do you grow on this field now?", sentence: "Pick the crops in your rotation, fill in typical dates, and add your equipment and, if you know them, your prices, yields and costs.", term: "current-plan" },
+  { id: "now", n: 2, nav: "What you do now", question: "What do you grow on this field now?", sentence: "A few short questions, one at a time: your crops, their dates, your equipment, then prices and losses. We fill in typical dates and published local prices for you to check.", term: "current-plan" },
   { id: "simulate", n: 3, nav: "Simulate current plan", question: "How would your current plan do over 10 years?", sentence: "Your plan is replayed about 200 times over real past weather from this field's NASA record, in new orders.", term: "resampling" },
   { id: "try", n: 4, nav: "Try other plans", question: "What else could you try?", sentence: "Add suggested plans for this place, or build your own from a copy of your current plan. Up to 5 alongside your current plan.", term: "scenario" },
   { id: "compare", n: 5, nav: "Compare", question: "Which plan suits you best?", sentence: "Every plan side by side over the same past weather, with badges, the reasons for each, and what you give up.", term: "comparison-badge" },

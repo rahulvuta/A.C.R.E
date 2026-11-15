@@ -28,12 +28,23 @@
 .acre-input-source { display: block; color: #596469; font-size: 13px; overflow-wrap: anywhere; margin: 4px 0; }
 .acre-input-plan-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-bottom: 24px; }
 .acre-input-crop-facts { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin-top: 8px; font-size: 14px; color: #455157; }
-.acre-input-crop-list { list-style: none; padding: 0; margin: 12px 0; max-height: 310px; overflow-y: auto; }
-.acre-input-crop-list li { padding: 12px 0; border-bottom: 1px solid #d8dfe1; }
-.acre-input-crop-list button { width: 100%; text-align: left; }
-.acre-input-crop-list button[aria-pressed="true"] { border-color: #004656; background: #edf7f8; }
-.acre-input-selected { border: 1px solid #9abfc6; border-radius: 6px; padding: 12px; margin: 10px 0 14px; background: #f5fafb; }
-.acre-input-selected button { margin-top: 8px; }
+.acre-input-combo { position: relative; }
+.acre-input-combo input[role="combobox"] { padding-right: 36px; background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23455157' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 12px center; cursor: pointer; }
+.acre-input-combo-list { position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% - 4px); list-style: none; margin: 0; padding: 4px; max-height: 300px; overflow-y: auto; background: white; border: 1px solid #9aafb5; border-radius: 6px; box-shadow: 0 8px 24px rgb(0 0 0 / .12); }
+.acre-input-combo-list li { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 9px 10px; border-radius: 4px; cursor: pointer; }
+.acre-input-combo-list li[aria-selected="true"] { background: #eef8fa; }
+.acre-input-combo-list li.acre-input-combo-note { cursor: default; color: #596469; font-size: 14px; }
+.acre-input-combo-name { font-weight: 500; color: #004656; }
+.acre-input-combo-tags { display: inline-flex; gap: 6px; flex-wrap: wrap; justify-content: end; }
+.acre-input-combo-tags span { font-size: 12px; color: #455157; background: #f2f5f5; border-radius: 4px; padding: 1px 6px; }
+.acre-input-combo-list li.acre-input-combo-research { flex-direction: column; align-items: start; gap: 2px; border-top: 1px solid #d8dfe1; border-radius: 0 0 4px 4px; }
+.acre-input-combo-hint { font-size: 13px; color: #596469; }
+.acre-inputs button.acre-input-change { min-height: 32px; padding: 4px 10px; font-size: 14px; }
+.acre-input-combo > .acre-input-change { margin-top: 2px; }
+.acre-input-selected { border: 1px solid #9abfc6; border-radius: 6px; padding: 10px 12px; margin: 6px 0 12px; background: #f5fafb; }
+.acre-input-selected-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.acre-input-selected-head strong { font-size: 17px; }
+.acre-input-research-status { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 14px; color: #455157; }
 .acre-input-researched { border: 1px solid #d6bd98; border-radius: 6px; padding: 14px; margin-top: 12px; }
 .acre-input-date { margin-top: 18px; }
 .acre-input-error { border: 1px solid #c0a47e; border-radius: 6px; padding: 12px; margin: 12px 0; background: #fffaf2; }
@@ -72,3 +83,7 @@
 .acre-input-harness-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
 @media (max-width: 1000px) { .acre-input-plan-grid, .acre-input-harness-grid { grid-template-columns: 1fr; } }
 @media (max-width: 600px) { .acre-input-reading-fields { grid-template-columns: 1fr; } .acre-input-card { padding: 16px; } .acre-input-harness main { padding: 16px; } }
+.acre-input-plan-stack { display: grid; gap: 18px; margin-bottom: 18px; max-width: 560px; }
+.acre-input-plan-stack h3 { margin: 4px 0 0; }
+.acre-input-plan-stack h3 small { font-weight: 400; }
+.acre-input-plan-stack .acre-input-date { margin-top: 6px; }

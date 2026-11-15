@@ -37,12 +37,17 @@ test.describe("guided live demo farms", () => {
       await expect(page.getByText("Farm total", { exact: true })).toBeVisible();
       await expect(page.getByRole("list", { name: "Fields", exact: true }).locator("li").first()).toContainText(/ac/);
       await next(page, "What you do now");
-      await expect(page.getByRole("region", { name: "Equipment", exact: true })).toBeVisible();
-      await expect(page.getByRole("region", { name: "Prices, yields and costs", exact: true })).toBeVisible();
+      await expect(page.getByText("Part 1 of 5", { exact: true })).toBeVisible();
+      await next(page, "Dates");
       const dates = page.waitForResponse(response => response.url().endsWith("/v1/plans/autofill"));
-      await page.getByRole("button", { name: "Fill typical dates", exact: true }).first().click();
+      await page.getByRole("button", { name: "Refill blank dates with typical ones", exact: true }).first().click();
       await expectOk(await dates);
-      await expect(page.getByRole("button", { name: "Fill typical dates", exact: true }).first()).toBeEnabled();
+      await expect(page.getByRole("button", { name: "Refill blank dates with typical ones", exact: true }).first()).toBeEnabled();
+      await next(page, "Equipment");
+      await expect(page.getByRole("region", { name: "Equipment", exact: true })).toBeVisible();
+      await next(page, "Prices and costs");
+      await expect(page.getByRole("region", { name: "Prices, yields and costs", exact: true })).toBeVisible();
+      await next(page, "Weather losses");
 
       const readingTools = page.locator("details.gf-reading-tools");
       await readingTools.getByText("Log a field reading", { exact: true }).click();
