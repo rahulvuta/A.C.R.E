@@ -129,3 +129,11 @@
 .gf-more { margin-top: 4px; font-size: 13px; color: var(--ink-muted); }
 .gf-more summary { cursor: pointer; color: var(--action); }
 .gf-more p { margin: 6px 0 0; }
+
+/* Step 2 asked one part at a time */
+.gf-parts { list-style: none; margin: 2px 0 6px 34px; padding: 0; display: grid; gap: 1px; }
+.gf-steps .gf-parts button { padding: 4px 8px; font-size: 13px; min-height: 0; }
+.gf-steps .gf-parts button[aria-current="step"] { font-weight: 600; }
+.gf-part-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; }
+.gf-part-head .gf-kicker { flex-basis: 100%; margin: 0; }
+.gf-part-question { margin: 0; font-size: 20px; font-weight: 500; }

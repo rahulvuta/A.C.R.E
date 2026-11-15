@@ -57,10 +57,23 @@ describe("guided flow (U1)", () => {
     await screen.findByRole("heading", { name: "What do you grow on this field now?" });
     expect(screen.getByText("Demo farm (example values)")).toBeInTheDocument();
     expect(screen.getByText("Ready to simulate")).toBeInTheDocument();
+    // Step 2 asks one part at a time: crops, dates, equipment, prices, losses.
+    expect(screen.getByText("Part 1 of 5")).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Equipment" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Next: Simulate current plan/ })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Next: Dates" }));
+    expect(screen.getAllByRole("textbox", { name: "Planting date" }).length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole("button", { name: "Next: Equipment" }));
     expect(await screen.findByRole("checkbox", { name: "Planter" })).toBeChecked();
+    fireEvent.click(screen.getByRole("button", { name: "Next: Prices and costs" }));
     // Sourced defaults with their origins, and the demo's own soybean price.
     await screen.findAllByText("Published source");
     expect(within(screen.getByRole("region", { name: "soybean economics" })).getByRole("spinbutton", { name: "Price · typical value" })).toHaveValue(11.2);
+    fireEvent.click(screen.getByRole("button", { name: "Next: Weather losses" }));
+    expect(screen.getByRole("group", { name: /weather losses/ })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Back: Prices and costs" }));
+    expect(screen.getByRole("region", { name: "Prices, yields and costs" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Next: Weather losses" }));
 
     fireEvent.click(screen.getByRole("button", { name: /Next: Simulate current plan/ }));
     await screen.findByRole("heading", { name: "How would your current plan do over 10 years?" });
@@ -85,6 +98,17 @@ describe("guided flow (U1)", () => {
     expect(screen.getByRole("region", { name: "Field readings" })).toBeInTheDocument();
     const fieldId = Object.keys(JSON.parse(window.localStorage.getItem("acre.simfield.v1")!).fields)[0]!;
     expect(getSimField(fieldId).chosenId).toMatch(/^s_/);
+  });
+
+  it("does not let a new field past the crops part until every season has its crops", async () => {
+    render(<Guided api={api} />);
+    fireEvent.click(screen.getByRole("button", { name: /Union County, North Carolina/ }));
+    await screen.findByRole("heading", { name: "What do you grow on this field now?" });
+    fireEvent.click(screen.getByRole("button", { name: "Add a season" }));
+    expect(screen.getByRole("button", { name: "Next: Dates" })).toBeDisabled();
+    expect(screen.getByText("Pick the crops for every season first.")).toBeInTheDocument();
+    fireEvent.click(screen.getAllByRole("button", { name: "Remove season" }).at(-1)!);
+    expect(screen.getByRole("button", { name: "Next: Dates" })).toBeEnabled();
   });
 
   it("logs a reading as the farmer's own, kept in the browser", async () => {

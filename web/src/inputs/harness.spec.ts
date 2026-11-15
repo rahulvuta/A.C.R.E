@@ -9,11 +9,11 @@ test("farmer inputs work together using explicitly labelled examples", async ({ 
   await expect(page.getByText("Example mode", { exact: true })).toBeVisible();
   await expect(page.getByText("40.03", { exact: false }).first()).toBeVisible();
   const picker = page.getByRole("region", { name: "Crop", exact: true });
-  await picker.getByRole("searchbox").fill("okra");
-  await picker.getByRole("button", { name: "Research 'okra' with AI" }).click();
+  await picker.getByRole("combobox").fill("okra");
+  await picker.getByRole("option", { name: /Look up “okra”/ }).click();
   await expect(picker.getByRole("status")).toContainText("Checking published references");
   await picker.getByRole("button", { name: "Use Okra" }).click();
-  await expect(picker.getByRole("button", { name: "Clear crop" })).toBeVisible();
+  await expect(picker.getByRole("button", { name: "Change crop" })).toBeVisible();
   await expect(picker.getByText("AI suggestion, not verified").first()).toBeVisible();
   const planting = page.getByRole("textbox", { name: "Next planting" });
   await planting.fill("05-12");
