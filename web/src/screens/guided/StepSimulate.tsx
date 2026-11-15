@@ -35,7 +35,6 @@ function LossEditor({ ctx }: { ctx: StepContext }) {
   const { sim, field } = ctx;
   const rows: Array<{ k: keyof LossAssumptions; label: string }> = [
     { k: "drySpringPct", label: "In a dry spring I lose about" },
-    { k: "wetSpringPct", label: "In a very wet spring I lose about" },
     { k: "heavyRainPct", label: "In a heavy-rain year I lose about" },
   ];
   return (

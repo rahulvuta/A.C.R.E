@@ -164,6 +164,8 @@ export interface CropOverride {
   price?: { value: number; unit: string } | null;
   yield?: { value: number; unit: string } | null;
   costPerArea?: { value: number; unit: string } | null;
+  priceCases?: Partial<Record<"low" | "typical" | "high", { value: number; unit: string }>>;
+  costItems?: Array<{ item: string; value: number; unit: string }>;
 }
 export interface LossAssumptions {
   /** Percent of yield lost in a dry spring, as the farmer estimates it; `null` = not set. */

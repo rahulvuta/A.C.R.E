@@ -27,6 +27,13 @@ export function EconomicsEditor({ location, crops, area, value, onChange, api = 
   const request = useInputRequest(key, loader, uniqueCrops.length > 0);
   const [costNames, setCostNames] = useState<Record<string, string>>({});
   function update(cropId: string, overrides: CropOverrides) {
+    const previous = value.overrides[cropId]?.costs;
+    const changed = Object.keys(overrides.costs ?? {}).filter(item => overrides.costs?.[item] !== previous?.[item]);
+    if (changed.includes("total")) overrides = { ...overrides, costs: { total: overrides.costs!.total! } };
+    else if (previous?.total && changed.length) {
+      const { total: _total, ...items } = overrides.costs ?? {};
+      overrides = { ...overrides, costs: items };
+    }
     onChange({ ...value, overrides: { ...value.overrides, [cropId]: overrides } });
   }
   return <section className="acre-inputs acre-input-card" aria-label="Prices, yields and costs"><h2>Your prices, yields and costs</h2>
@@ -35,9 +42,9 @@ export function EconomicsEditor({ location, crops, area, value, onChange, api = 
     {request.error && <ErrorNotice error={request.error} retry={request.retry} />}
     {!uniqueCrops.length && <p>Choose crops to enter their prices, yields and costs.</p>}
     {uniqueCrops.map(cropId => {
-      const defaults = request.data?.crops.find(crop => crop.crop_id === cropId);
+      const defaults = request.data?.crops.find(crop => crop.crop_id === cropId || crop.aliases.includes(cropId));
       const overrides = value.overrides[cropId] ?? {};
-      const costItems = [...new Set([...(defaults?.costs.items.map(item => item.item) ?? []), ...Object.keys(overrides.costs ?? {})])];
+      const costItems = overrides.costs?.total ? ["total"] : [...new Set([...(defaults?.costs.items.map(item => item.item) ?? []), ...Object.keys(overrides.costs ?? {})])];
       return <section key={cropId} className="acre-input-economics-crop" aria-label={`${readable(cropId)} economics`}><h3>{readable(cropId)}</h3>
         {defaults?.reason_text && <p>{defaults.reason_text}</p>}
         {defaults?.status && defaults.status !== "complete" && <p>Reference coverage: {readable(defaults.status)}</p>}

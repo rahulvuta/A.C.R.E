@@ -33,3 +33,9 @@ D→C: Field model has no goals/crop_history; D keeps them in `acre.fieldplannin
 4. Optional: mirror sim equipment/readings onto C's Field (farmActions.updateField) so GeoJSON export carries them; clear simField when a field is deleted.
 
 **Failing tests:** 5/411, all in `src/screens/guided/guided.test.tsx` (new, never passed). Everything else passes; typecheck clean.
+
+## Integration update — 2026-11-14
+
+Merged fe-u3 and mounted its crop, calendar, economics, equipment, and reading editors directly in the guided flow. Added calendar comparison, readable provenance labels, equipment/readings in farm exports, and live Demo specs for Union County and Pergamino. Fixed request shapes for costs, readings, loss assumptions, recommendation equipment, and optional season counts; crop aliases connect legacy field corn to maize references.
+
+Validation: 444 unit tests passed; TypeScript and production build passed. Live Demo verification remains in progress: baseline simulations and autofill work, but suggestion generation exceeds the browser timeout. Do not treat the new end-to-end specs as passed until that is resolved and both journeys complete.

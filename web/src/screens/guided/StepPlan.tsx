@@ -1,13 +1,12 @@
-import { useState } from "react";
-import { READING_KINDS, type Reading, type ReadingKind, type ScenarioResult } from "../../api/simModel";
+import { type ScenarioResult } from "../../api/simModel";
 import { FuturePlan, planSchema, type Plan } from "../../planning";
 import { baselineOf, BASELINE_ID, updateSimField } from "../../state/simField";
 import { useSimulation } from "../../state/useSimulation";
-import { OriginBadge } from "../../ui/OriginBadge";
+import { farmActions } from "../../farm/hooks";
+import { ReadingsLog as U3ReadingsLog } from "../../inputs";
 import { simulateRequest, type StepContext } from "./context";
 import { cropLabel, NA } from "./format";
 import { SimStatus } from "./StepSimulate";
-import { pick, useInputsModule } from "./slots";
 import { TenYearTimeline, withRotations, type ScenarioResult as TimelineResult } from "../../timeline";
 
 /*
@@ -15,96 +14,14 @@ import { TenYearTimeline, withRotations, type ScenarioResult as TimelineResult }
   the future-plan actions for its seasons (§10, P's FuturePlan: windows, deadlines, backup),
   the readings log, print and export.
 */
-const KIND_LABEL: Record<ReadingKind, string> = {
-  soil_moisture_pct: "Soil moisture (%)",
-  soil_moisture_vwc: "Soil moisture (VWC)",
-  rainfall_mm: "Rain gauge (mm)",
-  soil_temp_c: "Soil temperature (°C)",
-  note: "Note",
-};
-
 export function ReadingsLog({ ctx }: { ctx: StepContext }) {
   const { field, sim } = ctx;
-  const inputs = useInputsModule();
-  const U3 = pick(inputs, "ReadingsLog");
-  const [kind, setKind] = useState<ReadingKind>("soil_moisture_pct");
-  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const [value, setValue] = useState("");
-  const [depth, setDepth] = useState("");
-  const [note, setNote] = useState("");
   if (!field) return null;
-  const save = (readings: Reading[]) => updateSimField(field.field_id, { readings });
-  if (U3) return <U3 fieldId={field.field_id} readings={sim.readings} onChange={save} client={ctx.api.client} />;
-  const sorted = [...sim.readings].sort((a, b) => b.date.localeCompare(a.date));
-  return (
-    <section className="db-card" aria-label="Your readings">
-      <div className="db-card-head">
-        <h2>Your readings</h2>
-      </div>
-      <p className="gf-muted">Log what you measure on this field. Readings are shown beside NASA's modeled values and never mixed into them.</p>
-      <form
-        className="gf-reading-form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          const n = value.trim() === "" ? null : Number(value);
-          if (kind !== "note" && (n == null || !Number.isFinite(n))) return;
-          const d = depth.trim() === "" ? null : Number(depth);
-          save([...sim.readings, { date, kind, value: kind === "note" ? null : n, depthCm: d != null && Number.isFinite(d) ? d : null, note: note.trim() || null }]);
-          setValue("");
-          setNote("");
-        }}
-      >
-        <input type="date" aria-label="Reading date" value={date} onChange={(e) => setDate(e.target.value)} required />
-        <select aria-label="What you measured" value={kind} onChange={(e) => setKind(e.target.value as ReadingKind)}>
-          {READING_KINDS.map((k) => (
-            <option key={k} value={k}>
-              {KIND_LABEL[k]}
-            </option>
-          ))}
-        </select>
-        {kind !== "note" ? <input className="gf-num" aria-label="Value" inputMode="decimal" placeholder="Value" value={value} onChange={(e) => setValue(e.target.value)} required /> : null}
-        {kind.startsWith("soil") ? <input className="gf-num" aria-label="Depth (cm)" inputMode="numeric" placeholder="Depth cm" value={depth} onChange={(e) => setDepth(e.target.value)} /> : null}
-        <input aria-label="Note" placeholder="Note (optional)" value={note} onChange={(e) => setNote(e.target.value)} required={kind === "note"} />
-        <button type="submit" className="btn btn-primary">
-          Log reading
-        </button>
-      </form>
-      {sorted.length ? (
-        <table className="gf-table">
-          <thead>
-            <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Reading</th>
-              <th scope="col">Value</th>
-              <th scope="col">Note</th>
-              <th scope="col">
-                <span className="sr-only">Remove</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {sorted.map((r, i) => (
-              <tr key={`${r.date}-${r.kind}-${i}`}>
-                <td>{r.date}</td>
-                <td>
-                  {KIND_LABEL[r.kind]} <OriginBadge origin="grower" />
-                </td>
-                <td>{r.kind === "note" ? "" : `${r.value ?? NA}${r.depthCm != null ? ` at ${r.depthCm} cm` : ""}`}</td>
-                <td>{r.note ?? ""}</td>
-                <td>
-                  <button type="button" className="btn btn-quiet" onClick={() => save(sim.readings.filter((x) => x !== r))}>
-                    Remove
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p className="gf-muted">No readings yet.</p>
-      )}
-    </section>
-  );
+  return <U3ReadingsLog value={sim.readings.map(r => ({ date: r.date, kind: r.kind, value: r.value, depth_cm: r.depthCm, note: r.note, origin: "grower" }))} onChange={readings => {
+    const saved = readings.map(({ origin: _origin, depth_cm, ...r }) => ({ ...r, depthCm: depth_cm }));
+    updateSimField(field.field_id, { readings: saved });
+    farmActions.updateField(field.field_id, { readings: readings.map(({ origin: _origin, ...r }) => r) });
+  }} />;
 }
 
 function TimelineTable({ s }: { s: ScenarioResult }) {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { adaptEconomics, adaptSimulation, BackendEconomics, BackendSimulation, toBackendSimulate } from "./adapt";
+import { adaptDemo, adaptEconomics, adaptSimulation, BackendDemo, BackendEconomics, BackendSimulation, toBackendEconomics, toBackendSimulate } from "./adapt";
 import { createGlobalClient } from "./client";
 import { FIXTURE_API_BASE, FIXTURES, fixtureFetch } from "./fixtures";
 import type { Dist, Scenario } from "./simModel";
@@ -19,12 +19,21 @@ const req = (scenarios: Scenario[]) => ({
 
 describe("§11 simulate", () => {
   it("builds the backend body with the baseline flag, readings and the farmer's loss estimate", () => {
-    const b = toBackendSimulate(req([scen("current", true), scen("s2")]));
+    const b = toBackendSimulate({ ...req([scen("current", true), scen("s2")]), loss: { drySpringPct: 15, wetSpringPct: 99, heavyRainPct: null } });
     expect(b.scenarios[0]).toMatchObject({ scenario_id: "current", is_baseline: true, rotation: [{ plan_id: "p1" }] });
     expect(b.scenarios[1]).not.toHaveProperty("is_baseline");
-    expect(b.economics.loss_assumptions).toEqual({ dry_spring_pct: 15, wet_spring_pct: null, heavy_rain_pct: null });
+    expect(b.economics.loss_assumptions).toEqual({ dry_spring_pct: 15, heavy_rain_pct: null });
+    expect(b.economics.loss_assumptions).not.toHaveProperty("wet_spring_pct");
     expect(b.field.readings[0]).toEqual({ date: "2026-04-02", kind: "soil_moisture_pct", value: 23.5, depth_cm: 10 });
     expect(b).toMatchObject({ years: 10, runs: 200, seed: 7 });
+  });
+
+  it("sends total cost overrides using the request shape, preserving zero", () => {
+    const q = { ...req([scen("current", true)]), overrides: { soybean: { costPerArea: { value: 0, unit: "USD/acre" } } } };
+    expect(toBackendSimulate(q).economics.overrides.soybean).toEqual({ costs: { total: { value: 0, unit: "USD/acre" } } });
+    const economics = toBackendEconomics({ point: q.point, crops: ["soybean"], area: { value: null, unit: "ha" }, equipment: [], overrides: q.overrides });
+    expect(economics).not.toHaveProperty("area");
+    expect(economics.overrides.soybean).toEqual({ costs: { total: { value: 0, unit: "USD/acre" } } });
   });
 
   it("marks a value that folds in the loss assumption as assumed, and keeps blanks null", () => {
@@ -43,6 +52,17 @@ describe("§11 simulate", () => {
     const s = adaptSimulation(BackendSimulation.parse(raw));
     expect(s.method.note).toMatch(/not a forecast/);
     expect(s.comparison?.caveat).toMatch(/Best of the scenarios you compared/);
+  });
+
+  it("preserves backend money metadata without reading it as a numeric total", () => {
+    const raw = structuredClone(FIXTURES.simulateUnion) as Record<string, any>;
+    raw.scenarios[0].totals.weather_link = "none: money and weather are separate";
+    raw.scenarios[0].totals.crop_families_detail = { field_corn: "Poaceae", soybean: "Fabaceae" };
+    raw.scenarios[0].totals.margin_10y_price_cases = { low: 100, typical: 200, high: 300, currency: "USD" };
+    const result = adaptSimulation(BackendSimulation.parse(raw));
+    expect(result.scenarios[0]!.totals.weather_link).toBeUndefined();
+    expect(result.scenarios[0]!.totals.crop_families_detail).toBeUndefined();
+    expect((result.raw.scenarios as Array<{ totals: { weather_link: string } }>)[0]!.totals.weather_link).toMatch(/money and weather/);
   });
 
   it("fixture mode answers with the request's own scenarios; a baseline-only run has no badges", async () => {
@@ -76,10 +96,22 @@ describe("§12 §13 §15 §16", () => {
     expect(d.fields[north.field_id]!.rotation).toHaveLength(2);
     expect(north.plan?.plan_id).toBe(d.fields[north.field_id]!.rotation[0]!.plan_id);
     expect(d.fields[north.field_id]!.equipment).toContain("planter");
+    expect(north.equipment).toEqual(d.fields[north.field_id]!.equipment);
+    expect(north.readings?.[0]).toMatchObject({ date: d.fields[north.field_id]!.readings[0]!.date, kind: d.fields[north.field_id]!.readings[0]!.kind, value: d.fields[north.field_id]!.readings[0]!.value });
     expect(d.lossAssumptions).toEqual({ drySpringPct: 15, wetSpringPct: null, heavyRainPct: null });
     expect(d.overrides.soybean?.price).toEqual({ value: 11.2, unit: "USD/bu" });
     const p = await client.demoFarm("pergamino");
     expect(p.ok && p.data.farm.anchor.latitude).toBeLessThan(0);
+  });
+
+  it.each([
+    { value: 410, unit: "USD/acre" },
+    { total: { value: 410, unit: "USD/acre" } },
+    { total_per_area: { value: 410, unit: "USD/acre" } },
+  ])("keeps demo costs from supported input and saved response shapes", (costs) => {
+    const raw = { ...FIXTURES.demoUnion, economics_overrides: { soybean: { costs } } };
+    const demo = adaptDemo(BackendDemo.parse(raw));
+    expect(demo.overrides.soybean?.costPerArea).toEqual({ value: 410, unit: "USD/acre" });
   });
 
   it("autofill, crop search, research job and vocabularies", async () => {

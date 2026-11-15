@@ -34,7 +34,7 @@ describe("input API contracts", () => {
   it("accepts unavailable money and date references without making up values", () => {
     const result = economicsResponseSchema.parse({ meta: {}, currency: null, area_unit: "ha", crops: [{ crop_id: "okra", price: null, yield: null, costs: { items: [], total_per_area: null }, status: "unavailable", reason_text: "No regional references." }], equipment_costs: [], gaps: [] });
     expect(result.crops[0]?.price).toBeNull();
-    expect(autofillResponseSchema.parse({ meta: {}, plan: null, dates: [], gaps: [{ field: "next_plant", text: "No local date available." }] }).gaps).toEqual(["No local date available."]);
+    expect(autofillResponseSchema.parse({ meta: {}, plan: null, dates: [{ field: "next_plant", value: null, origin: null }], gaps: [{ field: "next_plant", text: "No local date available." }] }).gaps).toEqual(["No local date available."]);
   });
   it("keeps VWC and reading depth without accepting impossible sensor values", () => {
     expect(readingSchema.parse({ date: "2026-04-02", kind: "soil_moisture_vwc", value: 0, depth_cm: 10, origin: "grower" }).depth_cm).toBe(10);

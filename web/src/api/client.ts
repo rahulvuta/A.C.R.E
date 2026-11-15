@@ -1,3 +1,4 @@
+import { createInputsApi } from "../inputs/api";
 import type { ZodType, ZodTypeDef } from "zod";
 import {
   adaptCompare,
@@ -317,6 +318,7 @@ export function createGlobalClient(opts: { apiBase: string | null; timeoutMs: nu
   }
 
   return {
+    inputs: createInputsApi(opts.apiBase ?? "", opts.apiBase ? fetchImpl : async () => { throw new Error(offline.message); }),
     hasLiveApi: Boolean(opts.apiBase),
     geoSearch: (q: string, limit = 5): Promise<Result<GeoSearch>> =>
       call(`/v1/geo/search?q=${encodeURIComponent(q)}&limit=${limit}`, BackendGeoSearch, adaptGeoSearch),

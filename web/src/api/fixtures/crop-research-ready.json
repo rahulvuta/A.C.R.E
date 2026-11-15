@@ -10,6 +10,10 @@
  "crop": {
   "crop_id": "okra",
   "name": "Okra",
+  "family": null,
+  "roles": ["next"],
+  "has_calendar": false,
+  "has_economics": false,
   "origin": "ai_suggested"
  }
 }

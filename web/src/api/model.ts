@@ -282,6 +282,7 @@ export interface PlanningField {
   fieldId: string;
   areaHa: number | null;
   cropHistory: string[];
+  equipment?: string[];
 }
 
 /** One season's plan in the backend's plan shape (passed back unchanged to replay/future). */

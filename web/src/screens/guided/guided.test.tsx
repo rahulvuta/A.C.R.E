@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createGlobalClient } from "../../api/client";
 import { FIXTURE_API_BASE, fixtureFetch } from "../../api/fixtures";
 import { geoApiFrom } from "../../api/geoApi";
@@ -11,11 +11,22 @@ import { cropsOf, planReady, simulateRequest } from "./context";
 import { Guided } from "./Guided";
 import { STEPS } from "./steps";
 
+vi.mock("../../map/FarmMap", () => ({ FarmMap: () => <div aria-label="Farm map" /> }));
+
 const client = createGlobalClient({ apiBase: FIXTURE_API_BASE, timeoutMs: 2000, fetchImpl: fixtureFetch() });
 const api: GlobalApi = { client, geo: geoApiFrom(client), source: "fixtures" };
 
 beforeEach(() => {
-  window.localStorage.clear();
+  const values = new Map<string, string>();
+  Object.defineProperty(window, "localStorage", { configurable: true, value: {
+    get length() { return values.size; },
+    clear: () => values.clear(),
+    getItem: (key: string) => values.get(key) ?? null,
+    key: (index: number) => [...values.keys()][index] ?? null,
+    removeItem: (key: string) => values.delete(key),
+    setItem: (key: string, value: string) => values.set(key, String(value)),
+  } satisfies Storage });
+  window.scrollTo = vi.fn();
   window.history.replaceState(null, "", "/?view=app");
   resetFarmStoreForTests();
   resetSimFieldsForTests();
@@ -46,14 +57,14 @@ describe("guided flow (U1)", () => {
     await screen.findByRole("heading", { name: "What do you grow on this field now?" });
     expect(screen.getByText("Demo farm (example values)")).toBeInTheDocument();
     expect(screen.getByText("Ready to simulate")).toBeInTheDocument();
-    expect(screen.getByRole("checkbox", { name: "Planter" })).toBeChecked();
+    expect(await screen.findByRole("checkbox", { name: "Planter" })).toBeChecked();
     // Sourced defaults with their origins, and the demo's own soybean price.
     await screen.findAllByText("Published source");
-    expect(screen.getByRole("textbox", { name: "Soybean price, yours" })).toHaveValue("11.2");
+    expect(within(screen.getByRole("region", { name: "soybean economics" })).getByRole("spinbutton", { name: "Price · typical value" })).toHaveValue(11.2);
 
     fireEvent.click(screen.getByRole("button", { name: /Next: Simulate current plan/ }));
     await screen.findByRole("heading", { name: "How would your current plan do over 10 years?" });
-    expect(await screen.findByText(/Replays real past weather in new orders; not a forecast/)).toBeInTheDocument();
+    expect((await screen.findAllByText(/Replays real past weather in new orders; not a forecast/)).length).toBeGreaterThan(0);
     // The demo's 15% dry-spring loss estimate is labelled as the farmer's.
     expect(screen.getByRole("textbox", { name: /dry spring/ })).toHaveValue("15");
 
@@ -71,7 +82,7 @@ describe("guided flow (U1)", () => {
     fireEvent.click(choose[2]!);
 
     await screen.findByRole("heading", { name: "What does your chosen plan look like, year by year?" });
-    expect(screen.getByRole("region", { name: "Your readings" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Field readings" })).toBeInTheDocument();
     const fieldId = Object.keys(JSON.parse(window.localStorage.getItem("acre.simfield.v1")!).fields)[0]!;
     expect(getSimField(fieldId).chosenId).toMatch(/^s_/);
   });
@@ -84,9 +95,10 @@ describe("guided flow (U1)", () => {
       window.location.hash = "#u=plan";
       window.dispatchEvent(new HashChangeEvent("hashchange"));
     });
-    const log = await screen.findByRole("region", { name: "Your readings" });
-    fireEvent.change(within(log).getByRole("textbox", { name: "Value" }), { target: { value: "21" } });
-    fireEvent.click(within(log).getByRole("button", { name: "Log reading" }));
+    const log = await screen.findByRole("region", { name: "Field readings" });
+    fireEvent.change(within(log).getByLabelText("Date", { exact: true }), { target: { value: "2026-04-02" } });
+    fireEvent.change(within(log).getByRole("spinbutton", { name: "Soil moisture (%)" }), { target: { value: "21" } });
+    fireEvent.click(within(log).getByRole("button", { name: "Add reading" }));
     await waitFor(() => expect(within(log).getAllByText("You entered").length).toBeGreaterThan(1));
   });
 });

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import { ORIGIN_LABEL } from "../ui/OriginBadge";
 import type { Origin, Source } from "./schema";
 import "./inputs.css";
 
 export const display = (value: string | number | null | undefined) => value === null || value === undefined || value === "" ? "Not available" : String(value);
 export const readable = (value: string) => value.replaceAll("_", " ");
-export function OriginLabel({ origin }: { origin?: Origin }) {
-  return origin ? <span className={`acre-input-origin acre-input-origin-${origin}`} data-origin={origin}>{origin}</span> : <span className="acre-input-muted">Not available</span>;
+export function OriginLabel({ origin }: { origin?: Origin | null }) {
+  return origin ? <span className={`acre-input-origin acre-input-origin-${origin}`} data-origin={origin}>{ORIGIN_LABEL[origin]}</span> : <span className="acre-input-muted">Not available</span>;
 }
 export function SourceLabel({ source }: { source?: Source | null }) {
   const title = source?.title || "Not available";

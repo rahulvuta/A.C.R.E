@@ -4,6 +4,7 @@ import { simulateRequest, type StepContext } from "./context";
 import { CompareColumns, MethodNote } from "./SimViews";
 import { SimStatus } from "./StepSimulate";
 import { ScenarioCompare, simulationResultSchema } from "../../sim";
+import { TimelineCompare, withRotations, type ScenarioResult as TimelineResult } from "../../timeline";
 import { BASELINE_ID } from "../../state/simField";
 
 /* Step 5: every plan side by side over the same resampled past weather (§11 with all scenarios). */
@@ -36,6 +37,10 @@ export function StepCompare({ ctx }: { ctx: StepContext }) {
           })()}
         </section>
       ) : null}
+      {result.state === "ready" && req ? <details className="db-card"><summary>Compare crop calendars</summary><TimelineCompare
+        scenarios={withRotations(result.data.raw as unknown as { scenarios: TimelineResult[] }, { scenarios: req.scenarios.map(s => ({ scenario_id: s.scenarioId, rotation: s.rotation, is_baseline: s.isBaseline })) })}
+        note={result.data.method.note}
+      /></details> : null}
     </div>
   );
 }

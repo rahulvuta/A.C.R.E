@@ -19,11 +19,14 @@ function DateInput({ field, label, value, onChange }: { field: DateField; label:
   const date = getPlanDate(value.plan, field);
   const evidence = value.dates.find(d => d.field === field && d.value === date);
   const [draft, setDraft] = useState(date ?? "");
-  useEffect(() => setDraft(date ?? ""), [date]);
+  useEffect(() => {
+    if (draft === "" || monthDaySchema.safeParse(draft).success) setDraft(date ?? "");
+  }, [date]); // eslint-disable-line react-hooks/exhaustive-deps
   const invalid = draft !== "" && !monthDaySchema.safeParse(draft).success;
   return <div className="acre-input-date"><label>{label}<input type="text" inputMode="numeric" placeholder="Not available" value={draft} aria-invalid={invalid} maxLength={5} onChange={event => {
     const text = event.target.value; setDraft(text);
-    if (text === "" || monthDaySchema.safeParse(text).success) onChange({ ...value, plan: setDate(value.plan, field, text || null), dates: [...value.dates.filter(d => d.field !== field), { field, value: text || null, origin: "grower" }] });
+    const next = monthDaySchema.safeParse(text).success ? text : null;
+    onChange({ ...value, plan: setDate(value.plan, field, next), dates: [...value.dates.filter(d => d.field !== field), { field, value: next, origin: "grower" }] });
   }} /></label><p className="acre-input-help">Month and day (MM-DD); this date repeats each season.</p>
     {invalid ? <p role="alert">Use a valid MM-DD date, such as 04-20.</p> : <><OriginLabel origin={evidence?.origin} /><SourceLabel source={evidence?.source} /></>}
   </div>;
@@ -62,7 +65,7 @@ export function PlanEditor({ location, value, onChange, regionKey = value.plan.r
       let next = latest.current;
       for (const date of response.dates) {
         const relevant = date.field === "prev_harvest" || date.field === "next_plant" || next.plan.winter.kind === "cover" && ["winter.seed", "winter.terminate"].includes(date.field) || next.plan.winter.kind === "winter_grain" && ["winter.plant", "winter.harvest"].includes(date.field);
-        const grower = next.dates.some(d => d.field === date.field && d.origin === "grower");
+        const grower = next.dates.some(d => d.field === date.field && d.origin === "grower" && d.value !== null);
         if (relevant && !grower && getPlanDate(next.plan, date.field) === getPlanDate(startValue.plan, date.field)) next = { ...next, plan: setDate(next.plan, date.field, date.value), dates: [...next.dates.filter(d => d.field !== date.field), date] };
       }
       onChange(next); setGaps(response.gaps);

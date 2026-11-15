@@ -4,7 +4,7 @@
   "snapshot_hash": null
  },
  "_fixture": "Synthetic fixture built from docs/global/contract.md \u00a711\u2013\u00a716 (Agent D). Example values, not real backend output.",
- "items": [
+ "equipment": [
   {
    "id": "planter",
    "label": "Planter"

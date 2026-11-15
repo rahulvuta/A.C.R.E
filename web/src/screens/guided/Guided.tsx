@@ -12,11 +12,12 @@ import { SourceBanner } from "../workspace/Workspace";
 import { rotationReady, simulateRequest, type StepContext } from "./context";
 import { STEPS, stepIndex, type StepDef, type StepId } from "./steps";
 import { StepFarm } from "./StepFarm";
+import { economicsReady } from "./inputState";
 import { StepNow } from "./StepNow";
 import { StepSimulate } from "./StepSimulate";
 import { StepTry } from "./StepTry";
 import { StepCompare } from "./StepCompare";
-import { StepPlan } from "./StepPlan";
+import { ReadingsLog, StepPlan } from "./StepPlan";
 
 /*
   The Scenario Simulator's guided flow (card U1, docs/global/simulator.md): Your farm → What
@@ -114,7 +115,7 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
   const fullReq = simulateRequest(ctx, sim.scenarios);
   const done: Record<StepId, boolean> = {
     farm: Boolean(farm?.fields.length),
-    now: rotationReady(sim.rotation),
+    now: rotationReady(sim.rotation) && economicsReady(sim),
     simulate: peekSimulation(baseReq).state === "ready",
     try: sim.scenarios.length > 0,
     compare: sim.scenarios.length > 0 && peekSimulation(fullReq).state === "ready",
@@ -190,6 +191,7 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
           {step === "try" && field ? <StepTry ctx={ctx} /> : null}
           {step === "compare" && field ? <StepCompare ctx={ctx} /> : null}
           {step === "plan" && field ? <StepPlan ctx={ctx} /> : null}
+          {field && step !== "plan" ? <details className="db-card gf-reading-tools gf-no-print"><summary>Log a field reading</summary><ReadingsLog ctx={ctx} /></details> : null}
           {!field && step !== "farm" ? <Banner kind="info">Choose a field first.</Banner> : null}
           <footer className="gf-foot">
             {prev ? (
@@ -201,7 +203,7 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
             )}
             {next ? (
               <span className="gf-next">
-                {nextBlocked ? <span className="gf-why">{!field ? "Draw a field or try a demo farm first." : "Complete every crop and date in your current plan first."}</span> : null}
+                {nextBlocked ? <span className="gf-why">{!field ? "Draw a field or try a demo farm first." : "Complete your crops, dates and any money entries first."}</span> : null}
                 <button type="button" className="btn btn-primary" disabled={nextBlocked} onClick={() => go(next.id)}>
                   Next: {next.nav}
                 </button>

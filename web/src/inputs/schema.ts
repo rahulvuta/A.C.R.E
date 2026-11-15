@@ -35,7 +35,7 @@ export const researchJobSchema = z.object({
 export type ResearchJob = z.infer<typeof researchJobSchema>;
 export const dateFields = ["prev_harvest", "winter.seed", "winter.terminate", "winter.plant", "winter.harvest", "next_plant"] as const;
 export type DateField = typeof dateFields[number];
-export const dateEvidenceSchema = z.object({ field: z.enum(dateFields), value: monthDaySchema.nullable(), origin: originSchema, source: sourceSchema.nullable().optional() });
+export const dateEvidenceSchema = z.object({ field: z.enum(dateFields), value: monthDaySchema.nullable(), origin: originSchema.nullable(), source: sourceSchema.nullable().optional() });
 export type DateEvidence = z.infer<typeof dateEvidenceSchema>;
 export const planDraftSchema = z.object({
   plan_id: z.string(), label: z.string().nullable().optional(),
@@ -52,7 +52,7 @@ export const quantitySchema = z.object({ value: z.number().finite().nullable(), 
 export type Quantity = z.infer<typeof quantitySchema>;
 export const priceSchema = z.object({ low: z.number().finite().nullable(), typical: z.number().finite().nullable(), high: z.number().finite().nullable(), unit: z.string(), origin: originSchema, source: sourceSchema.nullable().optional() });
 export const economicsCropSchema = z.object({
-  crop_id: z.string(), price: priceSchema.nullable(), yield: quantitySchema.nullable(),
+  crop_id: z.string(), aliases: z.array(z.string()).default([]), price: priceSchema.nullable(), yield: quantitySchema.nullable(),
   costs: z.object({ items: z.array(quantitySchema.extend({ item: z.string() })), total_per_area: quantitySchema.partial({ origin: true }).nullable().optional() }),
   status: statusSchema, reason_text: z.string().nullable().optional(),
 });

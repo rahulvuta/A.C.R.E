@@ -24,19 +24,21 @@ describe("farmer inputs", () => {
   });
   it("shows exact origin labels and gives AI origins different classes from verified sources", () => {
     const { container } = render(<>{originSchema.options.map(origin => <OriginLabel key={origin} origin={origin} />)}</>);
-    for (const origin of originSchema.options) expect(screen.getByText(origin)).toHaveAttribute("data-origin", origin);
+    const labels = { grower: "You entered", verified_source: "Published source", dataset_estimate: "Dataset estimate", ai_suggested: "AI suggestion, not verified", source_checked: "AI-found, quote checked", assumed: "Assumed", calculation: "Calculated", nasa_measured: "NASA measured", nasa_modeled: "NASA model" };
+    for (const origin of originSchema.options) expect(screen.getByText(labels[origin])).toHaveAttribute("data-origin", origin);
     for (const origin of ["ai_suggested", "source_checked"]) expect(container.querySelector(`[data-origin="${origin}"]`)).not.toHaveClass("acre-input-origin-verified_source");
   });
   it("searches as you type and emits a selected catalog crop with its facts", async () => {
     const onChange = vi.fn(); const api = { ...exampleApi, search: vi.fn(exampleApi.search) };
-    render(<CropPicker regionKey="US-NC" value={null} onChange={onChange} api={api} />);
+    function Picker() { const [crop, setCrop] = useState<Crop | null>(null); return <CropPicker regionKey="US-NC" value={crop} onChange={value => { setCrop(value); onChange(value); }} api={api} />; }
+    render(<Picker />);
     fireEvent.change(screen.getByRole("searchbox", { name: "Crop" }), { target: { value: "soy" } });
     fireEvent.click(await screen.findByRole("button", { name: "Soybean" }));
     expect(api.search).toHaveBeenLastCalledWith("soy", "US-NC", expect.any(AbortSignal));
     expect(onChange).toHaveBeenCalledWith(exampleCrops[1]);
     expect(screen.getByText("Family: Fabaceae")).toBeInTheDocument();
     expect(screen.getByText("Calendar: Available")).toBeInTheDocument();
-    expect(screen.getByText("verified_source")).toBeInTheDocument();
+    expect(screen.getByText("Published source")).toBeInTheDocument();
   });
   it("polls AI research with progress, shows sources, and lets the grower select the result", async () => {
     vi.useFakeTimers();
@@ -52,7 +54,7 @@ describe("farmer inputs", () => {
     expect(api.researchJob).toHaveBeenCalledWith("example-okra", expect.any(AbortSignal));
     expect(screen.getByText("AI-suggested · review before use")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Example AI citation/ })).toBeInTheDocument();
-    expect(screen.getByText("ai_suggested")).toBeInTheDocument();
+    expect(screen.getByText("AI suggestion, not verified")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Use Okra" }));
     expect(screen.getByRole("button", { name: "Clear crop" })).toBeInTheDocument();
     expect(api.research).toHaveBeenCalledWith("okra", "US-NC", expect.any(AbortSignal));
@@ -75,13 +77,22 @@ describe("farmer inputs", () => {
     fireEvent.click(screen.getByRole("button", { name: "Fill typical dates" }));
     await waitFor(() => expect(date).toHaveValue("05-05"));
     expect(api.autofill).toHaveBeenCalledWith({ location: exampleLocation, crops: [{ role: "previous", crop_id: "field_corn" }, { role: "cover", crop_id: "cereal_rye" }, { role: "next", crop_id: "soybean" }] }, expect.any(AbortSignal));
-    expect(within(date.parentElement!.parentElement!).getByText("dataset_estimate")).toBeInTheDocument();
+    expect(within(date.parentElement!.parentElement!).getByText("Dataset estimate")).toBeInTheDocument();
     fireEvent.change(date, { target: { value: "05-12" } });
-    expect(within(date.parentElement!.parentElement!).getByText("grower")).toBeInTheDocument();
+    expect(within(date.parentElement!.parentElement!).getByText("You entered")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Fill typical dates" }));
     await waitFor(() => expect(api.autofill).toHaveBeenCalledTimes(2));
     expect(date).toHaveValue("05-12");
     fireEvent.change(date, { target: { value: "02-31" } }); expect(date).toHaveAttribute("aria-invalid", "true");
+  });
+  it("matches regional references through backend crop aliases", async () => {
+    const defaults = { ...exampleEconomics, crops: [{ ...exampleEconomics.crops[0]!, crop_id: "maize", aliases: ["field_corn"] }] };
+    const api = { ...exampleApi, estimate: vi.fn().mockResolvedValue(defaults) };
+    render(<EconomicsEditor location={exampleLocation} crops={["field_corn"]} area={{ value: 16.2, unit: "ha" }} value={createEconomicsValue()} onChange={vi.fn()} api={api} />);
+    const crop = screen.getByRole("region", { name: "field corn economics" });
+    await waitFor(() => expect(within(crop).getByRole("spinbutton", { name: "Price · typical value" })).toHaveValue(11.2));
+    expect(within(crop).getByRole("spinbutton", { name: "Cost · seed value" })).toHaveValue(62);
+    expect(within(crop).getAllByText("Published source").length).toBeGreaterThan(0);
   });
   it("preserves grower edits made while autofill is in flight", async () => {
     let finish!: (response: Awaited<ReturnType<typeof exampleApi.autofill>>) => void;
@@ -108,14 +119,14 @@ describe("farmer inputs", () => {
     expect(screen.getAllByRole("link", { name: /Example price reference/ })).toHaveLength(3);
     fireEvent.change(typical, { target: { value: "12.5" } });
     expect(typical).toHaveValue(12.5);
-    expect(within(typical.closest("td")!).getByText("grower")).toBeInTheDocument();
+    expect(within(typical.closest("td")!).getByText("You entered")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Reset Price · typical" })); expect(typical).toHaveValue(11.2);
     fireEvent.change(typical, { target: { value: "0" } }); expect(typical).toHaveValue(0);
     fireEvent.change(typical, { target: { value: "" } }); expect(typical).toHaveValue(null);
     expect(screen.getByRole("spinbutton", { name: "Dry spring yield loss percent" })).toHaveValue(null);
     fireEvent.change(screen.getByRole("spinbutton", { name: "Dry spring yield loss percent" }), { target: { value: "15" } });
     expect(screen.getByRole("spinbutton", { name: "Dry spring yield loss percent" })).toHaveValue(15);
-    expect(screen.getAllByText("assumed")).toHaveLength(2);
+    expect(screen.getAllByText("Assumed")).toHaveLength(2);
     expect(screen.getByText(/These percentages are your estimates/)).toBeInTheDocument();
     expect(screen.queryByText(/score/i)).not.toBeInTheDocument();
   });
@@ -133,7 +144,7 @@ describe("farmer inputs", () => {
     expect(screen.getByRole("spinbutton", { name: "Yield value" })).toHaveValue(48);
   });
   it("leaves unavailable references editable without replacing them with zero", async () => {
-    const api = { ...exampleApi, estimate: async () => ({ ...exampleEconomics, currency: null, crops: [{ crop_id: "soybean", price: null, yield: null, costs: { items: [], total_per_area: null }, status: "unavailable" as const, reason_text: "No regional references." }] }) };
+    const api = { ...exampleApi, estimate: async () => ({ ...exampleEconomics, currency: null, crops: [{ crop_id: "soybean", aliases: [], price: null, yield: null, costs: { items: [], total_per_area: null }, status: "unavailable" as const, reason_text: "No regional references." }] }) };
     render(<ControlledEconomics api={api} />);
     await screen.findByText("No regional references.");
     expect(screen.getByRole("spinbutton", { name: "Price · typical value" })).toHaveValue(null);

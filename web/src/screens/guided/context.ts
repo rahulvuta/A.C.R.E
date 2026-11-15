@@ -1,3 +1,4 @@
+import { economicsReady } from "./inputState";
 import type { SimulateRequest } from "../../api/adapt";
 import type { LatLon, RegionProfile } from "../../api/model";
 import type { Scenario } from "../../api/simModel";
@@ -35,7 +36,7 @@ export function cropsOf(r: FieldPlan[]): string[] {
 /** The simulate request for this field: the baseline plus the given alternatives. */
 export function simulateRequest(ctx: Pick<StepContext, "field" | "sim" | "point">, alternatives: Scenario[]): SimulateRequest | null {
   const { field, sim, point } = ctx;
-  if (!field || !point || !rotationReady(sim.rotation)) return null;
+  if (!field || !point || !rotationReady(sim.rotation) || !economicsReady(sim)) return null;
   const ha = areaHa(field.geometry);
   return {
     point,

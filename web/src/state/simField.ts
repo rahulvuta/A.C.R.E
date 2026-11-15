@@ -1,3 +1,4 @@
+import type { EconomicsValue, PlanEditorValue } from "../inputs";
 import { useSyncExternalStore } from "react";
 import type { FieldPlan } from "../farm/types";
 import type { CropOverride, DemoFarm, LossAssumptions, Reading, Scenario } from "../api/simModel";
@@ -16,6 +17,8 @@ export interface SimField {
   overrides: Record<string, CropOverride>;
   loss: LossAssumptions;
   priorities: Record<string, number>;
+  economicsInputs?: EconomicsValue;
+  planInputs?: Record<string, Pick<PlanEditorValue, "dates" | "cropDetails">>;
   /** Alternatives to the current plan (at most 5). */
   scenarios: Scenario[];
   chosenId: string | null;

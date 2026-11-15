@@ -1162,12 +1162,12 @@ export function toBackendGoals(g: Goals) {
       equipment: c.equipment ?? [],
       latest_planting: c.latestPlanting ?? null,
       earliest_harvest: c.earliestHarvest ?? null,
-      seasons: c.seasons ?? null,
+      ...(c.seasons != null ? { seasons: c.seasons } : {}),
     },
     preferences: { liked_crops: p.likedCrops ?? [], disliked_crops: p.dislikedCrops ?? [] },
   };
 }
-export const toBackendPlanningField = (f: PlanningField) => ({ field_id: f.fieldId, area_ha: f.areaHa, crop_history: f.cropHistory, soil: null });
+export const toBackendPlanningField = (f: PlanningField) => ({ field_id: f.fieldId, area_ha: f.areaHa, crop_history: f.cropHistory, ...(f.equipment ? { equipment: f.equipment } : {}), soil: null });
 
 // ================================================================== Scenario Simulator (§11–§16)
 // Shapes from docs/global/contract.md §11–§16. Values are renamed and regrouped only; every
@@ -1255,7 +1255,7 @@ const BackendScenarioResult = z
           .passthrough(),
       )
       .default([]),
-    totals: z.record(z.union([BackendDist, z.number(), z.null()])).default({}),
+    totals: z.record(z.union([BackendDist, z.number(), z.string(), z.array(z.unknown()), z.null()])).default({}),
     events: z.array(z.object({ event: z.string(), probability: num, text: z.string() }).passthrough()).default([]),
     money_status: LooseStatus,
     money_gaps: z.array(z.union([z.string(), z.object({ text: z.string() }).passthrough()])).default([]),
@@ -1282,7 +1282,7 @@ export const BackendSimulation = z
               .object({
                 scenario_id: z.string(),
                 versus: z.string(),
-                changes: z.array(z.object({ indicator: z.string(), median_delta: num, currency: str, unit: str, text: z.string().default("") }).passthrough()).default([]),
+                changes: z.array(z.object({ indicator: z.string(), median_delta: num, delta: num, currency: str, unit: str, text: z.string().default("") }).passthrough()).default([]),
               })
               .passthrough(),
           )
@@ -1324,7 +1324,11 @@ export function adaptSimulation(r: z.infer<typeof BackendSimulation>): Simulatio
         indicators: Object.fromEntries(Object.entries(y.indicators).map(([k, v]) => [k, distOrOdds(v)])),
         money: y.money ? { revenue: dist(y.money.revenue), costs: dist(y.money.costs), margin: dist(y.money.margin) } : null,
       })),
-      totals: Object.fromEntries(Object.entries(s.totals).map(([k, v]) => [k, typeof v === "number" || v === null ? v : dist(v)])),
+      totals: Object.fromEntries(Object.entries(s.totals).flatMap(([k, v]): Array<[string, Dist | number | null]> => {
+        if (typeof v === "number" || v === null) return [[k, v]];
+        if (typeof v !== "object" || Array.isArray(v) || !["median", "p10", "p90", "value"].some(key => key in v)) return [];
+        return [[k, dist(BackendDist.parse(v))]];
+      })),
       events: s.events.map((e) => ({ event: e.event, probability: nn(e.probability), text: e.text })),
       moneyStatus: asStatus(s.money_status),
       moneyGaps: s.money_gaps.map((g) => (typeof g === "string" ? g : g.text)),
@@ -1345,7 +1349,7 @@ export function adaptSimulation(r: z.infer<typeof BackendSimulation>): Simulatio
           deltas: c.deltas.map((d) => ({
             scenarioId: d.scenario_id,
             versus: d.versus,
-            changes: d.changes.map((x) => ({ indicator: x.indicator, medianDelta: nn(x.median_delta), currency: nn(x.currency), unit: nn(x.unit), text: x.text })),
+            changes: d.changes.map((x) => ({ indicator: x.indicator, medianDelta: nn(x.median_delta ?? x.delta), currency: nn(x.currency), unit: nn(x.unit), text: x.text })),
           })),
           tradeOffs: c.trade_offs.map((t) => ({ scenarioId: t.scenario_id, text: t.text })),
           notDecided: c.not_decided.map((n) => (typeof n === "string" ? { badge: n, reasonText: "" } : { badge: n.badge ?? "", reasonText: n.reason_text ?? n.text ?? "" })),
@@ -1375,9 +1379,9 @@ const toBackendOverrides = (o: Record<string, CropOverride>) =>
     Object.entries(o).map(([crop, v]) => [
       crop,
       {
-        ...(v.price ? { price: v.price } : {}),
+        ...(v.priceCases && Object.keys(v.priceCases).length ? { price: { ...Object.fromEntries(Object.entries(v.priceCases).map(([k, q]) => [k, q.value])), unit: (v.priceCases.typical ?? Object.values(v.priceCases)[0])!.unit } } : v.price ? { price: v.price } : {}),
         ...(v.yield ? { yield: v.yield } : {}),
-        ...(v.costPerArea ? { costs: { total_per_area: v.costPerArea } } : {}),
+        ...(v.costItems?.length ? { costs: v.costItems.map(({ item, value, unit }) => ({ item, value, unit })) } : v.costPerArea ? { costs: { total: v.costPerArea } } : {}),
       },
     ]),
   );
@@ -1388,7 +1392,7 @@ export function toBackendSimulate(q: SimulateRequest) {
     goals: { priorities: q.priorities },
     economics: {
       overrides: toBackendOverrides(q.overrides),
-      loss_assumptions: { dry_spring_pct: q.loss.drySpringPct, wet_spring_pct: q.loss.wetSpringPct, heavy_rain_pct: q.loss.heavyRainPct },
+      loss_assumptions: { dry_spring_pct: q.loss.drySpringPct, heavy_rain_pct: q.loss.heavyRainPct },
     },
     scenarios: q.scenarios.map((s) => ({ scenario_id: s.scenarioId, label: s.label, ...(s.isBaseline ? { is_baseline: true } : {}), rotation: s.rotation.map(fieldPlanToBackend) })),
     years: q.years ?? 10,
@@ -1460,7 +1464,7 @@ export function adaptEconomics(r: z.infer<typeof BackendEconomics>): Economics {
 export const toBackendEconomics = (q: { point: LatLonPoint; crops: string[]; area: { value: number | null; unit: "acre" | "ha" }; equipment: string[]; overrides: Record<string, CropOverride> }) => ({
   location: { latitude: q.point.latitude, longitude: q.point.longitude },
   crops: q.crops,
-  area: q.area,
+  ...(q.area.value != null && q.area.value > 0 ? { area: q.area } : {}),
   equipment: q.equipment,
   overrides: toBackendOverrides(q.overrides),
 });
@@ -1519,7 +1523,7 @@ export function adaptVocab(r: z.infer<typeof BackendVocab>): VocabItem[] {
     if (typeof x === "string") return [{ id: x, label: cropName(x), explanation: null }];
     if (!x || typeof x !== "object") return [];
     const o = x as Record<string, unknown>;
-    const id = (o.id ?? o.name ?? o.value ?? o.key) as string | undefined;
+    const id = (o.id ?? o.priority_id ?? o.name ?? o.value ?? o.key) as string | undefined;
     if (typeof id !== "string") return [];
     const expl = o.explanation ?? o.description ?? o.help;
     return [{ id, label: typeof o.label === "string" ? o.label : cropName(id), explanation: typeof expl === "string" ? expl : null }];
@@ -1552,9 +1556,14 @@ export const BackendDemo = z
 const asKind = (k: string): ReadingKind => ((READING_KINDS as readonly string[]).includes(k) ? (k as ReadingKind) : "note");
 const toPlans = (v: unknown): FieldPlan[] => (Array.isArray(v) ? v : v ? [v] : []).map(asFieldPlan).filter((p): p is FieldPlan => Boolean(p));
 const pickOverride = (v: unknown): CropOverride => {
-  const o = (v ?? {}) as Record<string, { value?: unknown; unit?: unknown } | undefined> & { costs?: { total_per_area?: { value?: unknown; unit?: unknown } } };
-  const vu = (x: { value?: unknown; unit?: unknown } | undefined) => (x && typeof x.value === "number" ? { value: x.value, unit: String(x.unit ?? "") } : null);
-  return { price: vu(o.price), yield: vu(o.yield), costPerArea: vu(o.costs?.total_per_area ?? o.cost_per_area) };
+  const o = (v ?? {}) as Record<string, unknown>;
+  const vu = (x: unknown) => {
+    if (!x || typeof x !== "object") return null;
+    const q = x as { value?: unknown; unit?: unknown };
+    return typeof q.value === "number" && Number.isFinite(q.value) ? { value: q.value, unit: String(q.unit ?? "") } : null;
+  };
+  const costs = o.costs as Record<string, unknown> | undefined;
+  return { price: vu(o.price), yield: vu(o.yield), costPerArea: vu(costs?.total ?? costs?.total_per_area ?? costs ?? o.cost_per_area) };
 };
 export function adaptDemo(r: z.infer<typeof BackendDemo>, now = new Date().toISOString()): DemoFarm {
   // current_plans: {field_id: Plan | Plan[]} or [{field_id, rotation|plans|plan}]
@@ -1574,7 +1583,11 @@ export function adaptDemo(r: z.infer<typeof BackendDemo>, now = new Date().toISO
       equipment: f.equipment,
       readings: f.readings.map((x) => ({ date: x.date, kind: asKind(x.kind), value: nn(x.value), depthCm: nn(x.depth_cm), note: nn(x.note) })),
     };
-    return { field_id: f.field_id, name: f.name, geometry: f.geometry as unknown as Farm["fields"][number]["geometry"], plan: rotation[0] ?? null };
+    return {
+      field_id: f.field_id, name: f.name, geometry: f.geometry as unknown as Farm["fields"][number]["geometry"], plan: rotation[0] ?? null,
+      equipment: f.equipment,
+      readings: f.readings.map(x => ({ date: x.date, kind: asKind(x.kind), value: nn(x.value), depth_cm: nn(x.depth_cm), note: nn(x.note) })),
+    };
   });
   const first = r.farm.fields[0]!.geometry as unknown as { type: string; coordinates: number[][][] | number[][][][] };
   const ring = (first.type === "Polygon" ? (first.coordinates as number[][][])[0] : (first.coordinates as number[][][][])[0]?.[0]) ?? [];

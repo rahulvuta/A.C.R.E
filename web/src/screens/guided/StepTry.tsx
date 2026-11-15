@@ -73,7 +73,7 @@ export function StepTry({ ctx }: { ctx: StepContext }) {
     setRec({ state: "loading" });
     const ha = areaHa(field.geometry);
     void ctx.api.client
-      .recommend({ point }, { priorities: goalPriorities, constraints: { equipment: sim.equipment } }, { fieldId: field.field_id, areaHa: ha > 0 ? Math.round(ha * 100) / 100 : null, cropHistory: [] })
+      .recommend({ point }, { priorities: goalPriorities }, { fieldId: field.field_id, areaHa: ha > 0 ? Math.round(ha * 100) / 100 : null, cropHistory: [], equipment: sim.equipment })
       .then((r) => live && setRec(r.ok ? { state: "ready", data: r.data } : { state: "error", message: r.message }));
     return () => {
       live = false;

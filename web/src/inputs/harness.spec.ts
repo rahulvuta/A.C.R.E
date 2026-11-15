@@ -14,7 +14,7 @@ test("farmer inputs work together using explicitly labelled examples", async ({ 
   await expect(picker.getByRole("status")).toContainText("Checking published references");
   await picker.getByRole("button", { name: "Use Okra" }).click();
   await expect(picker.getByRole("button", { name: "Clear crop" })).toBeVisible();
-  await expect(picker.getByText("ai_suggested").first()).toBeVisible();
+  await expect(picker.getByText("AI suggestion, not verified").first()).toBeVisible();
   const planting = page.getByRole("textbox", { name: "Next planting" });
   await planting.fill("05-12");
   await page.getByRole("button", { name: "Fill typical dates" }).click();
