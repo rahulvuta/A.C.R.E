@@ -390,3 +390,56 @@ def test_costs_per_hectare_convert_to_the_yield_area_unit():
     cm = money._from_record("soybean", {"value": 11.2, "unit": "USD/bu"},
                             {"value": 48, "unit": "bu/acre"}, {"value": 1000, "unit": "USD/ha"}, {})
     assert cm.area_unit == "acre" and cm.cost_per_area == pytest.approx(1000 * 0.40468564224)
+
+
+def test_harvested_yield_and_planted_costs_do_not_make_a_margin():
+    cm = money._from_record("soybean", {"value": 11.2, "unit": "USD/bu"},
+                            {"value": 48, "unit": "bu/acre", "area_basis": "harvested"},
+                            {"value": 410, "unit": "USD/acre", "area_basis": "planted"}, {})
+    assert cm.status == "partial" and cm.cost_per_area is None
+    assert any(g["reason"] == "area_basis_mismatch" for g in cm.gaps)
+
+
+def test_exact_mass_units_can_be_combined_without_bushel_assumptions():
+    cm = money._from_record("soybean", {"value": 0.35, "unit": "USD/kg"},
+                            {"value": 3.2, "unit": "t/ha"},
+                            {"value": 650, "unit": "USD/ha"}, {})
+    assert cm.status == "complete" and cm.yield_per_area == 3200
+    assert cm.price * cm.yield_per_area - cm.cost_per_area == pytest.approx(470)
+
+
+def test_zero_loss_is_an_explicit_assumption(client):
+    out = _sim(client, economics={"overrides": ECON, "loss_assumptions": {"dry_spring_pct": 0}},
+               field={"area_ha": 16.2})
+    assert out["scenarios"][0]["totals"]["margin_10y"]["includes_assumption"] == "dry_spring_pct"
+
+
+def test_different_currencies_have_no_profit_badge_or_money_delta(client):
+    scs = _sim(client, economics={"overrides": ECON}, field={"area_ha": 16.2})["scenarios"]
+    scs[1]["totals"]["margin_10y"]["currency"] = "ARS"
+    out = compare(scs, {"profit": 3})
+    assert not any(b["badge"] in {"best_profit", "best_for_priorities"} for b in out["badges"])
+    assert any(n["reason"] == "currency_mismatch" for n in out["not_decided"])
+    assert not any(c["indicator"] == "margin_10y" for d in out["deltas"] for c in d["changes"])
+
+
+def test_unused_rotation_seasons_do_not_change_one_year_indicators(client):
+    baseline = _sc("short", "corn_soy__no_cover", base=True)
+    longer = _sc("long", "corn_soy__no_cover", "soy_corn__rye")
+    out = _sim(client, [baseline, longer], years=1)
+    assert out["scenarios"][0]["yearly"] == out["scenarios"][1]["yearly"]
+    assert out["scenarios"][0]["totals"] == out["scenarios"][1]["totals"]
+
+
+def test_replay_readings_stay_separate_from_weather(client):
+    body = {"plan": _plan("corn_soy__no_cover"), "location": UNION}
+    baseline = client.post("/v1/seasons/2020/replay", json=body).json()
+    reading = {"date": "2020-04-02", "kind": "rainfall_mm", "value": 0}
+    response = client.post("/v1/seasons/2020/replay", json={**body,
+                           "field": {"equipment": ["planter"], "readings": [reading]}})
+    assert response.status_code == 200
+    out = response.json()
+    assert out["readings_context"][0]["value"] == 0
+    assert out["readings_context"][0]["origin"] == "grower"
+    assert out["readings_context"][0]["modeled_same_day"]["origin"] == "nasa_modeled"
+    assert out["daily"] == baseline["daily"] and out["spring"] == baseline["spring"]

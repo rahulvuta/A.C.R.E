@@ -118,6 +118,9 @@ def compare(scenarios: list[dict[str, Any]], priorities: dict[str, int], years: 
     if not scs:
         return out
     cur = _currency(scs)
+    currencies = {(s["totals"].get("margin_10y") or {}).get("currency") for s in scs
+                  if value(s, "margin_10y") is not None}
+    same_currency = len(currencies) == 1 and None not in currencies
     byid = {s["scenario_id"]: s for s in scs}
     badges, nd = out["badges"], out["not_decided"]
     if len(scs) < 2:
@@ -130,6 +133,10 @@ def compare(scenarios: list[dict[str, Any]], priorities: dict[str, int], years: 
         nd.append({"badge": "best_profit", "reason": "money_missing",
                    "text": "Not decided: no money result for " + ", ".join(no_money) +
                            " (add your prices, yields and costs)."})  # fmt: skip
+    elif not same_currency:
+        nd.append({"badge": "best_profit", "reason": "currency_mismatch",
+                   "text": "Not decided: scenario margins use different currencies; "
+                           "no exchange rate is assumed."})
     elif len(scs) > 1:
         win, runner = _best_single(scs, "margin_10y")
         if win is None:
@@ -186,6 +193,8 @@ def compare(scenarios: list[dict[str, Any]], priorities: dict[str, int], years: 
         if not weights:
             weights = {n: 1 for n in METRICS}
         missing = [n for n in weights if any(value(s, n) is None for s in scs)]
+        if "margin_10y" in weights and not same_currency and "margin_10y" not in missing:
+            missing.append("margin_10y")
         for n in missing:
             weights.pop(n)
         if missing:
@@ -211,6 +220,8 @@ def compare(scenarios: list[dict[str, Any]], priorities: dict[str, int], years: 
             continue
         changes, better, worse = [], [], []
         for n, (_, d, label, unit) in METRICS.items():
+            if unit == "money" and not same_currency:
+                continue
             a, b = value(s, n), value(base, n)
             if a is None or b is None:
                 continue

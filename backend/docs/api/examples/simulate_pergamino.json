@@ -109,7 +109,7 @@
     },
     "soybean": {
       "costs_per_area": {
-        "area_unit": null,
+        "area_unit": "ha",
         "origin": null,
         "value": null
       },
@@ -123,9 +123,9 @@
       },
       "status": "unavailable",
       "yield_per_area": {
-        "area_unit": null,
-        "origin": null,
-        "value": null
+        "area_unit": "ha",
+        "origin": "verified_source",
+        "value": 2.945
       }
     }
   },

@@ -1,0 +1,66 @@
+{
+  "dates": [
+    {
+      "field": "prev_harvest",
+      "origin": "dataset_estimate",
+      "source": {
+        "citation": "Sacks, Deryng, Foley & Ramankutty 2010, Crop planting dates: an analysis of global patterns, Global Ecology and Biogeography 19, 607-620",
+        "doi": "10.1111/j.1466-8238.2010.00551.x",
+        "extrapolated": false,
+        "resolution_deg": 0.5,
+        "sage_cell": "sage_-33.75_-60.75",
+        "title": "Sacks et al. 2010 crop calendar (SAGE, 0.5\u00b0)",
+        "url": "https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/"
+      },
+      "status": "complete",
+      "value": "04-15"
+    },
+    {
+      "field": "next_plant",
+      "origin": "dataset_estimate",
+      "source": {
+        "citation": "Sacks, Deryng, Foley & Ramankutty 2010, Crop planting dates: an analysis of global patterns, Global Ecology and Biogeography 19, 607-620",
+        "doi": "10.1111/j.1466-8238.2010.00551.x",
+        "extrapolated": false,
+        "resolution_deg": 0.5,
+        "sage_cell": "sage_-33.75_-60.75",
+        "title": "Sacks et al. 2010 crop calendar (SAGE, 0.5\u00b0)",
+        "url": "https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/"
+      },
+      "status": "complete",
+      "value": "11-30"
+    }
+  ],
+  "gaps": [],
+  "meta": {
+    "catalog_version": "v3:AR-B:sage_-33.75_-60.75:3edf141b9da9",
+    "plan_version": null,
+    "request_id": "req_example",
+    "snapshot_hash": null
+  },
+  "note": "Typical calendar dates, not a forecast or planting advice; confirm them for this field. SAGE is a 0.5-degree gridded estimate.",
+  "plan": {
+    "grower": {
+      "low_moisture_concern": null,
+      "observations": [],
+      "residue_report": null
+    },
+    "label": "Typical dates; confirm for this field",
+    "next_crop_id": "soybean",
+    "next_plant": "11-30",
+    "plan_id": "autofill_7c3284eeeb96",
+    "prev_harvest": "04-15",
+    "previous_crop_id": "maize",
+    "production_system": null,
+    "region": null,
+    "winter": {
+      "crop_id": null,
+      "harvest": null,
+      "kind": "none",
+      "plant": null,
+      "seed": null,
+      "terminate": null
+    }
+  },
+  "status": "complete"
+}

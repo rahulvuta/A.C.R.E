@@ -366,6 +366,10 @@ Response:
 ```
 A crop with no source and no override gets `status: "unavailable"`, null values and a `reason_text`.
 
+Sourced yields and cost totals may carry `area_basis: harvested|planted|unknown`. Conflicting
+known bases leave margin blank with a reason; no area-basis conversion is assumed. Exact mass
+and area unit conversions are supported; bushel-to-mass conversions are not inferred.
+
 ## 13. Crop library (S4)
 
 - `GET /v1/crops/search?q=okra&region_key=US-NC` returns `{meta, results: [{crop_id, name, family, roles, origin, has_calendar, has_economics, region_note}], can_research: true}`.
@@ -375,6 +379,12 @@ A crop with no source and no override gets `status: "unavailable"`, null values 
 
 The library is shared by all users (cached centrally). Every research call goes through the guardrails, research caps and rate limits. The request carries only the crop name and region.
 
+**Shipped (S4).** Crop details also carry `aliases`, `researched`, `in_sage` and `notes`.
+Calendars include `review` and `sage_check`. Economics references include `used_for_money`;
+AI references are never used for money. Research jobs carry `name`, `region_key`, `status`,
+`reason`, `reason_text` and an optional `check`. A known crop or cached answer can be ready
+without a new AI call. Crop research shares the regional-research rate limit and daily budget.
+
 ## 14. Field context: equipment and readings (S5)
 
 The field object in §11/§5 gains:
@@ -383,10 +393,27 @@ The field object in §11/§5 gains:
 
 Both stay in the browser and are sent per request, never stored on the server. `GET /v1/vocab/equipment` and `GET /v1/vocab/readings` return the vocabularies with labels.
 
+`POST /v1/seasons/{year}/replay` accepts `field: {equipment, readings}` and returns
+`readings_context`, including available same-day modeled context. Readings do not change the
+NASA series or replay metrics. Farm analysis accepts the same field context and returns it
+per field; equipment is passed to the recommendation feasibility check.
+
 ## 15. Demo and autofill (S6)
 
 - `GET /v1/demo/farm?scenario=union|pergamino` returns `{meta, farm: Farm (contract §5 shape plus equipment and readings), current_plans, economics_overrides, goals, label: "Demo farm (example values)"}`.
 - `POST /v1/plans/autofill` with body `{location, crops: [{role: "previous|cover|next", crop_id}]}` returns `{meta, plan: Plan, dates: [{field, value, origin, source}], gaps}`.
+
+**Shipped (S6).** Both demo farms contain two synthetic fields with geometry, measured area,
+equipment and example readings. `current_plans[field_id]` contains a two-season rotation.
+`economics_overrides` contains explicit example inputs, labelled not sourced; there is no
+default weather-loss assumption. `note`, `economics_note` and `resolution_note` describe the
+synthetic inputs, historical replay and shared NASA cell.
+
+Autofill accepts a point or `cell_id`, one previous crop, one next crop and an optional cover.
+The response adds `status` and `note`; each date adds `status`. Missing dates have null values
+and origins, with `{field, reason, text}` entries in `gaps`. An incomplete or invalid calendar
+has `plan: null`. NC catalog windows apply only within their NC region; other planting and
+harvest dates use the local SAGE calendar. Unsourced cover spacing is labelled `assumed`.
 
 ## 16. Vocabularies
 

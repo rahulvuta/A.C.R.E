@@ -9,7 +9,8 @@ import hashlib
 import json
 from typing import Annotated, Any, Literal
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from acre.api.routes import LocationIn, _invalid_for, _issues_from_plan_error, _loc_args, _meta
@@ -17,12 +18,16 @@ from acre.compare import engine, text
 from acre.compare import locations as places
 from acre.contracts import InvalidPlanError, Plan
 from acre.farms.geometry import GeometryError, parse_field
+from acre.field.equipment import Reading, check_equipment
 from acre.report.http import issue
 from acre.report.meta import response_meta
 from acre.simulate import compare as sim_compare
+from acre.simulate.autofill import autofill
+from acre.simulate.demo import demo_farm
 from acre.simulate.engine import Inputs, Scenario, readings_context, simulate
 from acre.simulate.money import MoneyInputError
 from acre.simulate.vocab import PRIORITIES, priorities_vocab
+from acre.weather.ondemand import Cell, CellIdError
 from acre.weather.snapshot import set_active_snapshot_dir
 
 router = APIRouter(prefix="/v1", tags=["simulate"])
@@ -42,15 +47,10 @@ class SimGoalsIn(BaseModel):
         return v
 
 
-class ReadingIn(BaseModel):
+class ReadingIn(Reading):
     """Contract §14. A farmer's own reading: shown beside modeled values, never mixed in."""
 
     model_config = ConfigDict(extra="ignore")
-    date: Annotated[str, Field(pattern=r"^\d{4}-\d{2}-\d{2}$")]
-    kind: Literal["soil_moisture_pct", "soil_moisture_vwc", "rainfall_mm", "soil_temp_c", "note"]
-    value: float | None = None
-    depth_cm: Annotated[float | None, Field(ge=0, le=500)] = None
-    note: Annotated[str | None, Field(max_length=500)] = None
 
 
 class FieldSimIn(BaseModel):
@@ -62,6 +62,11 @@ class FieldSimIn(BaseModel):
     equipment: Annotated[list[Annotated[str, Field(max_length=100)]], Field(max_length=50)] = \
         Field(default_factory=list)  # fmt: skip
     readings: Annotated[list[ReadingIn], Field(max_length=500)] = Field(default_factory=list)
+
+    @field_validator("equipment")
+    @classmethod
+    def _equipment(cls, value: list[str]) -> list[str]:
+        return check_equipment(value)
 
 
 class LossIn(BaseModel):
@@ -169,7 +174,7 @@ def simulate_scenarios(body: SimulateRequest) -> Any:
     except MoneyInputError as exc:
         return _invalid_for([issue(f"economics.{exc.field}", exc.code, str(exc))], choice)
     out.pop("_matrices", None)
-    readings = readings_context([r.model_dump() for r in f.readings], ctx)
+    readings = readings_context([r.model_dump(mode="json") for r in f.readings], ctx)
     for sc in out["scenarios"]:
         sc["readings_context"] = readings
     comparison = (sim_compare.compare(out["scenarios"], body.goals.priorities, body.years)
@@ -186,3 +191,47 @@ def simulate_scenarios(body: SimulateRequest) -> Any:
 def get_vocab_priorities() -> Any:
     return {"meta": response_meta(weather=False), "status": "complete",
             "priorities": priorities_vocab()}  # fmt: skip
+
+
+class AutofillCropIn(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    role: Literal["previous", "cover", "next"]
+    crop_id: Annotated[str, Field(min_length=1, max_length=100)]
+
+
+class AutofillRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    location: LocationIn
+    crops: Annotated[list[AutofillCropIn], Field(min_length=2, max_length=3)]
+
+
+@router.post("/plans/autofill")
+def autofill_plan(body: AutofillRequest) -> Any:
+    loc = body.location
+    issues = []
+    lat, lon = loc.latitude, loc.longitude
+    if loc.cell_id is not None:
+        if lat is not None or lon is not None:
+            issues.append(issue("location", "location_conflict", "Give a point or a cell_id."))
+        else:
+            try:
+                cell = Cell.parse(loc.cell_id)
+                lat, lon = cell.center_latitude, cell.center_longitude
+            except CellIdError as exc:
+                issues.append(issue("location.cell_id", "invalid_cell", str(exc)))
+    elif lat is None or lon is None:
+        issues.append(issue("location", "incomplete_point", "Give both latitude and longitude."))
+    roles = [c.role for c in body.crops]
+    if len(roles) != len(set(roles)) or not {"previous", "next"} <= set(roles):
+        issues.append(issue("crops", "crop_roles", "Give one previous and one next crop, "
+                            "and at most one cover crop."))
+    if issues:
+        return JSONResponse(status_code=400, content={"status": "invalid_input", "issues": issues,
+                            **response_meta(weather=False)})
+    assert lat is not None and lon is not None
+    return autofill(lat, lon, {c.role: c.crop_id for c in body.crops})
+
+
+@router.get("/demo/farm")
+def get_demo_farm(scenario: Annotated[Literal["union", "pergamino"], Query()] = "union") -> Any:
+    return demo_farm(scenario)

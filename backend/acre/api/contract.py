@@ -150,6 +150,17 @@ def simulator_specs() -> list[Example]:
                 "/v1/scenarios/simulate", {**no_money, "runs": 10}, 400),
         Example("vocab_priorities", "get", "/v1/vocab/priorities", "/v1/vocab/priorities", None,
                 200),
+        Example("demo_union", "get", "/v1/demo/farm", "/v1/demo/farm?scenario=union", None, 200),
+        Example("demo_pergamino", "get", "/v1/demo/farm", "/v1/demo/farm?scenario=pergamino",
+                None, 200),
+        Example("autofill_union", "post", "/v1/plans/autofill", "/v1/plans/autofill",
+                {"location": {"latitude": 34.98, "longitude": -80.55}, "crops": [
+                    {"role": "previous", "crop_id": "field_corn"},
+                    {"role": "cover", "crop_id": "cereal_rye"},
+                    {"role": "next", "crop_id": "soybean"}]}, 200),
+        Example("autofill_pergamino", "post", "/v1/plans/autofill", "/v1/plans/autofill",
+                {"location": PERG, "crops": [{"role": "previous", "crop_id": "maize"},
+                    {"role": "next", "crop_id": "soybean"}]}, 200),
     ]  # fmt: skip
 
 

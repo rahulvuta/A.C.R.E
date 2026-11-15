@@ -591,6 +591,55 @@
         "title": "AuditedNumber",
         "type": "object"
       },
+      "AutofillCropIn": {
+        "additionalProperties": false,
+        "properties": {
+          "crop_id": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Crop Id",
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "previous",
+              "cover",
+              "next"
+            ],
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "crop_id"
+        ],
+        "title": "AutofillCropIn",
+        "type": "object"
+      },
+      "AutofillRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "crops": {
+            "items": {
+              "$ref": "#/components/schemas/AutofillCropIn"
+            },
+            "maxItems": 3,
+            "minItems": 2,
+            "title": "Crops",
+            "type": "array"
+          },
+          "location": {
+            "$ref": "#/components/schemas/LocationIn"
+          }
+        },
+        "required": [
+          "location",
+          "crops"
+        ],
+        "title": "AutofillRequest",
+        "type": "object"
+      },
       "BackupComparison": {
         "additionalProperties": true,
         "properties": {
@@ -2939,9 +2988,37 @@
         "title": "FarmResponse",
         "type": "object"
       },
+      "FieldExtras": {
+        "description": "The S5 part of a field object, for callers that validate it on its own (A's simulate).",
+        "properties": {
+          "equipment": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Equipment",
+            "type": "array"
+          },
+          "readings": {
+            "items": {
+              "$ref": "#/components/schemas/Reading"
+            },
+            "title": "Readings",
+            "type": "array"
+          }
+        },
+        "title": "FieldExtras",
+        "type": "object"
+      },
       "FieldIn": {
         "additionalProperties": false,
         "properties": {
+          "equipment": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Equipment",
+            "type": "array"
+          },
           "field_id": {
             "maxLength": 100,
             "minLength": 1,
@@ -2976,6 +3053,13 @@
           },
           "plan": {
             "$ref": "#/components/schemas/Plan"
+          },
+          "readings": {
+            "items": {
+              "$ref": "#/components/schemas/Reading"
+            },
+            "title": "Readings",
+            "type": "array"
           }
         },
         "required": [
@@ -4960,18 +5044,81 @@
         "title": "RawWinter",
         "type": "object"
       },
-      "ReadingIn": {
-        "description": "Contract \u00a714. A farmer's own reading: shown beside modeled values, never mixed in.",
+      "Reading": {
+        "additionalProperties": false,
         "properties": {
           "date": {
-            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "format": "date",
             "title": "Date",
             "type": "string"
           },
           "depth_cm": {
             "anyOf": [
               {
-                "maximum": 500.0,
+                "maximum": 300.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Depth Cm"
+          },
+          "kind": {
+            "enum": [
+              "soil_moisture_pct",
+              "soil_moisture_vwc",
+              "rainfall_mm",
+              "soil_temp_c",
+              "note"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "date",
+          "kind"
+        ],
+        "title": "Reading",
+        "type": "object"
+      },
+      "ReadingIn": {
+        "description": "Contract \u00a714. A farmer's own reading: shown beside modeled values, never mixed in.",
+        "properties": {
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "depth_cm": {
+            "anyOf": [
+              {
+                "maximum": 300.0,
                 "minimum": 0.0,
                 "type": "number"
               },
@@ -5277,6 +5424,16 @@
       "ReplayRequest": {
         "additionalProperties": false,
         "properties": {
+          "field": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FieldExtras"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "location": {
             "anyOf": [
               {
@@ -5365,6 +5522,14 @@
           "plan_id": {
             "title": "Plan Id",
             "type": "string"
+          },
+          "readings_context": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Readings Context",
+            "type": "array"
           },
           "spring": {
             "additionalProperties": true,
@@ -9014,6 +9179,298 @@
         ]
       }
     },
+    "/v1/crops/research": {
+      "post": {
+        "description": "Body: ``{name, region_key, location?, refresh?, wait_s?}``. Only the name and region are\nresearched; a location only selects the SAGE cell for the cross-check.",
+        "operationId": "post_research_v1_crops_research_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Post Research V1 Crops Research Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Post Research",
+        "tags": [
+          "field",
+          "crop library"
+        ]
+      }
+    },
+    "/v1/crops/research/{job_id}": {
+      "get": {
+        "operationId": "get_research_v1_crops_research__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Research V1 Crops Research  Job Id  Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Research",
+        "tags": [
+          "field",
+          "crop library"
+        ]
+      }
+    },
+    "/v1/crops/search": {
+      "get": {
+        "operationId": "get_search_v1_crops_search_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Q",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "region_key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Region Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Search V1 Crops Search Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Search",
+        "tags": [
+          "field",
+          "crop library"
+        ]
+      }
+    },
+    "/v1/crops/{crop_id}": {
+      "get": {
+        "operationId": "get_crop_v1_crops__crop_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "crop_id",
+            "required": true,
+            "schema": {
+              "title": "Crop Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "region_key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Region Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Crop V1 Crops  Crop Id  Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Crop",
+        "tags": [
+          "field",
+          "crop library"
+        ]
+      }
+    },
+    "/v1/demo/farm": {
+      "get": {
+        "operationId": "get_demo_farm_v1_demo_farm_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "scenario",
+            "required": false,
+            "schema": {
+              "default": "union",
+              "enum": [
+                "union",
+                "pergamino"
+              ],
+              "title": "Scenario",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Demo Farm V1 Demo Farm Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Demo Farm",
+        "tags": [
+          "simulate"
+        ]
+      }
+    },
     "/v1/economics/estimate": {
       "post": {
         "description": "Body: ``{location, crops, area?, equipment?, overrides?, loss_assumptions?}``.",
@@ -9538,6 +9995,57 @@
         "summary": "Post Resolve",
         "tags": [
           "field"
+        ]
+      }
+    },
+    "/v1/plans/autofill": {
+      "post": {
+        "operationId": "autofill_plan_v1_plans_autofill_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutofillRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Autofill Plan V1 Plans Autofill Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Autofill Plan",
+        "tags": [
+          "simulate"
         ]
       }
     },

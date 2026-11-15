@@ -89,3 +89,9 @@ Failing tests: none known in `tests/simulate`. Shared tree: `tests/api/test_api_
 For B:
 - simulate calls `estimate_economics(location=, crops=, area={value, unit:"ha"}, equipment=, overrides=)` with costs converted to `{total: {value, unit}}`. It reads `crops[].price{low, typical, high, unit, origin}`, `yield{value, unit, origin}`, `costs{items[], total_per_area{value, unit}}`, and matches crop ids through `crop_ids.canonical`. `EconomicsInputError` (`.field`, `.code`) becomes a 400 at `economics.<field>`. Keep these stable.
 - S5 readings: simulate validates readings with its own `ReadingIn` (same kinds as §14). It could switch to `acre.field.equipment`'s model now that S5 is committed.
+
+## 2026-11-14 lead integration
+
+- S6 implemented: deterministic Union County and Pergamino demo farms, per-date sourced autofill, null plans with gaps for unavailable calendars, and contract examples.
+- S1/S2 fix pass covers mass units, explicit zero loss, currency comparisons, short horizons and mismatched area bases. S5 replay now returns readings beside NASA values; farm analysis accepts field context.
+- The high-effort GPT-6.1 Sol review stopped at its usage limit before a verdict; reproduced findings were checked and fixed. See `reviews/A-sim.md`. Targeted simulator/farm checks and the final integrated release checks are recorded by the lead.

@@ -15,6 +15,8 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
+from acre.economics.estimate import _qty_factor
+
 HA_PER_AC = 0.40468564224
 log = logging.getLogger(__name__)
 
@@ -76,18 +78,28 @@ def _from_record(crop_id: str, price: dict | None, yld: dict | None, costs: dict
     c_raw = _cost_total(costs)
     c_val = _num((c_raw or {}).get("value"))
     c_unit = _split((c_raw or {}).get("unit"))
+    yield_basis = (yld or {}).get("area_basis")
+    cost_basis = (c_raw or {}).get("area_basis")
+    if (yield_basis in {"harvested", "planted"} and cost_basis in {"harvested", "planted"}
+            and yield_basis != cost_basis):
+        m.gaps.append({"crop_id": crop_id, "field": "costs", "reason": "area_basis_mismatch",
+                       "text": f"{crop_id}: yield is per {yield_basis} area and costs per "
+                               f"{cost_basis} area; enter your own matching inputs."})
+        c_val = None
     for name, val in (("price", p_val), ("yield", y_val), ("costs", c_val)):
         if val is None:
             m.gaps.append({"crop_id": crop_id, "field": name, "reason": "no_value",
                            "text": f"No {name} for {crop_id}: give your own or none is used."})  # fmt: skip
     area = AREA_UNITS.get(y_unit[1].lower()) if y_unit else None
     c_area = AREA_UNITS.get(c_unit[1].lower()) if c_unit else None
-    if y_val is not None and p_val is not None and (not p_unit or not y_unit
-                                                    or p_unit[1] != y_unit[0] or area is None):
+    quantity_factor = _qty_factor(y_unit[0], p_unit[1]) if y_unit and p_unit else None
+    if y_val is not None and p_val is not None and (quantity_factor is None or area is None):
         m.gaps.append({"crop_id": crop_id, "field": "units", "reason": "unit_mismatch",
                        "text": f"{crop_id}: price and yield units do not match (e.g. USD/bu with "
                                "bu/acre)."})  # fmt: skip
         y_val = None
+    elif y_val is not None and quantity_factor is not None:
+        y_val *= quantity_factor
     if c_val is not None and c_area is None:
         m.gaps.append({"crop_id": crop_id, "field": "costs", "reason": "unit_mismatch",
                        "text": f"{crop_id}: costs need a per-area unit (USD/acre or USD/ha)."})

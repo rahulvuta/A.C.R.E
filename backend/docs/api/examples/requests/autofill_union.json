@@ -1,0 +1,25 @@
+{
+  "body": {
+    "crops": [
+      {
+        "crop_id": "field_corn",
+        "role": "previous"
+      },
+      {
+        "crop_id": "cereal_rye",
+        "role": "cover"
+      },
+      {
+        "crop_id": "soybean",
+        "role": "next"
+      }
+    ],
+    "location": {
+      "latitude": 34.98,
+      "longitude": -80.55
+    }
+  },
+  "method": "POST",
+  "status": 200,
+  "url": "/v1/plans/autofill"
+}

@@ -109,8 +109,8 @@ def matrices(sc: Scenario, legs: dict[str, LegSeasons], d: Draws, years: int) ->
     return Matrices(rain, heavy, dry, cover, ops, pool[d.index])
 
 
-def _families(sc: Scenario, ctx: Context) -> tuple[int | None, dict[str, str | None]]:
-    crops = [c for p in sc.rotation for c in (p.previous_crop_id, p.winter.crop_id,
+def _families(sc: Scenario, ctx: Context, years: int) -> tuple[int | None, dict[str, str | None]]:
+    crops = [c for p in sc.rotation[:years] for c in (p.previous_crop_id, p.winter.crop_id,
                                               p.next_crop_id) if c]  # fmt: skip
     fams = {c: family_of(c, ctx.index) for c in dict.fromkeys(crops)}
     if any(f is None for f in fams.values()):
@@ -201,10 +201,10 @@ def _money(sc: Scenario, m: Matrices, inp: Inputs, crops: dict[str, mon.CropMone
                 base = cm.yield_per_area * price_of[c] * mon.area_in(cm.area_unit, inp.area_ha)  # type: ignore[operator, arg-type]
                 factor = np.ones(runs)
                 if c == p.next_crop_id:  # the crop planted after the window the events describe
-                    if dry_l and (m.dry[:, t] > 0).any():
+                    if inp.loss.get("dry_spring_pct") is not None and (m.dry[:, t] > 0).any():
                         factor *= 1 - dry_l * (m.dry[:, t] > 0)
                         used_t.append("dry_spring_pct")
-                    if heavy_l and (m.heavy[:, t] > 0).any():
+                    if inp.loss.get("heavy_rain_pct") is not None and (m.heavy[:, t] > 0).any():
                         factor *= 1 - heavy_l * (m.heavy[:, t] > 0)
                         used_t.append("heavy_rain_pct")
                 rev[:, t] += base * factor
@@ -296,7 +296,7 @@ def readings_context(readings: list[dict[str, Any]], ctx: Context) -> list[dict[
 
 
 def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
-    plans = {plan_key(p): p for sc in inp.scenarios for p in sc.rotation}
+    plans = {plan_key(p): p for sc in inp.scenarios for p in sc.rotation[:inp.years]}
     ts = engine.threshold_set_for(ctx, [p.next_plant for p in plans.values()])
     legs = {k: leg_seasons(p, ctx, ts) for k, p in plans.items()}
     d = draws(list(legs.values()), inp.runs, inp.years, inp.seed)
@@ -313,7 +313,7 @@ def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
                 "reason_text": f"Only {len(d.pool)} past seasons can be evaluated for every plan "
                                f"here (at least {MIN_POOL} are needed).",
                 "scenarios": []}  # fmt: skip
-    crops = sorted({c for sc in inp.scenarios for p in sc.rotation
+    crops = sorted({c for sc in inp.scenarios for p in sc.rotation[:inp.years]
                     for c in (p.next_crop_id, p.winter.crop_id) if c})  # fmt: skip
     cm, money_source = mon.crop_money(inp.location, crops, inp.area_ha, inp.equipment,
                                       inp.overrides)  # fmt: skip
@@ -322,7 +322,7 @@ def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
     for sc in inp.scenarios:
         m = matrices(sc, legs, d, inp.years)
         mats[sc.scenario_id] = m
-        fam_n, fams = _families(sc, ctx)
+        fam_n, fams = _families(sc, ctx, inp.years)
         money = _money(sc, m, inp, cm)
         yearly = []
         for t in range(inp.years):

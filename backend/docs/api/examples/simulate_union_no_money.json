@@ -108,44 +108,44 @@
     },
     "field_corn": {
       "costs_per_area": {
-        "area_unit": null,
-        "origin": null,
+        "area_unit": "acre",
+        "origin": "verified_source",
         "value": null
       },
       "crop_id": "field_corn",
-      "currency": null,
+      "currency": "USD",
       "price": {
-        "high": null,
-        "low": null,
-        "origin": null,
-        "typical": null
+        "high": 6.76,
+        "low": 3.5,
+        "origin": "verified_source",
+        "typical": 5.4
       },
-      "status": "unavailable",
+      "status": "partial",
       "yield_per_area": {
-        "area_unit": null,
-        "origin": null,
-        "value": null
+        "area_unit": "acre",
+        "origin": "verified_source",
+        "value": 87.0
       }
     },
     "soybean": {
       "costs_per_area": {
-        "area_unit": null,
-        "origin": null,
+        "area_unit": "acre",
+        "origin": "verified_source",
         "value": null
       },
       "crop_id": "soybean",
-      "currency": null,
+      "currency": "USD",
       "price": {
-        "high": null,
-        "low": null,
-        "origin": null,
-        "typical": null
+        "high": 14.9,
+        "low": 8.98,
+        "origin": "verified_source",
+        "typical": 13.0
       },
-      "status": "unavailable",
+      "status": "partial",
       "yield_per_area": {
-        "area_unit": null,
-        "origin": null,
-        "value": null
+        "area_unit": "acre",
+        "origin": "verified_source",
+        "value": 39.0
       }
     }
   },
@@ -198,15 +198,9 @@
       "money_gaps": [
         {
           "crop_id": "field_corn",
-          "field": "price",
-          "reason": "no_value",
-          "text": "No price for field_corn: give your own or none is used."
-        },
-        {
-          "crop_id": "field_corn",
-          "field": "yield",
-          "reason": "no_value",
-          "text": "No yield for field_corn: give your own or none is used."
+          "field": "costs",
+          "reason": "area_basis_mismatch",
+          "text": "field_corn: yield is per harvested area and costs per planted area; enter your own matching inputs."
         },
         {
           "crop_id": "field_corn",
@@ -216,15 +210,9 @@
         },
         {
           "crop_id": "soybean",
-          "field": "price",
-          "reason": "no_value",
-          "text": "No price for soybean: give your own or none is used."
-        },
-        {
-          "crop_id": "soybean",
-          "field": "yield",
-          "reason": "no_value",
-          "text": "No yield for soybean: give your own or none is used."
+          "field": "costs",
+          "reason": "area_basis_mismatch",
+          "text": "soybean: yield is per harvested area and costs per planted area; enter your own matching inputs."
         },
         {
           "crop_id": "soybean",
@@ -233,7 +221,7 @@
           "text": "No costs for soybean: give your own or none is used."
         }
       ],
-      "money_status": "unavailable",
+      "money_status": "partial",
       "readings_context": [],
       "replayed_seasons_sample": [
         2023,
@@ -557,15 +545,9 @@
         },
         {
           "crop_id": "field_corn",
-          "field": "price",
-          "reason": "no_value",
-          "text": "No price for field_corn: give your own or none is used."
-        },
-        {
-          "crop_id": "field_corn",
-          "field": "yield",
-          "reason": "no_value",
-          "text": "No yield for field_corn: give your own or none is used."
+          "field": "costs",
+          "reason": "area_basis_mismatch",
+          "text": "field_corn: yield is per harvested area and costs per planted area; enter your own matching inputs."
         },
         {
           "crop_id": "field_corn",
@@ -575,15 +557,9 @@
         },
         {
           "crop_id": "soybean",
-          "field": "price",
-          "reason": "no_value",
-          "text": "No price for soybean: give your own or none is used."
-        },
-        {
-          "crop_id": "soybean",
-          "field": "yield",
-          "reason": "no_value",
-          "text": "No yield for soybean: give your own or none is used."
+          "field": "costs",
+          "reason": "area_basis_mismatch",
+          "text": "soybean: yield is per harvested area and costs per planted area; enter your own matching inputs."
         },
         {
           "crop_id": "soybean",
@@ -592,7 +568,7 @@
           "text": "No costs for soybean: give your own or none is used."
         }
       ],
-      "money_status": "unavailable",
+      "money_status": "partial",
       "readings_context": [],
       "replayed_seasons_sample": [
         2023,
