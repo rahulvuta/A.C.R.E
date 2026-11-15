@@ -19,6 +19,7 @@ export default defineConfig({
   fullyParallel: true,
   use: {
     baseURL: `http://localhost:${port}`,
+    actionTimeout: 15_000,
     launchOptions: { args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] },
   },
   webServer: {
