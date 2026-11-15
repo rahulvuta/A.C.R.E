@@ -1,4 +1,18 @@
 {
+  "calendar_research": [
+    {
+      "crop_id": "maize",
+      "missing": false,
+      "researched_at": null,
+      "role": "previous"
+    },
+    {
+      "crop_id": "soybean",
+      "missing": false,
+      "researched_at": null,
+      "role": "next"
+    }
+  ],
   "dates": [
     {
       "field": "prev_harvest",
@@ -61,6 +75,10 @@
       "seed": null,
       "terminate": null
     }
+  },
+  "research": {
+    "available": false,
+    "region_key": "AR-B"
   },
   "status": "complete"
 }

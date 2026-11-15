@@ -7,7 +7,8 @@ from typing import Any
 from fastapi import APIRouter, Request
 
 from acre.catalogs.regional import NC_KEY, valid_region_key
-from acre.croplib import library, research
+from acre.croplib import calendar_research, library, research
+from acre.economics.routes import research_request
 from acre.report.http import invalid, issue, read_object
 from acre.report.meta import response_meta
 
@@ -91,6 +92,32 @@ def get_research(job_id: str) -> Any:
     if job.job_status == "ready" and job.crop_id:
         out["crop"] = library.get_crop(job.crop_id, job.region_key)
     return out
+
+
+@router.post("/calendars/research")
+async def post_calendar_research(request: Request) -> Any:
+    """Body: ``{crop_id, region_key, location?, refresh?, wait_s?}``. Looks up the usual planting
+    and harvest windows of a known crop; a location only selects the SAGE cell for the cross-check
+    and is never sent to the AI."""
+    body, err = await read_object(request)
+    if err is not None:
+        return err
+    assert body is not None
+    req, problems = research_request(body)
+    if req is None:
+        return invalid(problems)
+    cid, rk, refresh, wait = req
+    job = calendar_research.start(cid, rk, sage=_sage_windows(body.get("location")),
+                                  refresh=refresh, wait_s=wait)  # fmt: skip
+    return {"meta": response_meta(weather=False), **job.as_dict()}
+
+
+@router.get("/calendars/research/{job_id}")
+def get_calendar_research(job_id: str) -> Any:
+    job = calendar_research.get(job_id)
+    if job is None:
+        return invalid([issue("job_id", "unknown_job", "no calendar research job with this id")])
+    return {"meta": response_meta(weather=False), **job.as_dict()}
 
 
 @router.get("/crops/{crop_id}")

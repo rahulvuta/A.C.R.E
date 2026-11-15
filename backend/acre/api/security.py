@@ -43,7 +43,8 @@ _SALT = secrets.token_bytes(16)
 
 CHEAP, ANALYSIS, GEO, WEATHER, RESEARCH = "cheap", "analysis", "geo", "weather_prepare", "research"
 RESEARCH_PATH = "/v1/regions/research"
-RESEARCH_PATHS = frozenset({RESEARCH_PATH, "/v1/crops/research"})
+RESEARCH_PATHS = frozenset({RESEARCH_PATH, "/v1/crops/research", "/v1/economics/research",
+                            "/v1/calendars/research"})  # fmt: skip
 REFRESH_PATHS = RESEARCH_PATHS | {"/v1/weather/prepare"}
 # GETs that compute or call an outside service; every other GET is cheap.
 _ANALYSIS_GET = re.compile(r"^/v1/(soil|live|locations/capabilities|seasons/[^/]+/replay"

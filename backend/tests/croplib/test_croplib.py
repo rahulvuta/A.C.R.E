@@ -118,7 +118,8 @@ def test_research_an_unknown_crop_and_cache_it_for_everyone(api):
     assert cal["sage_check"]["status"] == "inapplicable"
     refs = crop["economics_refs"]
     assert [(e["kind"], e["value"]) for e in refs] == [("price", 1.85)]  # the 9000 was dropped
-    assert refs[0]["used_for_money"] is False  # AI refs are never money
+    # quote found on an allowed page -> source_checked -> may fill money; ai_suggested never does
+    assert refs[0]["origin"] == "source_checked" and refs[0]["used_for_money"] is True
     dropped = got["check"]["guardrails"]["dropped"] if "check" in got else []
     assert any("not in the quote" in d["reason"] for d in dropped)
     # cached centrally: a second request (any user) makes no call
@@ -126,6 +127,21 @@ def test_research_an_unknown_crop_and_cache_it_for_everyone(api):
     assert again["job_status"] == "ready" and again["reason"] == "cached" and len(seen) == 1
     hits = api.get("/v1/crops/search", params={"q": "okr", "region_key": "US-NC"}).json()
     assert hits["results"][0]["crop_id"] == "okra" and hits["results"][0]["has_calendar"]
+
+
+def test_an_unchecked_reference_is_never_used_for_money(api):
+    a = answer()
+    a["economics_refs"] = [{"kind": "price", "value": 1.85, "unit": "USD/lb", "currency": "USD",
+                            "year": 2024, **ev(url=BLOG, quote="okra sold for 1.85 dollars")}]
+    PAGES[BLOG] = "<p>okra sold for 1.85 dollars</p>"
+    try:
+        calls_to(a)
+        r = api.post("/v1/crops/research", json={"name": "Okra", "region_key": "US-NC",
+                                                 "wait_s": 10}).json()  # fmt: skip
+        ref = api.get(f"/v1/crops/research/{r['job_id']}").json()["crop"]["economics_refs"][0]
+    finally:
+        PAGES[BLOG] = f"<p>{Q_CAL}</p>"
+    assert ref["origin"] == "ai_suggested" and ref["used_for_money"] is False
 
 
 def test_a_known_crop_is_never_researched(api):
@@ -157,7 +173,9 @@ def test_researched_crops_are_usable_by_plans_calendars_and_economics():
 
     out = estimate_economics(UNION, ["okra"])
     okra = out["crops"][0]
-    assert okra["status"] == "unavailable" and okra["price"] is None  # null money unless sourced
+    # a quote-checked price from an allowed source (.edu, found on the page) now fills the blank
+    assert okra["status"] == "partial" and okra["price"]["origin"] == "source_checked"
+    assert okra["price"]["typical"] == 1.85 and okra["yield"] is None  # the 9000 was dropped
     # another region does not borrow a researched calendar
     fr = regional.regional_catalog(-31.4, -64.2)  # AR-X (Córdoba): no okra research there
     assert fr.calendar("okra") is None
