@@ -1,34 +1,44 @@
-/* The farm dashboard (front door) and the field workspace. Kit tokens only. */
-.dash { min-height: 100vh; background: var(--canvas, #f4f6f7); color: var(--ink); }
-.dash-top { display: flex; align-items: center; gap: 24px; padding: 12px 32px; background: var(--surface, #fff); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; }
-.dash-brand { color: var(--ink); text-decoration: none; }
-.dash-nav { display: flex; gap: 4px; flex: 1; }
-.dash-nav a, .dash-nav button { background: none; border: 0; padding: 8px 12px; border-radius: 6px; color: var(--ink-muted); font: inherit; cursor: pointer; text-decoration: none; }
-.dash-nav a:hover, .dash-nav button:hover, .dash-nav [aria-current="page"] { color: var(--ink); background: var(--canvas, #f4f6f7); }
-.dash-main { max-width: 1200px; margin: 0 auto; padding: 24px 32px 64px; display: flex; flex-direction: column; gap: 20px; }
-.dash-bar { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
-.dash-bar h1, .dash-bar h2 { margin: 0; }
+/* The farm dashboard (front door) and the field workspace. They sit in the same dashboard
+   shell as the guided simulator (.db dark sidebar, .db-top bar, .db-card on the grey canvas);
+   only the pieces that shell lacks are defined here. Kit tokens only. */
+.dash-sections { display: grid; gap: 2px; }
+.dash-sections [role="tablist"] { display: grid; gap: 2px; }
+.dash-side-label {
+  margin: 0 0 4px; padding: 0 10px; font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+  text-transform: uppercase; color: rgb(255 255 255 / 0.5); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.dash-sections .gf-dot, .gf-steps .gf-dot svg { color: inherit; }
+.dash-back { padding-left: 0; margin-right: 4px; }
+.db-crumbs .dash-muted { font-size: 14px; }
 .dash-muted { color: var(--ink-muted); }
-.dash-empty { background: var(--surface, #fff); border: 1px solid var(--line); border-radius: 8px; padding: 56px 24px; text-align: center; display: grid; gap: 12px; justify-items: center; }
-.dash-empty h2 { margin: 0; }
+.dash-empty { padding: 48px 24px; text-align: center; display: grid; gap: 12px; justify-items: center; }
+.dash-empty h2 { margin: 0; font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
 .dash-empty p { max-width: 520px; margin: 0; color: var(--ink-muted); }
-.dash-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+.dash-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; justify-content: center; }
+.fw .dash-actions { justify-content: flex-start; }
 .dash-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-.dash-card { background: var(--surface, #fff); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: grid; gap: 12px; align-content: start; }
+.dash-card { display: grid; gap: 12px; align-content: start; }
 .dash-card-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-.dash-card-head h3 { margin: 0; }
-.dash-card dl, .fw-facts { margin: 0; display: grid; gap: 6px; }
+.dash-card-head h3 { margin: 0; font-size: 17px; font-weight: 500; }
+.dash-card dl, .fw-facts { margin: 0; display: grid; gap: 6px; font-size: 14px; }
 .dash-card dl > div, .fw-facts > div { display: flex; justify-content: space-between; gap: 12px; }
 .dash-card dt, .fw-facts dt { color: var(--ink-muted); }
 .dash-card dd, .fw-facts dd { margin: 0; text-align: right; }
-.dash-tag { border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; color: var(--ink-muted); font-size: 0.85em; }
+.dash-tag { padding: 3px 8px; border-radius: 6px; background: var(--check-soft); color: var(--check); font-size: 13px; }
 .dash-demos { display: grid; gap: 12px; }
-.dash-demo-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
-.dash-demo-btn { text-align: left; background: var(--surface, #fff); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: grid; gap: 4px; font: inherit; color: inherit; cursor: pointer; }
-.dash-demo-btn:hover { border-color: var(--accent); }
+.dash-demos .gf-muted { margin: 0; }
 .fw { display: grid; gap: 16px; }
-.fw-tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--line); }
-.fw-tabs button { background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 14px; font: inherit; color: var(--ink-muted); cursor: pointer; }
-.fw-tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
 .fw-pane[hidden] { display: none; }
 .fw-name { display: grid; gap: 4px; max-width: 360px; margin-bottom: 12px; }
+@media (max-width: 760px) { .gf-demo-row { grid-template-columns: 1fr; } }
+/* Phones: the shared dark sidebar becomes a top strip with sections in a scrolling row. */
+@media (max-width: 760px) {
+  :root .db { grid-template-columns: minmax(0, 1fr); }
+  :root .db::before { display: none; }
+  :root .db-side { position: static; height: auto; gap: 10px; padding: 12px; overflow: visible; }
+  :root .db-side .gf-steps ol, :root .db-side .dash-sections [role="tablist"] { display: flex; gap: 4px; overflow-x: auto; }
+  :root .db-side .gf-steps button { width: auto; white-space: nowrap; min-height: 38px; }
+  :root .dash-side-label, :root .db-side-foot { display: none; }
+  :root .db-top { position: static; }
+  :root .db-main { padding-left: 16px; padding-right: 16px; }
+}
