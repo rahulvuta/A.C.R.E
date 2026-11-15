@@ -50,7 +50,7 @@ Run it from whichever checkout has the newest merged backend.
 Check each agent's HANDOFF section first. It overrides anything here.
 
 **Backend state** (branch `backend` at `73f4f7d`; tree clean):
-- **S1** scenario engine and **S2** comparison/badges/money: **done in code, committed WIP** (`acre/simulate/{engine,seasons,money,compare,vocab}.py`, `acre/api/simulate_routes.py`). Verify with the full suite in a clean worktree, then run one Codex review.
+- **S1** scenario engine and **S2** comparison/badges/money: **done and verified** (`acre/simulate/{engine,seasons,money,compare,vocab}.py`, `acre/api/simulate_routes.py`): the full suite, ruff and the contract check pass in a clean tree at `73f4f7d`. Only the one Codex review is left.
 - **S6:** `GET /v1/vocab/priorities` is done. **Not started:** `POST /v1/plans/autofill` (`acre/simulate/autofill.py`) and `GET /v1/demo/farm` (`acre/simulate/demo.py`). The exact algorithm is in log-A's HANDOFF.
 - **S5** equipment/readings: **done** (`f925cfe`). **S3** economics: **done** (`02f214d`).
 - **S4** crop library: **partial** (`f896244`). Remaining steps are in log-B's HANDOFF: full-suite check, a SQLite version cache, adding `/v1/crops/research` to the research rate class and budget in `acre/api/security.py`, contract regeneration, §13 notes, one Codex review.
