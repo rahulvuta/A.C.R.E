@@ -1,0 +1,28 @@
+Commodity,Category,Item,Units,Size,Region,Country,Year,Value,Survey base year
+Barley,Gross value of production,"Primary product, grain",dollars per planted acre,No specific size,U.S. total,United States,2024,421.57,Base survey of 2019
+Barley,Gross value of production,"Secondary product, silage/straw/grazing",dollars per planted acre,No specific size,U.S. total,United States,2024,14.54,Base survey of 2019
+Barley,Gross value of production,"Total, gross value of production",dollars per planted acre,No specific size,U.S. total,United States,2024,436.11,Base survey of 2019
+Barley,Operating costs,Seed,dollars per planted acre,No specific size,U.S. total,United States,2024,23.88,Base survey of 2019
+Barley,Operating costs,Fertilizer  ,dollars per planted acre,No specific size,U.S. total,United States,2024,64.24,Base survey of 2019
+Barley,Operating costs,Chemicals,dollars per planted acre,No specific size,U.S. total,United States,2024,24.4,Base survey of 2019
+Barley,Operating costs,Custom services,dollars per planted acre,No specific size,U.S. total,United States,2024,7.62,Base survey of 2019
+Barley,Operating costs,"Fuel, lube, and electricity",dollars per planted acre,No specific size,U.S. total,United States,2024,21.25,Base survey of 2019
+Barley,Operating costs,Repairs,dollars per planted acre,No specific size,U.S. total,United States,2024,35.86,Base survey of 2019
+Barley,Operating costs,Other variable expenses  ,dollars per planted acre,No specific size,U.S. total,United States,2024,3.46,Base survey of 2019
+Barley,Operating costs,Interest on operating inputs,dollars per planted acre,No specific size,U.S. total,United States,2024,4.35,Base survey of 2019
+Barley,Operating costs,"Total, operating costs",dollars per planted acre,No specific size,U.S. total,United States,2024,185.06,Base survey of 2019
+Barley,Allocated overhead,Hired labor,dollars per planted acre,No specific size,U.S. total,United States,2024,5.3,Base survey of 2019
+Barley,Allocated overhead,Opportunity cost of unpaid labor,dollars per planted acre,No specific size,U.S. total,United States,2024,20.39,Base survey of 2019
+Barley,Allocated overhead,Capital recovery of machinery and equipment,dollars per planted acre,No specific size,U.S. total,United States,2024,147.87,Base survey of 2019
+Barley,Allocated overhead,Opportunity cost of land,dollars per planted acre,No specific size,U.S. total,United States,2024,87.44,Base survey of 2019
+Barley,Allocated overhead,Taxes and insurance,dollars per planted acre,No specific size,U.S. total,United States,2024,15.29,Base survey of 2019
+Barley,Allocated overhead,General farm overhead,dollars per planted acre,No specific size,U.S. total,United States,2024,23.77,Base survey of 2019
+Barley,Allocated overhead,"Total, allocated overhead",dollars per planted acre,No specific size,U.S. total,United States,2024,300.06,Base survey of 2019
+Barley,Costs listed,"Total, costs listed",dollars per planted acre,No specific size,U.S. total,United States,2024,485.12,Base survey of 2019
+Barley,Net value,Value of production less total costs listed,dollars per planted acre,No specific size,U.S. total,United States,2024,-49.01,Base survey of 2019
+Barley,Net value,Value of production less operating costs,dollars per planted acre,No specific size,U.S. total,United States,2024,251.05,Base survey of 2019
+Barley,Supporting information,Yield,bushels per planted acre,No specific size,U.S. total,United States,2024,66,Base survey of 2019
+Barley,Supporting information,Price,dollars per bushel at harvest,No specific size,U.S. total,United States,2024,6.41,Base survey of 2019
+Barley,Supporting information,Enterprise size,planted acres,No specific size,U.S. total,United States,2024,282,Base survey of 2019
+Barley,Production practices,Dryland,percent of acres,No specific size,U.S. total,United States,2024,83,Base survey of 2019
+Barley,Production practices,Irrigated,percent of acres,No specific size,U.S. total,United States,2024,17,Base survey of 2019

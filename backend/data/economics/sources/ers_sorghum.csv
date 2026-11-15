@@ -1,0 +1,28 @@
+Commodity,Category,Item,Units,Size,Region,Country,Year,Value,Survey base year
+Sorghum,Gross value of production,"Primary product, grain",dollars per planted acre,No specific size,U.S. total,United States,2024,268.38,Base survey of 2019
+Sorghum,Gross value of production,"Secondary product, silage/grazing  ",dollars per planted acre,No specific size,U.S. total,United States,2024,10.36,Base survey of 2019
+Sorghum,Gross value of production,"Total, gross value of production",dollars per planted acre,No specific size,U.S. total,United States,2024,278.74,Base survey of 2019
+Sorghum,Operating costs,Seed,dollars per planted acre,No specific size,U.S. total,United States,2024,15.79,Base survey of 2019
+Sorghum,Operating costs,Fertilizer  ,dollars per planted acre,No specific size,U.S. total,United States,2024,53.77,Base survey of 2019
+Sorghum,Operating costs,Chemicals,dollars per planted acre,No specific size,U.S. total,United States,2024,33.24,Base survey of 2019
+Sorghum,Operating costs,Custom services,dollars per planted acre,No specific size,U.S. total,United States,2024,21.79,Base survey of 2019
+Sorghum,Operating costs,"Fuel, lube, and electricity",dollars per planted acre,No specific size,U.S. total,United States,2024,13.55,Base survey of 2019
+Sorghum,Operating costs,Repairs,dollars per planted acre,No specific size,U.S. total,United States,2024,32.59,Base survey of 2019
+Sorghum,Operating costs,Purchased irrigation water,dollars per planted acre,No specific size,U.S. total,United States,2024,0.18,Base survey of 2019
+Sorghum,Operating costs,Interest on operating inputs,dollars per planted acre,No specific size,U.S. total,United States,2024,4.11,Base survey of 2019
+Sorghum,Operating costs,"Total, operating costs",dollars per planted acre,No specific size,U.S. total,United States,2024,175.02,Base survey of 2019
+Sorghum,Allocated overhead,Hired labor,dollars per planted acre,No specific size,U.S. total,United States,2024,5.1,Base survey of 2019
+Sorghum,Allocated overhead,Opportunity cost of unpaid labor,dollars per planted acre,No specific size,U.S. total,United States,2024,20.52,Base survey of 2019
+Sorghum,Allocated overhead,Capital recovery of machinery and equipment,dollars per planted acre,No specific size,U.S. total,United States,2024,141.79,Base survey of 2019
+Sorghum,Allocated overhead,Opportunity cost of land,dollars per planted acre,No specific size,U.S. total,United States,2024,64.72,Base survey of 2019
+Sorghum,Allocated overhead,Taxes and insurance,dollars per planted acre,No specific size,U.S. total,United States,2024,12.77,Base survey of 2019
+Sorghum,Allocated overhead,General farm overhead,dollars per planted acre,No specific size,U.S. total,United States,2024,17.66,Base survey of 2019
+Sorghum,Allocated overhead,"Total, allocated overhead",dollars per planted acre,No specific size,U.S. total,United States,2024,262.56,Base survey of 2019
+Sorghum,Costs listed,"Total, costs listed",dollars per planted acre,No specific size,U.S. total,United States,2024,437.57,Base survey of 2019
+Sorghum,Net value,Value of production less total costs listed,dollars per planted acre,No specific size,U.S. total,United States,2024,-158.84,Base survey of 2019
+Sorghum,Net value,Value of production less operating costs,dollars per planted acre,No specific size,U.S. total,United States,2024,103.72,Base survey of 2019
+Sorghum,Supporting information,Yield,bushels per planted acre,No specific size,U.S. total,United States,2024,64,Base survey of 2019
+Sorghum,Supporting information,Price,dollars per bushel at harvest,No specific size,U.S. total,United States,2024,4.21,Base survey of 2019
+Sorghum,Supporting information,Enterprise size,planted acres,No specific size,U.S. total,United States,2024,365,Base survey of 2019
+Sorghum,Production practices,Dryland,percent of acres,No specific size,U.S. total,United States,2024,97,Base survey of 2019
+Sorghum,Production practices,Irrigated,percent of acres,No specific size,U.S. total,United States,2024,3,Base survey of 2019
