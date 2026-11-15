@@ -65,6 +65,7 @@ export function migrate(raw: unknown): { store: FarmStore; dropped: number } | n
       name: typeof f.name === "string" ? f.name : "My farm",
       anchor,
       fields,
+      ...(typeof f.demo === "string" ? { demo: f.demo } : {}),
       created_at: typeof f.created_at === "string" ? f.created_at : now,
       updated_at: typeof f.updated_at === "string" ? f.updated_at : now,
     });

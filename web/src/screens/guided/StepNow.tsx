@@ -10,6 +10,8 @@ import { economicsReady, economicsValue, simulationOverrides } from "./inputStat
 
 const TRUST: Origin[] = ["grower", "verified_source", "source_checked", "dataset_estimate", "nasa_measured", "nasa_modeled", "calculation", "ai_suggested", "assumed"];
 const weakest = (origins: Origin[]): Origin => origins.reduce<Origin>((w, o) => TRUST.indexOf(o) > TRUST.indexOf(w) ? o : w, "grower");
+/** One season per leg of the rotation, up to the 10-year horizon; the backend accepts the same number. */
+export const MAX_ROTATION_SEASONS = 10;
 export const emptySeason = (i: number, previous = ""): FieldPlan => ({ plan_id: `season_${i + 1}`, label: `Season ${i + 1}`, previous_crop_id: previous, prev_harvest: "", winter: { kind: "none" }, next_crop_id: "", next_plant: "" });
 
 function editorValue(ctx: StepContext, plan: FieldPlan): PlanEditorValue {
@@ -42,25 +44,27 @@ export function RotationEditor({ ctx, rotation, onChange, idPrefix = "rot" }: { 
         onChange(seasons.map((p, j) => j === i ? fieldPlan(plan, value) : p));
       }} />
     </section>)}
-    {seasons.length < 4 ? <button type="button" className="btn btn-secondary" onClick={() => onChange([...seasons, emptySeason(seasons.length, seasons.at(-1)?.next_crop_id)])}>Add a season</button> : null}
+    {seasons.length < MAX_ROTATION_SEASONS ? <button type="button" className="btn btn-secondary" onClick={() => onChange([...seasons, emptySeason(seasons.length, seasons.at(-1)?.next_crop_id)])}>Add a season</button> : null}
     <p className="gf-muted">This rotation repeats through the 10-year historical replay.</p>
   </div>;
 }
-export function StepNow({ ctx }: { ctx: StepContext }) {
+export function StepNow({ ctx, part = "all" }: { ctx: StepContext; part?: "all" | "rotation" | "money" }) {
   const { field, sim, point } = ctx;
   if (!field || !point) return null;
   const setRotation = (rotation: FieldPlan[]) => {
     updateSimField(field.field_id, { rotation });
     if (rotation[0] && planReady(rotation[0])) farmActions.setFieldPlan(field.field_id, rotation[0]);
   };
+  const rotation = part !== "money";
+  const money = part !== "rotation";
   return <div className="gf-now">
-    <section className="db-card" aria-label={`Current plan for ${field.name}`}>
+    {rotation ? <section className="db-card" aria-label={`Current plan for ${field.name}`}>
       <div className="db-card-head"><h2>Current plan for {field.name}</h2><span className={rotationReady(sim.rotation) && economicsReady(sim) ? "gf-ok" : "gf-muted"}>{rotationReady(sim.rotation) && economicsReady(sim) ? "Ready to simulate" : "Not complete yet"}</span></div>
       <RotationEditor ctx={ctx} rotation={sim.rotation} onChange={setRotation} />
-    </section>
-    <EquipmentEditor api={ctx.api.client.inputs} value={sim.equipment} onChange={equipment => { updateSimField(field.field_id, { equipment }); farmActions.updateField(field.field_id, { equipment }); }} />
-    <EconomicsEditor location={point} area={{ value: areaHa(field.geometry) || null, unit: "ha" }} crops={cropsOf(sim.rotation)} api={ctx.api.client.inputs} value={economicsValue(sim)} onChange={value => updateSimField(field.field_id, { economicsInputs: value, overrides: simulationOverrides(value), loss: { ...sim.loss, drySpringPct: value.loss_assumptions.dry_spring_pct, heavyRainPct: value.loss_assumptions.heavy_rain_pct } })} />
+    </section> : null}
+    {rotation ? <EquipmentEditor api={ctx.api.client.inputs} value={sim.equipment} onChange={equipment => { updateSimField(field.field_id, { equipment }); farmActions.updateField(field.field_id, { equipment }); }} /> : null}
+    {money ? <><EconomicsEditor location={point} area={{ value: areaHa(field.geometry) || null, unit: "ha" }} crops={cropsOf(sim.rotation)} api={ctx.api.client.inputs} value={economicsValue(sim)} onChange={value => updateSimField(field.field_id, { economicsInputs: value, overrides: simulationOverrides(value), loss: { ...sim.loss, drySpringPct: value.loss_assumptions.dry_spring_pct, heavyRainPct: value.loss_assumptions.heavy_rain_pct } })} />
     <p className="gf-muted">A price override needs all three cases in the same unit. An entered cost list replaces regional costs; include every cost in your list.</p>
-    {!economicsReady(sim) ? <p role="alert" className="gf-error">Finish or reset incomplete money entries before continuing. Enter all three price cases in the same unit, and a value and unit for each cost.</p> : null}
+    {!economicsReady(sim) ? <p role="alert" className="gf-error">Finish or reset incomplete money entries before continuing. Enter all three price cases in the same unit, and a value and unit for each cost.</p> : null}</> : null}
   </div>;
 }

@@ -8,9 +8,10 @@ import { Landing } from "./site/Landing";
 import { AboutPage, EvidencePage, GrowersPage, ProductPage, ResourcesPage } from "./site/pages";
 import { Workspace } from "./screens/workspace/Workspace";
 import { Guided } from "./screens/guided/Guided";
+import { Dashboard } from "./screens/dashboard/Dashboard";
 
 /*
-  Routes (query `view`): the marketing site is the front door; `?view=app` opens the map
+  Routes (query `view`): the farm dashboard is the front door (no sign-in; `?view=home` is the marketing site); `?view=app` opens the map
   (the guided Scenario Simulator, card U1); `?view=fields` is the earlier
   per-field workspace (D1–D4); `?view=demo` is the Union County demo planner, loaded offline
   from the saved record. A link that carries planner state in its hash (older shared links,
@@ -31,7 +32,8 @@ export function App() {
   if (view === "demo" || plannerHash) return <PlannerRoute />;
   if (view === "app") return <Guided />;
   if (view === "fields") return <Workspace />;
-  return <Landing />;
+  if (view === "home") return <Landing />;
+  return <Dashboard />;
 }
 
 function PlannerRoute() {

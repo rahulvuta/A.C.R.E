@@ -10,6 +10,15 @@ describe("routes", () => {
     vi.unstubAllGlobals();
   });
 
+  it("the root URL opens the empty dashboard: no sign-in, Add Field and Explore Demo Farm", () => {
+    go("/");
+    render(<App />);
+    expect(screen.getByRole("heading", { name: "No fields available" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Explore Demo Farm" })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /Add field/i }).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/sign in|log in|sign up/i)).toBeNull();
+  });
+
   it("?view=app opens the guided simulator at step 1, with the demo farms and the deep-dive", () => {
     go("/?view=app");
     render(<App />);

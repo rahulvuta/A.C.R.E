@@ -68,6 +68,8 @@ export interface Farm {
   /** Where the map was centred when the farm was created; not sent anywhere on its own. */
   anchor: { latitude: number; longitude: number };
   fields: Field[];
+  /** Set (to the demo's label) on an example farm, so it stays apart from the grower's own fields. */
+  demo?: string;
   created_at: string; // ISO
   updated_at: string; // ISO
 }

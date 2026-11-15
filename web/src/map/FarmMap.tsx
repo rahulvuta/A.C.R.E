@@ -153,7 +153,7 @@ export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, 
     setMessage({ kind: "info", text: "Loading the demo farm…" });
     const r = await loadDemoFarm("union", api.demoFarm ? (sc, sig) => api.demoFarm!(sc, sig) : undefined);
     if (!r.ok) return setMessage({ kind: "error", text: r.message });
-    putFarm(r.demo.farm);
+    putFarm({ ...r.demo.farm, demo: r.demo.label });
     zoomToFarm(r.demo.farm);
     setMessage({ kind: "info", text: `${r.demo.label}: ${r.demo.farm.fields.length} fields loaded.${r.demo.source === "example" ? " These are example values, not a real farm." : ""}` });
   }, [api, zoomToFarm]);
