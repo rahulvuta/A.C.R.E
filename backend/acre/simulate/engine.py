@@ -137,7 +137,7 @@ def _events(m: Matrices, years: int) -> list[dict[str, Any]]:
         p = float(b2b.mean())
         out.append({"event": "back_to_back_dry_springs", "probability": round(p, 3),
                     "text": f"Two dry pre-planting windows in a row in {_pct(p)} of replays"})
-    return out
+    return [{**event, "origin": "calculation"} for event in out]
 
 
 def _timeline(sc: Scenario, inp: Inputs) -> list[dict[str, Any]]:

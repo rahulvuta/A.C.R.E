@@ -159,16 +159,19 @@
       "events": [
         {
           "event": "dry_springs_ge_3_in_5y",
+          "origin": "calculation",
           "probability": 0.04,
           "text": "3 or more dry pre-planting windows in 5 years in 4% of replays"
         },
         {
           "event": "heavy_rain_on_bare_soil_years_ge_3_in_5y",
+          "origin": "calculation",
           "probability": 1.0,
           "text": "3 or more years with heavy rain on bare soil in 5 years in 100% of replays"
         },
         {
           "event": "back_to_back_dry_springs",
+          "origin": "calculation",
           "probability": 0.06,
           "text": "Two dry pre-planting windows in a row in 6% of replays"
         }
@@ -481,16 +484,19 @@
       "events": [
         {
           "event": "dry_springs_ge_3_in_5y",
+          "origin": "calculation",
           "probability": 0.04,
           "text": "3 or more dry pre-planting windows in 5 years in 4% of replays"
         },
         {
           "event": "heavy_rain_on_bare_soil_years_ge_3_in_5y",
+          "origin": "calculation",
           "probability": 0.52,
           "text": "3 or more years with heavy rain on bare soil in 5 years in 52% of replays"
         },
         {
           "event": "back_to_back_dry_springs",
+          "origin": "calculation",
           "probability": 0.06,
           "text": "Two dry pre-planting windows in a row in 6% of replays"
         }

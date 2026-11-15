@@ -202,3 +202,8 @@ def test_malformed_money_overrides_have_typed_errors(price):
 def test_nonfinite_area_has_a_typed_error():
     with pytest.raises(EconomicsInputError):
         estimate_economics(UNION, ["soybean"], area={"value": float("inf"), "unit": "acre"})
+
+
+def test_crop_aliases_link_legacy_plans_to_canonical_references():
+    crop = estimate_economics(UNION, ["field_corn"])["crops"][0]
+    assert crop["crop_id"] == "maize" and "field_corn" in crop["aliases"]

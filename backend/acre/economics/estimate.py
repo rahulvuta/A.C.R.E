@@ -342,6 +342,8 @@ def _crop(cid: str, chain: list[str], t: data.Tables, ov: dict[str, Any], area_u
     out: dict[str, Any] = {"crop_id": cid, "name": _name(cid), "status": status, "price": price,
                            "yield": yld, "costs": costs, "revenue_per_area": revenue,
                            "margin_per_area": margin}  # fmt: skip
+    crop_info = crop_ids.info(cid)
+    out["aliases"] = list(crop_info.aliases) if crop_info else []
     if area is not None and (revenue or margin or costs["total_per_area"]):
         n = area[0] * AREAS[area[1]] / AREAS[area_unit]  # the area in ``area_unit``
         out["for_area"] = {"area": {"value": _r(n, 3), "unit": area_unit},
