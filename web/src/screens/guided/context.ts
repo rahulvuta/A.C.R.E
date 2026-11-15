@@ -6,7 +6,7 @@ import type { Scenario } from "../../api/simModel";
 import { areaHa } from "../../farm/geometry";
 import type { Farm, Field, FieldPlan } from "../../farm/types";
 import type { GlobalApi } from "../../state/useGlobal";
-import { baselineOf, type SimField } from "../../state/simField";
+import { baselineOf, zonesOf, type SimField } from "../../state/simField";
 import type { StepId } from "./steps";
 
 /** What every step reads: the API, the selected farm and field, and that field's simulator state. */
@@ -34,9 +34,9 @@ export const zonesOk = (zones: SimField["zones"]) => {
 export const rotationReady = (r: FieldPlan[]) => r.length > 0 && r.length <= MAX_ROTATION_LEGS && r.every(planReady);
 
 /** The current plan is complete: the field's rotation, or every zone's rotation when the field has zones. */
-export const baselineReady = (sim: SimField) => ((sim.zones ?? []).length > 0 ? zonesOk(sim.zones) && sim.zones!.every((z) => rotationReady(sim.zoneRotations?.[z.zoneId] ?? [])) : rotationReady(sim.rotation));
+export const baselineReady = (sim: SimField) => (zonesOf(sim).length > 0 ? zonesOk(sim.zones) && sim.zones!.every((z) => rotationReady(sim.zoneRotations?.[z.zoneId] ?? [])) : rotationReady(sim.rotation));
 /** Every crop the current plan uses, over all zones. */
-export const simCrops = (sim: SimField): string[] => cropsOf((sim.zones ?? []).length > 0 ? sim.zones!.flatMap((z) => sim.zoneRotations?.[z.zoneId] ?? []) : sim.rotation);
+export const simCrops = (sim: SimField): string[] => cropsOf(zonesOf(sim).length > 0 ? sim.zones!.flatMap((z) => sim.zoneRotations?.[z.zoneId] ?? []) : sim.rotation);
 
 /** The crops a rotation uses (for economics), in order of first use. */
 export function cropsOf(r: FieldPlan[]): string[] {
@@ -52,7 +52,7 @@ export function simulateRequest(ctx: Pick<StepContext, "field" | "sim" | "point"
   const ha = areaHa(field.geometry);
   return {
     point,
-    field: { fieldId: field.field_id, name: field.name, areaHa: ha > 0 ? Math.round(ha * 100) / 100 : null, geometry: field.geometry, equipment: sim.equipment, readings: sim.readings, ...((sim.zones ?? []).length ? { zones: sim.zones!.map((z) => ({ zoneId: z.zoneId, name: z.name, share: z.share })) } : {}) },
+    field: { fieldId: field.field_id, name: field.name, areaHa: ha > 0 ? Math.round(ha * 100) / 100 : null, geometry: field.geometry, equipment: sim.equipment, readings: sim.readings, ...(zonesOf(sim).length ? { zones: sim.zones!.map((z) => ({ zoneId: z.zoneId, name: z.name, share: z.share })) } : {}) },
     priorities: sim.priorities,
     overrides: sim.overrides,
     loss: sim.loss,

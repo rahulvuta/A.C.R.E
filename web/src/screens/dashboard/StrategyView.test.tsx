@@ -58,26 +58,27 @@ describe("HORIZON_YEARS and the request", () => {
 describe("the outlook view", () => {
   it("asks for 10 years with the trend adjustment, and says outlook but never forecast", async () => {
     const { container } = render(<StrategyView ctx={ctxWith()} onTab={() => {}} />);
-    await screen.findByText("What this outlook is built on");
+    await screen.findByLabelText("What this outlook is built on");
     await waitFor(() => expect(bodies.length).toBeGreaterThan(0));
     expect(bodies[0]!.years).toBe(10);
     expect(bodies[0]!.climate).toBe("trend");
-    expect(screen.getByRole("heading", { name: "Your 10-year outlook, plan by plan" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "The next 10 years, plan by plan" })).toBeInTheDocument();
     const text = container.textContent ?? "";
     expect(text).toMatch(/outlook/i);
     expect(text).not.toMatch(/not a forecast/i);
     expect(text).not.toMatch(/\bforecast/i);
   });
 
-  it("the built-on panel shows the record, the run count and the backend's climate sentence", async () => {
+  it("the small print at the bottom shows the record, the run count and the backend's climate sentence", async () => {
     render(<StrategyView ctx={ctxWith()} onTab={() => {}} />);
-    const panel = (await screen.findByText("What this outlook is built on")).closest("details")!;
-    expect(panel).toHaveAttribute("open");
-    const items = Array.from(panel.querySelectorAll("li")).map((li) => li.textContent);
-    expect(items[0]).toBe("45 past seasons observed at this field (1981-2025), from NASA weather data for the surrounding ~50 km area.");
-    expect(items[1]).toBe("Each plan is run through the next 10 years 200 times, each time with those seasons in a different order, and every plan gets the same sequences so the comparison is fair.");
-    expect(items[2]).toMatch(/^No statistically clear trend in yearly rain at this field since 1981/);
-    expect(items.at(-1)).toMatch(/cannot say what any single year will bring\.$/);
+    const panel = await screen.findByLabelText("What this outlook is built on");
+    expect(panel.tagName).toBe("FOOTER");
+    expect(panel.parentElement!.lastElementChild).toBe(panel);
+    const text = panel.textContent ?? "";
+    expect(text).toContain("45 past seasons observed at this field (1981-2025), from NASA weather data for the surrounding ~50 km area.");
+    expect(text).toContain("Each plan is run through the next 10 years 200 times");
+    expect(text).toMatch(/No statistically clear trend in yearly rain at this field since 1981/);
+    expect(text).toMatch(/cannot say what any single year will bring\./);
   });
 
   it("renders without the climate line, and without crashing, when the block is absent", async () => {
@@ -85,7 +86,7 @@ describe("the outlook view", () => {
     delete raw.method.climate_adjustment;
     delete raw.method.pool_years;
     render(<StrategyView ctx={ctxWith(raw)} onTab={() => {}} />);
-    const panel = (await screen.findByText("What this outlook is built on")).closest("details")!;
+    const panel = await screen.findByLabelText("What this outlook is built on");
     const text = panel.textContent ?? "";
     expect(text).not.toMatch(/trend/i);
     expect(text).not.toMatch(/past seasons observed/);
@@ -112,7 +113,7 @@ it("waits until the overview is visible before starting a simulation", async () 
   const { rerender } = render(<StrategyView ctx={{ ...ctx, active: false }} onTab={() => {}} />);
   expect(bodies).toHaveLength(0);
   rerender(<StrategyView ctx={{ ...ctx, active: true }} onTab={() => {}} />);
-  await screen.findByText("What this outlook is built on");
+  await screen.findByLabelText("What this outlook is built on");
   expect(bodies).toHaveLength(1);
   const rotation = ctx.sim.rotation.map((p) => ({ ...p, next_plant: "05-11" }));
   rerender(<StrategyView ctx={{ ...ctx, active: false, sim: { ...ctx.sim, rotation } }} onTab={() => {}} />);

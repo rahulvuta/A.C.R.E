@@ -14,7 +14,7 @@ import { useSimulation } from "../../state/useSimulation";
 import { rotationReady, simulateRequest, type StepContext } from "../guided/context";
 import { cropLabel, money, pct } from "../guided/format";
 import { SimStatus } from "../guided/StepSimulate";
-import { StrategySim, climateAdjustmentOf, conditionsOf, type FieldConditions } from "./StrategySim";
+import { ConditionsLine, StrategySim, climateAdjustmentOf, conditionsOf, monthAt, type FieldConditions } from "./StrategySim";
 import type { FieldGeometry } from "../../farm/types";
 
 /*
@@ -274,7 +274,8 @@ const PLOT_H = 130;
 const AXIS_H = 16;
 const OPS_ROW = 10;
 
-export function MonthChart({ monthly, title }: { monthly: ScenarioMonthly; title: string }) {
+/** `mode`: "full" is everything; "chart" is the drawing with a short key (and a marker on the timeline's month, `at`); "lists" is the text lists only. */
+export function MonthChart({ monthly, title, mode = "full", at = null }: { monthly: ScenarioMonthly; title: string; mode?: "full" | "chart" | "lists"; at?: string | null }) {
   const months = monthly.months;
   const [active, setActive] = useState<number | null>(null);
   if (!months.length) return <p className="gf-muted">No month-by-month result for this plan.</p>;
@@ -314,10 +315,12 @@ export function MonthChart({ monthly, title }: { monthly: ScenarioMonthly; title
   const hitLabel = (m: MonthlyMonth, i: number) => [...(shaded[i] ? m.risks.map(riskText) : []), ...(i === gapIdx ? [GAP_TEXT] : [])].join("; ");
   // A long horizon is crowded: label only the years, and drop the per-month marks that no longer fit.
   const dense = months.length > 60;
+  const atMonth = at ? monthAt(monthly, at) : null;
+  const atIdx = atMonth ? months.indexOf(atMonth) : -1;
   const labelAt = (m: MonthlyMonth, i: number) => (months.length <= 14 ? monthName(m.month, false) : i === 0 || m.month.endsWith("-01") ? m.month.slice(0, 4) : !dense && m.month.endsWith("-07") ? "Jul" : "");
   return (
     <figure className="sb-chart">
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${title}: money by month. Costs are drawn below the zero line, revenue above it, with the running total as a line. ${gapIdx >= 0 ? `The month with the largest funding gap, ${monthName(months[gapIdx]!.month)}, is marked. ` : ""}${riskMonths.length ? `${riskMonths.length} months are shaded for weather risk.` : ""} The month list below has every value.`} onMouseLeave={() => setActive(null)}>
+      {mode !== "lists" ? <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${title}: money by month. Costs are drawn below the zero line, revenue above it, with the running total as a line. ${gapIdx >= 0 ? `The month with the largest funding gap, ${monthName(months[gapIdx]!.month)}, is marked. ` : ""}${riskMonths.length ? `${riskMonths.length} months are shaded for weather risk.` : ""} The month list below has every value.`} onMouseLeave={() => setActive(null)}>
         <rect x={0} y={0} width={W} height={H} className="sb-bg" />
         {months.map((_, i) => (shaded[i] ? <rect key={`r${i}`} x={PAD_L + slot * i} y={PLOT_T} width={slot} height={PLOT_H} className="sb-risk" /> : null))}
         <line x1={PAD_L} x2={W - PAD_R} y1={y0} y2={y0} className="sb-zero" />
@@ -331,6 +334,7 @@ export function MonthChart({ monthly, title }: { monthly: ScenarioMonthly; title
           </g>
         ))}
         {mid.length > 1 ? <polyline points={pts(mid)} className="sb-line" /> : null}
+        {atIdx >= 0 ? <line x1={cx(atIdx)} x2={cx(atIdx)} y1={PLOT_T} y2={PLOT_T + PLOT_H} className="sb-now-line" /> : null}
         {gapIdx >= 0 ? <line x1={cx(gapIdx)} x2={cx(gapIdx)} y1={PLOT_T} y2={PLOT_T + PLOT_H} className="sb-gap-line" /> : null}
         {gapIdx >= 0 && months[gapIdx]!.cumulative_net?.median != null ? <circle cx={cx(gapIdx)} cy={y(months[gapIdx]!.cumulative_net!.median!)} r={4.5} className="sb-gap-dot" /> : null}
         {months.map((_, i) => (shaded[i] && !dense ? <text key={`b${i}`} x={cx(i)} y={PLOT_T + 9} textAnchor="middle" className="sb-risk-mark">!</text> : null))}
@@ -355,8 +359,16 @@ export function MonthChart({ monthly, title }: { monthly: ScenarioMonthly; title
             onBlur={() => setActive(null)}
           />
         ))}
-      </svg>
-      <figcaption className="sb-legend">
+      </svg> : null}
+      {mode === "chart" ? (
+        <figcaption className="sb-legend">
+          <span><i className="sb-key sb-key-rev" />Sold</span>
+          <span><i className="sb-key sb-key-cost" />Spent</span>
+          <span><i className="sb-key sb-key-line" />Running total</span>
+          {gapIdx >= 0 ? <span><i className="sb-key sb-key-gap" />Lowest point</span> : null}
+        </figcaption>
+      ) : null}
+      {mode === "full" ? <figcaption className="sb-legend">
         <span><i className="sb-key sb-key-rev" />Revenue (above zero)</span>
         <span><i className="sb-key sb-key-cost" />Costs (below zero)</span>
         <span><i className="sb-key sb-key-line" />Running total, typical (each month's net added up)</span>
@@ -364,8 +376,8 @@ export function MonthChart({ monthly, title }: { monthly: ScenarioMonthly; title
         {gapIdx >= 0 ? <span><i className="sb-key sb-key-gap" />{GAP_TEXT}: the month the typical running total is lowest</span> : null}
         <span><i className="sb-key sb-key-risk" />! Shaded: weather risk in 1 of 10 simulated years or more</span>
         <span>Triangle plant, square harvest, circle seed cover, diamond end cover</span>
-      </figcaption>
-      <p className="sb-detail" aria-live="polite">
+      </figcaption> : null}
+      {mode !== "lists" ? <p className="sb-detail" aria-live="polite">
         {a ? (
           <>
             <strong>{monthName(a.month)}</strong>: spent {fmt(a.costs?.median != null ? Math.abs(a.costs.median) : null)}, earned {fmt(a.revenue?.median)}, month's net {fmt(a.net?.median)}, running total {fmt(a.cumulative_net?.median)} (bad {fmt(a.cumulative_net?.p10)}, good {fmt(a.cumulative_net?.p90)}).
@@ -374,10 +386,10 @@ export function MonthChart({ monthly, title }: { monthly: ScenarioMonthly; title
             {a.risks.length ? ` Risk: ${a.risks.map(riskText).join("; ")}.` : ""}
           </>
         ) : (
-          <span className="gf-muted">Hover a month, or tab to a flagged month, for its numbers.</span>
+          <span className="gf-muted">Hover a month for its numbers.</span>
         )}
-      </p>
-      <details className="sb-list">
+      </p> : null}
+      {mode !== "chart" ? <><details className="sb-list">
         <summary>Month by month, as a list</summary>
         <ul>
           {months.map((m) => (
@@ -395,8 +407,41 @@ export function MonthChart({ monthly, title }: { monthly: ScenarioMonthly; title
           {listedRisks.map((m) => <li key={m.month}><strong>{monthName(m.month)}</strong>: {m.risks.map(riskText).join("; ")}. <OriginLabel origin={(monthly.origin ?? "calculation") as Origin} /></li>)}
         </ul>
       ) : null}
-      {monthly.timing_text ? <p className="gf-muted sb-small">{monthly.timing_text} <OriginLabel origin={(monthly.timing_origin ?? "assumed") as Origin} /></p> : null}
+      {monthly.timing_text ? <p className="gf-muted sb-small">{monthly.timing_text} <OriginLabel origin={(monthly.timing_origin ?? "assumed") as Origin} /></p> : null}</> : null}
     </figure>
+  );
+}
+
+// ------------------------------------------------------------------ the few numbers a box leads with
+/** The headline money for one plan: crop margin over the horizon, the difference from the current plan and the most cash needed. Every figure is the backend's. */
+export function KeyNumbers({ box }: { box: BoxModel }) {
+  const result = box.result;
+  if (!result || result.moneyStatus !== "complete") return null;
+  const margin: Dist | null = (result.totals.margin_10y as Dist | null | undefined) ?? null;
+  const cur = margin?.currency ?? box.monthly?.currency ?? null;
+  const perArea = marginPerAreaOf(box.raw, result.scenarioId);
+  const gap = box.monthly?.funding_gap ?? null;
+  const delta = box.marginDelta?.value ?? null;
+  const ranged = margin?.p10 != null && margin.p90 != null && margin.p10 !== margin.p90;
+  return (
+    <dl className="sb-key-numbers" aria-label={`${box.title}: money over ${HORIZON_YEARS} years`}>
+      <div className="sb-key-main">
+        <dt>Crop margin over {HORIZON_YEARS} years</dt>
+        <dd className={margin?.median != null && margin.median < 0 ? "sb-neg" : undefined}>{money(margin?.median, cur)}</dd>
+        {perArea ? <dd className="sb-cap">{money(perArea.median, perArea.currency ?? cur)} per {AREA_PHRASE[perArea.area_unit]} per year</dd> : null}
+        {ranged ? <dd className="sb-cap">bad years {money(margin!.p10, cur)} · good years {money(margin!.p90, cur)}</dd> : null}
+      </div>
+      <div>
+        <dt>Compared with now</dt>
+        {box.isBaseline ? <dd className="sb-text">Your current plan</dd> : delta != null ? <dd className={delta < 0 ? "sb-neg" : delta > 0 ? "sb-pos" : undefined}>{signedMoney(delta, box.marginDelta?.currency ?? cur)}</dd> : <dd className="sb-text">Not available</dd>}
+      </div>
+      {gap ? (
+        <div>
+          <dt title="The most the running total goes below zero: the cash or credit the plan needs before sales come in">Most cash needed</dt>
+          {gap.median != null && gap.median > 0 ? <dd>{money(gap.median, gap.currency ?? cur)}{gap.deepest_month ? <span className="sb-cap"> in {monthName(gap.deepest_month)}</span> : null}</dd> : gap.median === 0 ? <dd className="sb-text">None</dd> : <dd className="sb-text">Not available</dd>}
+        </div>
+      ) : null}
+    </dl>
   );
 }
 
@@ -417,7 +462,6 @@ export interface StrategyBoxProps {
   live?: { at: string; geometry: FieldGeometry; conditions: FieldConditions | null; startSeason: number };
 }
 export function StrategyBox({ box, badges, highlight, waiting, onTab, onAdd, canAdd = true, finding = false, live }: StrategyBoxProps) {
-  const heading = <div className="db-card-head"><h3>{box.title || `Plan ${box.slot + 1}`}</h3></div>;
   if (!box.scenario)
     return (
       <section className="db-card sb-box sb-empty" aria-label={`Plan ${box.slot + 1}: empty`}>
@@ -432,28 +476,34 @@ export function StrategyBox({ box, badges, highlight, waiting, onTab, onAdd, can
         )}
       </section>
     );
+  const complete = box.result?.moneyStatus === "complete";
   return (
     <section className={`db-card sb-box${highlight ? " sb-best" : ""}`} aria-label={box.title}>
-      {heading}
-      {box.suggested ? (
-        <div className="sb-suggested">
-          <span className="gf-muted sb-small">Suggested by the plan finder for this location and your priorities. It was not chosen for margin; the margin comparison is below. {box.suggestedOrigin && box.suggestedOrigin in originLabels ? <OriginLabel origin={box.suggestedOrigin as Origin} /> : null}</span>
-          <button type="button" className="btn btn-secondary" disabled={!canAdd} onClick={() => onAdd?.(box.scenario!)}>Add to my plans</button>
-        </div>
-      ) : null}
-      {badges.length ? <ul className="sb-badges" aria-label="Where this plan comes out ahead">{badges.map((b, i) => <li key={i}>{b.badge}</li>)}</ul> : null}
+      <div className="db-card-head sb-box-head"><h3 title={box.title}>{box.title || `Plan ${box.slot + 1}`}</h3></div>
+      <ul className="sb-badges" aria-label="Where this plan comes out ahead">{badges.map((b, i) => <li key={i} title={b.why}>{b.badge}</li>)}</ul>
       {box.result ? (
         <>
           {live && rotationReady(box.scenario.rotation) ? <StrategySim title={box.title} rotation={box.scenario.rotation} geometry={live.geometry} monthly={box.monthly} conditions={live.conditions} at={live.at} startSeason={live.startSeason} /> : null}
-          <MoneySummary result={box.result} monthly={box.monthly} raw={box.raw} onFinancial={() => onTab("financial")} isBaseline={box.isBaseline ?? box.slot === 0} marginDelta={box.marginDelta ?? null} />
-          {box.result.moneyStatus === "complete" ? <MoneyExplainer rotation={box.scenario.rotation} monthly={box.monthly} raw={box.raw} /> : null}
-          {box.result.moneyStatus === "complete" ? (box.monthly ? <MonthChart monthly={box.monthly} title={box.title} /> : <p className="gf-muted">The month-by-month view is not available for this plan yet.</p>) : null}
+          <KeyNumbers box={box} />
+          {complete && box.monthly ? <MonthChart monthly={box.monthly} title={box.title} mode="chart" at={live?.at ?? null} /> : null}
+          {complete ? (
+            <details className="sb-more">
+              <summary>All numbers and sources</summary>
+              <MoneySummary result={box.result} monthly={box.monthly} raw={box.raw} onFinancial={() => onTab("financial")} isBaseline={box.isBaseline ?? box.slot === 0} marginDelta={box.marginDelta ?? null} />
+              <MoneyExplainer rotation={box.scenario.rotation} monthly={box.monthly} raw={box.raw} />
+              {box.monthly ? <MonthChart monthly={box.monthly} title={box.title} mode="lists" /> : <p className="gf-muted">The month-by-month view is not available for this plan yet.</p>}
+              {box.suggested ? <p className="gf-muted sb-small">Suggested by the plan finder for this location and your priorities. It was not chosen for margin; the margin comparison is above. {box.suggestedOrigin && box.suggestedOrigin in originLabels ? <OriginLabel origin={box.suggestedOrigin as Origin} /> : null}</p> : null}
+            </details>
+          ) : (
+            <MoneySummary result={box.result} monthly={box.monthly} raw={box.raw} onFinancial={() => onTab("financial")} />
+          )}
+          {box.suggested ? <button type="button" className="btn btn-secondary sb-add" disabled={!canAdd} title="Suggested by the plan finder for this location and your priorities, not chosen for margin" onClick={() => onAdd?.(box.scenario!)}>Add to my plans</button> : null}
         </>
       ) : waiting ? (
         <p className="gf-muted" role="status">Running this plan through the next {HORIZON_YEARS} years…</p>
       ) : (
         <>
-          <p className="gf-muted">{rotationReady(box.scenario.rotation) ? "Results are not available for this plan yet. Check the simulation status above." : `Finish this plan's crops and dates under ${box.slot === 0 ? "Crop Rotation" : "Recommendations"}.`}</p>
+          <p className="gf-muted">{rotationReady(box.scenario.rotation) ? "Results are not available for this plan yet." : `Finish this plan's crops and dates under ${box.slot === 0 ? "Crop Rotation" : "Recommendations"}.`}</p>
           <button type="button" className="btn btn-secondary" onClick={() => onTab(box.slot === 0 ? "rotation" : "recommendations")}>{box.slot === 0 ? "Open Crop Rotation" : "Open Recommendations"}</button>
         </>
       )}
@@ -588,13 +638,13 @@ export function outlookBasis(raw: Record<string, unknown> | null, runs: number |
   return lines;
 }
 
-export function OutlookBasis({ raw, runs, sourceYears }: { raw: Record<string, unknown> | null; runs: number | null; sourceYears: string | null }) {
-  const lines = outlookBasis(raw, runs, sourceYears);
+/** The small print at the very bottom of the page: what the outlook is built on, and the service's own notes. */
+export function OutlookBasis({ raw, runs, sourceYears, notes = [] }: { raw: Record<string, unknown> | null; runs: number | null; sourceYears: string | null; notes?: string[] }) {
+  const lines = [...outlookBasis(raw, runs, sourceYears), ...notes.filter(Boolean)];
   return (
-    <details className="db-card sb-basis" open>
-      <summary>What this outlook is built on</summary>
-      <ul>{lines.map((l, i) => <li key={i}>{l}</li>)}</ul>
-    </details>
+    <footer className="sb-basis" aria-label="What this outlook is built on">
+      <p><strong>What this outlook is built on.</strong> {lines.join(" ")} <OriginLabel origin="calculation" /></p>
+    </footer>
   );
 }
 
@@ -607,7 +657,10 @@ export function StrategyView({ ctx, onTab }: { ctx: StepContext; onTab: (t: stri
   const needMore = own.length < SLOTS - 1 && rotationReady(sim.rotation);
   const rec = useShortlist(ctx, needMore && ctx.active !== false);
   const finding = needMore && (rec.state === "loading" || rec.state === "idle") && Boolean(ctx.point);
-  const picks = needMore && rec.state === "ready" ? pickSuggestions(rec.data.shortlist, sim.rotation, sim.scenarios, SLOTS - 1 - own.length) : [];
+  // Suggestions the service could not put money on are passed over while the plan finder has another to offer.
+  const [skipped, setSkipped] = useState<string[]>([]);
+  const pool = needMore && rec.state === "ready" ? pickSuggestions(rec.data.shortlist, sim.rotation, sim.scenarios, rec.data.shortlist.length).filter((p) => !skipped.includes(p.scenario.scenarioId)) : [];
+  const picks = pool.slice(0, SLOTS - 1 - own.length);
   const alternatives = [...own, ...picks.map((p) => p.scenario)];
   const suggested = Object.fromEntries(picks.map((p) => [p.scenario.scenarioId, p.origin]));
   const base = simulateRequest(ctx, alternatives);
@@ -615,6 +668,14 @@ export function StrategyView({ ctx, onTab }: { ctx: StepContext; onTab: (t: stri
   const req = base && !finding ? { ...base, years: HORIZON_YEARS } : null;
   const { sim: result, run } = useSimulation(ctx.api.client, req, ctx.active !== false);
   const data = result.state === "ready" ? result.data : null;
+  const pickKey = picks.map((p) => p.scenario.scenarioId).join("|");
+  useEffect(() => {
+    if (!data) return;
+    const spare = pool.length - picks.length;
+    const noMoney = picks.map((p) => p.scenario.scenarioId).filter((id) => { const r = data.scenarios.find((x) => x.scenarioId === id); return r != null && r.moneyStatus !== "complete"; });
+    if (spare > 0 && noMoney.length) setSkipped((cur) => [...cur, ...noMoney.slice(0, spare)]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, pickKey]);
   const baseline = base?.scenarios[0] ?? { scenarioId: "current", label: "What I do now", isBaseline: true, rotation: sim.rotation, from: "current" as const };
   const boxes = buildBoxes(baseline, alternatives, data, suggested);
   const badgesFor = (id: string | undefined) => (id && data?.comparison ? data.comparison.badges.filter((b) => b.scenarioId === id).map((b) => ({ badge: badgeText(b.badge), why: b.why })) : []);
@@ -644,31 +705,27 @@ export function StrategyView({ ctx, onTab }: { ctx: StepContext; onTab: (t: stri
     return () => window.clearInterval(id);
   }, [playing, span.length]);
   const conditions = useMemo(() => conditionsOf(data?.raw ?? null), [data]);
-  const live = at && field ? { at, geometry: field.geometry, conditions, startSeason: Number(sim.startSeason) } : undefined;
+  // The 3D fields are drawn only while this view is on screen, so hidden sections hold no WebGL contexts.
+  const live = at && field && ctx.active !== false ? { at, geometry: field.geometry, conditions, startSeason: Number(sim.startSeason) } : undefined;
   const add = (s: Scenario) => field && sim.scenarios.length < MAX_ALTERNATIVES && updateSimField(field.field_id, (cur) => ({ scenarios: cur.scenarios.some((x) => x.scenarioId === s.scenarioId) ? cur.scenarios : [...cur.scenarios, s] }));
   return (
     <section className="sb" aria-label="Your strategies">
       <div className="sb-head">
-        <h2>Your {HORIZON_YEARS}-year outlook, plan by plan</h2>
-        <p className="gf-muted">Each plan carried through the next {HORIZON_YEARS} years, month by month: the expected spending, sales and running total, with a bad-year to good-year range. The plans are compared with each other, not with every possible plan.</p>
+        <h2>The next {HORIZON_YEARS} years, plan by plan</h2>
       </div>
-      {data ? <OutlookBasis raw={data.raw} runs={data.method.runs} sourceYears={data.method.sourceYears} /> : null}
       {!rotationReady(sim.rotation) ? (
         <section className="db-card">
-          <p className="gf-muted">Set a complete crop rotation to see what each strategy spends and earns.</p>
+          <p className="gf-muted">Set a complete crop rotation to see what each plan spends and earns.</p>
           <button type="button" className="btn btn-secondary" onClick={() => onTab("rotation")}>Open Crop Rotation</button>
         </section>
       ) : !base ? (
         <section className="db-card">
-          <p className="gf-muted">Finish your prices and costs to see what each strategy spends and earns.</p>
+          <p className="gf-muted">Finish your prices and costs to see what each plan spends and earns.</p>
           <button type="button" className="btn btn-secondary" onClick={() => onTab("financial")}>Open Financial Analysis</button>
         </section>
       ) : (
         <>
           {finding ? <p className="gf-running" role="status">Finding suggested plans…</p> : <SimStatus sim={result} onRetry={run} what={`${base.scenarios.length} ${base.scenarios.length === 1 ? "plan" : "plans"}`} />}
-          {summary.length ? (
-            <p className="sb-summary"><strong>What this means.</strong> {summary.join(" ")} <OriginLabel origin="calculation" /></p>
-          ) : null}
           {at && span.length > 1 ? (
             <div className="db-card sb-timeline" role="group" aria-label="Simulation timeline">
               <button type="button" className="btn btn-primary" onClick={() => { if (!playing && pos >= span.length - 1) setPos(0); setPlaying(!playing); }}>
@@ -676,7 +733,7 @@ export function StrategyView({ ctx, onTab }: { ctx: StepContext; onTab: (t: stri
               </button>
               <strong className="sb-timeline-date">{timelineDate(at)}</strong>
               <input type="range" aria-label="Month of the simulation" min={0} max={span.length - 1} step={1} value={Math.min(pos, span.length - 1)} aria-valuetext={timelineDate(at)} onChange={(e) => { setPlaying(false); setPos(Number(e.target.value)); }} />
-              <span className="gf-muted sb-small">{timelineDate(span[0]!)} to {timelineDate(span[span.length - 1]!)}. Press Play, or drag, to run all three plans through the same months.</span>
+              <ConditionsLine conditions={conditions} at={at} />
             </div>
           ) : null}
           <div className="sb-grid">
@@ -685,8 +742,14 @@ export function StrategyView({ ctx, onTab }: { ctx: StepContext; onTab: (t: stri
               return <StrategyBox key={b.slot} box={b} badges={bs} highlight={bs.length > 0} waiting={!finding && (result.state === "loading" || result.state === "idle")} finding={finding} canAdd={sim.scenarios.length < MAX_ALTERNATIVES} onAdd={add} onTab={onTab} live={live} />;
             })}
           </div>
-          {data ? <VerdictRow boxes={boxes} data={data} /> : null}
-          {data ? <p className="gf-muted sb-small">{data.method.note}{" "}<OriginLabel origin="calculation" /></p> : null}
+          {data?.comparison ? (
+            <details className="sb-more sb-compare">
+              <summary>How the plans compare, in words</summary>
+              {summary.length ? <p className="sb-small">{summary.join(" ")} <OriginLabel origin="calculation" /></p> : null}
+              <VerdictRow boxes={boxes} data={data} />
+            </details>
+          ) : null}
+          {data ? <OutlookBasis raw={data.raw} runs={data.method.runs} sourceYears={data.method.sourceYears} /> : null}
         </>
       )}
     </section>

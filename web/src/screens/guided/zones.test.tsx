@@ -5,7 +5,7 @@ import { createGlobalClient } from "../../api/client";
 import { FIXTURE_API_BASE, fixtureFetch } from "../../api/fixtures";
 import { geoApiFrom } from "../../api/geoApi";
 import { resetFarmStoreForTests } from "../../farm/hooks";
-import { evenShares, getSimField, resetSimFieldsForTests, setZoneLayout } from "../../state/simField";
+import { ZONES_ENABLED, evenShares, getSimField, resetSimFieldsForTests, setZoneLayout } from "../../state/simField";
 import { clearSimulationsForTests } from "../../state/useSimulation";
 import type { GlobalApi } from "../../state/useGlobal";
 import { baselineReady, simulateRequest, zonesOk } from "./context";
@@ -31,7 +31,8 @@ beforeEach(() => {
   resetFarmStoreForTests(); resetSimFieldsForTests(); clearSimulationsForTests();
 });
 
-describe("field zones", () => {
+// Zones are switched off for now (ZONES_ENABLED); these run again when they come back.
+describe.skipIf(!ZONES_ENABLED)("field zones", () => {
   it("makes equal shares that add up to exactly 1", () => {
     for (const n of [2, 3, 7]) expect(evenShares(n).reduce((a, b) => a + b, 0)).toBeCloseTo(1, 10);
   });

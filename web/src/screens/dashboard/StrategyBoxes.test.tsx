@@ -107,7 +107,7 @@ describe("strategy boxes", () => {
     const bs = buildBoxes(mk("current", "What I do now", true), [mk("sug_x", "Soy first")], flat, { sug_x: "calculation" });
     render(<StrategyBox box={bs[1]!} badges={[]} highlight={false} waiting={false} onTab={onTab} onAdd={onAdd} />);
     expect(screen.getByRole("heading", { name: "Suggested: Soy first" })).toBeInTheDocument();
-    expect(screen.getByText(/Suggested by the plan finder for this location and your priorities\. It was not chosen for margin; the margin comparison is below\./)).toBeInTheDocument();
+    expect(screen.getByText(/Suggested by the plan finder for this location and your priorities\. It was not chosen for margin; the margin comparison is above\./)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Add to my plans" }));
     expect(onAdd).toHaveBeenCalledWith(expect.objectContaining({ scenarioId: "sug_x" }));
     cleanup();

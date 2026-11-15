@@ -5,7 +5,7 @@ import { areaHa } from "../../farm/geometry";
 import { farmActions } from "../../farm/hooks";
 import type { FieldPlan } from "../../farm/types";
 import { EconomicsEditor, EquipmentEditor, PlanEditor, dateFields, getPlanDate, type PlanEditorValue } from "../../inputs";
-import { MAX_ZONES, evenShares, newZoneId, setZoneLayout, updateSimField, type SimZone } from "../../state/simField";
+import { MAX_ZONES, ZONES_ENABLED, evenShares, newZoneId, setZoneLayout, updateSimField, zonesOf, type SimZone } from "../../state/simField";
 import { baselineReady, cropsOf, planReady, simCrops, zonesOk, type StepContext } from "./context";
 import { cropLabel } from "./format";
 import { economicsReady, economicsValue, simulationOverrides } from "./inputState";
@@ -54,7 +54,7 @@ export type NowPart = (typeof NOW_PARTS)[number]["id"];
 /** Every season has its crops picked (dates come in the next part). */
 export const cropsChosen = (r: FieldPlan[]) => r.length > 0 && r.every((p) => Boolean(p.previous_crop_id && p.next_crop_id && (p.winter.kind === "none" || p.winter.crop_id)));
 export function nowPartReady(part: NowPart, sim: StepContext["sim"]): boolean {
-  const zones = sim.zones ?? [];
+  const zones = zonesOf(sim);
   if (part === "crops") return zones.length ? zonesOk(zones) && zones.every((z) => cropsChosen(sim.zoneRotations?.[z.zoneId] ?? [])) : cropsChosen(sim.rotation);
   if (part === "dates") return baselineReady(sim);
   if (part === "prices") return economicsReady(sim);
@@ -142,7 +142,7 @@ export function StepNow({ ctx, part = "all" }: { ctx: StepContext; part?: Part }
   const showMoney = has("all", "money", "prices", "losses");
   const single = NOW_PARTS.find((p) => p.id === part);
   const ready = baselineReady(sim) && economicsReady(sim);
-  const zoned = (sim.zones ?? []).length > 0;
+  const zoned = zonesOf(sim).length > 0;
   const splitIntoZones = () => {
     const a = newZoneId(), b = newZoneId();
     setZoneLayout(field.field_id, [{ zoneId: a, name: "Zone 1", share: 0.5 }, { zoneId: b, name: "Zone 2", share: 0.5 }], { [a]: structuredClone(sim.rotation), [b]: structuredClone(sim.rotation) });
@@ -155,11 +155,11 @@ export function StepNow({ ctx, part = "all" }: { ctx: StepContext; part?: Part }
     </div> : null}
     {showRotation ? zoned ? <ZonesRotation ctx={ctx} show={rotationShow} />
       : single ? <section className="db-card" aria-label={`Current plan for ${field.name}`}><RotationEditor ctx={ctx} rotation={sim.rotation} onChange={setRotation} show={rotationShow} />
-        {rotationShow !== "dates" ? <button type="button" className="btn btn-secondary" onClick={splitIntoZones}>Split this field into zones</button> : null}</section>
+        {ZONES_ENABLED && rotationShow !== "dates" ? <button type="button" className="btn btn-secondary" onClick={splitIntoZones}>Split this field into zones</button> : null}</section>
       : <section className="db-card" aria-label={`Current plan for ${field.name}`}>
       <div className="db-card-head"><h2>Current plan for {field.name}</h2><span className={ready ? "gf-ok" : "gf-muted"}>{ready ? "Ready to simulate" : "Not complete yet"}</span></div>
       <RotationEditor ctx={ctx} rotation={sim.rotation} onChange={setRotation} />
-      <button type="button" className="btn btn-secondary" onClick={splitIntoZones}>Split this field into zones</button>
+      {ZONES_ENABLED ? <button type="button" className="btn btn-secondary" onClick={splitIntoZones}>Split this field into zones</button> : null}
     </section> : null}
     {showEquipment ? <EquipmentEditor api={ctx.api.client.inputs} value={sim.equipment} onChange={equipment => { updateSimField(field.field_id, { equipment }); farmActions.updateField(field.field_id, { equipment }); }} /> : null}
     {showMoney ? <><EconomicsEditor show={economicsShow} location={point} area={{ value: areaHa(field.geometry) || null, unit: "ha" }} crops={simCrops(sim)} api={ctx.api.client.inputs} value={economicsValue(sim)} onChange={value => updateSimField(field.field_id, { economicsInputs: value, overrides: simulationOverrides(value), loss: { ...sim.loss, drySpringPct: value.loss_assumptions.dry_spring_pct, heavyRainPct: value.loss_assumptions.heavy_rain_pct } })} />
