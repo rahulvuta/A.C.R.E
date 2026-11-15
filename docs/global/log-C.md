@@ -23,3 +23,19 @@ Status lines (`YYYY-MM-DD <card>: done | what is left`) and handoffs (`C→X: ..
 - Hooks: `useFarms()` → `{ farms, farm, selectedFarm, selectedFieldId, persistence, notice, actions }`; `useSelectedField()` → `Field | null`; `selectField(id | null)`; also `farmActions`, `updateFieldPlan(fieldId, plan)`, `putFarm(farm)`. Store is `localStorage` `acre.farms.v1`, memory fallback with a notice.
 - 3D: `<FarmWorld … outlines={strips.map(s => fieldFor(s)?.geometry)} />` and show `SCENE_SHAPE_LABEL` from `scene/polygonShape.ts` ("Shape from your drawing; an illustration of planned dates") next to the view when outlines are given.
 - C→D: `state/farmSource.ts` can now re-export from `farm/hooks.ts`.
+
+## 2026-11-14 U4 (Scenario Simulator: farm, acres, 10-year timeline)
+
+- 2026-11-14 U4: done | acres on field cards and map labels, live farm total while drawing, demo farm loader, `web/src/timeline/` (TenYearTimeline, TimelineCompare, MiniTimeline) with §11/§15 example fixtures. Left: switch the demo to the live `GET /v1/demo/farm` once A ships it (already tried first; falls back to the example file); Pergamino demo has no example file yet (backend only).
+
+### For D (U1): what to mount
+
+- **Timeline** (`import … from "web/src/timeline"`):
+  - `<TenYearTimeline scenario={…} riskAt?={0.3} note?={method.note} compact?={false} />`: one row per year, Jan–Dec, bands for cash crop / cover / bare ground, planting and harvest marks, an amber dot when that year's `dry_pre_plant` or `heavy_rain_at_planting` probability ≥ `riskAt`, and a hover/focus card with margin median, p10–p90, odds, rain on bare soil and living cover days. Header shows `totals.margin_10y`. Missing money says "Not available".
+  - `<TimelineCompare scenarios={[…]} riskAt? note? />`: 2–6 scenarios as lanes on one 10-year axis; the baseline gets "Your current plan"; hover a year for the same card.
+  - `scenario` is a §11 `scenarios[]` item plus `rotation` (the request's rotation plans) and `is_baseline`. Build it with `withRotations(response, request)`. Without `rotation` the timeline still shows the crops in order, without dates, and says so.
+  - `<MiniTimeline plan={FieldPlan} year? />` and `planCrops(plan)` for compact field cards.
+  - Example fixtures (labelled): `timeline/fixtures/simulate-union.json` (§11 response, 3 scenarios), `simulate-union.request.json`, `demo-farm-union.json` (§15). Dev page: `/src/timeline/harness.html`.
+- **Map** (`<FarmMap>` unchanged props): field cards now show acres (bold) and hectares, crops, plan status (from `fieldStates`), and a mini timeline. A "Farm total" (area only) updates live while drawing or editing; the drawing hint shows the shape's acres. Each field is labelled on the map with name and acres (hidden below zoom 12). "Try a demo farm (Union County, NC)" in the empty panel loads the demo and zooms to it.
+- **Demo**: `loadDemoFarm("union", api.demoFarm)` → `{ok, demo: {farm, label, source: "backend"|"example", goals, economicsOverrides}}`; then `putFarm(demo.farm)`. `GeoApi.demoFarm?` is new (optional).
+- **Types**: `Field` gained optional `equipment?: string[]` and `readings?: FieldReading[]` (§14); the store keeps them across reloads; `farmActions.updateField(id, {equipment, readings})` works.

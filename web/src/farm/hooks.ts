@@ -56,7 +56,7 @@ export const farmActions = {
     return r.field;
   },
   /** Throws with a plain message when a new geometry is invalid. */
-  updateField: (fieldId: string, patch: Partial<Pick<Field, "name" | "geometry" | "plan" | "notes">>) => update((s) => ops.updateField(s, fieldId, patch)),
+  updateField: (fieldId: string, patch: Partial<Pick<Field, "name" | "geometry" | "plan" | "notes" | "equipment" | "readings">>) => update((s) => ops.updateField(s, fieldId, patch)),
   setFieldPlan: (fieldId: string, plan: FieldPlan | null) => update((s) => ops.updateField(s, fieldId, { plan })),
   deleteField: (fieldId: string) => update((s) => ops.deleteField(s, fieldId)),
   selectField,

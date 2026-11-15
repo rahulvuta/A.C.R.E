@@ -10,3 +10,5 @@ export { STATE_COLOR, type FieldState } from "./fieldLayers";
 export { useFarms, useSelectedField, selectField, farmActions, updateFieldPlan, putFarm } from "../farm/hooks";
 export { exportFarm, importFarm } from "../farm/geojson";
 export { formatArea, areaHa, areaAc } from "../farm/geometry";
+export { loadDemoFarm, parseDemoFarm, type DemoFarm, type DemoScenario } from "../farm/demo";
+export type { Field, FieldReading, Farm, FieldPlan } from "../farm/types";
