@@ -195,7 +195,8 @@ def check(answer: dict[str, Any], fetch: Any) -> tuple[list[dict[str, Any]], dic
         page = pages.get(it["source_url"])
         origin = cr._origin(it, page)
         if origin is None:
-            cr._drop(g, what, f"source page unreachable ({getattr(page, 'reason', None)})")
+            cr._drop(g, what, f"source page unreachable ({getattr(page, 'reason', None)})",
+                     it["source_url"])
             continue
         dup = (kind, item, unit, year, it["source_url"], float(v))
         if dup in seen:
