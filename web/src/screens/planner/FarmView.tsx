@@ -2,6 +2,7 @@ import { Component, lazy, Suspense, useEffect, useMemo, useState, type CSSProper
 import type { CardKey } from "../../content/strategies";
 import { fieldStateAt, MONTH_TICKS, SEASON_DAYS, seasonDay, seasonLabel } from "../../scene/growth";
 import type { CameraPreset, ScenePalette } from "../../scene/FarmWorld";
+import type { FarmLayout } from "../../scene/polygonShape";
 import type { StripVM } from "../../view/build";
 import { Segmented } from "../../ui/components";
 
@@ -75,7 +76,16 @@ export function FarmView({
   onSelectCard,
   onSpring,
   replay = false,
+  layout,
+  tag = "Illustration of your plan",
+  waterKey = true,
 }: {
+  /** Farm layout: strips are fields drawn at their real shapes and places (field workspace). */
+  layout?: FarmLayout | null;
+  /** The small label on the stage. */
+  tag?: string;
+  /** Show the "soil water that spring" key (only meaningful when strips carry modeled wetness). */
+  waterKey?: boolean;
   strips: StripVM[];
   /** The spring being replayed, shown as a chip on the stage. */
   spring: { year: number; text: string; dry: boolean } | null;
@@ -174,7 +184,7 @@ export function FarmView({
         }
       >
         <Suspense fallback={loading}>
-          <FarmWorld strips={strips} day={shown} preset={preset} animate={!reducedMotion} palette={palette} onSelect={onSelectCard} />
+          <FarmWorld strips={strips} layout={layout} day={shown} preset={preset} animate={!reducedMotion} palette={palette} onSelect={onSelectCard} />
         </Suspense>
       </SceneBoundary>
     );
@@ -187,7 +197,7 @@ export function FarmView({
       <div className="fb-stage">
         {canvas}
 
-        <p className="fb-stage-tag">Illustration of your plan</p>
+        <p className="fb-stage-tag">{tag}</p>
         {spring ? (
           <button type="button" className={`fb-stage-spring${spring.dry ? " is-dry" : ""}`} onClick={onSpring}>
             <span className="fb-stage-spring-text">
@@ -196,7 +206,7 @@ export function FarmView({
           </button>
         ) : null}
 
-        {preset === "overview" ? (
+        {preset === "overview" && waterKey ? (
           <p className="fb-stage-key">
             <span className="lg lg-water" /> Blue band: soil water that spring, modeled
           </p>

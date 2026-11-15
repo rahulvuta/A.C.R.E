@@ -16,6 +16,7 @@ import { ReadingsLog, StepPlan } from "../guided/StepPlan";
 import { StepSimulate } from "../guided/StepSimulate";
 import { StepTry } from "../guided/StepTry";
 import { ResearchPanel } from "../workspace/ResearchPanel";
+import { FarmScene } from "./FarmScene";
 
 /*
   One field's workspace: seven sections that reuse the guided simulator's step components
@@ -38,7 +39,7 @@ type TabId = (typeof TABS)[number]["id"];
 // The guided steps call ctx.go(step); here a step is a section.
 const STEP_TO_TAB: Record<StepId, TabId> = { farm: "overview", now: "rotation", simulate: "simulation", try: "recommendations", compare: "simulation", plan: "future" };
 
-export function FieldWorkspace({ api, farm, field, tab, onTab, onClose, onCopy }: { api: GlobalApi; farm: Farm; field: Field; tab: string; onTab: (t: string) => void; onClose: () => void; onCopy: () => void }) {
+export function FieldWorkspace({ api, farm, field, tab, onTab, onClose, onCopy, onOpenField }: { api: GlobalApi; farm: Farm; field: Field; tab: string; onTab: (t: string) => void; onClose: () => void; onCopy: () => void; onOpenField: (id: string) => void }) {
   const active: TabId = TABS.some((t) => t.id === tab) ? (tab as TabId) : "overview";
   const sim = useSimField(field.field_id);
   const place = useFieldPlace(api.client, field);
@@ -69,7 +70,7 @@ export function FieldWorkspace({ api, farm, field, tab, onTab, onClose, onCopy }
           <button type="button" className="btn btn-quiet" onClick={onCopy}>Copy this field to my fields</button>
         </Banner>
       ) : null}
-      {pane("overview", () => <Overview ctx={ctx} farm={farm} field={field} onTab={onTab} onClose={onClose} />)}
+      {pane("overview", () => <Overview ctx={ctx} farm={farm} field={field} onTab={onTab} onClose={onClose} onOpenField={onOpenField} />)}
       {pane("rotation", () => <StepNow ctx={ctx} part="rotation" />)}
       {pane("conditions", () => (
         <div className="gf-now">
@@ -99,7 +100,7 @@ export function FieldWorkspace({ api, farm, field, tab, onTab, onClose, onCopy }
   );
 }
 
-function Overview({ ctx, farm, field, onTab, onClose }: { ctx: StepContext; farm: Farm; field: Field; onTab: (t: string) => void; onClose: () => void }) {
+function Overview({ ctx, farm, field, onTab, onClose, onOpenField }: { ctx: StepContext; farm: Farm; field: Field; onTab: (t: string) => void; onClose: () => void; onOpenField: (id: string) => void }) {
   const { sim } = ctx;
   const crops = cropsOf(sim.rotation).map(cropLabel).join(" → ");
   const ha = areaHa(field.geometry);
@@ -125,6 +126,7 @@ function Overview({ ctx, farm, field, onTab, onClose }: { ctx: StepContext; farm
           </button>
         </div>
       </section>
+      <FarmScene farm={farm} fieldId={field.field_id} rotation={sim.rotation} onOpen={onOpenField} />
     </div>
   );
 }
