@@ -67,7 +67,7 @@ test("draw 2 fields, rename one, add a hole, reload: all three persist", async (
   expect(geo.type).toBe("Polygon");
   expect(geo.coordinates).toHaveLength(2);
   // Area shows both units.
-  await expect(fields(page).first()).toContainText(/ha · .* ac/);
+  await expect(fields(page).first()).toContainText(/\d ac \d.* ha/);
 });
 
 test("a bowtie outline is rejected with a message", async ({ page }) => {

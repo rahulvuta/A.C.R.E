@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { toBackendGoals } from "./adapt";
+import { adaptVocab, BackendVocab, toBackendGoals } from "./adapt";
 import { createGlobalClient } from "./client";
 import { FIXTURE_API_BASE, fixtureFetch } from "./fixtures";
 
@@ -36,9 +36,25 @@ describe("planning endpoints (§8–§10)", () => {
     expect(r.data.note).toMatch(/not a forecast/i);
   });
 
+  it("sends available equipment in field context, separate from equipment limitations", async () => {
+    let body: Record<string, any> = {};
+    const fixture = fixtureFetch();
+    const capture = createGlobalClient({ apiBase: FIXTURE_API_BASE, timeoutMs: 2000, fetchImpl: (url, init) => {
+      body = JSON.parse(init?.body ?? "{}");
+      return fixture(url, init);
+    } });
+    const equipment = ["planter", "grain_drill", "sprayer", "combine"];
+    const response = await capture.recommend(place, { priorities: { soil_cover: 3 } }, { fieldId: "synthetic", areaHa: 16.2, cropHistory: [], equipment });
+    expect(response.ok).toBe(true);
+    expect(body.field.equipment).toEqual(equipment);
+    expect(body.goals.constraints.equipment).toEqual([]);
+  });
+  it("uses the published priority_id vocabulary key for labels and explanations", () => {
+    expect(adaptVocab(BackendVocab.parse({ priorities: [{ priority_id: "profit", label: "Margin", explanation: "Margin from your numbers or sourced references." }] }))).toEqual([{ id: "profit", label: "Margin", explanation: "Margin from your numbers or sourced references." }]);
+  });
   it("unknown irrigation stays unknown, never false", () => {
     const b = toBackendGoals({ priorities: { soil_cover: 2 } });
     expect(b.constraints.irrigation).toBe("unknown");
-    expect(b.constraints.seasons).toBeNull();
+    expect(b.constraints).not.toHaveProperty("seasons");
   });
 });

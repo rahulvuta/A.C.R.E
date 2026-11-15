@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import * as maplibregl from "maplibre-gl";
 import type { Map as MlMap, MapGeoJSONFeature } from "maplibre-gl";
-import { addHole, addParcel, bbox, checkGeometry, formatArea, type Ring } from "../farm/geometry";
+import { addHole, addParcel, areaM2, bbox, centroid, checkGeometry, formatArea, SQ_M_PER_AC, SQ_M_PER_HA, type Ring } from "../farm/geometry";
+import { loadDemoFarm } from "../farm/demo";
+import { MiniTimeline, planCrops } from "../timeline/MiniTimeline";
 import { exportFarm, exportFileName, importFarm, MAX_IMPORT_BYTES } from "../farm/geojson";
-import { farmActions, useFarms } from "../farm/hooks";
-import type { Farm, Field } from "../farm/types";
+import { farmActions, putFarm, useFarms } from "../farm/hooks";
+import type { Farm, Field, FieldGeometry } from "../farm/types";
 import { createDrawing, type Drawing } from "./drawing";
 import { ensureFieldLayers, FIELDS_FILL, setFieldData, STATE_COLOR, type FieldState } from "./fieldLayers";
 import { CELL_LABEL, ensureCellLayers, SHARED_NOTICE, setCellData, type WeatherCellView } from "./weatherCells";
@@ -45,6 +47,8 @@ export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, 
   const drawing = useRef<Drawing | null>(null);
   const [tool, setTool] = useState<Tool>("idle");
   const [message, setMessage] = useState<{ kind: "error" | "info"; text: string } | null>(null);
+  // The outline being drawn or edited right now, for the live acres.
+  const [live, setLive] = useState<FieldGeometry | null>(null);
   const toolRef = useRef(tool);
   toolRef.current = tool;
   // The click that closes a polygon also reaches the map; it must not drop a pin.
@@ -56,6 +60,7 @@ export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, 
       ensureCellLayers(m);
       ensureFieldLayers(m);
       drawing.current = createDrawing(m);
+      drawing.current.onChange(setLive);
       setMap(m);
       onMapReady?.(m);
     },
@@ -89,10 +94,75 @@ export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, 
     };
   }, [map, weatherCells]);
 
+  // Each field's name and acres on the map, at its centre; hidden when zoomed far out.
+  const fieldLabels = useRef<maplibregl.Marker[]>([]);
+  const pendingZoom = useRef<Farm | null>(null);
+  useEffect(() => {
+    if (map && pendingZoom.current) {
+      const f = pendingZoom.current;
+      pendingZoom.current = null;
+      zoomToFarm(f);
+    }
+  });
+  useEffect(() => {
+    if (!map) return;
+    for (const mk of fieldLabels.current) mk.remove();
+    const editing = tool === "edit" ? selectedFieldId : null;
+    fieldLabels.current = (farm?.fields ?? [])
+      .filter((f) => f.field_id !== editing)
+      .map((f) => {
+        const el = document.createElement("div");
+        el.className = "mp-field-label";
+        el.dataset.fieldId = f.field_id;
+        const a = formatArea(f.geometry);
+        const name = document.createElement("strong");
+        name.textContent = f.name;
+        const ac = document.createElement("span");
+        ac.textContent = `${a.ac} · ${a.ha}`;
+        el.append(name, ac);
+        const c = centroid(f.geometry);
+        return new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([c.longitude, c.latitude]).addTo(map);
+      });
+    const host = map.getContainer();
+    const zoomed = () => host.classList.toggle("mp-labels-off", map.getZoom() < 12);
+    zoomed();
+    map.on("zoomend", zoomed);
+    return () => {
+      map.off("zoomend", zoomed);
+      for (const mk of fieldLabels.current) mk.remove();
+      fieldLabels.current = [];
+    };
+  }, [map, farm, tool, selectedFieldId]);
+
+  const zoomToFarm = useCallback(
+    (f: Farm) => {
+      if (f.fields.length === 0) return;
+      // Chosen before the map finished loading: zoom once it is ready.
+      if (!map) {
+        pendingZoom.current = f;
+        return;
+      }
+      const bb = f.fields.map((x) => bbox(x.geometry));
+      const w = Math.min(...bb.map((b) => b[0])), s2 = Math.min(...bb.map((b) => b[1])), e = Math.max(...bb.map((b) => b[2])), n = Math.max(...bb.map((b) => b[3]));
+      map.fitBounds([[w, s2], [e, n]], { padding: 80, maxZoom: 16, duration: 1000 });
+    },
+    [map],
+  );
+
+  const loadDemo = useCallback(async () => {
+    setMessage({ kind: "info", text: "Loading the demo farm…" });
+    const r = await loadDemoFarm("union", api.demoFarm ? (sc, sig) => api.demoFarm!(sc, sig) : undefined);
+    if (!r.ok) return setMessage({ kind: "error", text: r.message });
+    putFarm(r.demo.farm);
+    zoomToFarm(r.demo.farm);
+    setMessage({ kind: "info", text: `${r.demo.label}: ${r.demo.farm.fields.length} fields loaded.${r.demo.source === "example" ? " These are example values, not a real farm." : ""}` });
+  }, [api, zoomToFarm]);
+
   const stop = useCallback(() => {
     quietUntil.current = Date.now() + 400;
     drawing.current?.onFinish(null);
     drawing.current?.clear();
+    setLive(null);
     setTool("idle");
   }, []);
 
@@ -144,6 +214,7 @@ export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, 
     if (!selected || !drawing.current) return;
     setMessage(null);
     drawing.current.loadForEdit(selected.geometry);
+    setLive(selected.geometry);
     setTool("edit");
   };
 
@@ -209,6 +280,9 @@ export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, 
         }}
         onZoom={zoomTo}
         onMessage={setMessage}
+        onDemo={loadDemo}
+        fieldStates={fieldStates}
+        live={live}
       />
       {farm && farm.fields.length > 0 ? <ResultsLegend farm={farm} states={fieldStates} cells={weatherCells} /> : null}
       {children}
@@ -228,6 +302,9 @@ function FarmPanel({
   onCancel,
   onZoom,
   onMessage,
+  onDemo,
+  fieldStates = {},
+  live,
 }: {
   farms: Farm[];
   farm: Farm | null;
@@ -240,7 +317,15 @@ function FarmPanel({
   onCancel: () => void;
   onZoom: (f: Field) => void;
   onMessage: (m: { kind: "error" | "info"; text: string } | null) => void;
+  onDemo: () => void;
+  fieldStates?: Record<string, FieldState>;
+  live: FieldGeometry | null;
 }) {
+  // Acres for display only (turf, contract radius); the backend recomputes area for analysis.
+  const liveM2 = live ? areaM2(live) : null;
+  const fieldsM2 = (farm?.fields ?? []).reduce((t, f) => t + (tool === "edit" && f.field_id === selected?.field_id ? 0 : areaM2(f.geometry)), 0);
+  const totalM2 = fieldsM2 + (liveM2 !== null && (tool === "draw-field" || tool === "edit") ? liveM2 : 0);
+  const fieldCount = (farm?.fields.length ?? 0) + (tool === "draw-field" && liveM2 ? 1 : 0);
   const fileInput = useRef<HTMLInputElement | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const busy = tool !== "idle";
@@ -315,6 +400,16 @@ function FarmPanel({
       ) : (
         <div className="mp-drawing" role="status">
           <p>{HINT[tool]}</p>
+          <p className="mp-live" aria-live="polite">
+            {liveM2 !== null ? (
+              <>
+                {tool === "draw-hole" ? "Area left out: " : "This shape: "}
+                <strong>{fmtAc(liveM2)}</strong> · {fmtHa(liveM2)}
+              </>
+            ) : (
+              "Place at least three corners to see the acres."
+            )}
+          </p>
           <div className="mp-tools">
             {tool === "edit" ? (
               <button type="button" className="btn btn-primary btn-small" onClick={onDone}>
@@ -334,6 +429,16 @@ function FarmPanel({
         </p>
       ) : null}
 
+      {farm && fieldCount > 0 ? (
+        <div className="mp-total" aria-live="polite" data-testid="farm-total">
+          <span className="mp-total-label">Farm total</span>
+          <span className="mp-total-ac">{fmtAc(totalM2)}</span>
+          <span className="mp-total-sub">
+            {fmtHa(totalM2)} · {fieldCount} {fieldCount === 1 ? "field" : "fields"}
+          </span>
+        </div>
+      ) : null}
+
       {farm && farm.fields.length > 0 ? (
         <ul className="mp-fields" aria-label="Fields">
           {farm.fields.map((f) => {
@@ -342,11 +447,23 @@ function FarmPanel({
             return (
               <li key={f.field_id} className={isSel ? "is-selected" : undefined} data-field-id={f.field_id}>
                 <button type="button" className="mp-field" aria-pressed={isSel} disabled={busy} onClick={() => farmActions.selectField(isSel ? null : f.field_id)} onDoubleClick={() => onZoom(f)}>
-                  <span className="mp-field-name">{f.name}</span>
-                  <span className="mp-field-area">
-                    {a.ha} · {a.ac}
+                  <span className="mp-field-top">
+                    <span className="mp-field-name">{f.name}</span>
+                    <span className="mp-field-area">
+                      <strong>{a.ac}</strong> {a.ha}
+                    </span>
+                  </span>
+                  <span className="mp-field-crops">{planCrops(f.plan)}</span>
+                  <span className="mp-field-status" data-state={f.plan ? (fieldStates[f.field_id] ?? "none") : "no-plan"}>
+                    <span className="mp-dot" style={{ background: f.plan ? STATE_COLOR[fieldStates[f.field_id] ?? "none"] : "transparent" }} aria-hidden="true" />
+                    {f.plan ? PLAN_STATUS[fieldStates[f.field_id] ?? "none"] : "No plan yet"}
                   </span>
                 </button>
+                {f.plan ? (
+                  <div className="mp-field-mini">
+                    <MiniTimeline plan={f.plan} />
+                  </div>
+                ) : null}
                 {isSel && !busy ? (
                   <div className="mp-field-edit">
                     <input
@@ -383,7 +500,12 @@ function FarmPanel({
           })}
         </ul>
       ) : (
-        <p className="mp-quiet">{farm ? "No fields yet. Draw your first field on the map." : "Find your farm, then draw your fields."}</p>
+        <div className="mp-empty">
+          <p className="mp-quiet">{farm ? "No fields yet. Draw your first field on the map." : "Find your farm, then draw your fields."}</p>
+          <button type="button" className="btn btn-secondary btn-small" onClick={onDemo} disabled={busy}>
+            Try a demo farm (Union County, NC)
+          </button>
+        </div>
       )}
 
       <div className="mp-files">
@@ -448,3 +570,16 @@ function ResultsLegend({ farm, states = {}, cells = [] }: { farm: Farm; states?:
     </section>
   );
 }
+
+const fmt = (v: number) => (v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2));
+const fmtAc = (m2: number) => `${fmt(m2 / SQ_M_PER_AC)} ac`;
+const fmtHa = (m2: number) => `${fmt(m2 / SQ_M_PER_HA)} ha`;
+
+/** A field card's one-line plan status. */
+const PLAN_STATUS: Record<FieldState, string> = {
+  none: "Plan set, not simulated yet",
+  pending: "Weather being prepared",
+  ready: "Results ready",
+  flagged: "Results ready, with a check",
+  unavailable: "No result here",
+};

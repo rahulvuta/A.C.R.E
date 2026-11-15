@@ -1,3 +1,4 @@
+import { createInputsApi } from "../inputs/api";
 import type { ZodType, ZodTypeDef } from "zod";
 import {
   adaptCompare,
@@ -42,6 +43,27 @@ import {
 } from "./adapt";
 import type { Capabilities, FarmAnalysis, FuturePlan, Generation, GeoSearch, Goals, InputIssue, PlaceInfo, PlanningField, PlanPlace, Recommendation, RegionProfile, ResearchJob, WeatherCell } from "./model";
 import type { Farm } from "../farm/types";
+import {
+  BackendAutofill,
+  BackendCropJob,
+  BackendCropSearch,
+  BackendDemo,
+  BackendEconomics,
+  BackendSimulation,
+  BackendVocab,
+  adaptAutofill,
+  adaptCropJob,
+  adaptCropSearch,
+  adaptDemo,
+  adaptEconomics,
+  adaptSimulation,
+  adaptVocab,
+  toBackendAutofill,
+  toBackendEconomics,
+  toBackendSimulate,
+  type SimulateRequest,
+} from "./adapt";
+import type { Autofill, CropJob, CropSearch, DemoFarm, Economics, Simulation, VocabItem } from "./simModel";
 import { LocationResolveResponse, ReplayResponse, type CompareResponse, type PlanInput, type SensitivityResponse, type YearsResponse } from "./schema";
 
 /*
@@ -296,6 +318,7 @@ export function createGlobalClient(opts: { apiBase: string | null; timeoutMs: nu
   }
 
   return {
+    inputs: createInputsApi(opts.apiBase ?? "", opts.apiBase ? fetchImpl : async () => { throw new Error(offline.message); }),
     hasLiveApi: Boolean(opts.apiBase),
     geoSearch: (q: string, limit = 5): Promise<Result<GeoSearch>> =>
       call(`/v1/geo/search?q=${encodeURIComponent(q)}&limit=${limit}`, BackendGeoSearch, adaptGeoSearch),
@@ -323,6 +346,25 @@ export function createGlobalClient(opts: { apiBase: string | null; timeoutMs: nu
     /** §10: the multi-season future plan for a candidate (raw, from generate) or one plan. */
     future: (place: PlanPlace, what: { candidate: Record<string, unknown> } | { plan: Record<string, unknown> }, startSeason: string, seasons = 2, edits?: Array<{ field: string; value: unknown }>): Promise<Result<FuturePlan>> =>
       call("/v1/plans/future", BackendFuture, adaptFuture, post({ ...toBackendPlace(place), ...what, start_season: startSeason, seasons, ...(edits?.length ? { edits } : {}) })),
+
+    // ---- Scenario Simulator (§11–§16)
+    /** §11: simulate the baseline and up to 5 alternatives over 10 years of resampled past weather. */
+    simulate: (q: SimulateRequest): Promise<Result<Simulation>> => call("/v1/scenarios/simulate", BackendSimulation, adaptSimulation, post(toBackendSimulate(q))),
+    /** §12: sourced prices, yields and costs for these crops at this place (the farmer's overrides win). */
+    economics: (q: Parameters<typeof toBackendEconomics>[0]): Promise<Result<Economics>> => call("/v1/economics/estimate", BackendEconomics, adaptEconomics, post(toBackendEconomics(q))),
+    /** §13: the shared crop library. */
+    searchCrops: (q: string, regionKey: string | null): Promise<Result<CropSearch>> =>
+      call(`/v1/crops/search?q=${encodeURIComponent(q)}${regionKey ? `&region_key=${encodeURIComponent(regionKey)}` : ""}`, BackendCropSearch, adaptCropSearch),
+    /** §13: research an unknown crop (only the name and region are sent). */
+    researchCrop: (name: string, regionKey: string | null): Promise<Result<CropJob>> => call("/v1/crops/research", BackendCropJob, adaptCropJob, post({ name, region_key: regionKey })),
+    cropJob: (jobId: string): Promise<Result<CropJob>> => call(`/v1/crops/research/${encodeURIComponent(jobId)}`, BackendCropJob, adaptCropJob),
+    /** §14, §16: vocabularies with plain labels. */
+    vocab: (which: "equipment" | "readings" | "priorities"): Promise<Result<VocabItem[]>> => call(`/v1/vocab/${which}`, BackendVocab, adaptVocab),
+    /** §15: a complete demo farm (example values). */
+    demoFarm: (scenario: "union" | "pergamino"): Promise<Result<DemoFarm>> => call(`/v1/demo/farm?scenario=${scenario}`, BackendDemo, (r) => adaptDemo(r)),
+    /** §15: typical dates for the chosen crops at this place, each with its origin. */
+    autofill: (point: LatLon, crops: Array<{ role: "previous" | "cover" | "next"; cropId: string }>): Promise<Result<Autofill>> =>
+      call("/v1/plans/autofill", BackendAutofill, adaptAutofill, post(toBackendAutofill(point, crops))),
   };
 }
 export type GlobalClient = ReturnType<typeof createGlobalClient>;

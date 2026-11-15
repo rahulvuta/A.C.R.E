@@ -14,7 +14,16 @@ export type TermId =
   | "rank"
   | "regional-estimate"
   | "replay"
-  | "extension";
+  | "extension"
+  | "farm-field"
+  | "current-plan"
+  | "resampling"
+  | "scenario"
+  | "comparison-badge"
+  | "ten-year-plan"
+  | "band"
+  | "margin"
+  | "loss-assumption";
 
 export const GLOSSARY: Record<TermId, { term: string; definition: string }> = {
   "cover-crop": {
@@ -61,5 +70,41 @@ export const GLOSSARY: Record<TermId, { term: string; definition: string }> = {
   extension: {
     term: "Extension agent",
     definition: "A local adviser from NC State Extension (the county Cooperative Extension office) who helps growers with crop decisions.",
+  },
+  "farm-field": {
+    term: "Fields and acres",
+    definition: "Each field you draw keeps its own plan. Acres are measured from the outline you draw; the service measures them again for any money result. Your outlines stay in this browser.",
+  },
+  "current-plan": {
+    term: "Your current plan",
+    definition: "The crops and dates you use now, as a rotation of one to four seasons that repeats. It is the baseline every other plan is compared with.",
+  },
+  resampling: {
+    term: "Replaying past weather",
+    definition: "A 10-year run picks whole past seasons (1981 to 2025) from your field's NASA weather record in a new random order, about 200 times. It shows the range of what has happened here, not a forecast.",
+  },
+  scenario: {
+    term: "Scenario",
+    definition: "Another plan for the same field, such as adding a cover crop or a winter grain. Each one is replayed over the same past weather as your current plan, so they can be compared fairly.",
+  },
+  "comparison-badge": {
+    term: "Badges",
+    definition: "Best for profit, most sustainable, lowest weather risk and best for your priorities. Each is the best of the plans you compared, given these numbers and past weather; a badge is left out when it cannot be decided fairly.",
+  },
+  "ten-year-plan": {
+    term: "Your 10-year plan",
+    definition: "The plan you chose, laid out year by year with its crops, key dates, decision deadlines and a backup. Dates come from your entries or published guidance, each with its source.",
+  },
+  band: {
+    term: "Typical range",
+    definition: "The middle value (median) of all the replays, with the low (10th percentile) and high (90th percentile) ends. Eight in ten replays fall inside the range.",
+  },
+  margin: {
+    term: "Margin",
+    definition: "Revenue minus costs, from your own prices, yields and costs or from sourced regional figures (USDA, university surveys, FAOSTAT). A crop with neither has no money result.",
+  },
+  "loss-assumption": {
+    term: "Your loss estimate",
+    definition: "Your own guess of how much yield you lose in a dry spring or a very wet one. It is the only way weather turns into money here, and results that use it are labelled as your estimate.",
   },
 };

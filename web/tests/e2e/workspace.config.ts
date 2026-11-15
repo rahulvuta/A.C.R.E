@@ -14,8 +14,8 @@ const apiBase = process.env.E2E_API ?? "http://api.test";
 
 export default defineConfig({
   testDir: ".",
-  testMatch: /workspace[^/]*\.spec\.ts$/,
-  timeout: process.env.E2E_API ? 240_000 : 45_000,
+  testMatch: /(?:workspace[^/]*|guided-demo)\.spec\.ts$/,
+  timeout: process.env.E2E_API ? 360_000 : 45_000,
   fullyParallel: true,
   use: {
     baseURL: `http://localhost:${port}`,

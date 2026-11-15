@@ -38,7 +38,25 @@ import {
   type PlanPlace,
   type Recommendation,
 } from "./model";
-import type { Farm } from "../farm/types";
+import type { Farm, FieldPlan } from "../farm/types";
+import {
+  READING_KINDS,
+  type Autofill,
+  type CropJob,
+  type CropOverride,
+  type CropSearch,
+  type DemoFarm,
+  type Dist,
+  type Economics,
+  type LossAssumptions,
+  type MoneyRef,
+  type Odds,
+  type Reading,
+  type ReadingKind,
+  type Scenario,
+  type Simulation,
+  type VocabItem,
+} from "./simModel";
 
 /*
   The boundary with Rahul's backend (Phase 12, backend branch at d7d3367, Nov 14 2026).
@@ -1144,9 +1162,461 @@ export function toBackendGoals(g: Goals) {
       equipment: c.equipment ?? [],
       latest_planting: c.latestPlanting ?? null,
       earliest_harvest: c.earliestHarvest ?? null,
-      seasons: c.seasons ?? null,
+      ...(c.seasons != null ? { seasons: c.seasons } : {}),
     },
     preferences: { liked_crops: p.likedCrops ?? [], disliked_crops: p.dislikedCrops ?? [] },
   };
 }
-export const toBackendPlanningField = (f: PlanningField) => ({ field_id: f.fieldId, area_ha: f.areaHa, crop_history: f.cropHistory, soil: null });
+export const toBackendPlanningField = (f: PlanningField) => ({ field_id: f.fieldId, area_ha: f.areaHa, crop_history: f.cropHistory, ...(f.equipment ? { equipment: f.equipment } : {}), soil: null });
+
+// ================================================================== Scenario Simulator (§11–§16)
+// Shapes from docs/global/contract.md §11–§16. Values are renamed and regrouped only; every
+// median, band, badge, delta and odds figure is the backend's own.
+
+const BackendDist = z
+  .object({ p10: num, median: num, p90: num, unit: str, currency: str, origin: str, includes_assumption: str, probability: num })
+  .passthrough();
+const dist = (d: z.infer<typeof BackendDist> | null | undefined): Dist | null =>
+  d
+    ? {
+        p10: nn(d.p10),
+        median: nn(d.median),
+        p90: nn(d.p90),
+        unit: nn(d.unit),
+        currency: nn(d.currency),
+        // A folded-in loss assumption makes the value the farmer's estimate, never a measurement.
+        origin: d.includes_assumption ? "assumed" : asOrigin(d.origin, "calculation"),
+        includesAssumption: nn(d.includes_assumption),
+      }
+    : null;
+const distOrOdds = (d: z.infer<typeof BackendDist>): Dist | Odds =>
+  d.probability !== undefined && d.median === undefined ? { probability: nn(d.probability), origin: asOrigin(d.origin, "calculation") } : (dist(d) as Dist);
+
+/** A season plan from the backend, kept in the backend's own plan shape (farm/types.ts FieldPlan). */
+const BackendRotationPlan = z
+  .object({
+    plan_id: z.string(),
+    label: str,
+    previous_crop_id: z.string(),
+    next_crop_id: z.string(),
+    prev_harvest: z.string(),
+    next_plant: z.string(),
+    winter: z.object({ kind: z.enum(["none", "cover", "winter_grain"]) }).passthrough(),
+  })
+  .passthrough();
+export function asFieldPlan(raw: unknown): FieldPlan | null {
+  const p = BackendRotationPlan.safeParse(raw);
+  if (!p.success) return null;
+  const w = p.data.winter as Record<string, string>;
+  const winter: FieldPlan["winter"] =
+    w.kind === "cover"
+      ? { kind: "cover", crop_id: w.crop_id ?? "", seed: w.seed ?? "", terminate: w.terminate ?? "" }
+      : w.kind === "winter_grain"
+        ? { kind: "winter_grain", crop_id: w.crop_id ?? "", plant: w.plant ?? "", harvest: w.harvest ?? "" }
+        : { kind: "none" };
+  const origins = (p.data as { origins?: unknown }).origins;
+  return {
+    plan_id: p.data.plan_id,
+    ...(p.data.label ? { label: p.data.label } : {}),
+    previous_crop_id: p.data.previous_crop_id,
+    next_crop_id: p.data.next_crop_id,
+    prev_harvest: p.data.prev_harvest,
+    next_plant: p.data.next_plant,
+    winter,
+    ...(origins && typeof origins === "object" && !Array.isArray(origins) ? { origins: origins as FieldPlan["origins"] } : {}),
+  };
+}
+const fieldPlanToBackend = (p: FieldPlan) => ({
+  plan_id: p.plan_id,
+  ...(p.label ? { label: p.label } : {}),
+  previous_crop_id: p.previous_crop_id,
+  next_crop_id: p.next_crop_id,
+  prev_harvest: p.prev_harvest,
+  next_plant: p.next_plant,
+  winter: p.winter,
+  grower: { low_moisture_concern: p.grower?.low_moisture_concern ?? null },
+});
+
+const BackendScenarioResult = z
+  .object({
+    scenario_id: z.string(),
+    label: str,
+    status: LooseStatus,
+    reason_text: str,
+    timeline: z.array(z.object({ year: int, season: z.union([z.string(), z.number()]).nullable().optional(), crop_sequence: z.array(z.string()).default([]), plan_id: str }).passthrough()).default([]),
+    yearly: z
+      .array(
+        z
+          .object({
+            year: int,
+            indicators: z.record(BackendDist).default({}),
+            money: z.object({ revenue: BackendDist.nullable().optional(), costs: BackendDist.nullable().optional(), margin: BackendDist.nullable().optional() }).passthrough().nullable().optional(),
+          })
+          .passthrough(),
+      )
+      .default([]),
+    totals: z.record(z.union([BackendDist, z.number(), z.string(), z.array(z.unknown()), z.null()])).default({}),
+    events: z.array(z.object({ event: z.string(), probability: num, text: z.string() }).passthrough()).default([]),
+    money_status: LooseStatus,
+    money_gaps: z.array(z.union([z.string(), z.object({ text: z.string() }).passthrough()])).default([]),
+    readings_context: z
+      .array(z.object({ date: z.string(), kind: z.string(), value: num, origin: str, modeled_same_day: z.record(z.unknown()).nullable().optional() }).passthrough())
+      .default([]),
+  })
+  .passthrough();
+
+export const BackendSimulation = z
+  .object({
+    meta: GlobalMeta.optional(),
+    status: LooseStatus,
+    reason_text: str,
+    method: z.object({ weather: str, runs: num, seed: num, source_years: str, note: str }).passthrough().nullable().optional(),
+    scenarios: z.array(BackendScenarioResult).default([]),
+    comparison: z
+      .object({
+        baseline: str,
+        badges: z.array(z.object({ badge: z.string(), scenario_id: z.string(), why: z.string().default("") }).passthrough()).default([]),
+        deltas: z
+          .array(
+            z
+              .object({
+                scenario_id: z.string(),
+                versus: z.string(),
+                changes: z.array(z.object({ indicator: z.string(), median_delta: num, delta: num, currency: str, unit: str, text: z.string().default("") }).passthrough()).default([]),
+              })
+              .passthrough(),
+          )
+          .default([]),
+        trade_offs: z.array(z.object({ scenario_id: z.string(), text: z.string() }).passthrough()).default([]),
+        not_decided: z.array(z.union([z.string(), z.object({ badge: str, reason_text: str, text: str }).passthrough()])).default([]),
+        caveat: str,
+      })
+      .passthrough()
+      .nullable()
+      .optional(),
+  })
+  .passthrough();
+
+const NOT_A_FORECAST = "Replays real past weather in new orders; not a forecast.";
+const CAVEAT = "Best of the scenarios you compared, given these numbers and past weather. Not a forecast.";
+
+export function adaptSimulation(r: z.infer<typeof BackendSimulation>): Simulation {
+  const c = r.comparison;
+  return {
+    status: asStatus(r.status),
+    reasonText: nn(r.reason_text),
+    method: {
+      weather: r.method?.weather ?? "historical_resampling",
+      runs: nn(r.method?.runs),
+      seed: nn(r.method?.seed),
+      sourceYears: nn(r.method?.source_years),
+      // The label is always there, whether or not the backend repeated it.
+      note: r.method?.note || NOT_A_FORECAST,
+    },
+    scenarios: r.scenarios.map((s) => ({
+      scenarioId: s.scenario_id,
+      label: s.label ?? s.scenario_id,
+      status: asStatus(s.status),
+      reasonText: nn(s.reason_text),
+      timeline: s.timeline.map((t) => ({ year: t.year, season: String(t.season ?? t.year), cropSequence: t.crop_sequence, planId: nn(t.plan_id) })),
+      yearly: s.yearly.map((y) => ({
+        year: y.year,
+        indicators: Object.fromEntries(Object.entries(y.indicators).map(([k, v]) => [k, distOrOdds(v)])),
+        money: y.money ? { revenue: dist(y.money.revenue), costs: dist(y.money.costs), margin: dist(y.money.margin) } : null,
+      })),
+      totals: Object.fromEntries(Object.entries(s.totals).flatMap(([k, v]): Array<[string, Dist | number | null]> => {
+        if (typeof v === "number" || v === null) return [[k, v]];
+        if (typeof v !== "object" || Array.isArray(v) || !["median", "p10", "p90", "value"].some(key => key in v)) return [];
+        return [[k, dist(BackendDist.parse(v))]];
+      })),
+      events: s.events.map((e) => ({ event: e.event, probability: nn(e.probability), text: e.text })),
+      moneyStatus: asStatus(s.money_status),
+      moneyGaps: s.money_gaps.map((g) => (typeof g === "string" ? g : g.text)),
+      readingsContext: s.readings_context.map((x) => ({
+        date: x.date,
+        kind: x.kind,
+        value: nn(x.value),
+        origin: asOrigin(x.origin, "grower"),
+        modeled: Object.entries(x.modeled_same_day ?? {})
+          .filter(([k]) => k !== "origin")
+          .map(([name, value]) => ({ name, value: typeof value === "number" ? value : null, origin: asOrigin(String(x.modeled_same_day?.origin ?? ""), "nasa_modeled") })),
+      })),
+    })),
+    comparison: c
+      ? {
+          baseline: nn(c.baseline),
+          badges: c.badges.map((b) => ({ badge: b.badge, scenarioId: b.scenario_id, why: b.why })),
+          deltas: c.deltas.map((d) => ({
+            scenarioId: d.scenario_id,
+            versus: d.versus,
+            changes: d.changes.map((x) => ({ indicator: x.indicator, medianDelta: nn(x.median_delta ?? x.delta), currency: nn(x.currency), unit: nn(x.unit), text: x.text })),
+          })),
+          tradeOffs: c.trade_offs.map((t) => ({ scenarioId: t.scenario_id, text: t.text })),
+          notDecided: c.not_decided.map((n) => (typeof n === "string" ? { badge: n, reasonText: "" } : { badge: n.badge ?? "", reasonText: n.reason_text ?? n.text ?? "" })),
+          caveat: c.caveat || CAVEAT,
+        }
+      : null,
+    raw: r as Record<string, unknown>,
+  };
+}
+
+export interface SimulateRequest {
+  point: LatLonPoint;
+  field: { fieldId: string; name: string; areaHa: number | null; geometry?: Farm["fields"][number]["geometry"] | null; equipment: string[]; readings: Reading[] };
+  priorities: Record<string, number>;
+  overrides: Record<string, CropOverride>;
+  loss: LossAssumptions;
+  scenarios: Scenario[];
+  years?: number;
+  runs?: number;
+  seed?: number;
+  startSeason: string;
+}
+type LatLonPoint = { latitude: number; longitude: number };
+const toBackendReading = (r: Reading) => ({ date: r.date, kind: r.kind, value: r.value, ...(r.depthCm != null ? { depth_cm: r.depthCm } : {}), ...(r.note ? { note: r.note } : {}) });
+const toBackendOverrides = (o: Record<string, CropOverride>) =>
+  Object.fromEntries(
+    Object.entries(o).map(([crop, v]) => [
+      crop,
+      {
+        ...(v.priceCases && Object.keys(v.priceCases).length ? { price: { ...Object.fromEntries(Object.entries(v.priceCases).map(([k, q]) => [k, q.value])), unit: (v.priceCases.typical ?? Object.values(v.priceCases)[0])!.unit } } : v.price ? { price: v.price } : {}),
+        ...(v.yield ? { yield: v.yield } : {}),
+        ...(v.costItems?.length ? { costs: v.costItems.map(({ item, value, unit }) => ({ item, value, unit })) } : v.costPerArea ? { costs: { total: v.costPerArea } } : {}),
+      },
+    ]),
+  );
+export function toBackendSimulate(q: SimulateRequest) {
+  return {
+    location: { latitude: q.point.latitude, longitude: q.point.longitude },
+    field: { field_id: q.field.fieldId, name: q.field.name, area_ha: q.field.areaHa, geometry: q.field.geometry ?? null, equipment: q.field.equipment, readings: q.field.readings.map(toBackendReading) },
+    goals: { priorities: q.priorities },
+    economics: {
+      overrides: toBackendOverrides(q.overrides),
+      loss_assumptions: { dry_spring_pct: q.loss.drySpringPct, heavy_rain_pct: q.loss.heavyRainPct },
+    },
+    scenarios: q.scenarios.map((s) => ({ scenario_id: s.scenarioId, label: s.label, ...(s.isBaseline ? { is_baseline: true } : {}), rotation: s.rotation.map(fieldPlanToBackend) })),
+    years: q.years ?? 10,
+    runs: q.runs ?? 200,
+    seed: q.seed ?? 7,
+    start_season: q.startSeason,
+  };
+}
+
+// §12 economics
+const BackendMoneySource = BackendSource.and(z.object({ years: z.union([z.string(), z.number()]).nullable().optional(), year: z.union([z.string(), z.number()]).nullable().optional() }).passthrough());
+const moneySource = (s: z.infer<typeof BackendMoneySource> | null | undefined): MoneyRef["source"] => {
+  if (!s || (!s.title && !s.url)) return null;
+  const base = source(s)!;
+  const yrs = s.years ?? s.year;
+  return { ...base, years: yrs == null ? null : String(yrs) };
+};
+const BackendMoney = z.object({ value: num, unit: str, origin: str, source: BackendMoneySource.nullable().optional() }).passthrough();
+const money = (m: z.infer<typeof BackendMoney> | null | undefined): MoneyRef | null =>
+  m ? { value: nn(m.value), unit: nn(m.unit), origin: asOrigin(m.origin), source: moneySource(m.source) } : null;
+export const BackendEconomics = z
+  .object({
+    meta: GlobalMeta.optional(),
+    currency: z.string().default("USD"),
+    area_unit: z.enum(["acre", "ha"]).default("acre"),
+    crops: z
+      .array(
+        z
+          .object({
+            crop_id: z.string(),
+            status: LooseStatus,
+            reason_text: str,
+            price: z.object({ low: num, typical: num, high: num, unit: str, origin: str, source: BackendMoneySource.nullable().optional() }).passthrough().nullable().optional(),
+            yield: BackendMoney.nullable().optional(),
+            costs: z
+              .object({ items: z.array(BackendMoney.and(z.object({ item: z.string() }).passthrough())).default([]), total_per_area: z.object({ value: num, unit: str }).passthrough().nullable().optional() })
+              .passthrough()
+              .nullable()
+              .optional(),
+          })
+          .passthrough(),
+      )
+      .default([]),
+    equipment_costs: z.array(BackendMoney.and(z.object({ equipment: z.string(), pass: str }).passthrough())).default([]),
+    gaps: z.array(z.union([z.string(), z.object({ text: z.string() }).passthrough()])).default([]),
+  })
+  .passthrough();
+export function adaptEconomics(r: z.infer<typeof BackendEconomics>): Economics {
+  return {
+    currency: r.currency,
+    areaUnit: r.area_unit,
+    crops: r.crops.map((c) => ({
+      cropId: c.crop_id,
+      status: asStatus(c.status),
+      reasonText: nn(c.reason_text),
+      price: c.price ? { low: nn(c.price.low), typical: nn(c.price.typical), high: nn(c.price.high), unit: nn(c.price.unit), origin: asOrigin(c.price.origin), source: moneySource(c.price.source) } : null,
+      yield: money(c.yield),
+      costs: c.costs
+        ? {
+            items: c.costs.items.map((i) => ({ item: i.item, ...money(i)! })),
+            totalPerArea: c.costs.total_per_area ? { value: nn(c.costs.total_per_area.value), unit: nn(c.costs.total_per_area.unit) } : null,
+          }
+        : null,
+    })),
+    equipmentCosts: r.equipment_costs.map((e) => ({ equipment: e.equipment, pass: nn(e.pass), ...money(e)! })),
+    gaps: r.gaps.map((g) => (typeof g === "string" ? g : g.text)),
+  };
+}
+export const toBackendEconomics = (q: { point: LatLonPoint; crops: string[]; area: { value: number | null; unit: "acre" | "ha" }; equipment: string[]; overrides: Record<string, CropOverride> }) => ({
+  location: { latitude: q.point.latitude, longitude: q.point.longitude },
+  crops: q.crops,
+  ...(q.area.value != null && q.area.value > 0 ? { area: q.area } : {}),
+  equipment: q.equipment,
+  overrides: toBackendOverrides(q.overrides),
+});
+
+// §13 crop library
+export const BackendCropSearch = z
+  .object({
+    meta: GlobalMeta.optional(),
+    results: z
+      .array(
+        z
+          .object({ crop_id: z.string(), name: z.string(), family: str, roles: z.array(z.string()).default([]), origin: str, has_calendar: z.boolean().default(false), has_economics: z.boolean().default(false), region_note: str })
+          .passthrough(),
+      )
+      .default([]),
+    can_research: z.boolean().default(false),
+  })
+  .passthrough();
+export const adaptCropSearch = (r: z.infer<typeof BackendCropSearch>): CropSearch => ({
+  results: r.results.map((c) => ({
+    cropId: c.crop_id,
+    name: c.name,
+    family: nn(c.family),
+    roles: c.roles,
+    origin: asOrigin(c.origin),
+    hasCalendar: c.has_calendar,
+    hasEconomics: c.has_economics,
+    regionNote: nn(c.region_note),
+  })),
+  canResearch: r.can_research,
+});
+export const BackendCropJob = z
+  .object({ meta: GlobalMeta.optional(), job_id: str, job_status: str, crop_id: str, reason_text: str, crop: z.object({ crop_id: z.string() }).passthrough().nullable().optional() })
+  .passthrough();
+export const adaptCropJob = (r: z.infer<typeof BackendCropJob>): CropJob => ({
+  jobId: nn(r.job_id),
+  jobStatus: asJob(r.job_status, "pending"),
+  cropId: r.crop_id ?? r.crop?.crop_id ?? null,
+  reasonText: nn(r.reason_text),
+});
+
+// §14 and §16 vocabularies (each item may be a bare id or {id|name|value, label, explanation})
+export const BackendVocab = z
+  .object({
+    meta: GlobalMeta.optional(),
+    items: z.array(z.unknown()).optional(),
+    equipment: z.array(z.unknown()).optional(),
+    readings: z.array(z.unknown()).optional(),
+    kinds: z.array(z.unknown()).optional(),
+    priorities: z.array(z.unknown()).optional(),
+  })
+  .passthrough();
+export function adaptVocab(r: z.infer<typeof BackendVocab>): VocabItem[] {
+  const list = r.items ?? r.equipment ?? r.readings ?? r.kinds ?? r.priorities ?? [];
+  return list.flatMap((x): VocabItem[] => {
+    if (typeof x === "string") return [{ id: x, label: cropName(x), explanation: null }];
+    if (!x || typeof x !== "object") return [];
+    const o = x as Record<string, unknown>;
+    const id = (o.id ?? o.priority_id ?? o.name ?? o.value ?? o.key) as string | undefined;
+    if (typeof id !== "string") return [];
+    const expl = o.explanation ?? o.description ?? o.help;
+    return [{ id, label: typeof o.label === "string" ? o.label : cropName(id), explanation: typeof expl === "string" ? expl : null }];
+  });
+}
+
+// §15 demo and autofill
+const BackendDemoField = z
+  .object({
+    field_id: z.string(),
+    name: z.string(),
+    geometry: z.object({ type: z.enum(["Polygon", "MultiPolygon"]), coordinates: z.array(z.unknown()) }).passthrough(),
+    plan: z.unknown().optional(),
+    rotation: z.array(z.unknown()).optional(),
+    equipment: z.array(z.string()).default([]),
+    readings: z.array(z.object({ date: z.string(), kind: z.string(), value: num, depth_cm: num, note: str }).passthrough()).default([]),
+  })
+  .passthrough();
+export const BackendDemo = z
+  .object({
+    meta: GlobalMeta.optional(),
+    label: z.string().default("Demo farm (example values)"),
+    farm: z.object({ farm_id: z.string(), name: z.string(), anchor: BackendPoint.nullable().optional(), fields: z.array(BackendDemoField).min(1) }).passthrough(),
+    current_plans: z.union([z.record(z.unknown()), z.array(z.unknown())]).nullable().optional(),
+    economics_overrides: z.record(z.unknown()).nullable().optional(),
+    goals: z.object({ priorities: z.record(z.number()).default({}) }).passthrough().nullable().optional(),
+    loss_assumptions: z.object({ dry_spring_pct: num, wet_spring_pct: num, heavy_rain_pct: num }).passthrough().nullable().optional(),
+  })
+  .passthrough();
+const asKind = (k: string): ReadingKind => ((READING_KINDS as readonly string[]).includes(k) ? (k as ReadingKind) : "note");
+const toPlans = (v: unknown): FieldPlan[] => (Array.isArray(v) ? v : v ? [v] : []).map(asFieldPlan).filter((p): p is FieldPlan => Boolean(p));
+const pickOverride = (v: unknown): CropOverride => {
+  const o = (v ?? {}) as Record<string, unknown>;
+  const vu = (x: unknown) => {
+    if (!x || typeof x !== "object") return null;
+    const q = x as { value?: unknown; unit?: unknown };
+    return typeof q.value === "number" && Number.isFinite(q.value) ? { value: q.value, unit: String(q.unit ?? "") } : null;
+  };
+  const costs = o.costs as Record<string, unknown> | undefined;
+  return { price: vu(o.price), yield: vu(o.yield), costPerArea: vu(costs?.total ?? costs?.total_per_area ?? costs ?? o.cost_per_area) };
+};
+export function adaptDemo(r: z.infer<typeof BackendDemo>, now = new Date().toISOString()): DemoFarm {
+  // current_plans: {field_id: Plan | Plan[]} or [{field_id, rotation|plans|plan}]
+  const plansFor = (fieldId: string): FieldPlan[] => {
+    const cp = r.current_plans;
+    if (Array.isArray(cp)) {
+      const row = cp.find((x) => (x as { field_id?: string }).field_id === fieldId) as Record<string, unknown> | undefined;
+      return row ? toPlans(row.rotation ?? row.plans ?? row.plan) : [];
+    }
+    return cp ? toPlans(cp[fieldId]) : [];
+  };
+  const fields: DemoFarm["fields"] = {};
+  const farmFields = r.farm.fields.map((f) => {
+    const rotation = plansFor(f.field_id).length ? plansFor(f.field_id) : toPlans(f.rotation ?? f.plan);
+    fields[f.field_id] = {
+      rotation,
+      equipment: f.equipment,
+      readings: f.readings.map((x) => ({ date: x.date, kind: asKind(x.kind), value: nn(x.value), depthCm: nn(x.depth_cm), note: nn(x.note) })),
+    };
+    return {
+      field_id: f.field_id, name: f.name, geometry: f.geometry as unknown as Farm["fields"][number]["geometry"], plan: rotation[0] ?? null,
+      equipment: f.equipment,
+      readings: f.readings.map(x => ({ date: x.date, kind: asKind(x.kind), value: nn(x.value), depth_cm: nn(x.depth_cm), note: nn(x.note) })),
+    };
+  });
+  const first = r.farm.fields[0]!.geometry as unknown as { type: string; coordinates: number[][][] | number[][][][] };
+  const ring = (first.type === "Polygon" ? (first.coordinates as number[][][])[0] : (first.coordinates as number[][][][])[0]?.[0]) ?? [];
+  // The map centre only (where to open the map); the backend works from the field geometry.
+  const anchor = r.farm.anchor ?? { latitude: ring[0]?.[1] ?? 0, longitude: ring[0]?.[0] ?? 0 };
+  return {
+    label: r.label,
+    farm: { schema: "acre.farm.v1", farm_id: r.farm.farm_id, name: r.farm.name, anchor: { latitude: anchor.latitude, longitude: anchor.longitude }, fields: farmFields, created_at: now, updated_at: now },
+    fields,
+    overrides: Object.fromEntries(Object.entries(r.economics_overrides ?? {}).map(([k, v]) => [k, pickOverride(v)])),
+    priorities: r.goals?.priorities ?? {},
+    lossAssumptions: { drySpringPct: nn(r.loss_assumptions?.dry_spring_pct), wetSpringPct: nn(r.loss_assumptions?.wet_spring_pct), heavyRainPct: nn(r.loss_assumptions?.heavy_rain_pct) },
+  };
+}
+
+export const BackendAutofill = z
+  .object({
+    meta: GlobalMeta.optional(),
+    plan: z.unknown().optional(),
+    dates: z.array(z.object({ field: z.string(), value: str, origin: str, source: BackendSource.nullable().optional() }).passthrough()).default([]),
+    gaps: z.array(z.union([z.string(), z.object({ text: z.string() }).passthrough()])).default([]),
+  })
+  .passthrough();
+export const adaptAutofill = (r: z.infer<typeof BackendAutofill>): Autofill => ({
+  plan: asFieldPlan(r.plan),
+  dates: r.dates.map((d) => ({ field: d.field, value: nn(d.value), origin: asOrigin(d.origin), source: source(d.source) })),
+  gaps: r.gaps.map((g) => (typeof g === "string" ? g : g.text)),
+});
+export const toBackendAutofill = (point: LatLonPoint, crops: Array<{ role: "previous" | "cover" | "next"; cropId: string }>) => ({
+  location: { latitude: point.latitude, longitude: point.longitude },
+  crops: crops.map((c) => ({ role: c.role, crop_id: c.cropId })),
+});

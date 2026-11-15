@@ -7,10 +7,12 @@ import { APP_NAME } from "./config";
 import { Landing } from "./site/Landing";
 import { AboutPage, EvidencePage, GrowersPage, ProductPage, ResourcesPage } from "./site/pages";
 import { Workspace } from "./screens/workspace/Workspace";
+import { Guided } from "./screens/guided/Guided";
 
 /*
   Routes (query `view`): the marketing site is the front door; `?view=app` opens the map
-  (find your farm, card D1); `?view=demo` is the Union County demo planner, loaded offline
+  (the guided Scenario Simulator, card U1); `?view=fields` is the earlier
+  per-field workspace (D1–D4); `?view=demo` is the Union County demo planner, loaded offline
   from the saved record. A link that carries planner state in its hash (older shared links,
   including `?view=app#s=…`) still opens the demo, so nothing shared before the map breaks.
 */
@@ -27,7 +29,8 @@ export function App() {
   if (view === "about") return <AboutPage />;
   const plannerHash = /(^|[#&])(s|pg|y|l|r|p|e|v|loc)=/.test(window.location.hash);
   if (view === "demo" || plannerHash) return <PlannerRoute />;
-  if (view === "app") return <Workspace />;
+  if (view === "app") return <Guided />;
+  if (view === "fields") return <Workspace />;
   return <Landing />;
 }
 

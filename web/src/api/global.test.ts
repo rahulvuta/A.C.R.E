@@ -21,6 +21,20 @@ import {
   BackendFuture,
   BackendGeneration,
   BackendRecommendation,
+  adaptAutofill,
+  adaptCropJob,
+  adaptCropSearch,
+  adaptDemo,
+  adaptEconomics,
+  adaptSimulation,
+  adaptVocab,
+  BackendAutofill,
+  BackendCropJob,
+  BackendCropSearch,
+  BackendDemo,
+  BackendEconomics,
+  BackendSimulation,
+  BackendVocab,
 } from "./adapt";
 import { createGlobalClient, type FetchLike } from "./client";
 import { FIXTURE_API_BASE, FIXTURES, fixtureFetch, POLYGONS, type FixtureName } from "./fixtures";
@@ -55,10 +69,21 @@ const READERS: Record<FixtureName, (raw: unknown) => unknown> = {
   weatherPending: (r) => adaptWeather(BackendWeather.parse(r)),
   weatherReady: (r) => adaptWeather(BackendWeather.parse(r)),
   weatherUnion: (r) => adaptWeather(BackendWeather.parse(r)),
+  demoUnion: (r) => adaptDemo(BackendDemo.parse(r)),
+  demoPergamino: (r) => adaptDemo(BackendDemo.parse(r)),
+  simulateUnion: (r) => adaptSimulation(BackendSimulation.parse(r)),
+  economicsUnion: (r) => adaptEconomics(BackendEconomics.parse(r)),
+  cropsSearch: (r) => adaptCropSearch(BackendCropSearch.parse(r)),
+  cropResearchPending: (r) => adaptCropJob(BackendCropJob.parse(r)),
+  cropResearchReady: (r) => adaptCropJob(BackendCropJob.parse(r)),
+  autofillUnion: (r) => adaptAutofill(BackendAutofill.parse(r)),
+  vocabEquipment: (r) => adaptVocab(BackendVocab.parse(r)),
+  vocabReadings: (r) => adaptVocab(BackendVocab.parse(r)),
+  vocabPriorities: (r) => adaptVocab(BackendVocab.parse(r)),
 };
 
 // Maps keyed by data (plan dates, indicators, parameters) rather than field names: a new key there is new data, not a new field.
-const RECORDS = new Set(["eras", "eras_shared_years", "dry_spring", "missing_days", "thresholds_by_plant"]);
+const RECORDS = new Set(["eras", "eras_shared_years", "dry_spring", "missing_days", "thresholds_by_plant", "indicators", "totals", "priorities", "current_plans", "economics_overrides", "modeled_same_day"]);
 /** Adds an unknown field at the top level and inside every object, as a newer backend might. */
 function withExtras(v: unknown, inRecord = false): unknown {
   if (Array.isArray(v)) return v.map((x) => withExtras(x));
