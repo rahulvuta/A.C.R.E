@@ -3,21 +3,25 @@
     "badges": [
       {
         "badge": "best_profit",
+        "origin": "calculation",
         "scenario_id": "current",
         "why": "Highest median 10-year margin: $32,094 vs $14,080 for Add cereal rye. Includes your loss assumption (assumed, your estimate)."
       },
       {
         "badge": "most_sustainable",
+        "origin": "calculation",
         "scenario_id": "rye",
         "why": "Best on soil and water: living-cover days a year: 165 days; median rain on bare soil a year: 82.3 mm; crop families: 2 families."
       },
       {
         "badge": "lowest_weather_risk",
+        "origin": "calculation",
         "scenario_id": "rye",
         "why": "Fewest weather stress events (dry pre-planting windows and years with heavy rain on bare soil): 1.8 on average vs 2.0 for What I do now."
       },
       {
         "badge": "best_for_priorities",
+        "origin": "calculation",
         "scenario_id": "current",
         "why": "Ranks best on what you weighted most (median 10-year margin, living-cover days a year, median rain on bare soil a year), using rank positions only (no score)."
       }
@@ -31,36 +35,43 @@
             "currency": "USD",
             "indicator": "margin_10y",
             "median_delta": -18014,
+            "origin": "calculation",
             "text": "-$18,014 over 10 years (median)"
           },
           {
             "delta": 165.0,
             "indicator": "living_cover_days_per_year",
+            "origin": "calculation",
             "text": "+165 days (living-cover days a year)"
           },
           {
             "delta": -521.5,
             "indicator": "rain_on_bare_soil_mm_per_year",
+            "origin": "calculation",
             "text": "-521.5 mm (median rain on bare soil a year)"
           },
           {
             "delta": 0.0,
             "indicator": "heavy_rain_days_on_bare_soil_per_year",
+            "origin": "calculation",
             "text": "+0 days (heavy-rain days on bare soil a year)"
           },
           {
             "delta": -0.23,
             "indicator": "stress_events",
+            "origin": "calculation",
             "text": "-0.2 events (mean weather stress events in the period)"
           },
           {
             "delta": 0.0,
             "indicator": "crop_families",
+            "origin": "calculation",
             "text": "+0 families (crop families)"
           },
           {
             "delta": 2.0,
             "indicator": "operations_per_year",
+            "origin": "calculation",
             "text": "+2 operations (field operations a year)"
           }
         ],
@@ -76,6 +87,7 @@
           "median rain on bare soil a year",
           "mean weather stress events in the period"
         ],
+        "origin": "calculation",
         "scenario_id": "rye",
         "text": "Better on living-cover days a year, median rain on bare soil a year, mean weather stress events in the period, but worse on median 10-year margin, field operations a year.",
         "worse": [
@@ -165,6 +177,7 @@
     "draws": "Every scenario replays the same sequence of past seasons in each run, so differences come from the plans, not from the draw.",
     "money_source": "economics_library",
     "note": "Replays real past weather in new orders; not a forecast.",
+    "origin": "calculation",
     "pool_years": 44,
     "resolution": "One NASA POWER cell (~0.5 x 0.625 degrees): fields in one cell share one weather series.",
     "runs": 200,
@@ -395,6 +408,10 @@
           "p90": 38550
         },
         "operations_per_year": 2.0,
+        "origins": {
+          "crop_families": "calculation",
+          "operations_per_year": "calculation"
+        },
         "rain_on_bare_soil_mm_per_year": {
           "median": 603.8,
           "origin": "calculation",
@@ -1236,6 +1253,10 @@
           "p90": 20536
         },
         "operations_per_year": 4.0,
+        "origins": {
+          "crop_families": "calculation",
+          "operations_per_year": "calculation"
+        },
         "rain_on_bare_soil_mm_per_year": {
           "median": 82.3,
           "origin": "calculation",
