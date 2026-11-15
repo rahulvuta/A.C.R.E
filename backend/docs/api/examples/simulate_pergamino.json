@@ -146,6 +146,289 @@
     "area_origin": null,
     "field_id": null
   },
+  "field_conditions": {
+    "months": [
+      {
+        "air_temp_c": {
+          "median": 24.8,
+          "p10": 23.4,
+          "p90": 26.7
+        },
+        "month": 1,
+        "rain_mm": {
+          "median": 111.1,
+          "p10": 71.0,
+          "p90": 199.1
+        },
+        "soil_wetness_root": {
+          "median": 0.6,
+          "p10": 0.58,
+          "p90": 0.65
+        },
+        "soil_wetness_top": {
+          "median": 0.58,
+          "p10": 0.5,
+          "p90": 0.65
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 23.2,
+          "p10": 22.0,
+          "p90": 24.7
+        },
+        "month": 2,
+        "rain_mm": {
+          "median": 110.3,
+          "p10": 43.7,
+          "p90": 225.4
+        },
+        "soil_wetness_root": {
+          "median": 0.61,
+          "p10": 0.59,
+          "p90": 0.65
+        },
+        "soil_wetness_top": {
+          "median": 0.61,
+          "p10": 0.54,
+          "p90": 0.66
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 20.9,
+          "p10": 19.3,
+          "p90": 22.7
+        },
+        "month": 3,
+        "rain_mm": {
+          "median": 108.1,
+          "p10": 57.7,
+          "p90": 244.0
+        },
+        "soil_wetness_root": {
+          "median": 0.62,
+          "p10": 0.59,
+          "p90": 0.67
+        },
+        "soil_wetness_top": {
+          "median": 0.62,
+          "p10": 0.55,
+          "p90": 0.7
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 16.6,
+          "p10": 15.3,
+          "p90": 18.0
+        },
+        "month": 4,
+        "rain_mm": {
+          "median": 94.3,
+          "p10": 55.7,
+          "p90": 205.7
+        },
+        "soil_wetness_root": {
+          "median": 0.65,
+          "p10": 0.61,
+          "p90": 0.7
+        },
+        "soil_wetness_top": {
+          "median": 0.66,
+          "p10": 0.61,
+          "p90": 0.72
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 12.7,
+          "p10": 11.1,
+          "p90": 14.6
+        },
+        "month": 5,
+        "rain_mm": {
+          "median": 64.7,
+          "p10": 9.0,
+          "p90": 120.9
+        },
+        "soil_wetness_root": {
+          "median": 0.66,
+          "p10": 0.61,
+          "p90": 0.72
+        },
+        "soil_wetness_top": {
+          "median": 0.67,
+          "p10": 0.6,
+          "p90": 0.73
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 9.6,
+          "p10": 7.8,
+          "p90": 11.6
+        },
+        "month": 6,
+        "rain_mm": {
+          "median": 20.7,
+          "p10": 4.1,
+          "p90": 63.1
+        },
+        "soil_wetness_root": {
+          "median": 0.66,
+          "p10": 0.62,
+          "p90": 0.72
+        },
+        "soil_wetness_top": {
+          "median": 0.66,
+          "p10": 0.62,
+          "p90": 0.73
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 8.9,
+          "p10": 7.4,
+          "p90": 11.0
+        },
+        "month": 7,
+        "rain_mm": {
+          "median": 27.4,
+          "p10": 3.9,
+          "p90": 62.6
+        },
+        "soil_wetness_root": {
+          "median": 0.66,
+          "p10": 0.63,
+          "p90": 0.71
+        },
+        "soil_wetness_top": {
+          "median": 0.67,
+          "p10": 0.63,
+          "p90": 0.72
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 11.2,
+          "p10": 9.4,
+          "p90": 12.8
+        },
+        "month": 8,
+        "rain_mm": {
+          "median": 29.8,
+          "p10": 3.3,
+          "p90": 83.2
+        },
+        "soil_wetness_root": {
+          "median": 0.65,
+          "p10": 0.61,
+          "p90": 0.72
+        },
+        "soil_wetness_top": {
+          "median": 0.65,
+          "p10": 0.61,
+          "p90": 0.73
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 13.5,
+          "p10": 12.5,
+          "p90": 14.8
+        },
+        "month": 9,
+        "rain_mm": {
+          "median": 51.8,
+          "p10": 19.5,
+          "p90": 116.1
+        },
+        "soil_wetness_root": {
+          "median": 0.64,
+          "p10": 0.6,
+          "p90": 0.71
+        },
+        "soil_wetness_top": {
+          "median": 0.64,
+          "p10": 0.59,
+          "p90": 0.72
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 17.1,
+          "p10": 16.1,
+          "p90": 18.4
+        },
+        "month": 10,
+        "rain_mm": {
+          "median": 101.4,
+          "p10": 58.7,
+          "p90": 206.9
+        },
+        "soil_wetness_root": {
+          "median": 0.64,
+          "p10": 0.6,
+          "p90": 0.71
+        },
+        "soil_wetness_top": {
+          "median": 0.65,
+          "p10": 0.59,
+          "p90": 0.73
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 20.3,
+          "p10": 18.8,
+          "p90": 21.9
+        },
+        "month": 11,
+        "rain_mm": {
+          "median": 110.2,
+          "p10": 55.1,
+          "p90": 177.5
+        },
+        "soil_wetness_root": {
+          "median": 0.62,
+          "p10": 0.59,
+          "p90": 0.7
+        },
+        "soil_wetness_top": {
+          "median": 0.63,
+          "p10": 0.57,
+          "p90": 0.71
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 23.4,
+          "p10": 21.6,
+          "p90": 25.6
+        },
+        "month": 12,
+        "rain_mm": {
+          "median": 92.2,
+          "p10": 36.5,
+          "p90": 205.2
+        },
+        "soil_wetness_root": {
+          "median": 0.61,
+          "p10": 0.58,
+          "p90": 0.67
+        },
+        "soil_wetness_top": {
+          "median": 0.61,
+          "p10": 0.53,
+          "p90": 0.68
+        }
+      }
+    ],
+    "origin": "nasa_modeled",
+    "text": "Typical conditions per calendar month from this field's NASA POWER cell (~50 km): modeled soil wetness (0 = dry, 1 = saturated), rain and air temperature. Median and the 1-in-10 low and high across the record.",
+    "years": "1981-2026"
+  },
   "meta": {
     "catalog_version": "v3:AR-B:sage_-33.75_-60.75:3edf141b9da9",
     "plan_version": "sim_fb9fefe8907050c4",

@@ -167,6 +167,289 @@
     "area_origin": "grower",
     "field_id": "fld_example"
   },
+  "field_conditions": {
+    "months": [
+      {
+        "air_temp_c": {
+          "median": 3.6,
+          "p10": 1.3,
+          "p90": 6.8
+        },
+        "month": 1,
+        "rain_mm": {
+          "median": 104.4,
+          "p10": 42.5,
+          "p90": 142.4
+        },
+        "soil_wetness_root": {
+          "median": 0.77,
+          "p10": 0.65,
+          "p90": 0.91
+        },
+        "soil_wetness_top": {
+          "median": 0.81,
+          "p10": 0.68,
+          "p90": 0.89
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 6.2,
+          "p10": 4.0,
+          "p90": 8.6
+        },
+        "month": 2,
+        "rain_mm": {
+          "median": 85.0,
+          "p10": 41.5,
+          "p90": 147.4
+        },
+        "soil_wetness_root": {
+          "median": 0.81,
+          "p10": 0.68,
+          "p90": 0.95
+        },
+        "soil_wetness_top": {
+          "median": 0.83,
+          "p10": 0.72,
+          "p90": 0.91
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 10.5,
+          "p10": 8.1,
+          "p90": 12.5
+        },
+        "month": 3,
+        "rain_mm": {
+          "median": 91.0,
+          "p10": 50.0,
+          "p90": 150.0
+        },
+        "soil_wetness_root": {
+          "median": 0.81,
+          "p10": 0.67,
+          "p90": 0.95
+        },
+        "soil_wetness_top": {
+          "median": 0.83,
+          "p10": 0.71,
+          "p90": 0.91
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 15.3,
+          "p10": 13.3,
+          "p90": 17.4
+        },
+        "month": 4,
+        "rain_mm": {
+          "median": 79.7,
+          "p10": 29.5,
+          "p90": 141.6
+        },
+        "soil_wetness_root": {
+          "median": 0.75,
+          "p10": 0.61,
+          "p90": 0.92
+        },
+        "soil_wetness_top": {
+          "median": 0.78,
+          "p10": 0.62,
+          "p90": 0.89
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 20.4,
+          "p10": 18.6,
+          "p90": 21.9
+        },
+        "month": 5,
+        "rain_mm": {
+          "median": 83.2,
+          "p10": 44.2,
+          "p90": 158.0
+        },
+        "soil_wetness_root": {
+          "median": 0.64,
+          "p10": 0.56,
+          "p90": 0.8
+        },
+        "soil_wetness_top": {
+          "median": 0.67,
+          "p10": 0.54,
+          "p90": 0.82
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 25.0,
+          "p10": 23.2,
+          "p90": 27.0
+        },
+        "month": 6,
+        "rain_mm": {
+          "median": 95.0,
+          "p10": 45.1,
+          "p90": 159.9
+        },
+        "soil_wetness_root": {
+          "median": 0.6,
+          "p10": 0.52,
+          "p90": 0.69
+        },
+        "soil_wetness_top": {
+          "median": 0.61,
+          "p10": 0.51,
+          "p90": 0.73
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 27.2,
+          "p10": 25.5,
+          "p90": 28.4
+        },
+        "month": 7,
+        "rain_mm": {
+          "median": 103.8,
+          "p10": 63.8,
+          "p90": 178.5
+        },
+        "soil_wetness_root": {
+          "median": 0.56,
+          "p10": 0.52,
+          "p90": 0.63
+        },
+        "soil_wetness_top": {
+          "median": 0.56,
+          "p10": 0.51,
+          "p90": 0.66
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 26.2,
+          "p10": 24.4,
+          "p90": 27.5
+        },
+        "month": 8,
+        "rain_mm": {
+          "median": 110.1,
+          "p10": 66.3,
+          "p90": 182.6
+        },
+        "soil_wetness_root": {
+          "median": 0.58,
+          "p10": 0.52,
+          "p90": 0.65
+        },
+        "soil_wetness_top": {
+          "median": 0.58,
+          "p10": 0.5,
+          "p90": 0.69
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 22.1,
+          "p10": 20.9,
+          "p90": 24.4
+        },
+        "month": 9,
+        "rain_mm": {
+          "median": 93.0,
+          "p10": 36.0,
+          "p90": 189.0
+        },
+        "soil_wetness_root": {
+          "median": 0.59,
+          "p10": 0.52,
+          "p90": 0.64
+        },
+        "soil_wetness_top": {
+          "median": 0.59,
+          "p10": 0.5,
+          "p90": 0.68
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 16.3,
+          "p10": 14.5,
+          "p90": 18.0
+        },
+        "month": 10,
+        "rain_mm": {
+          "median": 72.0,
+          "p10": 24.8,
+          "p90": 143.1
+        },
+        "soil_wetness_root": {
+          "median": 0.58,
+          "p10": 0.53,
+          "p90": 0.7
+        },
+        "soil_wetness_top": {
+          "median": 0.58,
+          "p10": 0.51,
+          "p90": 0.74
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 10.1,
+          "p10": 8.0,
+          "p90": 12.6
+        },
+        "month": 11,
+        "rain_mm": {
+          "median": 81.1,
+          "p10": 28.5,
+          "p90": 141.9
+        },
+        "soil_wetness_root": {
+          "median": 0.61,
+          "p10": 0.53,
+          "p90": 0.77
+        },
+        "soil_wetness_top": {
+          "median": 0.62,
+          "p10": 0.52,
+          "p90": 0.81
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 6.0,
+          "p10": 2.8,
+          "p90": 8.5
+        },
+        "month": 12,
+        "rain_mm": {
+          "median": 90.1,
+          "p10": 45.8,
+          "p90": 177.4
+        },
+        "soil_wetness_root": {
+          "median": 0.69,
+          "p10": 0.58,
+          "p90": 0.84
+        },
+        "soil_wetness_top": {
+          "median": 0.74,
+          "p10": 0.58,
+          "p90": 0.85
+        }
+      }
+    ],
+    "origin": "nasa_modeled",
+    "text": "Typical conditions per calendar month from this field's NASA POWER cell (~50 km): modeled soil wetness (0 = dry, 1 = saturated), rain and air temperature. Median and the 1-in-10 low and high across the record.",
+    "years": "1981-2025"
+  },
   "meta": {
     "catalog_version": "v2:8eeb5bf961eb",
     "plan_version": "sim_7030f168d2612fd3",
@@ -224,10 +507,20 @@
               "p10": 16413,
               "p90": 16413
             },
+            "cumulative_costs": {
+              "median": 16413,
+              "p10": 16413,
+              "p90": 16413
+            },
             "cumulative_net": {
               "median": -16413,
               "p10": -16413,
               "p90": -16413
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
             },
             "month": "2027-05",
             "net": {
@@ -254,10 +547,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 16413,
+              "p10": 16413,
+              "p90": 16413
+            },
             "cumulative_net": {
               "median": -16413,
               "p10": -16413,
               "p90": -16413
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
             },
             "month": "2027-06",
             "net": {
@@ -279,10 +582,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 16413,
+              "p10": 16413,
+              "p90": 16413
+            },
             "cumulative_net": {
               "median": -16413,
               "p10": -16413,
               "p90": -16413
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
             },
             "month": "2027-07",
             "net": {
@@ -304,10 +617,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 16413,
+              "p10": 16413,
+              "p90": 16413
+            },
             "cumulative_net": {
               "median": -16413,
               "p10": -16413,
               "p90": -16413
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
             },
             "month": "2027-08",
             "net": {
@@ -329,10 +652,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 16413,
+              "p10": 16413,
+              "p90": 16413
+            },
             "cumulative_net": {
               "median": -16413,
               "p10": -16413,
               "p90": -16413
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
             },
             "month": "2027-09",
             "net": {
@@ -354,10 +687,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 16413,
+              "p10": 16413,
+              "p90": 16413
+            },
             "cumulative_net": {
               "median": 5108,
               "p10": 1880,
               "p90": 5108
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2027-10",
             "net": {
@@ -390,10 +733,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 16413,
+              "p10": 16413,
+              "p90": 16413
+            },
             "cumulative_net": {
               "median": 5108,
               "p10": 1880,
               "p90": 5108
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2027-11",
             "net": {
@@ -415,10 +768,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 16413,
+              "p10": 16413,
+              "p90": 16413
+            },
             "cumulative_net": {
               "median": 5108,
               "p10": 1880,
               "p90": 5108
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2027-12",
             "net": {
@@ -440,10 +803,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 16413,
+              "p10": 16413,
+              "p90": 16413
+            },
             "cumulative_net": {
               "median": 5108,
               "p10": 1880,
               "p90": 5108
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2028-01",
             "net": {
@@ -465,10 +838,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 16413,
+              "p10": 16413,
+              "p90": 16413
+            },
             "cumulative_net": {
               "median": 5108,
               "p10": 1880,
               "p90": 5108
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2028-02",
             "net": {
@@ -490,10 +873,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 16413,
+              "p10": 16413,
+              "p90": 16413
+            },
             "cumulative_net": {
               "median": 5108,
               "p10": 1880,
               "p90": 5108
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2028-03",
             "net": {
@@ -515,10 +908,20 @@
               "p10": 28022,
               "p90": 28022
             },
+            "cumulative_costs": {
+              "median": 44434,
+              "p10": 44434,
+              "p90": 44434
+            },
             "cumulative_net": {
               "median": -22914,
               "p10": -26142,
               "p90": -22914
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2028-04",
             "net": {
@@ -551,10 +954,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 44434,
+              "p10": 44434,
+              "p90": 44434
+            },
             "cumulative_net": {
               "median": -22914,
               "p10": -26142,
               "p90": -22914
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2028-05",
             "net": {
@@ -576,10 +989,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 44434,
+              "p10": 44434,
+              "p90": 44434
+            },
             "cumulative_net": {
               "median": -22914,
               "p10": -26142,
               "p90": -22914
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2028-06",
             "net": {
@@ -601,10 +1024,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 44434,
+              "p10": 44434,
+              "p90": 44434
+            },
             "cumulative_net": {
               "median": -22914,
               "p10": -26142,
               "p90": -22914
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2028-07",
             "net": {
@@ -626,10 +1059,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 44434,
+              "p10": 44434,
+              "p90": 44434
+            },
             "cumulative_net": {
               "median": -22914,
               "p10": -26142,
               "p90": -22914
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2028-08",
             "net": {
@@ -651,10 +1094,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 44434,
+              "p10": 44434,
+              "p90": 44434
+            },
             "cumulative_net": {
               "median": -22914,
               "p10": -26142,
               "p90": -22914
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2028-09",
             "net": {
@@ -676,10 +1129,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 44434,
+              "p10": 44434,
+              "p90": 44434
+            },
             "cumulative_net": {
               "median": 7710,
               "p10": 3116,
               "p90": 7710
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2028-10",
             "net": {
@@ -712,10 +1175,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 44434,
+              "p10": 44434,
+              "p90": 44434
+            },
             "cumulative_net": {
               "median": 7710,
               "p10": 3116,
               "p90": 7710
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2028-11",
             "net": {
@@ -737,10 +1210,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 44434,
+              "p10": 44434,
+              "p90": 44434
+            },
             "cumulative_net": {
               "median": 7710,
               "p10": 3116,
               "p90": 7710
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2028-12",
             "net": {
@@ -762,10 +1245,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 44434,
+              "p10": 44434,
+              "p90": 44434
+            },
             "cumulative_net": {
               "median": 7710,
               "p10": 3116,
               "p90": 7710
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2029-01",
             "net": {
@@ -787,10 +1280,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 44434,
+              "p10": 44434,
+              "p90": 44434
+            },
             "cumulative_net": {
               "median": 7710,
               "p10": 3116,
               "p90": 7710
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2029-02",
             "net": {
@@ -812,10 +1315,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 44434,
+              "p10": 44434,
+              "p90": 44434
+            },
             "cumulative_net": {
               "median": 7710,
               "p10": 3116,
               "p90": 7710
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2029-03",
             "net": {
@@ -837,10 +1350,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 44434,
+              "p10": 44434,
+              "p90": 44434
+            },
             "cumulative_net": {
               "median": 7710,
               "p10": 3116,
               "p90": 7710
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2029-04",
             "net": {
@@ -868,10 +1391,20 @@
               "p10": 16413,
               "p90": 16413
             },
+            "cumulative_costs": {
+              "median": 60847,
+              "p10": 60847,
+              "p90": 60847
+            },
             "cumulative_net": {
               "median": -8703,
               "p10": -13296,
               "p90": -8703
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2029-05",
             "net": {
@@ -898,10 +1431,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 60847,
+              "p10": 60847,
+              "p90": 60847
+            },
             "cumulative_net": {
               "median": -8703,
               "p10": -13296,
               "p90": -8703
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2029-06",
             "net": {
@@ -923,10 +1466,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 60847,
+              "p10": 60847,
+              "p90": 60847
+            },
             "cumulative_net": {
               "median": -8703,
               "p10": -13296,
               "p90": -8703
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2029-07",
             "net": {
@@ -948,10 +1501,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 60847,
+              "p10": 60847,
+              "p90": 60847
+            },
             "cumulative_net": {
               "median": -8703,
               "p10": -13296,
               "p90": -8703
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2029-08",
             "net": {
@@ -973,10 +1536,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 60847,
+              "p10": 60847,
+              "p90": 60847
+            },
             "cumulative_net": {
               "median": -8703,
               "p10": -13296,
               "p90": -8703
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2029-09",
             "net": {
@@ -998,10 +1571,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 60847,
+              "p10": 60847,
+              "p90": 60847
+            },
             "cumulative_net": {
               "median": 12818,
               "p10": 8224,
               "p90": 12818
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2029-10",
             "net": {
@@ -1034,10 +1617,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 60847,
+              "p10": 60847,
+              "p90": 60847
+            },
             "cumulative_net": {
               "median": 12818,
               "p10": 8224,
               "p90": 12818
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2029-11",
             "net": {
@@ -1059,10 +1652,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 60847,
+              "p10": 60847,
+              "p90": 60847
+            },
             "cumulative_net": {
               "median": 12818,
               "p10": 8224,
               "p90": 12818
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2029-12",
             "net": {
@@ -1084,10 +1687,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 60847,
+              "p10": 60847,
+              "p90": 60847
+            },
             "cumulative_net": {
               "median": 12818,
               "p10": 8224,
               "p90": 12818
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2030-01",
             "net": {
@@ -1109,10 +1722,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 60847,
+              "p10": 60847,
+              "p90": 60847
+            },
             "cumulative_net": {
               "median": 12818,
               "p10": 8224,
               "p90": 12818
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2030-02",
             "net": {
@@ -1134,10 +1757,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 60847,
+              "p10": 60847,
+              "p90": 60847
+            },
             "cumulative_net": {
               "median": 12818,
               "p10": 8224,
               "p90": 12818
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2030-03",
             "net": {
@@ -1159,10 +1792,20 @@
               "p10": 28022,
               "p90": 28022
             },
+            "cumulative_costs": {
+              "median": 88869,
+              "p10": 88869,
+              "p90": 88869
+            },
             "cumulative_net": {
               "median": -15204,
               "p10": -19797,
               "p90": -15204
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2030-04",
             "net": {
@@ -1195,10 +1838,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 88869,
+              "p10": 88869,
+              "p90": 88869
+            },
             "cumulative_net": {
               "median": -15204,
               "p10": -19797,
               "p90": -15204
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2030-05",
             "net": {
@@ -1220,10 +1873,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 88869,
+              "p10": 88869,
+              "p90": 88869
+            },
             "cumulative_net": {
               "median": -15204,
               "p10": -19797,
               "p90": -15204
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2030-06",
             "net": {
@@ -1245,10 +1908,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 88869,
+              "p10": 88869,
+              "p90": 88869
+            },
             "cumulative_net": {
               "median": -15204,
               "p10": -19797,
               "p90": -15204
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2030-07",
             "net": {
@@ -1270,10 +1943,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 88869,
+              "p10": 88869,
+              "p90": 88869
+            },
             "cumulative_net": {
               "median": -15204,
               "p10": -19797,
               "p90": -15204
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2030-08",
             "net": {
@@ -1295,10 +1978,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 88869,
+              "p10": 88869,
+              "p90": 88869
+            },
             "cumulative_net": {
               "median": -15204,
               "p10": -19797,
               "p90": -15204
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2030-09",
             "net": {
@@ -1320,10 +2013,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 88869,
+              "p10": 88869,
+              "p90": 88869
+            },
             "cumulative_net": {
               "median": 15420,
               "p10": 7598,
               "p90": 15420
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2030-10",
             "net": {
@@ -1356,10 +2059,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 88869,
+              "p10": 88869,
+              "p90": 88869
+            },
             "cumulative_net": {
               "median": 15420,
               "p10": 7598,
               "p90": 15420
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2030-11",
             "net": {
@@ -1381,10 +2094,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 88869,
+              "p10": 88869,
+              "p90": 88869
+            },
             "cumulative_net": {
               "median": 15420,
               "p10": 7598,
               "p90": 15420
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2030-12",
             "net": {
@@ -1406,10 +2129,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 88869,
+              "p10": 88869,
+              "p90": 88869
+            },
             "cumulative_net": {
               "median": 15420,
               "p10": 7598,
               "p90": 15420
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2031-01",
             "net": {
@@ -1431,10 +2164,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 88869,
+              "p10": 88869,
+              "p90": 88869
+            },
             "cumulative_net": {
               "median": 15420,
               "p10": 7598,
               "p90": 15420
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2031-02",
             "net": {
@@ -1456,10 +2199,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 88869,
+              "p10": 88869,
+              "p90": 88869
+            },
             "cumulative_net": {
               "median": 15420,
               "p10": 7598,
               "p90": 15420
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2031-03",
             "net": {
@@ -1481,10 +2234,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 88869,
+              "p10": 88869,
+              "p90": 88869
+            },
             "cumulative_net": {
               "median": 15420,
               "p10": 7598,
               "p90": 15420
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2031-04",
             "net": {
@@ -1512,10 +2275,20 @@
               "p10": 16413,
               "p90": 16413
             },
+            "cumulative_costs": {
+              "median": 105282,
+              "p10": 105282,
+              "p90": 105282
+            },
             "cumulative_net": {
               "median": -993,
               "p10": -8814,
               "p90": -993
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2031-05",
             "net": {
@@ -1542,10 +2315,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 105282,
+              "p10": 105282,
+              "p90": 105282
+            },
             "cumulative_net": {
               "median": -993,
               "p10": -8814,
               "p90": -993
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2031-06",
             "net": {
@@ -1567,10 +2350,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 105282,
+              "p10": 105282,
+              "p90": 105282
+            },
             "cumulative_net": {
               "median": -993,
               "p10": -8814,
               "p90": -993
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2031-07",
             "net": {
@@ -1592,10 +2385,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 105282,
+              "p10": 105282,
+              "p90": 105282
+            },
             "cumulative_net": {
               "median": -993,
               "p10": -8814,
               "p90": -993
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2031-08",
             "net": {
@@ -1617,10 +2420,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 105282,
+              "p10": 105282,
+              "p90": 105282
+            },
             "cumulative_net": {
               "median": -993,
               "p10": -8814,
               "p90": -993
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2031-09",
             "net": {
@@ -1642,10 +2455,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 105282,
+              "p10": 105282,
+              "p90": 105282
+            },
             "cumulative_net": {
               "median": 17300,
               "p10": 12706,
               "p90": 20528
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2031-10",
             "net": {
@@ -1678,10 +2501,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 105282,
+              "p10": 105282,
+              "p90": 105282
+            },
             "cumulative_net": {
               "median": 17300,
               "p10": 12706,
               "p90": 20528
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2031-11",
             "net": {
@@ -1703,10 +2536,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 105282,
+              "p10": 105282,
+              "p90": 105282
+            },
             "cumulative_net": {
               "median": 17300,
               "p10": 12706,
               "p90": 20528
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2031-12",
             "net": {
@@ -1728,10 +2571,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 105282,
+              "p10": 105282,
+              "p90": 105282
+            },
             "cumulative_net": {
               "median": 17300,
               "p10": 12706,
               "p90": 20528
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2032-01",
             "net": {
@@ -1753,10 +2606,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 105282,
+              "p10": 105282,
+              "p90": 105282
+            },
             "cumulative_net": {
               "median": 17300,
               "p10": 12706,
               "p90": 20528
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2032-02",
             "net": {
@@ -1778,10 +2641,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 105282,
+              "p10": 105282,
+              "p90": 105282
+            },
             "cumulative_net": {
               "median": 17300,
               "p10": 12706,
               "p90": 20528
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2032-03",
             "net": {
@@ -1803,10 +2676,20 @@
               "p10": 28022,
               "p90": 28022
             },
+            "cumulative_costs": {
+              "median": 133303,
+              "p10": 133303,
+              "p90": 133303
+            },
             "cumulative_net": {
               "median": -10722,
               "p10": -15315,
               "p90": -7494
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2032-04",
             "net": {
@@ -1839,10 +2722,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 133303,
+              "p10": 133303,
+              "p90": 133303
+            },
             "cumulative_net": {
               "median": -10722,
               "p10": -15315,
               "p90": -7494
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2032-05",
             "net": {
@@ -1864,10 +2757,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 133303,
+              "p10": 133303,
+              "p90": 133303
+            },
             "cumulative_net": {
               "median": -10722,
               "p10": -15315,
               "p90": -7494
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2032-06",
             "net": {
@@ -1889,10 +2792,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 133303,
+              "p10": 133303,
+              "p90": 133303
+            },
             "cumulative_net": {
               "median": -10722,
               "p10": -15315,
               "p90": -7494
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2032-07",
             "net": {
@@ -1914,10 +2827,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 133303,
+              "p10": 133303,
+              "p90": 133303
+            },
             "cumulative_net": {
               "median": -10722,
               "p10": -15315,
               "p90": -7494
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2032-08",
             "net": {
@@ -1939,10 +2862,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 133303,
+              "p10": 133303,
+              "p90": 133303
+            },
             "cumulative_net": {
               "median": -10722,
               "p10": -15315,
               "p90": -7494
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2032-09",
             "net": {
@@ -1964,10 +2897,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 133303,
+              "p10": 133303,
+              "p90": 133303
+            },
             "cumulative_net": {
               "median": 19902,
               "p10": 13943,
               "p90": 23130
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2032-10",
             "net": {
@@ -2000,10 +2943,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 133303,
+              "p10": 133303,
+              "p90": 133303
+            },
             "cumulative_net": {
               "median": 19902,
               "p10": 13943,
               "p90": 23130
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2032-11",
             "net": {
@@ -2025,10 +2978,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 133303,
+              "p10": 133303,
+              "p90": 133303
+            },
             "cumulative_net": {
               "median": 19902,
               "p10": 13943,
               "p90": 23130
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2032-12",
             "net": {
@@ -2050,10 +3013,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 133303,
+              "p10": 133303,
+              "p90": 133303
+            },
             "cumulative_net": {
               "median": 19902,
               "p10": 13943,
               "p90": 23130
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2033-01",
             "net": {
@@ -2075,10 +3048,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 133303,
+              "p10": 133303,
+              "p90": 133303
+            },
             "cumulative_net": {
               "median": 19902,
               "p10": 13943,
               "p90": 23130
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2033-02",
             "net": {
@@ -2100,10 +3083,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 133303,
+              "p10": 133303,
+              "p90": 133303
+            },
             "cumulative_net": {
               "median": 19902,
               "p10": 13943,
               "p90": 23130
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2033-03",
             "net": {
@@ -2125,10 +3118,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 133303,
+              "p10": 133303,
+              "p90": 133303
+            },
             "cumulative_net": {
               "median": 19902,
               "p10": 13943,
               "p90": 23130
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2033-04",
             "net": {
@@ -2156,10 +3159,20 @@
               "p10": 16413,
               "p90": 16413
             },
+            "cumulative_costs": {
+              "median": 149716,
+              "p10": 149716,
+              "p90": 149716
+            },
             "cumulative_net": {
               "median": 3489,
               "p10": -2470,
               "p90": 6717
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2033-05",
             "net": {
@@ -2186,10 +3199,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 149716,
+              "p10": 149716,
+              "p90": 149716
+            },
             "cumulative_net": {
               "median": 3489,
               "p10": -2470,
               "p90": 6717
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2033-06",
             "net": {
@@ -2211,10 +3234,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 149716,
+              "p10": 149716,
+              "p90": 149716
+            },
             "cumulative_net": {
               "median": 3489,
               "p10": -2470,
               "p90": 6717
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2033-07",
             "net": {
@@ -2236,10 +3269,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 149716,
+              "p10": 149716,
+              "p90": 149716
+            },
             "cumulative_net": {
               "median": 3489,
               "p10": -2470,
               "p90": 6717
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2033-08",
             "net": {
@@ -2261,10 +3304,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 149716,
+              "p10": 149716,
+              "p90": 149716
+            },
             "cumulative_net": {
               "median": 3489,
               "p10": -2470,
               "p90": 6717
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2033-09",
             "net": {
@@ -2286,10 +3339,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 149716,
+              "p10": 149716,
+              "p90": 149716
+            },
             "cumulative_net": {
               "median": 25010,
               "p10": 19051,
               "p90": 28238
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2033-10",
             "net": {
@@ -2322,10 +3385,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 149716,
+              "p10": 149716,
+              "p90": 149716
+            },
             "cumulative_net": {
               "median": 25010,
               "p10": 19051,
               "p90": 28238
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2033-11",
             "net": {
@@ -2347,10 +3420,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 149716,
+              "p10": 149716,
+              "p90": 149716
+            },
             "cumulative_net": {
               "median": 25010,
               "p10": 19051,
               "p90": 28238
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2033-12",
             "net": {
@@ -2372,10 +3455,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 149716,
+              "p10": 149716,
+              "p90": 149716
+            },
             "cumulative_net": {
               "median": 25010,
               "p10": 19051,
               "p90": 28238
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2034-01",
             "net": {
@@ -2397,10 +3490,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 149716,
+              "p10": 149716,
+              "p90": 149716
+            },
             "cumulative_net": {
               "median": 25010,
               "p10": 19051,
               "p90": 28238
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2034-02",
             "net": {
@@ -2422,10 +3525,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 149716,
+              "p10": 149716,
+              "p90": 149716
+            },
             "cumulative_net": {
               "median": 25010,
               "p10": 19051,
               "p90": 28238
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2034-03",
             "net": {
@@ -2447,10 +3560,20 @@
               "p10": 28022,
               "p90": 28022
             },
+            "cumulative_costs": {
+              "median": 177738,
+              "p10": 177738,
+              "p90": 177738
+            },
             "cumulative_net": {
               "median": -3012,
               "p10": -8971,
               "p90": 216
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2034-04",
             "net": {
@@ -2483,10 +3606,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 177738,
+              "p10": 177738,
+              "p90": 177738
+            },
             "cumulative_net": {
               "median": -3012,
               "p10": -8971,
               "p90": 216
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2034-05",
             "net": {
@@ -2508,10 +3641,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 177738,
+              "p10": 177738,
+              "p90": 177738
+            },
             "cumulative_net": {
               "median": -3012,
               "p10": -8971,
               "p90": 216
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2034-06",
             "net": {
@@ -2533,10 +3676,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 177738,
+              "p10": 177738,
+              "p90": 177738
+            },
             "cumulative_net": {
               "median": -3012,
               "p10": -8971,
               "p90": 216
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2034-07",
             "net": {
@@ -2558,10 +3711,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 177738,
+              "p10": 177738,
+              "p90": 177738
+            },
             "cumulative_net": {
               "median": -3012,
               "p10": -8971,
               "p90": 216
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2034-08",
             "net": {
@@ -2583,10 +3746,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 177738,
+              "p10": 177738,
+              "p90": 177738
+            },
             "cumulative_net": {
               "median": -3012,
               "p10": -8971,
               "p90": 216
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2034-09",
             "net": {
@@ -2608,10 +3781,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 177738,
+              "p10": 177738,
+              "p90": 177738
+            },
             "cumulative_net": {
               "median": 26246,
               "p10": 18425,
               "p90": 30840
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2034-10",
             "net": {
@@ -2644,10 +3827,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 177738,
+              "p10": 177738,
+              "p90": 177738
+            },
             "cumulative_net": {
               "median": 26246,
               "p10": 18425,
               "p90": 30840
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2034-11",
             "net": {
@@ -2669,10 +3862,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 177738,
+              "p10": 177738,
+              "p90": 177738
+            },
             "cumulative_net": {
               "median": 26246,
               "p10": 18425,
               "p90": 30840
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2034-12",
             "net": {
@@ -2694,10 +3897,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 177738,
+              "p10": 177738,
+              "p90": 177738
+            },
             "cumulative_net": {
               "median": 26246,
               "p10": 18425,
               "p90": 30840
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2035-01",
             "net": {
@@ -2719,10 +3932,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 177738,
+              "p10": 177738,
+              "p90": 177738
+            },
             "cumulative_net": {
               "median": 26246,
               "p10": 18425,
               "p90": 30840
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2035-02",
             "net": {
@@ -2744,10 +3967,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 177738,
+              "p10": 177738,
+              "p90": 177738
+            },
             "cumulative_net": {
               "median": 26246,
               "p10": 18425,
               "p90": 30840
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2035-03",
             "net": {
@@ -2769,10 +4002,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 177738,
+              "p10": 177738,
+              "p90": 177738
+            },
             "cumulative_net": {
               "median": 26246,
               "p10": 18425,
               "p90": 30840
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2035-04",
             "net": {
@@ -2800,10 +4043,20 @@
               "p10": 16413,
               "p90": 16413
             },
+            "cumulative_costs": {
+              "median": 194151,
+              "p10": 194151,
+              "p90": 194151
+            },
             "cumulative_net": {
               "median": 9834,
               "p10": 2012,
               "p90": 14427
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2035-05",
             "net": {
@@ -2830,10 +4083,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 194151,
+              "p10": 194151,
+              "p90": 194151
+            },
             "cumulative_net": {
               "median": 9834,
               "p10": 2012,
               "p90": 14427
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2035-06",
             "net": {
@@ -2855,10 +4118,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 194151,
+              "p10": 194151,
+              "p90": 194151
+            },
             "cumulative_net": {
               "median": 9834,
               "p10": 2012,
               "p90": 14427
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2035-07",
             "net": {
@@ -2880,10 +4153,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 194151,
+              "p10": 194151,
+              "p90": 194151
+            },
             "cumulative_net": {
               "median": 9834,
               "p10": 2012,
               "p90": 14427
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2035-08",
             "net": {
@@ -2905,10 +4188,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 194151,
+              "p10": 194151,
+              "p90": 194151
+            },
             "cumulative_net": {
               "median": 9834,
               "p10": 2012,
               "p90": 14427
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2035-09",
             "net": {
@@ -2930,10 +4223,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 194151,
+              "p10": 194151,
+              "p90": 194151
+            },
             "cumulative_net": {
               "median": 31354,
               "p10": 23533,
               "p90": 35948
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2035-10",
             "net": {
@@ -2966,10 +4269,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 194151,
+              "p10": 194151,
+              "p90": 194151
+            },
             "cumulative_net": {
               "median": 31354,
               "p10": 23533,
               "p90": 35948
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2035-11",
             "net": {
@@ -2991,10 +4304,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 194151,
+              "p10": 194151,
+              "p90": 194151
+            },
             "cumulative_net": {
               "median": 31354,
               "p10": 23533,
               "p90": 35948
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2035-12",
             "net": {
@@ -3016,10 +4339,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 194151,
+              "p10": 194151,
+              "p90": 194151
+            },
             "cumulative_net": {
               "median": 31354,
               "p10": 23533,
               "p90": 35948
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2036-01",
             "net": {
@@ -3041,10 +4374,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 194151,
+              "p10": 194151,
+              "p90": 194151
+            },
             "cumulative_net": {
               "median": 31354,
               "p10": 23533,
               "p90": 35948
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2036-02",
             "net": {
@@ -3066,10 +4409,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 194151,
+              "p10": 194151,
+              "p90": 194151
+            },
             "cumulative_net": {
               "median": 31354,
               "p10": 23533,
               "p90": 35948
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2036-03",
             "net": {
@@ -3091,10 +4444,20 @@
               "p10": 28022,
               "p90": 28022
             },
+            "cumulative_costs": {
+              "median": 222172,
+              "p10": 222172,
+              "p90": 222172
+            },
             "cumulative_net": {
               "median": 3333,
               "p10": -4489,
               "p90": 7926
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2036-04",
             "net": {
@@ -3127,10 +4490,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 222172,
+              "p10": 222172,
+              "p90": 222172
+            },
             "cumulative_net": {
               "median": 3333,
               "p10": -4489,
               "p90": 7926
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2036-05",
             "net": {
@@ -3152,10 +4525,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 222172,
+              "p10": 222172,
+              "p90": 222172
+            },
             "cumulative_net": {
               "median": 3333,
               "p10": -4489,
               "p90": 7926
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2036-06",
             "net": {
@@ -3177,10 +4560,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 222172,
+              "p10": 222172,
+              "p90": 222172
+            },
             "cumulative_net": {
               "median": 3333,
               "p10": -4489,
               "p90": 7926
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2036-07",
             "net": {
@@ -3202,10 +4595,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 222172,
+              "p10": 222172,
+              "p90": 222172
+            },
             "cumulative_net": {
               "median": 3333,
               "p10": -4489,
               "p90": 7926
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2036-08",
             "net": {
@@ -3227,10 +4630,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 222172,
+              "p10": 222172,
+              "p90": 222172
+            },
             "cumulative_net": {
               "median": 3333,
               "p10": -4489,
               "p90": 7926
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2036-09",
             "net": {
@@ -3252,10 +4665,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 222172,
+              "p10": 222172,
+              "p90": 222172
+            },
             "cumulative_net": {
               "median": 32094,
               "p10": 24272,
               "p90": 38550
+            },
+            "cumulative_revenue": {
+              "median": 254266,
+              "p10": 246444,
+              "p90": 260722
             },
             "month": "2036-10",
             "net": {
@@ -4140,10 +5563,20 @@
               "p10": 1801,
               "p90": 1801
             },
+            "cumulative_costs": {
+              "median": 1801,
+              "p10": 1801,
+              "p90": 1801
+            },
             "cumulative_net": {
               "median": -1801,
               "p10": -1801,
               "p90": -1801
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
             },
             "month": "2026-10",
             "net": {
@@ -4170,10 +5603,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 1801,
+              "p10": 1801,
+              "p90": 1801
+            },
             "cumulative_net": {
               "median": -1801,
               "p10": -1801,
               "p90": -1801
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
             },
             "month": "2026-11",
             "net": {
@@ -4195,10 +5638,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 1801,
+              "p10": 1801,
+              "p90": 1801
+            },
             "cumulative_net": {
               "median": -1801,
               "p10": -1801,
               "p90": -1801
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
             },
             "month": "2026-12",
             "net": {
@@ -4220,10 +5673,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 1801,
+              "p10": 1801,
+              "p90": 1801
+            },
             "cumulative_net": {
               "median": -1801,
               "p10": -1801,
               "p90": -1801
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
             },
             "month": "2027-01",
             "net": {
@@ -4245,10 +5708,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 1801,
+              "p10": 1801,
+              "p90": 1801
+            },
             "cumulative_net": {
               "median": -1801,
               "p10": -1801,
               "p90": -1801
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
             },
             "month": "2027-02",
             "net": {
@@ -4270,10 +5743,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 1801,
+              "p10": 1801,
+              "p90": 1801
+            },
             "cumulative_net": {
               "median": -1801,
               "p10": -1801,
               "p90": -1801
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
             },
             "month": "2027-03",
             "net": {
@@ -4295,10 +5778,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 1801,
+              "p10": 1801,
+              "p90": 1801
+            },
             "cumulative_net": {
               "median": -1801,
               "p10": -1801,
               "p90": -1801
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
             },
             "month": "2027-04",
             "net": {
@@ -4331,10 +5824,20 @@
               "p10": 16413,
               "p90": 16413
             },
+            "cumulative_costs": {
+              "median": 18214,
+              "p10": 18214,
+              "p90": 18214
+            },
             "cumulative_net": {
               "median": -18214,
               "p10": -18214,
               "p90": -18214
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
             },
             "month": "2027-05",
             "net": {
@@ -4361,10 +5864,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 18214,
+              "p10": 18214,
+              "p90": 18214
+            },
             "cumulative_net": {
               "median": -18214,
               "p10": -18214,
               "p90": -18214
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
             },
             "month": "2027-06",
             "net": {
@@ -4386,10 +5899,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 18214,
+              "p10": 18214,
+              "p90": 18214
+            },
             "cumulative_net": {
               "median": -18214,
               "p10": -18214,
               "p90": -18214
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
             },
             "month": "2027-07",
             "net": {
@@ -4411,10 +5934,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 18214,
+              "p10": 18214,
+              "p90": 18214
+            },
             "cumulative_net": {
               "median": -18214,
               "p10": -18214,
               "p90": -18214
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
             },
             "month": "2027-08",
             "net": {
@@ -4436,10 +5969,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 18214,
+              "p10": 18214,
+              "p90": 18214
+            },
             "cumulative_net": {
               "median": -18214,
               "p10": -18214,
               "p90": -18214
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
             },
             "month": "2027-09",
             "net": {
@@ -4461,10 +6004,20 @@
               "p10": 1801,
               "p90": 1801
             },
+            "cumulative_costs": {
+              "median": 20016,
+              "p10": 20016,
+              "p90": 20016
+            },
             "cumulative_net": {
               "median": 1505,
               "p10": -1723,
               "p90": 1505
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2027-10",
             "net": {
@@ -4495,10 +6048,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 20016,
+              "p10": 20016,
+              "p90": 20016
+            },
             "cumulative_net": {
               "median": 1505,
               "p10": -1723,
               "p90": 1505
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2027-11",
             "net": {
@@ -4520,10 +6083,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 20016,
+              "p10": 20016,
+              "p90": 20016
+            },
             "cumulative_net": {
               "median": 1505,
               "p10": -1723,
               "p90": 1505
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2027-12",
             "net": {
@@ -4545,10 +6118,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 20016,
+              "p10": 20016,
+              "p90": 20016
+            },
             "cumulative_net": {
               "median": 1505,
               "p10": -1723,
               "p90": 1505
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2028-01",
             "net": {
@@ -4570,10 +6153,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 20016,
+              "p10": 20016,
+              "p90": 20016
+            },
             "cumulative_net": {
               "median": 1505,
               "p10": -1723,
               "p90": 1505
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2028-02",
             "net": {
@@ -4595,10 +6188,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 20016,
+              "p10": 20016,
+              "p90": 20016
+            },
             "cumulative_net": {
               "median": 1505,
               "p10": -1723,
               "p90": 1505
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2028-03",
             "net": {
@@ -4620,10 +6223,20 @@
               "p10": 28022,
               "p90": 28022
             },
+            "cumulative_costs": {
+              "median": 48037,
+              "p10": 48037,
+              "p90": 48037
+            },
             "cumulative_net": {
               "median": -26517,
               "p10": -29745,
               "p90": -26517
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2028-04",
             "net": {
@@ -4660,10 +6273,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 48037,
+              "p10": 48037,
+              "p90": 48037
+            },
             "cumulative_net": {
               "median": -26517,
               "p10": -29745,
               "p90": -26517
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2028-05",
             "net": {
@@ -4685,10 +6308,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 48037,
+              "p10": 48037,
+              "p90": 48037
+            },
             "cumulative_net": {
               "median": -26517,
               "p10": -29745,
               "p90": -26517
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2028-06",
             "net": {
@@ -4710,10 +6343,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 48037,
+              "p10": 48037,
+              "p90": 48037
+            },
             "cumulative_net": {
               "median": -26517,
               "p10": -29745,
               "p90": -26517
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2028-07",
             "net": {
@@ -4735,10 +6378,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 48037,
+              "p10": 48037,
+              "p90": 48037
+            },
             "cumulative_net": {
               "median": -26517,
               "p10": -29745,
               "p90": -26517
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2028-08",
             "net": {
@@ -4760,10 +6413,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 48037,
+              "p10": 48037,
+              "p90": 48037
+            },
             "cumulative_net": {
               "median": -26517,
               "p10": -29745,
               "p90": -26517
+            },
+            "cumulative_revenue": {
+              "median": 21521,
+              "p10": 18293,
+              "p90": 21521
             },
             "month": "2028-09",
             "net": {
@@ -4785,10 +6448,20 @@
               "p10": 1801,
               "p90": 1801
             },
+            "cumulative_costs": {
+              "median": 49839,
+              "p10": 49839,
+              "p90": 49839
+            },
             "cumulative_net": {
               "median": 2306,
               "p10": -2288,
               "p90": 2306
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2028-10",
             "net": {
@@ -4819,10 +6492,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 49839,
+              "p10": 49839,
+              "p90": 49839
+            },
             "cumulative_net": {
               "median": 2306,
               "p10": -2288,
               "p90": 2306
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2028-11",
             "net": {
@@ -4844,10 +6527,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 49839,
+              "p10": 49839,
+              "p90": 49839
+            },
             "cumulative_net": {
               "median": 2306,
               "p10": -2288,
               "p90": 2306
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2028-12",
             "net": {
@@ -4869,10 +6562,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 49839,
+              "p10": 49839,
+              "p90": 49839
+            },
             "cumulative_net": {
               "median": 2306,
               "p10": -2288,
               "p90": 2306
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2029-01",
             "net": {
@@ -4894,10 +6597,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 49839,
+              "p10": 49839,
+              "p90": 49839
+            },
             "cumulative_net": {
               "median": 2306,
               "p10": -2288,
               "p90": 2306
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2029-02",
             "net": {
@@ -4919,10 +6632,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 49839,
+              "p10": 49839,
+              "p90": 49839
+            },
             "cumulative_net": {
               "median": 2306,
               "p10": -2288,
               "p90": 2306
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2029-03",
             "net": {
@@ -4944,10 +6667,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 49839,
+              "p10": 49839,
+              "p90": 49839
+            },
             "cumulative_net": {
               "median": 2306,
               "p10": -2288,
               "p90": 2306
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2029-04",
             "net": {
@@ -4980,10 +6713,20 @@
               "p10": 16413,
               "p90": 16413
             },
+            "cumulative_costs": {
+              "median": 66251,
+              "p10": 66251,
+              "p90": 66251
+            },
             "cumulative_net": {
               "median": -14107,
               "p10": -18701,
               "p90": -14107
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2029-05",
             "net": {
@@ -5010,10 +6753,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 66251,
+              "p10": 66251,
+              "p90": 66251
+            },
             "cumulative_net": {
               "median": -14107,
               "p10": -18701,
               "p90": -14107
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2029-06",
             "net": {
@@ -5035,10 +6788,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 66251,
+              "p10": 66251,
+              "p90": 66251
+            },
             "cumulative_net": {
               "median": -14107,
               "p10": -18701,
               "p90": -14107
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2029-07",
             "net": {
@@ -5060,10 +6823,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 66251,
+              "p10": 66251,
+              "p90": 66251
+            },
             "cumulative_net": {
               "median": -14107,
               "p10": -18701,
               "p90": -14107
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2029-08",
             "net": {
@@ -5085,10 +6858,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 66251,
+              "p10": 66251,
+              "p90": 66251
+            },
             "cumulative_net": {
               "median": -14107,
               "p10": -18701,
               "p90": -14107
+            },
+            "cumulative_revenue": {
+              "median": 52144,
+              "p10": 47551,
+              "p90": 52144
             },
             "month": "2029-09",
             "net": {
@@ -5110,10 +6893,20 @@
               "p10": 1801,
               "p90": 1801
             },
+            "cumulative_costs": {
+              "median": 68053,
+              "p10": 68053,
+              "p90": 68053
+            },
             "cumulative_net": {
               "median": 5612,
               "p10": 1019,
               "p90": 5612
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2029-10",
             "net": {
@@ -5144,10 +6937,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 68053,
+              "p10": 68053,
+              "p90": 68053
+            },
             "cumulative_net": {
               "median": 5612,
               "p10": 1019,
               "p90": 5612
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2029-11",
             "net": {
@@ -5169,10 +6972,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 68053,
+              "p10": 68053,
+              "p90": 68053
+            },
             "cumulative_net": {
               "median": 5612,
               "p10": 1019,
               "p90": 5612
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2029-12",
             "net": {
@@ -5194,10 +7007,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 68053,
+              "p10": 68053,
+              "p90": 68053
+            },
             "cumulative_net": {
               "median": 5612,
               "p10": 1019,
               "p90": 5612
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2030-01",
             "net": {
@@ -5219,10 +7042,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 68053,
+              "p10": 68053,
+              "p90": 68053
+            },
             "cumulative_net": {
               "median": 5612,
               "p10": 1019,
               "p90": 5612
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2030-02",
             "net": {
@@ -5244,10 +7077,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 68053,
+              "p10": 68053,
+              "p90": 68053
+            },
             "cumulative_net": {
               "median": 5612,
               "p10": 1019,
               "p90": 5612
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2030-03",
             "net": {
@@ -5269,10 +7112,20 @@
               "p10": 28022,
               "p90": 28022
             },
+            "cumulative_costs": {
+              "median": 96075,
+              "p10": 96075,
+              "p90": 96075
+            },
             "cumulative_net": {
               "median": -22409,
               "p10": -27003,
               "p90": -22409
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2030-04",
             "net": {
@@ -5309,10 +7162,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 96075,
+              "p10": 96075,
+              "p90": 96075
+            },
             "cumulative_net": {
               "median": -22409,
               "p10": -27003,
               "p90": -22409
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2030-05",
             "net": {
@@ -5334,10 +7197,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 96075,
+              "p10": 96075,
+              "p90": 96075
+            },
             "cumulative_net": {
               "median": -22409,
               "p10": -27003,
               "p90": -22409
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2030-06",
             "net": {
@@ -5359,10 +7232,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 96075,
+              "p10": 96075,
+              "p90": 96075
+            },
             "cumulative_net": {
               "median": -22409,
               "p10": -27003,
               "p90": -22409
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2030-07",
             "net": {
@@ -5384,10 +7267,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 96075,
+              "p10": 96075,
+              "p90": 96075
+            },
             "cumulative_net": {
               "median": -22409,
               "p10": -27003,
               "p90": -22409
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2030-08",
             "net": {
@@ -5409,10 +7302,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 96075,
+              "p10": 96075,
+              "p90": 96075
+            },
             "cumulative_net": {
               "median": -22409,
               "p10": -27003,
               "p90": -22409
+            },
+            "cumulative_revenue": {
+              "median": 73665,
+              "p10": 69072,
+              "p90": 73665
             },
             "month": "2030-09",
             "net": {
@@ -5434,10 +7337,20 @@
               "p10": 1801,
               "p90": 1801
             },
+            "cumulative_costs": {
+              "median": 97876,
+              "p10": 97876,
+              "p90": 97876
+            },
             "cumulative_net": {
               "median": 6413,
               "p10": -1409,
               "p90": 6413
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2030-10",
             "net": {
@@ -5468,10 +7381,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 97876,
+              "p10": 97876,
+              "p90": 97876
+            },
             "cumulative_net": {
               "median": 6413,
               "p10": -1409,
               "p90": 6413
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2030-11",
             "net": {
@@ -5493,10 +7416,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 97876,
+              "p10": 97876,
+              "p90": 97876
+            },
             "cumulative_net": {
               "median": 6413,
               "p10": -1409,
               "p90": 6413
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2030-12",
             "net": {
@@ -5518,10 +7451,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 97876,
+              "p10": 97876,
+              "p90": 97876
+            },
             "cumulative_net": {
               "median": 6413,
               "p10": -1409,
               "p90": 6413
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2031-01",
             "net": {
@@ -5543,10 +7486,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 97876,
+              "p10": 97876,
+              "p90": 97876
+            },
             "cumulative_net": {
               "median": 6413,
               "p10": -1409,
               "p90": 6413
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2031-02",
             "net": {
@@ -5568,10 +7521,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 97876,
+              "p10": 97876,
+              "p90": 97876
+            },
             "cumulative_net": {
               "median": 6413,
               "p10": -1409,
               "p90": 6413
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2031-03",
             "net": {
@@ -5593,10 +7556,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 97876,
+              "p10": 97876,
+              "p90": 97876
+            },
             "cumulative_net": {
               "median": 6413,
               "p10": -1409,
               "p90": 6413
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2031-04",
             "net": {
@@ -5629,10 +7602,20 @@
               "p10": 16413,
               "p90": 16413
             },
+            "cumulative_costs": {
+              "median": 114289,
+              "p10": 114289,
+              "p90": 114289
+            },
             "cumulative_net": {
               "median": -10000,
               "p10": -17821,
               "p90": -10000
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2031-05",
             "net": {
@@ -5659,10 +7642,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 114289,
+              "p10": 114289,
+              "p90": 114289
+            },
             "cumulative_net": {
               "median": -10000,
               "p10": -17821,
               "p90": -10000
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2031-06",
             "net": {
@@ -5684,10 +7677,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 114289,
+              "p10": 114289,
+              "p90": 114289
+            },
             "cumulative_net": {
               "median": -10000,
               "p10": -17821,
               "p90": -10000
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2031-07",
             "net": {
@@ -5709,10 +7712,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 114289,
+              "p10": 114289,
+              "p90": 114289
+            },
             "cumulative_net": {
               "median": -10000,
               "p10": -17821,
               "p90": -10000
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2031-08",
             "net": {
@@ -5734,10 +7747,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 114289,
+              "p10": 114289,
+              "p90": 114289
+            },
             "cumulative_net": {
               "median": -10000,
               "p10": -17821,
               "p90": -10000
+            },
+            "cumulative_revenue": {
+              "median": 104289,
+              "p10": 96467,
+              "p90": 104289
             },
             "month": "2031-09",
             "net": {
@@ -5759,10 +7782,20 @@
               "p10": 1801,
               "p90": 1801
             },
+            "cumulative_costs": {
+              "median": 116090,
+              "p10": 116090,
+              "p90": 116090
+            },
             "cumulative_net": {
               "median": 6491,
               "p10": 1898,
               "p90": 9720
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2031-10",
             "net": {
@@ -5793,10 +7826,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 116090,
+              "p10": 116090,
+              "p90": 116090
+            },
             "cumulative_net": {
               "median": 6491,
               "p10": 1898,
               "p90": 9720
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2031-11",
             "net": {
@@ -5818,10 +7861,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 116090,
+              "p10": 116090,
+              "p90": 116090
+            },
             "cumulative_net": {
               "median": 6491,
               "p10": 1898,
               "p90": 9720
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2031-12",
             "net": {
@@ -5843,10 +7896,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 116090,
+              "p10": 116090,
+              "p90": 116090
+            },
             "cumulative_net": {
               "median": 6491,
               "p10": 1898,
               "p90": 9720
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2032-01",
             "net": {
@@ -5868,10 +7931,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 116090,
+              "p10": 116090,
+              "p90": 116090
+            },
             "cumulative_net": {
               "median": 6491,
               "p10": 1898,
               "p90": 9720
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2032-02",
             "net": {
@@ -5893,10 +7966,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 116090,
+              "p10": 116090,
+              "p90": 116090
+            },
             "cumulative_net": {
               "median": 6491,
               "p10": 1898,
               "p90": 9720
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2032-03",
             "net": {
@@ -5918,10 +8001,20 @@
               "p10": 28022,
               "p90": 28022
             },
+            "cumulative_costs": {
+              "median": 144112,
+              "p10": 144112,
+              "p90": 144112
+            },
             "cumulative_net": {
               "median": -21530,
               "p10": -26124,
               "p90": -18302
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2032-04",
             "net": {
@@ -5958,10 +8051,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 144112,
+              "p10": 144112,
+              "p90": 144112
+            },
             "cumulative_net": {
               "median": -21530,
               "p10": -26124,
               "p90": -18302
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2032-05",
             "net": {
@@ -5983,10 +8086,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 144112,
+              "p10": 144112,
+              "p90": 144112
+            },
             "cumulative_net": {
               "median": -21530,
               "p10": -26124,
               "p90": -18302
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2032-06",
             "net": {
@@ -6008,10 +8121,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 144112,
+              "p10": 144112,
+              "p90": 144112
+            },
             "cumulative_net": {
               "median": -21530,
               "p10": -26124,
               "p90": -18302
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2032-07",
             "net": {
@@ -6033,10 +8156,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 144112,
+              "p10": 144112,
+              "p90": 144112
+            },
             "cumulative_net": {
               "median": -21530,
               "p10": -26124,
               "p90": -18302
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2032-08",
             "net": {
@@ -6058,10 +8191,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 144112,
+              "p10": 144112,
+              "p90": 144112
+            },
             "cumulative_net": {
               "median": -21530,
               "p10": -26124,
               "p90": -18302
+            },
+            "cumulative_revenue": {
+              "median": 122582,
+              "p10": 117988,
+              "p90": 125810
             },
             "month": "2032-09",
             "net": {
@@ -6083,10 +8226,20 @@
               "p10": 1801,
               "p90": 1801
             },
+            "cumulative_costs": {
+              "median": 145913,
+              "p10": 145913,
+              "p90": 145913
+            },
             "cumulative_net": {
               "median": 7292,
               "p10": 1333,
               "p90": 10520
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2032-10",
             "net": {
@@ -6117,10 +8270,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 145913,
+              "p10": 145913,
+              "p90": 145913
+            },
             "cumulative_net": {
               "median": 7292,
               "p10": 1333,
               "p90": 10520
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2032-11",
             "net": {
@@ -6142,10 +8305,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 145913,
+              "p10": 145913,
+              "p90": 145913
+            },
             "cumulative_net": {
               "median": 7292,
               "p10": 1333,
               "p90": 10520
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2032-12",
             "net": {
@@ -6167,10 +8340,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 145913,
+              "p10": 145913,
+              "p90": 145913
+            },
             "cumulative_net": {
               "median": 7292,
               "p10": 1333,
               "p90": 10520
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2033-01",
             "net": {
@@ -6192,10 +8375,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 145913,
+              "p10": 145913,
+              "p90": 145913
+            },
             "cumulative_net": {
               "median": 7292,
               "p10": 1333,
               "p90": 10520
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2033-02",
             "net": {
@@ -6217,10 +8410,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 145913,
+              "p10": 145913,
+              "p90": 145913
+            },
             "cumulative_net": {
               "median": 7292,
               "p10": 1333,
               "p90": 10520
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2033-03",
             "net": {
@@ -6242,10 +8445,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 145913,
+              "p10": 145913,
+              "p90": 145913
+            },
             "cumulative_net": {
               "median": 7292,
               "p10": 1333,
               "p90": 10520
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2033-04",
             "net": {
@@ -6278,10 +8491,20 @@
               "p10": 16413,
               "p90": 16413
             },
+            "cumulative_costs": {
+              "median": 162326,
+              "p10": 162326,
+              "p90": 162326
+            },
             "cumulative_net": {
               "median": -9121,
               "p10": -15080,
               "p90": -5893
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2033-05",
             "net": {
@@ -6308,10 +8531,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 162326,
+              "p10": 162326,
+              "p90": 162326
+            },
             "cumulative_net": {
               "median": -9121,
               "p10": -15080,
               "p90": -5893
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2033-06",
             "net": {
@@ -6333,10 +8566,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 162326,
+              "p10": 162326,
+              "p90": 162326
+            },
             "cumulative_net": {
               "median": -9121,
               "p10": -15080,
               "p90": -5893
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2033-07",
             "net": {
@@ -6358,10 +8601,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 162326,
+              "p10": 162326,
+              "p90": 162326
+            },
             "cumulative_net": {
               "median": -9121,
               "p10": -15080,
               "p90": -5893
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2033-08",
             "net": {
@@ -6383,10 +8636,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 162326,
+              "p10": 162326,
+              "p90": 162326
+            },
             "cumulative_net": {
               "median": -9121,
               "p10": -15080,
               "p90": -5893
+            },
+            "cumulative_revenue": {
+              "median": 153205,
+              "p10": 147246,
+              "p90": 156433
             },
             "month": "2033-09",
             "net": {
@@ -6408,10 +8671,20 @@
               "p10": 1801,
               "p90": 1801
             },
+            "cumulative_costs": {
+              "median": 164127,
+              "p10": 164127,
+              "p90": 164127
+            },
             "cumulative_net": {
               "median": 10599,
               "p10": 4640,
               "p90": 13827
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2033-10",
             "net": {
@@ -6442,10 +8715,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 164127,
+              "p10": 164127,
+              "p90": 164127
+            },
             "cumulative_net": {
               "median": 10599,
               "p10": 4640,
               "p90": 13827
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2033-11",
             "net": {
@@ -6467,10 +8750,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 164127,
+              "p10": 164127,
+              "p90": 164127
+            },
             "cumulative_net": {
               "median": 10599,
               "p10": 4640,
               "p90": 13827
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2033-12",
             "net": {
@@ -6492,10 +8785,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 164127,
+              "p10": 164127,
+              "p90": 164127
+            },
             "cumulative_net": {
               "median": 10599,
               "p10": 4640,
               "p90": 13827
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2034-01",
             "net": {
@@ -6517,10 +8820,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 164127,
+              "p10": 164127,
+              "p90": 164127
+            },
             "cumulative_net": {
               "median": 10599,
               "p10": 4640,
               "p90": 13827
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2034-02",
             "net": {
@@ -6542,10 +8855,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 164127,
+              "p10": 164127,
+              "p90": 164127
+            },
             "cumulative_net": {
               "median": 10599,
               "p10": 4640,
               "p90": 13827
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2034-03",
             "net": {
@@ -6567,10 +8890,20 @@
               "p10": 28022,
               "p90": 28022
             },
+            "cumulative_costs": {
+              "median": 192149,
+              "p10": 192149,
+              "p90": 192149
+            },
             "cumulative_net": {
               "median": -17423,
               "p10": -23382,
               "p90": -14195
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2034-04",
             "net": {
@@ -6607,10 +8940,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 192149,
+              "p10": 192149,
+              "p90": 192149
+            },
             "cumulative_net": {
               "median": -17423,
               "p10": -23382,
               "p90": -14195
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2034-05",
             "net": {
@@ -6632,10 +8975,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 192149,
+              "p10": 192149,
+              "p90": 192149
+            },
             "cumulative_net": {
               "median": -17423,
               "p10": -23382,
               "p90": -14195
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2034-06",
             "net": {
@@ -6657,10 +9010,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 192149,
+              "p10": 192149,
+              "p90": 192149
+            },
             "cumulative_net": {
               "median": -17423,
               "p10": -23382,
               "p90": -14195
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2034-07",
             "net": {
@@ -6682,10 +9045,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 192149,
+              "p10": 192149,
+              "p90": 192149
+            },
             "cumulative_net": {
               "median": -17423,
               "p10": -23382,
               "p90": -14195
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2034-08",
             "net": {
@@ -6707,10 +9080,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 192149,
+              "p10": 192149,
+              "p90": 192149
+            },
             "cumulative_net": {
               "median": -17423,
               "p10": -23382,
               "p90": -14195
+            },
+            "cumulative_revenue": {
+              "median": 174726,
+              "p10": 168767,
+              "p90": 177954
             },
             "month": "2034-09",
             "net": {
@@ -6732,10 +9115,20 @@
               "p10": 1801,
               "p90": 1801
             },
+            "cumulative_costs": {
+              "median": 193951,
+              "p10": 193951,
+              "p90": 193951
+            },
             "cumulative_net": {
               "median": 10034,
               "p10": 2212,
               "p90": 14627
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2034-10",
             "net": {
@@ -6766,10 +9159,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 193951,
+              "p10": 193951,
+              "p90": 193951
+            },
             "cumulative_net": {
               "median": 10034,
               "p10": 2212,
               "p90": 14627
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2034-11",
             "net": {
@@ -6791,10 +9194,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 193951,
+              "p10": 193951,
+              "p90": 193951
+            },
             "cumulative_net": {
               "median": 10034,
               "p10": 2212,
               "p90": 14627
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2034-12",
             "net": {
@@ -6816,10 +9229,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 193951,
+              "p10": 193951,
+              "p90": 193951
+            },
             "cumulative_net": {
               "median": 10034,
               "p10": 2212,
               "p90": 14627
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2035-01",
             "net": {
@@ -6841,10 +9264,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 193951,
+              "p10": 193951,
+              "p90": 193951
+            },
             "cumulative_net": {
               "median": 10034,
               "p10": 2212,
               "p90": 14627
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2035-02",
             "net": {
@@ -6866,10 +9299,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 193951,
+              "p10": 193951,
+              "p90": 193951
+            },
             "cumulative_net": {
               "median": 10034,
               "p10": 2212,
               "p90": 14627
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2035-03",
             "net": {
@@ -6891,10 +9334,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 193951,
+              "p10": 193951,
+              "p90": 193951
+            },
             "cumulative_net": {
               "median": 10034,
               "p10": 2212,
               "p90": 14627
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2035-04",
             "net": {
@@ -6927,10 +9380,20 @@
               "p10": 16413,
               "p90": 16413
             },
+            "cumulative_costs": {
+              "median": 210363,
+              "p10": 210363,
+              "p90": 210363
+            },
             "cumulative_net": {
               "median": -6379,
               "p10": -14201,
               "p90": -1785
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2035-05",
             "net": {
@@ -6957,10 +9420,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 210363,
+              "p10": 210363,
+              "p90": 210363
+            },
             "cumulative_net": {
               "median": -6379,
               "p10": -14201,
               "p90": -1785
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2035-06",
             "net": {
@@ -6982,10 +9455,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 210363,
+              "p10": 210363,
+              "p90": 210363
+            },
             "cumulative_net": {
               "median": -6379,
               "p10": -14201,
               "p90": -1785
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2035-07",
             "net": {
@@ -7007,10 +9490,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 210363,
+              "p10": 210363,
+              "p90": 210363
+            },
             "cumulative_net": {
               "median": -6379,
               "p10": -14201,
               "p90": -1785
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2035-08",
             "net": {
@@ -7032,10 +9525,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 210363,
+              "p10": 210363,
+              "p90": 210363
+            },
             "cumulative_net": {
               "median": -6379,
               "p10": -14201,
               "p90": -1785
+            },
+            "cumulative_revenue": {
+              "median": 203984,
+              "p10": 196163,
+              "p90": 208578
             },
             "month": "2035-09",
             "net": {
@@ -7057,10 +9560,20 @@
               "p10": 1801,
               "p90": 1801
             },
+            "cumulative_costs": {
+              "median": 212165,
+              "p10": 212165,
+              "p90": 212165
+            },
             "cumulative_net": {
               "median": 13340,
               "p10": 5519,
               "p90": 17934
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2035-10",
             "net": {
@@ -7091,10 +9604,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 212165,
+              "p10": 212165,
+              "p90": 212165
+            },
             "cumulative_net": {
               "median": 13340,
               "p10": 5519,
               "p90": 17934
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2035-11",
             "net": {
@@ -7116,10 +9639,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 212165,
+              "p10": 212165,
+              "p90": 212165
+            },
             "cumulative_net": {
               "median": 13340,
               "p10": 5519,
               "p90": 17934
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2035-12",
             "net": {
@@ -7141,10 +9674,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 212165,
+              "p10": 212165,
+              "p90": 212165
+            },
             "cumulative_net": {
               "median": 13340,
               "p10": 5519,
               "p90": 17934
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2036-01",
             "net": {
@@ -7166,10 +9709,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 212165,
+              "p10": 212165,
+              "p90": 212165
+            },
             "cumulative_net": {
               "median": 13340,
               "p10": 5519,
               "p90": 17934
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2036-02",
             "net": {
@@ -7191,10 +9744,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 212165,
+              "p10": 212165,
+              "p90": 212165
+            },
             "cumulative_net": {
               "median": 13340,
               "p10": 5519,
               "p90": 17934
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2036-03",
             "net": {
@@ -7216,10 +9779,20 @@
               "p10": 28022,
               "p90": 28022
             },
+            "cumulative_costs": {
+              "median": 240186,
+              "p10": 240186,
+              "p90": 240186
+            },
             "cumulative_net": {
               "median": -14681,
               "p10": -22503,
               "p90": -10088
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2036-04",
             "net": {
@@ -7256,10 +9829,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 240186,
+              "p10": 240186,
+              "p90": 240186
+            },
             "cumulative_net": {
               "median": -14681,
               "p10": -22503,
               "p90": -10088
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2036-05",
             "net": {
@@ -7281,10 +9864,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 240186,
+              "p10": 240186,
+              "p90": 240186
+            },
             "cumulative_net": {
               "median": -14681,
               "p10": -22503,
               "p90": -10088
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2036-06",
             "net": {
@@ -7306,10 +9899,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 240186,
+              "p10": 240186,
+              "p90": 240186
+            },
             "cumulative_net": {
               "median": -14681,
               "p10": -22503,
               "p90": -10088
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2036-07",
             "net": {
@@ -7331,10 +9934,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 240186,
+              "p10": 240186,
+              "p90": 240186
+            },
             "cumulative_net": {
               "median": -14681,
               "p10": -22503,
               "p90": -10088
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2036-08",
             "net": {
@@ -7356,10 +9969,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 240186,
+              "p10": 240186,
+              "p90": 240186
+            },
             "cumulative_net": {
               "median": -14681,
               "p10": -22503,
               "p90": -10088
+            },
+            "cumulative_revenue": {
+              "median": 225505,
+              "p10": 217683,
+              "p90": 230099
             },
             "month": "2036-09",
             "net": {
@@ -7381,10 +10004,20 @@
               "p10": 0,
               "p90": 0
             },
+            "cumulative_costs": {
+              "median": 240186,
+              "p10": 240186,
+              "p90": 240186
+            },
             "cumulative_net": {
               "median": 14080,
               "p10": 6258,
               "p90": 20536
+            },
+            "cumulative_revenue": {
+              "median": 254266,
+              "p10": 246444,
+              "p90": 260722
             },
             "month": "2036-10",
             "net": {

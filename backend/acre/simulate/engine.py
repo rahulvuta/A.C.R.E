@@ -368,14 +368,19 @@ def _monthly(sc: Scenario, m: Matrices, inp: Inputs, parts: list[tuple[int, str,
     first, last = min(flows), max(flows)
     months = []
     cum = np.zeros(runs)
+    cum_c = np.zeros(runs)
+    cum_r = np.zeros(runs)
     y, mo = first
     zero = np.zeros(runs)
     while (y, mo) <= last:
         c, r = costs.get((y, mo), zero), revs.get((y, mo), zero)
         net = r - c
         cum = cum + net
+        cum_c = cum_c + c
+        cum_r = cum_r + r
         months.append({"month": f"{y:04d}-{mo:02d}", "costs": q(c, 0), "revenue": q(r, 0),
                        "net": q(net, 0), "cumulative_net": q(cum, 0),
+                       "cumulative_costs": q(cum_c, 0), "cumulative_revenue": q(cum_r, 0),
                        "operations": ops.get((y, mo), []),
                        "risks": risks.get((y, mo), [])})  # fmt: skip
         y, mo = (y + 1, 1) if mo == 12 else (y, mo + 1)
@@ -431,6 +436,38 @@ def readings_context(readings: list[dict[str, Any]], ctx: Context) -> list[dict[
 
 
 # --------------------------------------------------------------------------- whole simulation
+
+
+def field_conditions(ctx: Context) -> dict[str, Any] | None:
+    """What the field's NASA record says a typical month looks like: modeled soil wetness (top
+    ~5 cm and root zone, 0-1), rain and air temperature per calendar month, as the median and
+    p10-p90 over the record's years. Context for the plan's calendar; never an input to it."""
+    frame = ctx.series.frame
+    if "gwettop" not in frame.columns:
+        return None
+    by_month: list[dict[str, Any]] = []
+    idx = frame.index
+    for mo in range(1, 13):
+        sel = frame[idx.month == mo]
+        if sel.empty:
+            continue
+        row: dict[str, Any] = {"month": mo}
+        per_year = sel.groupby(sel.index.year)
+        for col, key, how in (("gwettop", "soil_wetness_top", "mean"),
+                              ("gwetroot", "soil_wetness_root", "mean"),
+                              ("precip_mm", "rain_mm", "sum"),
+                              ("tmean_c", "air_temp_c", "mean")):  # fmt: skip
+            if col not in sel.columns:
+                continue
+            vals = getattr(per_year[col], how)(**({"min_count": 20} if how == "sum" else {}))
+            vals = vals.dropna().to_numpy(dtype=float)
+            row[key] = q(vals, 2 if col.startswith("gwet") else 1) if vals.size else None
+        by_month.append(row)
+    return {"origin": "nasa_modeled", "months": by_month,
+            "years": f"{ctx.series.first_date.year}-{ctx.series.last_date.year}",
+            "text": "Typical conditions per calendar month from this field's NASA POWER cell "
+                    "(~50 km): modeled soil wetness (0 = dry, 1 = saturated), rain and air "
+                    "temperature. Median and the 1-in-10 low and high across the record."}  # fmt: skip
 
 
 def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
@@ -506,5 +543,5 @@ def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
                     "money_gaps": money["money_gaps"],
                     "replayed_seasons_sample": [int(y) for y in m.seasons[0]]})  # fmt: skip
     return {"status": "complete", "method": {**method, "money_source": money_source},
-            "scenarios": out, "_matrices": mats,
+            "scenarios": out, "_matrices": mats, "field_conditions": field_conditions(ctx),
             "crop_money": {c: v.public() for c, v in cm.items()}}  # fmt: skip
