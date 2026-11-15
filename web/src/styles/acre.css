@@ -4359,3 +4359,32 @@ html[data-input="pointer"] :is(input:not([type="range"], [type="checkbox"], [typ
   grid-auto-flow: row;
   grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
 }
+
+/* 3D stage: the reader can rotate and zoom; a hint and a way back to the chosen view. */
+.fb-stage-nav {
+  position: absolute;
+  right: var(--sp-4);
+  bottom: var(--sp-4);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.fb-stage-hint {
+  padding: 4px 8px;
+  border-radius: var(--radius-md);
+  background: rgb(255 255 255 / 0.85);
+  font-size: 12px;
+  color: var(--ink-muted);
+  pointer-events: none;
+}
+.fb-stage-nav button {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+@media (max-width: 640px) { .fb-stage-hint { display: none; } }
+.world-canvas { touch-action: none; }

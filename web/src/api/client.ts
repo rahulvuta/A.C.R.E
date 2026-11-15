@@ -291,6 +291,9 @@ export function latestOnly() {
   screens say so instead of inventing data; tests and the fixture mode pass `fixtureFetch`.
   Coordinates go only in the request to the service, never in a log.
 */
+/** A simulation replays ~200 seasons per plan; on a small server (or one waking up) that can take a minute. */
+export const SIMULATE_TIMEOUT_MS = 120_000;
+
 export function createGlobalClient(opts: { apiBase: string | null; timeoutMs: number; fetchImpl?: FetchLike }) {
   const fetchImpl: FetchLike = opts.fetchImpl ?? ((u, init) => fetch(u, init));
   const base = { timeoutMs: opts.timeoutMs, fetchImpl };
@@ -304,10 +307,11 @@ export function createGlobalClient(opts: { apiBase: string | null; timeoutMs: nu
     schema: ZodType<B, ZodTypeDef, unknown>,
     make: (b: B) => T,
     init?: { method?: string; headers?: Record<string, string>; body?: string },
+    timeoutMs = base.timeoutMs,
   ): Promise<Result<T>> {
     const url = api(path);
     if (!url) return offline;
-    const r = await getJson(url, schema, { ...base, init });
+    const r = await getJson(url, schema, { ...base, timeoutMs, init });
     if (!r.ok) return r;
     try {
       return { ok: true, data: make(r.data), origin: "live" };
@@ -349,7 +353,7 @@ export function createGlobalClient(opts: { apiBase: string | null; timeoutMs: nu
 
     // ---- Scenario Simulator (§11–§16)
     /** §11: simulate the baseline and up to 5 alternatives over 10 years of resampled past weather. */
-    simulate: (q: SimulateRequest): Promise<Result<Simulation>> => call("/v1/scenarios/simulate", BackendSimulation, adaptSimulation, post(toBackendSimulate(q))),
+    simulate: (q: SimulateRequest): Promise<Result<Simulation>> => call("/v1/scenarios/simulate", BackendSimulation, adaptSimulation, post(toBackendSimulate(q)), Math.max(base.timeoutMs, SIMULATE_TIMEOUT_MS)),
     /** §12: sourced prices, yields and costs for these crops at this place (the farmer's overrides win). */
     economics: (q: Parameters<typeof toBackendEconomics>[0]): Promise<Result<Economics>> => call("/v1/economics/estimate", BackendEconomics, adaptEconomics, post(toBackendEconomics(q))),
     /** §13: the shared crop library. */
