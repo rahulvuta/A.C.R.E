@@ -1,3 +1,4 @@
+import { MAX_ROTATION_LEGS } from "../../api/limits";
 import { economicsReady } from "./inputState";
 import type { SimulateRequest } from "../../api/adapt";
 import type { LatLon, RegionProfile } from "../../api/model";
@@ -24,7 +25,7 @@ export const planReady = (p: FieldPlan) =>
   Boolean(p.previous_crop_id && p.next_crop_id && /^\d{2}-\d{2}$/.test(p.prev_harvest) && /^\d{2}-\d{2}$/.test(p.next_plant)) &&
   (p.winter.kind === "none" ||
     (p.winter.kind === "cover" ? Boolean(p.winter.crop_id && p.winter.seed && p.winter.terminate) : Boolean(p.winter.crop_id && p.winter.plant && p.winter.harvest)));
-export const rotationReady = (r: FieldPlan[]) => r.length > 0 && r.every(planReady);
+export const rotationReady = (r: FieldPlan[]) => r.length > 0 && r.length <= MAX_ROTATION_LEGS && r.every(planReady);
 
 /** The crops a rotation uses (for economics), in order of first use. */
 export function cropsOf(r: FieldPlan[]): string[] {

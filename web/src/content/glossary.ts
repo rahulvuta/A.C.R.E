@@ -77,7 +77,7 @@ export const GLOSSARY: Record<TermId, { term: string; definition: string }> = {
   },
   "current-plan": {
     term: "Your current plan",
-    definition: "The crops and dates you use now, as a rotation of one to four seasons that repeats. It is the baseline every other plan is compared with.",
+    definition: "The crops and dates you use now, as a rotation of one to ten seasons that repeats. It is the baseline every other plan is compared with.",
   },
   resampling: {
     term: "Replaying past weather",

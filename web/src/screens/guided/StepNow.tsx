@@ -1,3 +1,4 @@
+import { MAX_ROTATION_LEGS } from "../../api/limits";
 import type { Origin } from "../../api/model";
 import { areaHa } from "../../farm/geometry";
 import { farmActions } from "../../farm/hooks";
@@ -10,12 +11,19 @@ import { economicsReady, economicsValue, simulationOverrides } from "./inputStat
 
 const TRUST: Origin[] = ["grower", "verified_source", "source_checked", "dataset_estimate", "nasa_measured", "nasa_modeled", "calculation", "ai_suggested", "assumed"];
 const weakest = (origins: Origin[]): Origin => origins.reduce<Origin>((w, o) => TRUST.indexOf(o) > TRUST.indexOf(w) ? o : w, "grower");
-/** One season per leg of the rotation, up to the 10-year horizon; the backend accepts the same number. */
-export const MAX_ROTATION_SEASONS = 10;
-export const emptySeason = (i: number, previous = ""): FieldPlan => ({ plan_id: `season_${i + 1}`, label: `Season ${i + 1}`, previous_crop_id: previous, prev_harvest: "", winter: { kind: "none" }, next_crop_id: "", next_plant: "" });
+export const emptySeason = (i: number, previous = "", taken: string[] = []): FieldPlan => {
+  // Plan ids must be unique within a rotation, also after a middle season was removed.
+  let n = i + 1;
+  while (taken.includes(`season_${n}`)) n += 1;
+  return { plan_id: `season_${n}`, label: `Season ${i + 1}`, previous_crop_id: previous, prev_harvest: "", winter: { kind: "none" }, next_crop_id: "", next_plant: "" };
+};
 
-function editorValue(ctx: StepContext, plan: FieldPlan): PlanEditorValue {
-  const saved = ctx.sim.planInputs?.[plan.plan_id];
+/** Saved editor inputs (dates with their origin, crop details) are keyed per rotation: the current plan keeps the plain plan id,
+ *  every alternative its own prefix, so two rotations that both have a "season_1" never share dates or provenance. */
+export const planInputKey = (idPrefix: string, planId: string) => (idPrefix === "rot" ? planId : `${idPrefix}/${planId}`);
+
+function editorValue(ctx: StepContext, plan: FieldPlan, idPrefix: string): PlanEditorValue {
+  const saved = ctx.sim.planInputs?.[planInputKey(idPrefix, plan.plan_id)];
   const value: PlanEditorValue = {
     plan: { ...plan, previous_crop_id: plan.previous_crop_id || null, next_crop_id: plan.next_crop_id || null, prev_harvest: plan.prev_harvest || null, next_plant: plan.next_plant || null },
     dates: [],
@@ -38,13 +46,13 @@ export function RotationEditor({ ctx, rotation, onChange, idPrefix = "rot" }: { 
   const seasons = rotation.length ? rotation : [emptySeason(0)];
   return <div className="gf-rotation">
     {seasons.map((plan, i) => <section key={`${idPrefix}-${i}`} className="gf-season" aria-label={`Season ${i + 1}`}>
-      <div className="gf-season-head"><h3>Season {i + 1}</h3>{seasons.length > 1 ? <button type="button" className="btn btn-quiet" onClick={() => onChange(seasons.filter((_, j) => j !== i))}>Remove season</button> : null}</div>
-      <PlanEditor location={ctx.point!} regionKey={ctx.regionKey ?? ""} api={ctx.api.client.inputs} value={editorValue(ctx, plan)} onChange={value => {
-        updateSimField(ctx.field!.field_id, current => ({ planInputs: { ...current.planInputs, [plan.plan_id]: { dates: value.dates, cropDetails: value.cropDetails } } }));
+      <div className="gf-season-head"><h3>Season {i + 1}</h3>{seasons.length > 1 ? <button type="button" className="btn btn-quiet" onClick={() => { updateSimField(ctx.field!.field_id, (current) => { const { [planInputKey(idPrefix, plan.plan_id)]: _gone, ...planInputs } = current.planInputs ?? {}; return { planInputs }; }); onChange(seasons.filter((_, j) => j !== i)); }}>Remove season</button> : null}</div>
+      <PlanEditor location={ctx.point!} regionKey={ctx.regionKey ?? ""} api={ctx.api.client.inputs} value={editorValue(ctx, plan, idPrefix)} onChange={value => {
+        updateSimField(ctx.field!.field_id, current => ({ planInputs: { ...current.planInputs, [planInputKey(idPrefix, plan.plan_id)]: { dates: value.dates, cropDetails: value.cropDetails } } }));
         onChange(seasons.map((p, j) => j === i ? fieldPlan(plan, value) : p));
       }} />
     </section>)}
-    {seasons.length < MAX_ROTATION_SEASONS ? <button type="button" className="btn btn-secondary" onClick={() => onChange([...seasons, emptySeason(seasons.length, seasons.at(-1)?.next_crop_id)])}>Add a season</button> : null}
+    {seasons.length < MAX_ROTATION_LEGS ? <button type="button" className="btn btn-secondary" onClick={() => onChange([...seasons, emptySeason(seasons.length, seasons.at(-1)?.next_crop_id, seasons.map((p) => p.plan_id))])}>Add a season</button> : null}
     <p className="gf-muted">This rotation repeats through the 10-year historical replay.</p>
   </div>;
 }
