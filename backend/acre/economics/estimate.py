@@ -2,8 +2,11 @@
 
 For each value the order is: the farmer's override (``grower``), then a sourced regional reference
 for the location's own region (``verified_source`` or ``dataset_estimate``; most specific region
-first: admin1, then country), then ``null`` with a reason. No number is ever invented, and no other
-region's number is borrowed.
+first: admin1, then country), then a researched reference whose quote code found on a page of an
+allowed official source (``source_checked``; same region order), then ``null`` with a reason. No
+number is ever invented, and no other region's number is borrowed. A researched reference that is
+only ``ai_suggested`` is never a value: it is returned as a ``suggestion`` the farmer may adopt, and
+then it comes back as an ordinary ``grower`` override.
 
 * Prices come in low, typical and high cases from the source's historical range.
 * Units: in the US, acre, bu, lb and USD; elsewhere ha, t and the source's currency (USD when the
@@ -17,13 +20,20 @@ region's number is borrowed.
 
 from __future__ import annotations
 
+import logging
 import math
+import statistics
 from typing import Any
+from urllib.parse import urlparse
 
 from acre.catalogs import crop_ids
 from acre.economics import data
 from acre.field.equipment import valid_equipment
+from acre.research import client
 
+log = logging.getLogger(__name__)
+PRICE_YEARS = 5  # a researched price range uses the most recent years of one unit and source
+MAX_SUGGESTIONS = 6
 ACRES_PER_HA = 2.4710538146716534
 MASS_KG = {"t": 1000.0, "kg": 1.0, "lb": 0.45359237, "cwt": 45.359237}
 AREAS = {"acre": 1.0, "ha": ACRES_PER_HA}  # in acres
@@ -225,8 +235,156 @@ def _per_area(value: float, unit: str, area_unit: str) -> tuple[float, str, str]
     return None if f is None else (value * f, cur, f"{cur}/{area_unit}")
 
 
+# --------------------------------------------------------------------------- researched references
+
+
+def _year(r: dict[str, Any]) -> int:
+    try:
+        return int(str(r.get("year") or "")[:4])
+    except ValueError:
+        return 0
+
+
+def _url(r: dict[str, Any]) -> str:
+    return str((r.get("source") or {}).get("url") or "")
+
+
+def _ref_usable(kind: str, r: dict[str, Any]) -> bool:
+    """Can the estimate turn this reference's unit into a value (price ``CUR/qty``, yield
+    ``qty/area``, cost ``CUR/area`` with a known area)?"""
+    sp = _split(r.get("unit"))
+    if sp is None or not isinstance(r.get("value"), int | float):
+        return False
+    if kind == "price":
+        return sp[1] not in AREAS
+    return sp[1] in AREAS and (kind != "yield" or sp[0] not in AREAS)
+
+
+def _ref_source(r: dict[str, Any]) -> dict[str, Any]:
+    src = r.get("source") or {}
+    return {"title": src.get("title"), "url": src.get("url"), "locator": src.get("locator"),
+            "year": _year(r) or None, "evidence_quote": src.get("evidence_quote"),
+            "region_key": r["region_key"]}  # fmt: skip
+
+
+def _checked(refs: list[dict[str, Any]], chain: list[str], kind: str) -> list[dict[str, Any]]:
+    """Usable ``source_checked`` references of ``kind`` for the most specific region that has any."""
+    ok = [r for r in refs if r["kind"] == kind and r["origin"] == "source_checked"
+          and _ref_usable(kind, r)]  # fmt: skip
+    for key in chain:
+        hits = [r for r in ok if r["region_key"] == key]
+        if hits:
+            return hits
+    return []
+
+
+def _ref_price(refs: list[dict[str, Any]], chain: list[str]) -> dict[str, Any] | None:
+    """Low, typical and high over the newest years of one unit, currency and source domain (never
+    mixed); a single reference gives low = typical = high."""
+    hits = _checked(refs, chain, "price")
+    groups: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
+    for r in hits:
+        key = (r["unit"], str(r.get("currency") or ""), urlparse(_url(r)).hostname or "")
+        groups.setdefault(key, []).append(r)
+    if not groups:
+        return None
+    key, grp = max(groups.items(), key=lambda kv: (max(_year(r) for r in kv[1]), len(kv[1]),
+                                                   kv[0]))  # fmt: skip
+    years = sorted({_year(r) for r in grp}, reverse=True)[:PRICE_YEARS]
+    sel = sorted((r for r in grp if _year(r) in years), key=lambda r: (-_year(r), _url(r)))
+    vals = sorted(float(r["value"]) for r in sel)
+    newest = sel[0]
+    src = _ref_source(newest)
+    if len(years) > 1:
+        src = {**{k: v for k, v in src.items() if k != "year"},
+               "years": f"{min(years)}-{max(years)}"}
+    return {"low": vals[0], "typical": statistics.median(vals), "high": vals[-1], "unit": key[0],
+            "currency": key[1] or _split(key[0])[0],  # type: ignore[index]
+            "origin": "source_checked", "source": src,
+            "sources": [_ref_source(r) | {"value": r["value"]} for r in sel]}  # fmt: skip
+
+
+def _ref_yield(refs: list[dict[str, Any]], chain: list[str]) -> dict[str, Any] | None:
+    hits = _checked(refs, chain, "yield")
+    if not hits:
+        return None
+    r = max(hits, key=lambda r: (_year(r), _url(r), r["value"]))
+    return {"value": r["value"], "unit": r["unit"], "origin": "source_checked",
+            "source": _ref_source(r)}  # fmt: skip
+
+
+def _ref_costs(refs: list[dict[str, Any]], chain: list[str]) -> list[dict[str, Any]]:
+    """The newest ``total`` if there is one, else the items of the single newest source and year
+    (never summed across sources)."""
+    hits = _checked(refs, chain, "cost")
+    if not hits:
+        return []
+    totals = [r for r in hits if r.get("item") == "total"]
+    if totals:
+        picked = [max(totals, key=lambda r: (_year(r), _url(r), r["value"]))]
+    else:
+        newest = max(hits, key=lambda r: (_year(r), _url(r)))
+        picked = sorted((r for r in hits if _url(r) == _url(newest) and _year(r) == _year(newest)),
+                        key=lambda r: str(r.get("item")))  # fmt: skip
+    return [{"item": r.get("item") or "cost", "value": r["value"], "unit": r["unit"],
+             "currency": r.get("currency") or _split(r["unit"])[0],  # type: ignore[index]
+             "origin": "source_checked", "source": _ref_source(r)} for r in picked]
+
+
+def _suggestions(refs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """References that are not values: AI-found and unconfirmed, or checked but with a unit the
+    estimate cannot use. Newest first; the farmer may adopt one (it returns as an override)."""
+    out = []
+    for r in sorted(refs, key=lambda r: (-_year(r), _url(r), str(r.get("item")))):
+        kind = r["kind"] if r["kind"] in ("price", "yield", "cost") else None
+        if kind is None:
+            continue
+        usable = _ref_usable(kind, r)
+        if r["origin"] == "source_checked" and usable:
+            continue
+        note = ("the unit could not be converted; check it before using this number" if not usable
+                else "AI-found: the quote was not confirmed on a page of an approved source")
+        src = r.get("source") or {}
+        out.append({"field": "costs" if kind == "cost" else kind,
+                    **({"item": r.get("item") or "cost"} if kind == "cost" else {}),
+                    "value": r["value"], "unit": r["unit"], "currency": r.get("currency"),
+                    "year": _year(r) or None, "origin": r["origin"],
+                    "region_key": r["region_key"],
+                    "source": {"title": src.get("title"), "url": src.get("url"),
+                               "locator": src.get("locator"),
+                               "evidence_quote": src.get("evidence_quote")}, "note": note})  # fmt: skip
+    return out[:MAX_SUGGESTIONS]
+
+
+def _researched(cid: str, chain: list[str]) -> list[dict[str, Any]]:
+    if not chain:
+        return []
+    try:
+        from acre.croplib import library
+
+        return library.researched_refs(cid, chain)
+    except Exception as exc:  # noqa: BLE001 - the library never breaks an estimate
+        log.warning("researched references unavailable: %s", type(exc).__name__)
+        return []
+
+
+def _research_state(cid: str, chain: list[str]) -> dict[str, Any]:
+    out: dict[str, Any] = {"researched_at": None, "status": None}
+    if chain:
+        try:
+            from acre.croplib import library
+
+            row = library.research_status("economics", cid, chain[0])
+        except Exception:  # noqa: BLE001
+            row = None
+        if row:
+            out = {"researched_at": row["researched_at"], "status": row["status"]}
+    return out
+
+
 def _crop(cid: str, chain: list[str], t: data.Tables, ov: dict[str, Any], area_unit: str,
-          us: bool, area: tuple[float, str] | None) -> dict[str, Any]:  # fmt: skip
+          us: bool, area: tuple[float, str] | None,
+          refs: list[dict[str, Any]] = ()) -> dict[str, Any]:  # type: ignore[assignment]  # fmt: skip
     reasons: list[str] = []
     # price
     price: dict[str, Any] | None = None
@@ -242,6 +400,8 @@ def _crop(cid: str, chain: list[str], t: data.Tables, ov: dict[str, Any], area_u
             price = {"low": r["low"], "typical": r["typical"], "high": r["high"],
                      "unit": r["unit"], "currency": r["currency"] or _split(r["unit"])[0],  # type: ignore[index]
                      "origin": r["origin"], "source": data.source_of(r)}  # fmt: skip
+        elif (rp := _ref_price(refs, chain)) is not None:
+            price = rp
         else:
             reasons.append("no sourced price for this region")
     if price is not None and _split(price["unit"]) is not None:
@@ -258,6 +418,8 @@ def _crop(cid: str, chain: list[str], t: data.Tables, ov: dict[str, Any], area_u
             yld = {"value": r["value"], "unit": r["unit"], "origin": r["origin"],
                    "source": data.source_of(r),
                    **({"area_basis": r["area_basis"]} if r.get("area_basis") else {})}  # fmt: skip
+        elif (ry := _ref_yield(refs, chain)) is not None:
+            yld = ry
         else:
             reasons.append("no sourced yield for this region")
     if yld is not None and _split(yld["unit"]) is not None:
@@ -280,6 +442,8 @@ def _crop(cid: str, chain: list[str], t: data.Tables, ov: dict[str, Any], area_u
                           "currency": r["currency"], "origin": r["origin"],
                           **({"area_basis": r["area_basis"]} if r.get("area_basis") else {}),
                           "source": data.source_of(r)} for r in sorted(same, key=lambda r: r["item"])]  # fmt: skip
+        elif rc := _ref_costs(refs, chain):
+            cost_rows = rc
         else:
             cost_rows = []
             reasons.append("no sourced costs for this region")
@@ -344,6 +508,8 @@ def _crop(cid: str, chain: list[str], t: data.Tables, ov: dict[str, Any], area_u
                            "margin_per_area": margin}  # fmt: skip
     crop_info = crop_ids.info(cid)
     out["aliases"] = list(crop_info.aliases) if crop_info else []
+    out["suggestions"] = _suggestions(refs)
+    out["economics_research"] = _research_state(cid, chain)
     if area is not None and (revenue or margin or costs["total_per_area"]):
         n = area[0] * AREAS[area[1]] / AREAS[area_unit]  # the area in ``area_unit``
         out["for_area"] = {"area": {"value": _r(n, 3), "unit": area_unit},
@@ -420,7 +586,8 @@ def estimate_economics(location: dict[str, Any] | None, crops: list[str],
                     "your own numbers are used.")  # fmt: skip
     if not chain:
         gaps.append("No region is known for this location, so no regional reference applies.")
-    crop_out = [_crop(c, chain, t, ov.get(c, {}), area_unit, us, ar) for c in cids]
+    crop_out = [_crop(c, chain, t, ov.get(c, {}), area_unit, us, ar, _researched(c, chain))
+                for c in cids]
     currencies = {x["margin_per_area"]["currency"] for x in crop_out if x["margin_per_area"]}
     currencies |= {x["price"]["currency"] for x in crop_out if x["price"]}
     statuses = {x["status"] for x in crop_out}
@@ -433,10 +600,12 @@ def estimate_economics(location: dict[str, Any] | None, crops: list[str],
         "area": {"value": ar[0], "unit": ar[1], "origin": "grower"} if ar else None,
         "region_keys": chain,
         "crops": crop_out,
+        "research": {"available": client.configured(), "region_key": chain[0] if chain else None},
         "equipment_costs": _equipment_costs(equipment, chain, t, area_unit, gaps),
         "equipment_note": PASS_NOTE,
         "loss_assumptions": losses,
         "gaps": gaps,
-        "note": "Money uses your numbers first, then sourced regional references; a value with "
-                "neither is left blank. Not a forecast.",
+        "note": "Money uses your numbers first, then sourced regional references and researched "
+                "ones whose quote was found on an approved source's page; a value with none of "
+                "these is left blank. Not a forecast.",
     }  # fmt: skip

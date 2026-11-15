@@ -30,6 +30,8 @@ _LOCK = threading.RLock()
 _SEEDED: dict[str, str] = {}  # db path -> seed stamp
 _VERSIONS: dict[str, tuple[float, str]] = {}
 VERSION_TTL_SECONDS = 2.0
+#: Reference origins the economics estimate may turn into money (``ai_suggested`` never is).
+MONEY_ORIGINS = ("verified_source", "dataset_estimate", "source_checked")
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT);
@@ -44,7 +46,14 @@ CREATE TABLE IF NOT EXISTS calendars (
     PRIMARY KEY (crop_id, region_key));
 CREATE TABLE IF NOT EXISTS economics_refs (
     crop_id TEXT NOT NULL, region_key TEXT NOT NULL, kind TEXT NOT NULL, value REAL, unit TEXT,
-    currency TEXT, year TEXT, origin TEXT NOT NULL, source TEXT, from_research INTEGER NOT NULL);
+    currency TEXT, year TEXT, origin TEXT NOT NULL, source TEXT, from_research INTEGER NOT NULL,
+    item TEXT);
+CREATE TABLE IF NOT EXISTS economics_research (
+    crop_id TEXT NOT NULL, region_key TEXT NOT NULL, researched_at TEXT NOT NULL, status TEXT,
+    found_json TEXT, cache_key TEXT, PRIMARY KEY (crop_id, region_key));
+CREATE TABLE IF NOT EXISTS calendar_research (
+    crop_id TEXT NOT NULL, region_key TEXT NOT NULL, researched_at TEXT NOT NULL, status TEXT,
+    found_json TEXT, cache_key TEXT, PRIMARY KEY (crop_id, region_key));
 CREATE TABLE IF NOT EXISTS research (
     cache_key TEXT PRIMARY KEY, name TEXT NOT NULL, region_key TEXT NOT NULL, crop_id TEXT,
     raw TEXT, guardrails TEXT, created_at TEXT NOT NULL);
@@ -71,6 +80,7 @@ def connect(seed: bool = True):
         try:
             con.execute("PRAGMA journal_mode=WAL")
             con.executescript(SCHEMA)
+            _migrate(con)
             if seed:
                 _seed(con, path)
             yield con
@@ -82,6 +92,14 @@ def connect(seed: bool = True):
                 _VERSIONS.pop(str(path), None)
         finally:
             con.close()
+
+
+def _migrate(con: sqlite3.Connection) -> None:
+    """Bring a database file made by an older version up to the current schema. Tables are added
+    by ``SCHEMA`` (``IF NOT EXISTS``); a column added later needs an explicit, guarded ALTER."""
+    cols = {r["name"] for r in con.execute("PRAGMA table_info(economics_refs)")}
+    if "item" not in cols:
+        con.execute("ALTER TABLE economics_refs ADD COLUMN item TEXT")
 
 
 # --------------------------------------------------------------------------- seeding
@@ -287,12 +305,12 @@ def get_crop(crop_id: str, region_key: str | None = None) -> dict[str, Any] | No
                        "review": c["review"],
                        "sage_check": json.loads(c["sage_check"]) if c["sage_check"] else None}
                       for c in cals if keep(c["region_key"])],
-        "economics_refs": [{"region_key": e["region_key"], "kind": e["kind"], "value": e["value"],
+        "economics_refs": [{"region_key": e["region_key"], "kind": e["kind"], "item": e["item"],
+                            "value": e["value"],
                             "unit": e["unit"], "currency": e["currency"], "year": e["year"],
                             "origin": e["origin"],
                             "source": json.loads(e["source"]) if e["source"] else None,
-                            "used_for_money": e["origin"] in ("verified_source",
-                                                              "dataset_estimate")}
+                            "used_for_money": e["origin"] in MONEY_ORIGINS}
                            for e in refs if keep(e["region_key"])],
         "origin": r["origin"], "sources": json.loads(r["sources"]),
         "researched": bool(r["researched"]), "in_sage": bool(r["in_sage"]),
@@ -310,7 +328,7 @@ def search(q: str, region_key: str | None = None, limit: int = 25) -> list[dict[
                            "review != 'manual_check'")}  # fmt: skip
         econ = {(r["crop_id"], r["region_key"].upper()) for r in
                 con.execute("SELECT crop_id, region_key FROM economics_refs WHERE origin IN "
-                            "('verified_source', 'dataset_estimate')")}  # fmt: skip
+                            "('verified_source', 'dataset_estimate', 'source_checked')")}  # fmt: skip
     hits = []
     for r in rows:
         hay = [r["crop_id"], r["name"].lower(), *(a.lower() for a in json.loads(r["aliases"])),
@@ -376,9 +394,9 @@ def store_research(*, cache_key: str, name: str, region_key: str, crop: dict[str
         for e in refs:
             con.execute(
                 "INSERT INTO economics_refs (crop_id, region_key, kind, value, unit, currency, "
-                "year, origin, source, from_research) VALUES (?,?,?,?,?,?,?,?,?,1)",
+                "year, origin, source, from_research, item) VALUES (?,?,?,?,?,?,?,?,?,1,?)",
                 (cid, region_key, e["kind"], e["value"], e["unit"], e.get("currency"),
-                 e.get("year"), e["origin"], json.dumps(e.get("source"))))  # fmt: skip
+                 e.get("year"), e["origin"], json.dumps(e.get("source")), e.get("item")))  # fmt: skip
         con.execute("INSERT OR REPLACE INTO research (cache_key, name, region_key, crop_id, raw, "
                     "guardrails, created_at) VALUES (?,?,?,?,?,?,?)",
                     (cache_key, name, region_key, cid, json.dumps(raw), json.dumps(guardrails),
@@ -390,3 +408,109 @@ def store_research(*, cache_key: str, name: str, region_key: str, crop: dict[str
 
     regional.clear_cache()
     return cid
+
+
+# --------------------------------------------------------------------------- researched economics
+# and calendars for a crop that is already known (cards: economics research, calendar research)
+
+_STATUS_TABLES = {"economics": "economics_research", "calendars": "calendar_research"}
+
+
+def _record(con: sqlite3.Connection, kind: str, crop_id: str, region_key: str, status: str,
+            found: dict[str, int], cache_key: str) -> None:
+    con.execute(f"INSERT OR REPLACE INTO {_STATUS_TABLES[kind]} (crop_id, region_key, "
+                "researched_at, status, found_json, cache_key) VALUES (?,?,?,?,?,?)",
+                (crop_id, region_key, _now(), status, json.dumps(found), cache_key))  # fmt: skip
+
+
+def research_status(kind: str, crop_id: str, region_key: str) -> dict[str, Any] | None:
+    """When this crop and region were last researched for ``economics`` or ``calendars``."""
+    if not db_path().exists():
+        return None
+    with connect(seed=False) as con:
+        r = con.execute(f"SELECT * FROM {_STATUS_TABLES[kind]} WHERE crop_id=? AND region_key=?",
+                        (crop_id, region_key.upper())).fetchone()  # fmt: skip
+    if r is None:
+        return None
+    return {"researched_at": r["researched_at"], "status": r["status"],
+            "found": json.loads(r["found_json"]) if r["found_json"] else None,
+            "cache_key": r["cache_key"]}  # fmt: skip
+
+
+def store_economics(*, crop_id: str, region_key: str, refs: list[dict[str, Any]], status: str,
+                    found: dict[str, int], cache_key: str) -> None:  # fmt: skip
+    """Replace this crop+region's researched references (never the seeded ones) and record the
+    research. When nothing usable was found the earlier researched references are kept."""
+    rk = region_key.upper()
+    with connect() as con:
+        if refs:
+            con.execute("DELETE FROM economics_refs WHERE crop_id=? AND region_key=? AND "
+                        "from_research=1", (crop_id, rk))  # fmt: skip
+        for e in refs:
+            con.execute(
+                "INSERT INTO economics_refs (crop_id, region_key, kind, value, unit, currency, "
+                "year, origin, source, from_research, item) VALUES (?,?,?,?,?,?,?,?,?,1,?)",
+                (crop_id, rk, e["kind"], e["value"], e["unit"], e.get("currency"),
+                 None if e.get("year") is None else str(e["year"]), e["origin"],
+                 json.dumps(e.get("source")), e.get("item")))  # fmt: skip
+        _record(con, "economics", crop_id, rk, status, found, cache_key)
+
+
+def researched_refs(crop_id: str, chain: list[str]) -> list[dict[str, Any]]:
+    """Researched economics references of a crop for the regions in ``chain`` (most specific
+    first), as dicts with the source decoded. ``[]`` when there is no library file yet."""
+    if not chain or not db_path().exists():
+        return []
+    keys = [k.upper() for k in chain]
+    with connect(seed=False) as con:
+        rows = con.execute("SELECT * FROM economics_refs WHERE crop_id=? AND from_research=1",
+                           (crop_id,)).fetchall()  # fmt: skip
+    out = [{"region_key": r["region_key"].upper(), "kind": r["kind"], "item": r["item"],
+            "value": r["value"], "unit": r["unit"], "currency": r["currency"],
+            "year": r["year"], "origin": r["origin"],
+            "source": json.loads(r["source"]) if r["source"] else {}}
+           for r in rows if r["region_key"].upper() in keys]  # fmt: skip
+    return sorted(out, key=lambda e: keys.index(e["region_key"]))
+
+
+def store_calendars(*, crop_id: str, region_key: str, calendars: list[dict[str, Any]],
+                    status: str, found: dict[str, int], cache_key: str) -> None:  # fmt: skip
+    """Store researched calendars for a known crop+region (replacing earlier researched ones when
+    there are new ones) and record the research. Seeded crop data is never touched."""
+    rk = region_key.upper()
+    now = _now()
+    with connect() as con:
+        if calendars:
+            con.execute("DELETE FROM calendars WHERE crop_id=? AND region_key=?", (crop_id, rk))
+        for c in calendars:
+            con.execute(
+                "INSERT OR REPLACE INTO calendars (crop_id, region_key, plant, harvest, origin, "
+                "source, review, sage_check, cached_at) VALUES (?,?,?,?,?,?,?,?,?)",
+                (crop_id, rk, json.dumps(c.get("plant")) if c.get("plant") else None,
+                 json.dumps(c.get("harvest")) if c.get("harvest") else None, c["origin"],
+                 json.dumps(c.get("source")), c.get("review"),
+                 json.dumps(c.get("sage_check")) if c.get("sage_check") else None, now))  # fmt: skip
+        _record(con, "calendars", crop_id, rk, status, found, cache_key)
+    from acre.catalogs import regional
+
+    regional.clear_cache()
+
+
+def researched_calendar(crop_id: str, chain: list[str]) -> dict[str, Any] | None:
+    """The most specific researched calendar of a crop for the region chain that is not flagged
+    ``manual_check`` and has a planting window (a harvest window may be missing)."""
+    if not chain or not db_path().exists():
+        return None
+    with connect(seed=False) as con:
+        rows = con.execute("SELECT * FROM calendars WHERE crop_id=?", (crop_id,)).fetchall()
+    for k in chain:
+        for r in rows:
+            if r["region_key"].upper() != k.upper() or not r["plant"]:
+                continue
+            if r["review"] == "manual_check":
+                continue
+            return {"plant": json.loads(r["plant"]),
+                    "harvest": json.loads(r["harvest"]) if r["harvest"] else None,
+                    "origin": r["origin"], "region_key": r["region_key"].upper(),
+                    "source": json.loads(r["source"]) if r["source"] else None}  # fmt: skip
+    return None

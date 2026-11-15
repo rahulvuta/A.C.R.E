@@ -58,6 +58,8 @@ def _fake_app(research_reply=None) -> Starlette:
         Route("/v1/crops", echo),
         Route("/v1/regions/research", research, methods=["POST"]),
         Route("/v1/crops/research", research, methods=["POST"]),
+        Route("/v1/economics/research", research, methods=["POST"]),
+        Route("/v1/calendars/research", research, methods=["POST"]),
     ])  # fmt: skip
     return app
 
@@ -87,6 +89,8 @@ def _assert_envelope(r, http: int, status: str, code: str) -> None:
     ("GET", "/v1/geo/search", GEO), ("GET", "/v1/geo/reverse", GEO),
     ("POST", "/v1/weather/prepare", WEATHER), ("POST", "/v1/regions/research", RESEARCH),
     ("POST", "/v1/crops/research", RESEARCH), ("GET", "/v1/crops/research/cj_1", CHEAP),
+    ("POST", "/v1/economics/research", RESEARCH), ("POST", "/v1/calendars/research", RESEARCH),
+    ("GET", "/v1/economics/research/ej_1", CHEAP), ("GET", "/v1/calendars/research/kj_1", CHEAP),
     ("GET", "/v1/regions/research/rj_1", CHEAP), ("OPTIONS", "/v1/plans/compare", None),
 ])  # fmt: skip
 def test_route_classes(method, path, cls):
@@ -176,7 +180,8 @@ def test_research_daily_cap_is_global_across_clients():
     assert int(r.headers["Retry-After"]) <= 86_400
 
 
-@pytest.mark.parametrize("path", ["/v1/regions/research", "/v1/crops/research"])
+@pytest.mark.parametrize("path", ["/v1/regions/research", "/v1/crops/research",
+                                   "/v1/economics/research", "/v1/calendars/research"])
 def test_research_cache_hits_do_not_use_the_budget(path):
     def cached(n):
         return {"job_id": f"rj_{n}", "job_status": "ready", "status": "partial", "check": None}
@@ -185,7 +190,8 @@ def test_research_cache_hits_do_not_use_the_budget(path):
     assert all(c.post(path, json={}).status_code == 200 for _ in range(5))
 
 
-@pytest.mark.parametrize("path", ["/v1/regions/research", "/v1/crops/research"])
+@pytest.mark.parametrize("path", ["/v1/regions/research", "/v1/crops/research",
+                                   "/v1/economics/research", "/v1/calendars/research"])
 def test_research_per_client_limit(path):
     c = _client(_settings(limits={RESEARCH: (3, 3600.0)}), research_reply=_new_job)
     codes = [c.post(path, json={}).status_code for _ in range(4)]

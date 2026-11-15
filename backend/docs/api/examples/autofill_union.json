@@ -1,4 +1,24 @@
 {
+  "calendar_research": [
+    {
+      "crop_id": "field_corn",
+      "missing": false,
+      "researched_at": null,
+      "role": "previous"
+    },
+    {
+      "crop_id": "cereal_rye",
+      "missing": false,
+      "researched_at": null,
+      "role": "cover"
+    },
+    {
+      "crop_id": "soybean",
+      "missing": false,
+      "researched_at": null,
+      "role": "next"
+    }
+  ],
   "dates": [
     {
       "field": "prev_harvest",
@@ -92,6 +112,10 @@
       "seed": "09-30",
       "terminate": "04-21"
     }
+  },
+  "research": {
+    "available": false,
+    "region_key": "US-NC"
   },
   "status": "complete"
 }

@@ -7,13 +7,18 @@
 * Rows that disagree (same crop, type, stage and neighbours, different numbers or verdict) are both
   kept, each naming the other in ``conflicts_with``. Nothing is merged.
 
-Pages are fetched with a generic User-Agent; no farm or location data is in any request.
+Pages are fetched with a generic browser User-Agent (no app name, no contact details); no farm or
+location data is in any request. PDFs are read with ``pypdf`` (bounded bytes, pages and time); a
+PDF that cannot be parsed stays "reachable, quote not checkable".
 """
 
 from __future__ import annotations
 
 import html
+import io
+import logging
 import re
+import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
@@ -22,9 +27,16 @@ import httpx
 
 from acre.catalogs import crop_ids
 
-USER_AGENT = "ACRE-research-check/1.0"
+log = logging.getLogger("acre.research")
+
+# A mainstream browser string: many official sites refuse unknown clients. Nothing identifies us.
+USER_AGENT = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like "
+              "Gecko) Chrome/124.0.0.0 Safari/537.36")
 FETCH_TIMEOUT_S = 20.0
 MAX_PAGE_BYTES = 5_000_000
+MAX_PDF_BYTES = 15_000_000
+MAX_PDF_PAGES = 60
+PDF_BUDGET_S = FETCH_TIMEOUT_S  # the parse stops at the same budget as one fetch
 _TAGS = re.compile(r"<(script|style)[^>]*>.*?</\1>|<[^>]+>", re.S | re.I)
 _SPACE = re.compile(r"\s+")
 _TRANS = str.maketrans({"’": "'", "‘": "'", "“": '"', "”": '"', "–": "-", "—": "-", " ": " ",
@@ -47,24 +59,71 @@ class Page:
     reason: str | None = None
 
 
+def pdf_text(data: bytes, budget_s: float = PDF_BUDGET_S) -> str | None:
+    """Normalised text of the first :data:`MAX_PDF_PAGES` pages, or ``None`` if it cannot be read.
+
+    Line breaks and hyphenation are tolerated by :func:`quote_in`, which also tries the text with
+    "hyphen + space" removed."""
+    if len(data) > MAX_PDF_BYTES:
+        return None
+    try:
+        from pypdf import PdfReader
+
+        reader = PdfReader(io.BytesIO(data))
+        if reader.is_encrypted:
+            return None
+        end = time.monotonic() + budget_s
+        parts: list[str] = []
+        for i, page in enumerate(reader.pages):
+            if i >= MAX_PDF_PAGES or time.monotonic() > end:
+                break
+            parts.append(page.extract_text() or "")
+    except Exception as exc:  # noqa: BLE001 - any parse problem: fall back to "not checkable"
+        log.info("pdf not parsed: %s", type(exc).__name__)
+        return None
+    text = normalise(" ".join(parts))
+    return text or None
+
+
+def quote_in(quote: str, text: str) -> bool:
+    """The normalised quote is on the page text; a PDF's hyphenated line breaks are tolerated."""
+    q = normalise(quote)
+    if not q or not text:
+        return False
+    if q in text:
+        return True
+    return q.replace("- ", "").replace("-", "") in text.replace("- ", "").replace("-", "")
+
+
 def fetch_page(url: str, client: httpx.Client | None = None) -> Page:
     if not url.startswith(("https://", "http://")):
         return Page(False, reason="not_a_web_url")
     own = client is None
     c = client or httpx.Client(timeout=FETCH_TIMEOUT_S, follow_redirects=True,
                                headers={"User-Agent": USER_AGENT})  # fmt: skip
+    r: httpx.Response | None = None
     try:
-        r = c.get(url)
-    except httpx.HTTPError:
-        return Page(False, reason="unreachable")
+        for _attempt in (1, 2):  # one retry on a network error or a 5xx
+            try:
+                r = c.get(url)
+            except httpx.HTTPError:
+                r = None
+                continue
+            if r.status_code < 500:
+                break
     finally:
         if own:
             c.close()
+    if r is None:
+        return Page(False, reason="unreachable")
     if r.status_code >= 400:
         return Page(False, reason=f"http_{r.status_code}")
     ctype = r.headers.get("content-type", "")
-    if "pdf" in ctype:
-        return Page(True, text="", reason="pdf_not_checked")  # reachable, but quote not checkable
+    if "pdf" in ctype or url.lower().split("?")[0].endswith(".pdf"):
+        text = pdf_text(r.content)
+        if text is None:
+            return Page(True, text="", reason="pdf_not_checked")  # reachable, quote not checkable
+        return Page(True, text=text, reason="pdf")
     return Page(True, text=normalise(r.text[:MAX_PAGE_BYTES]))
 
 
@@ -172,7 +231,7 @@ def _evidence_origin(item: dict[str, Any], pages: dict[str, Page], log: CheckLog
     if not page.ok:
         log.dropped.append({"item": what, "reason": f"source page {page.reason}"})
         return None
-    if page.text and normalise(quote) in page.text:
+    if quote_in(quote, page.text):
         log.found += 1
         if item.get("_domain_ok") is False:  # guardrails: off-allowlist domains stay suggestions
             return "ai_suggested"

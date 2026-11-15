@@ -367,6 +367,31 @@ Response:
 ```
 A crop with no source and no override gets `status: "unavailable"`, null values and a `reason_text`.
 
+**Order of values (per price, yield and costs).** 1. the farmer's override (`grower`);
+2. a row of the sourced tables for the location's region chain (`verified_source` or
+`dataset_estimate`); 3. a researched reference with origin `source_checked` (the quote was found by
+code on a page of an allowed official source, see §13) for the most specific region of the chain
+that has any; 4. blank with a reason. A researched price uses the most recent up to 5 years of
+references that share one unit, currency and source domain (`low` = min, `typical` = median, `high` =
+max; one reference gives `low = typical = high`; units and currencies are never mixed, the group with
+the newest year is used). A researched yield is the newest year's value. Researched costs are the
+newest `total`, else the items of the single newest source and year (never summed across sources). A
+researched reference whose unit cannot be normalised is not a value. The record carries
+`origin: "source_checked"` and a `source` (`title, url, locator, year | years, evidence_quote,
+region_key`), plus `sources` (one entry per year used) for a price.
+
+**`ai_suggested` references are never values.** Quote-checked references from allowed official
+sources fill blanks and are labelled `source_checked`; unverified AI finds (the quote was not on the
+page, or the source is not on the approved list) are only returned as suggestions the farmer may
+adopt; an adopted one comes back to the backend as an ordinary `grower` override. Each crop has
+`suggestions: [{field: "price|yield|costs", item?, value, unit, currency, year, origin, region_key,
+source: {title, url, locator, evidence_quote}, note}]` (newest first, at most 6; it also lists a
+`source_checked` reference that could not be used because of its unit, with a `note`), and
+`economics_research: {researched_at: str | null, status: str | null}` for the most specific region
+of the chain. The response has `research: {available: bool, region_key: str | null}`: `available` is
+true when AI research is configured on the server, `region_key` is the most specific key of the
+chain (the one to pass to `POST /v1/economics/research`).
+
 Sourced yields and cost totals may carry `area_basis: harvested|planted|unknown`. Conflicting
 known bases leave margin blank with a reason; no area-basis conversion is assumed. Exact mass
 and area unit conversions are supported; bushel-to-mass conversions are not inferred.
@@ -380,9 +405,60 @@ and area unit conversions are supported; bushel-to-mass conversions are not infe
 
 The library is shared by all users (cached centrally). Every research call goes through the guardrails, research caps and rate limits. The request carries only the crop name and region.
 
+### Economics research (known crops)
+
+`POST /v1/economics/research` with body `{crop_id, region_key, refresh?: bool, wait_s?: 0-120}` looks up
+published farm-gate prices (several recent years), typical yields and production costs per area for a
+crop that is already in the library, in one region (ISO `US`, `US-NC`, `AR-B`; not `koppen:`). An unknown
+`crop_id` is `400` with issue `unknown_crop` ("research the crop first via `/v1/crops/research`").
+`GET /v1/economics/research/{job_id}` returns the same job. Both return
+
+```json
+{"meta": {}, "job_id": "ej_…", "job_status": "pending|ready|failed", "status": "partial",
+ "crop_id": "sorghum", "region_key": "US-NC", "reason": null, "reason_text": null,
+ "started_at": "…Z", "finished_at": "…Z", "found": {"price": 4, "yield": 1, "cost": 2},
+ "check": {"guardrails": {"dropped": [], "downgraded": [], "flagged": [], "items_in": 9},
+           "kept": {"source_checked": 6, "ai_suggested": 1}, "gaps": []}}
+```
+`found` counts the kept references per kind (`null` while pending or failed). `status` is `partial` when
+something was kept, `insufficient_data` (`reason: "nothing_found"`) when nothing passed the checks; a
+failed job is `unavailable` with `reason` `research_not_configured | research_bad_output |
+research_truncated | rate_limited | provider_error | research_timeout | research_failed` and a
+`reason_text`. A repeated request for the same crop and region (same prompt version and model) is
+answered from the library: `reason: "cached"`, no `check`, no AI call; `refresh: true` asks again.
+A refresh that finds nothing keeps the earlier researched references.
+
+The job shares the daily budget and per-client rate limit of `/v1/crops/research` and
+`/v1/regions/research` (a cache hit costs nothing), the configuration check, the source-domain
+allowlist, the quote check and the drop and downgrade log. The AI receives only the crop name and id,
+the region key and its country. Kept items are stored in `economics_refs` (`from_research = 1`; the
+seeded rows are never touched; a successful refresh replaces the earlier researched rows of the crop
+and region) with `item` (`total` or a cost item name; null for a price or yield), and the time of the
+research is recorded per crop and region. An item is kept only with a quote that contains its number,
+a value >= 0 (prices and yields > 0), a unit that parses as `CUR/quantity` (price), `quantity/area`
+(yield) or `CUR/area` (cost, area `acre` or `ha`), and a year from 1990 to the current year. Origin:
+`source_checked` when the page is on the allowlist and the quote is on the fetched page (HTML, or PDF
+text; hyphenated line breaks are tolerated); `ai_suggested` when the page is reachable but either is
+not true; a dead page drops the item. The `economics_refs` of `GET /v1/crops/{id}` carry `item`
+and `used_for_money` (true for `verified_source`, `dataset_estimate` and `source_checked`).
+
+### Calendar research (known crops)
+
+`POST /v1/calendars/research` with body `{crop_id, region_key, location?, refresh?, wait_s?}` and
+`GET /v1/calendars/research/{job_id}` use the same job shape, rules, budget, cache and error codes as
+economics research, with `job_id` prefix `kj_` and `found: {"calendars": n}`. The AI is asked only for the usual
+planting and harvest windows (MM-DD ranges) of the crop in the region (for a cover crop: the usual
+seeding window, stored as `plant`, and termination window, stored as `harvest`), each with a quote that
+contains the dates. The windows are checked like crop research (valid dates, dates in the quote, quote
+on the page, one calendar per region) and stored in the library's `calendars` table for the crop and
+region (`origin` `source_checked` or `ai_suggested`, `source`, `review: "manual_check"` and not used
+when the window disagrees with the SAGE window of the cell). `location` is used only to read the SAGE
+windows of its cell for that cross-check and is never sent to the AI.
+
 **Shipped (S4).** Crop details also carry `aliases`, `researched`, `in_sage` and `notes`.
 Calendars include `review` and `sage_check`. Economics references include `used_for_money`;
-AI references are never used for money. Research jobs carry `name`, `region_key`, `status`,
+Only references with origin `source_checked` (and the seeded `verified_source` and `dataset_estimate`
+ones) are used for money (§12); `ai_suggested` references never are. Research jobs carry `name`, `region_key`, `status`,
 `reason`, `reason_text` and an optional `check`. A known crop or cached answer can be ready
 without a new AI call. Crop research shares the regional-research rate limit and daily budget.
 
@@ -409,6 +485,21 @@ equipment and example readings. `current_plans[field_id]` contains a two-season 
 `economics_overrides` contains explicit example inputs, labelled not sourced; there is no
 default weather-loss assumption. `note`, `economics_note` and `resolution_note` describe the
 synthetic inputs, historical replay and shared NASA cell.
+
+**Researched dates.** When the verified catalog and SAGE have no date for a crop's role, autofill uses
+a researched calendar of the library (§13) for the location's region chain (most specific first): the
+date is the middle of the window (for a cover crop its seeding window for `winter.seed` and its
+termination window for `winter.terminate`, used only when no verified rule gives the date), with
+`origin` taken from the calendar row (`source_checked` or `ai_suggested`) and its `source` (plus
+`region_key`, `method: "window_midpoint"`, `researched: true`). An `ai_suggested` date adds a gap with
+reason `unverified_calendar`. Verified catalog and SAGE dates always win. The response also has
+`research: {available: bool, region_key: str | null}` (`available` is whether AI research is
+configured; `region_key` is the most specific key of the location, derived as in §12, the one to pass
+to `POST /v1/calendars/research`; the location itself is not sent to the AI) and
+`calendar_research: [{crop_id, role, researched_at: str | null, missing: bool}]`, one per requested
+crop: `researched_at` is when its calendar was last researched for that region, and `missing` is true
+when no verified, SAGE or researched date covers its role (for a cover crop: no verified seeding rule
+and no researched window), so the frontend knows which crops to look up and not to repeat a lookup.
 
 Autofill accepts a point or `cell_id`, one previous crop, one next crop and an optional cover.
 The response adds `status` and `note`; each date adds `status`. Missing dates have null values

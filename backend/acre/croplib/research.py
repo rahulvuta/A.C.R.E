@@ -6,8 +6,9 @@ in the API body is used here only to read the SAGE windows of its cell for the c
 
 The result is stored centrally (``croplib.sqlite``) for every user. Its origin is ``source_checked``
 when code found the quote on the cited page, else ``ai_suggested``; never ``verified_source``.
-Economics references are kept only with a quote that contains their number, and the economics
-estimate never uses them as money (they are not ``verified_source`` / ``dataset_estimate``).
+Economics references are kept only with a quote that contains their number. The economics
+estimate uses a reference as money only when its origin is ``source_checked`` (quote found on a page
+of an allowed official source); an ``ai_suggested`` one is only ever a suggestion the farmer may adopt.
 """
 
 from __future__ import annotations
@@ -29,7 +30,7 @@ from acre.research import client, guardrails, prompt, verify
 
 log = logging.getLogger("acre.croplib")
 
-CROP_PROMPT_VERSION = "c1"
+CROP_PROMPT_VERSION = "c2"
 NAME_RE = re.compile(r"^[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ '\-]{1,59}$")
 FAMILY_RE = re.compile(r"^[A-Z][a-z]+aceae$")
 SEASON_DAYS = (20, 400)
@@ -66,8 +67,13 @@ SYSTEM = f"""You research one crop for one farming region, for a farm-planning t
 every item with its source and a warning that it is unverified.
 
 Rules:
-- Use only these kinds of sources: {prompt.SOURCE_POLICY}. Never blogs, seed-company marketing, \
-forums or AI-written pages.
+- Use only these sources, in this priority: national statistics agencies and ministries of \
+agriculture (USDA NASS and ERS, Statistics Canada, Eurostat, ABARES, MAGyP, India's DES and ICAR \
+and their equivalents), FAO and FAOSTAT, and university extension services and research institutes. \
+Items from any other source are discarded by code. Never blogs, seed-company marketing, news, \
+commercial sites, forums or AI-written pages.
+- Prefer an HTML page to a PDF when both exist; search the most specific region first (state or \
+province), then the country.
 - Every item needs source_url (the page you read), source_locator and evidence_quote: words \
 copied exactly from that page, at most {guardrails.MAX_QUOTE_WORDS} words, that contain every \
 number and date of the item.
@@ -128,7 +134,8 @@ def known_crop(name: str) -> str | None:
 # --------------------------------------------------------------------------- the check
 
 
-def _ask(params: dict[str, Any]) -> tuple[dict[str, Any], list[Any]]:
+def _ask(params: dict[str, Any], schema: dict[str, Any] | None = None
+         ) -> tuple[dict[str, Any], list[Any]]:  # fmt: skip
     raws: list[Any] = []
     body = params
     for attempt in (1, 2):
@@ -136,7 +143,7 @@ def _ask(params: dict[str, Any]) -> tuple[dict[str, Any], list[Any]]:
         raws.append(reply.raw if reply.raw is not None else reply.text)
         try:
             answer = client.parse_answer(reply.text)
-            errors = guardrails.schema_errors(answer, CROP_SCHEMA)
+            errors = guardrails.schema_errors(answer, schema or CROP_SCHEMA)
         except client.ResearchError as exc:
             answer, errors = None, [str(exc)]
         if answer is not None and not errors:
@@ -151,8 +158,7 @@ def _origin(item: dict[str, Any], page: verify.Page | None) -> str | None:
     """``source_checked`` (quote on an allowed page), ``ai_suggested``, or None (dead page)."""
     if page is None or not page.ok:
         return None
-    quote = verify.normalise(item.get("evidence_quote") or "")
-    found = bool(page.text) and bool(quote) and quote in page.text
+    found = verify.quote_in(item.get("evidence_quote") or "", page.text)
     return "source_checked" if found and guardrails.domain_allowed(item["source_url"]) else (
         "ai_suggested")
 
@@ -162,71 +168,50 @@ def _source(item: dict[str, Any]) -> dict[str, Any]:
             "locator": item.get("source_locator"), "evidence_quote": item.get("evidence_quote")}  # fmt: skip
 
 
-def check(answer: dict[str, Any], name: str, region_key: str, sage: dict[str, Any],
-          fetch: Any) -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]],
-                               dict[str, Any]]:  # fmt: skip
-    """Deterministic guardrails and quote checks: (crop, calendars, refs, guardrail log)."""
-    g: dict[str, Any] = {"guardrail_version": guardrails.GUARDRAIL_VERSION, "dropped": [],
-                         "downgraded": [], "flagged": [], "items_in": 0}  # fmt: skip
+def _drop(g: dict[str, Any], what: str, why: str) -> None:
+    g["dropped"].append({"item": what, "reason": why})
 
-    def drop(what: str, why: str) -> None:
-        g["dropped"].append({"item": what, "reason": why})
 
-    items = [("crop", answer["crop"]), *(("calendar", c) for c in answer["calendars"]),
-             *(("economics_ref", e) for e in answer["economics_refs"])]  # fmt: skip
-    g["items_in"] = len(items)
+def _usable(g: dict[str, Any], kind: str, i: dict[str, Any]) -> bool:
+    """A source URL, a short quote; a domain off the allowlist is only noted (``ai_suggested``)."""
+    url = i.get("source_url")
+    if not isinstance(url, str) or not url.startswith(("https://", "http://")):
+        _drop(g, kind, "no source_url")
+        return False
+    if len((i.get("evidence_quote") or "").split()) > guardrails.MAX_QUOTE_WORDS:
+        _drop(g, kind, "evidence_quote longer than 30 words")
+        return False
+    if not guardrails.domain_allowed(url):
+        g["downgraded"].append({"item": kind, "reason": "source domain not on the allowlist; "
+                                "ai_suggested at best"})  # fmt: skip
+    return True
+
+
+def new_log() -> dict[str, Any]:
+    return {"guardrail_version": guardrails.GUARDRAIL_VERSION, "dropped": [], "downgraded": [],
+            "flagged": [], "items_in": 0}  # fmt: skip
+
+
+def fetch_pages(items: list[tuple[str, dict[str, Any]]], fetch: Any) -> dict[str, Any]:
+    """Each distinct cited page, fetched once."""
     urls = sorted({i.get("source_url") for _, i in items
                    if isinstance(i.get("source_url"), str) and i["source_url"].startswith("http")})  # fmt: skip
-    pages = {u: fetch(u) for u in urls}
+    return {u: fetch(u) for u in urls}
+
+
+def check_calendars(items: list[dict[str, Any]], cid: str, sage: dict[str, Any],
+                    pages: dict[str, Any], g: dict[str, Any]) -> list[dict[str, Any]]:  # fmt: skip
+    """The calendar windows of an answer that pass the checks (at most one per region), each with
+    its origin, source and SAGE cross-check; every drop or flag is written to the log ``g``."""
+
+    def drop(what: str, why: str) -> None:
+        _drop(g, what, why)
 
     def usable(kind: str, i: dict[str, Any]) -> bool:
-        url = i.get("source_url")
-        if not isinstance(url, str) or not url.startswith(("https://", "http://")):
-            drop(kind, "no source_url")
-            return False
-        if len((i.get("evidence_quote") or "").split()) > guardrails.MAX_QUOTE_WORDS:
-            drop(kind, "evidence_quote longer than 30 words")
-            return False
-        if not guardrails.domain_allowed(url):
-            g["downgraded"].append({"item": kind, "reason": "source domain not on the allowlist; "
-                                    "ai_suggested at best"})  # fmt: skip
-        return True
+        return _usable(g, kind, i)
 
-    # the crop's own facts
-    c = answer["crop"]
-    cid = slug(name)
-    crop: dict[str, Any] = {"crop_id": cid, "name": name.strip(), "roles": [c["role"]],
-                            "aliases": sorted({slug(c["name"])} - {cid}) if c.get("name") else [],
-                            "scientific_name": None, "family": None, "season_length_days": None,
-                            "origin": "ai_suggested", "sources": []}  # fmt: skip
-    if usable("crop", c):
-        origin = _origin(c, pages.get(c["source_url"]))
-        if origin is None:
-            drop("crop", "source page unreachable")
-        else:
-            crop["origin"], crop["sources"] = origin, [_source(c)]
-            crop["scientific_name"] = (c.get("scientific_name") or None)
-            fam = c.get("family")
-            if fam and FAMILY_RE.match(fam):
-                crop["family"] = fam
-            elif fam:
-                drop("crop.family", f"'{fam}' is not a botanical family name")
-            days = c.get("season_length_days")
-            if days is not None:
-                missing = verify.unsupported_numbers({"evidence_quote": c.get("evidence_quote"),
-                                                      "d": days}, ("d",), ())  # fmt: skip
-                if not SEASON_DAYS[0] <= days <= SEASON_DAYS[1]:
-                    drop("crop.season_length_days", f"{days} days is outside {SEASON_DAYS}")
-                elif missing:
-                    drop("crop.season_length_days", "the number is not in the quote")
-                else:
-                    crop["season_length_days"] = days
-    if crop["origin"] == "ai_suggested" and not crop["sources"]:
-        crop["notes"] = "No sourced crop facts were found; only the name you typed is stored."
-
-    # calendars
     cals: list[dict[str, Any]] = []
-    for i, w in enumerate(sorted(answer["calendars"], key=lambda x: str(x.get("source_url"))
+    for i, w in enumerate(sorted(items, key=lambda x: str(x.get("source_url"))
                                  )[:MAX_CALENDARS]):  # fmt: skip
         what = f"calendar[{i}]"
         if not usable(what, w):
@@ -272,6 +257,61 @@ def check(answer: dict[str, Any], name: str, region_key: str, sage: dict[str, An
         for extra in cals[1:]:
             drop("calendar", f"another calendar for this region was kept ({extra['source']['url']})")
         cals = cals[:1]
+    return cals
+
+
+def check(answer: dict[str, Any], name: str, region_key: str, sage: dict[str, Any],
+          fetch: Any) -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]],
+                               dict[str, Any]]:  # fmt: skip
+    """Deterministic guardrails and quote checks: (crop, calendars, refs, guardrail log)."""
+    g: dict[str, Any] = {"guardrail_version": guardrails.GUARDRAIL_VERSION, "dropped": [],
+                         "downgraded": [], "flagged": [], "items_in": 0}  # fmt: skip
+
+    def drop(what: str, why: str) -> None:
+        _drop(g, what, why)
+
+    def usable(kind: str, i: dict[str, Any]) -> bool:
+        return _usable(g, kind, i)
+
+    items = [("crop", answer["crop"]), *(("calendar", c) for c in answer["calendars"]),
+             *(("economics_ref", e) for e in answer["economics_refs"])]  # fmt: skip
+    g["items_in"] = len(items)
+    pages = fetch_pages(items, fetch)
+
+    # the crop's own facts
+    c = answer["crop"]
+    cid = slug(name)
+    crop: dict[str, Any] = {"crop_id": cid, "name": name.strip(), "roles": [c["role"]],
+                            "aliases": sorted({slug(c["name"])} - {cid}) if c.get("name") else [],
+                            "scientific_name": None, "family": None, "season_length_days": None,
+                            "origin": "ai_suggested", "sources": []}  # fmt: skip
+    if usable("crop", c):
+        origin = _origin(c, pages.get(c["source_url"]))
+        if origin is None:
+            drop("crop", "source page unreachable")
+        else:
+            crop["origin"], crop["sources"] = origin, [_source(c)]
+            crop["scientific_name"] = (c.get("scientific_name") or None)
+            fam = c.get("family")
+            if fam and FAMILY_RE.match(fam):
+                crop["family"] = fam
+            elif fam:
+                drop("crop.family", f"'{fam}' is not a botanical family name")
+            days = c.get("season_length_days")
+            if days is not None:
+                missing = verify.unsupported_numbers({"evidence_quote": c.get("evidence_quote"),
+                                                      "d": days}, ("d",), ())  # fmt: skip
+                if not SEASON_DAYS[0] <= days <= SEASON_DAYS[1]:
+                    drop("crop.season_length_days", f"{days} days is outside {SEASON_DAYS}")
+                elif missing:
+                    drop("crop.season_length_days", "the number is not in the quote")
+                else:
+                    crop["season_length_days"] = days
+    if crop["origin"] == "ai_suggested" and not crop["sources"]:
+        crop["notes"] = "No sourced crop facts were found; only the name you typed is stored."
+
+    # calendars
+    cals = check_calendars(answer["calendars"], cid, sage, pages, g)
 
     # economics references: only with a quote that holds the number
     refs: list[dict[str, Any]] = []
