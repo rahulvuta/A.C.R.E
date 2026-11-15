@@ -180,6 +180,8 @@ export interface Scenario {
   label: string;
   isBaseline: boolean;
   rotation: FieldPlan[];
+  /** Zoned baseline: each zone's own rotation (keyed by zone id). Absent means the whole field follows `rotation`. */
+  zoneRotations?: Record<string, FieldPlan[]>;
   /** Where it came from: the farmer's plan, a suggestion from /recommend, or built by hand. */
   from: "current" | "suggested" | "custom";
 }

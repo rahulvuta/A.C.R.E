@@ -137,3 +137,11 @@
 .gf-part-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; }
 .gf-part-head .gf-kicker { flex-basis: 100%; margin: 0; }
 .gf-part-question { margin: 0; font-size: 20px; font-weight: 500; }
+
+/* Field zones: parts of one field, each with its own current rotation */
+.gf-zones { display: grid; gap: 14px; }
+.gf-zone .db-card-head { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; }
+.gf-zone-name, .gf-zone-share { display: grid; gap: 4px; font-size: 14px; }
+.gf-zone-name input { min-width: 200px; }
+.gf-zone-share input { width: 110px; }
+.gf-zone-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }

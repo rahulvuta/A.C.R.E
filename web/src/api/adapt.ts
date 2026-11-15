@@ -1362,7 +1362,7 @@ export function adaptSimulation(r: z.infer<typeof BackendSimulation>): Simulatio
 
 export interface SimulateRequest {
   point: LatLonPoint;
-  field: { fieldId: string; name: string; areaHa: number | null; geometry?: Farm["fields"][number]["geometry"] | null; equipment: string[]; readings: Reading[] };
+  field: { fieldId: string; name: string; areaHa: number | null; geometry?: Farm["fields"][number]["geometry"] | null; equipment: string[]; readings: Reading[]; zones?: Array<{ zoneId: string; name: string; share: number }> };
   priorities: Record<string, number>;
   overrides: Record<string, CropOverride>;
   loss: LossAssumptions;
@@ -1390,13 +1390,15 @@ const toBackendOverrides = (o: Record<string, CropOverride>) =>
 export function toBackendSimulate(q: SimulateRequest) {
   return {
     location: { latitude: q.point.latitude, longitude: q.point.longitude },
-    field: { field_id: q.field.fieldId, name: q.field.name, area_ha: q.field.areaHa, geometry: q.field.geometry ?? null, equipment: q.field.equipment, readings: q.field.readings.map(toBackendReading) },
+    field: { field_id: q.field.fieldId, name: q.field.name, area_ha: q.field.areaHa, geometry: q.field.geometry ?? null, equipment: q.field.equipment, readings: q.field.readings.map(toBackendReading), ...(q.field.zones?.length ? { zones: q.field.zones.map((z) => ({ zone_id: z.zoneId, name: z.name, share: z.share })) } : {}) },
     goals: { priorities: q.priorities },
     economics: {
       overrides: toBackendOverrides(q.overrides),
       loss_assumptions: { dry_spring_pct: q.loss.drySpringPct, heavy_rain_pct: q.loss.heavyRainPct },
     },
-    scenarios: q.scenarios.map((s) => ({ scenario_id: s.scenarioId, label: s.label, ...(s.isBaseline ? { is_baseline: true } : {}), rotation: s.rotation.map(fieldPlanToBackend) })),
+    scenarios: q.scenarios.map((s) => ({ scenario_id: s.scenarioId, label: s.label, ...(s.isBaseline ? { is_baseline: true } : {}), // A zoned baseline sends each zone's own rotation; every other scenario sends one rotation for the whole field.
+      rotation: s.zoneRotations && q.field.zones?.length ? undefined : s.rotation.map(fieldPlanToBackend),
+      zone_rotations: s.zoneRotations && q.field.zones?.length ? Object.fromEntries(Object.entries(s.zoneRotations).map(([id, r]) => [id, r.map(fieldPlanToBackend)])) : undefined })),
     years: q.years ?? 10,
     runs: q.runs ?? 200,
     seed: q.seed ?? 7,
