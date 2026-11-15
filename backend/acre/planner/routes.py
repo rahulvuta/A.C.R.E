@@ -521,7 +521,8 @@ async def post_future(request: Request) -> Any:
         issues.append(issue("start_season", "invalid_year", "start_season is a year like 2027"))
     n = body.get("seasons", len(legs) or 1)
     if isinstance(n, bool) or not isinstance(n, int) or not 1 <= n <= MAX_SEASONS:
-        issues.append(issue("seasons", "invalid_seasons", "seasons must be a whole number 1-10"))
+        issues.append(issue("seasons", "invalid_seasons",
+                            f"seasons must be a whole number 1-{MAX_SEASONS}"))
     as_of = None
     if body.get("as_of") is not None:
         try:

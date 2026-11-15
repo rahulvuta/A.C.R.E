@@ -26,6 +26,12 @@ EQUIPMENT_LIMITS: tuple[str, ...] = (
     "no_drill_interseeding", "no_roller_crimper", "no_no_till_planter", "no_grain_drill",
     "no_sprayer",
 )  # fmt: skip
+# The generator enumerates every crop sequence and every leg option for each season (generator.py,
+# the ``product(...)`` loops), so its cost grows about 10x per season: measured offline, about 0.7 s
+# at 4 seasons for Union County and about 5 s for Pergamino. Longer rotations are fine to simulate,
+# check and lay out (``MAX_ROTATION_LEGS`` in ``acre.contracts``); they are just not searched for.
+MAX_GENERATED_SEASONS = 4
+
 _MMDD = re.compile(r"^(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$")
 _DAYS = {1: 31, 2: 29, 3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31}
 
@@ -59,7 +65,7 @@ class Constraints(_Strict):
     equipment: list[str] = Field(default_factory=list)
     latest_planting: str | None = None  # MM-DD
     earliest_harvest: str | None = None  # MM-DD
-    seasons: int = Field(default=2, ge=1, le=4)
+    seasons: int = Field(default=2, ge=1, le=MAX_GENERATED_SEASONS)
 
     @field_validator("allowed_crops", "excluded_crops", "must_include")
     @classmethod

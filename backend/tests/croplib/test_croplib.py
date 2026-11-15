@@ -305,3 +305,24 @@ def test_economics_only_crops_are_seeded_and_not_researched(api, monkeypatch):
     seen = calls_to(answer())
     job = research.start("Synthetic econ crop", "US", wait_s=10)
     assert job.reason == "known_crop" and seen == []
+
+
+def test_an_empty_cache_dir_rebuilds_the_library_from_bundled_data(api, monkeypatch, tmp_path):
+    """Render's free disk is wiped on restart: the built-in library must rebuild from the repo."""
+    from acre.economics import data
+
+    monkeypatch.delenv("ACRE_ECONOMICS_DIR", raising=False)  # the bundled data/economics files
+    data.clear_cache()
+    root = Path(library.db_path()).parent
+    assert not root.exists() or not any(root.iterdir())  # truly empty to begin with
+    first = api.get("/v1/crops/maize", params={"region_key": "US-NC"}).json()
+    assert first["origin"] == "verified_source" and "field_corn" in first["aliases"]
+    assert api.get("/v1/crops/search", params={"q": "soy"}).json()["results"][0]["crop_id"] == "soybean"
+    assert library.db_path().exists()
+    # a restart: the file and the in-process seed memory are gone; the next lookup rebuilds
+    for f in root.glob("croplib.sqlite*"):
+        f.unlink()
+    library.reset()
+    again = api.get("/v1/crops/maize", params={"region_key": "US-NC"}).json()
+    assert again["crop_id"] == first["crop_id"] and again["economics_refs"] == first["economics_refs"]
+    assert library.db_path().exists()

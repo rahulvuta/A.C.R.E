@@ -243,3 +243,14 @@ def test_an_unknown_final_harvest_makes_the_season_and_plan_partial(client):
                                               "seasons": 1}).json()  # fmt: skip
     assert j["seasons"][0]["status"] == "partial" and j["seasons"][0]["harvest_known"] is False
     assert j["status"] == "partial"
+
+
+def test_a_ten_season_future_plan_is_laid_out_without_truncation(client):
+    from acre.contracts import MAX_ROTATION_LEGS
+
+    j = future(client, plan_id="corn_soy__rye", start_season=2027, seasons=MAX_ROTATION_LEGS)
+    assert len(j["seasons"]) == MAX_ROTATION_LEGS == 10
+    assert [s["season"] for s in j["seasons"]] == [str(2027 + i) for i in range(10)]
+    r = client.post("/v1/plans/future", json={"plan_id": "corn_soy__rye", "start_season": 2027,
+                                              "seasons": MAX_ROTATION_LEGS + 1})
+    assert r.status_code == 400 and r.json()["issues"][0]["field"] == "seasons"

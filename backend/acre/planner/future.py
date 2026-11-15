@@ -22,14 +22,14 @@ from pydantic import BaseModel
 
 from acre.catalogs import crop_ids
 from acre.catalogs.index import CatalogIndex
-from acre.contracts import FieldIssue, Plan, Status
+from acre.contracts import MAX_ROTATION_LEGS, FieldIssue, Plan, Status
 from acre.planner.backup import build_backup_plan
 from acre.planner.calendar import ActionCalendar, build_action_calendar, diff_calendars
 
 DATE_FIELDS = ("prev_harvest", "next_plant", "winter.seed", "winter.terminate", "winter.plant",
                "winter.harvest")  # fmt: skip
 EDITABLE = (*DATE_FIELDS, "winter.crop_id")
-MAX_SEASONS = 10  # the 10-year planning horizon; legs repeat when fewer are given
+MAX_SEASONS = MAX_ROTATION_LEGS  # the planning horizon; legs repeat when fewer are given
 NOT_A_FORECAST = ("Planned dates on future calendars, from the plan and its sources. They are not "
                   "a forecast: the weather in these seasons is unknown.")  # fmt: skip
 

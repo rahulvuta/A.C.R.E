@@ -11855,6 +11855,7 @@
   },
   "method": {
     "definitions": "backend/docs/indicators.md",
+    "excluded_indicators": {},
     "indicators_used": [
       "living_cover_days",
       "bare_soil_days",
