@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import polygonsFixture from "../api/fixtures/polygons.json";
 import type { FieldGeometry } from "../farm/types";
-import { insideStage, slabGeometry, stageShape } from "./polygonShape";
+import { farmLayout, insideStage, slabGeometry, stageShape, type PlacedShape } from "./polygonShape";
 
 type Poly = { geometry: FieldGeometry; area_ha: number | null; valid: boolean };
 const P = polygonsFixture.polygons as unknown as Record<string, Poly>;
@@ -41,5 +41,33 @@ describe("stageShape (card C3)", () => {
   it("no geometry, or a degenerate one, falls back (null)", () => {
     expect(stageShape(null, 7.4, 7.4)).toBeNull();
     expect(stageShape({ type: "Polygon", coordinates: [[[0, 0], [0, 0], [0, 0], [0, 0]]] }, 7.4, 7.4)).toBeNull();
+  });
+});
+
+describe("farmLayout", () => {
+  const rect = (lon: number, lat: number, w: number, h: number) => ({
+    type: "Polygon" as const,
+    coordinates: [[[lon, lat], [lon + w, lat], [lon + w, lat + h], [lon, lat + h], [lon, lat]]],
+  });
+
+  it("keeps each field's real place, relative size and shared scale", () => {
+    const west = rect(-80.55, 34.98, 0.004, 0.004);
+    const eastNorth = rect(-80.54, 34.99, 0.002, 0.002);
+    const lay = farmLayout([west, eastNorth], 24, 11, 7.4)!;
+    const [a, b] = lay.fields as [PlacedShape, PlacedShape];
+    expect(a.x).toBeLessThan(b.x); // west field sits to the west (left)
+    expect(b.z).toBeLessThan(a.z); // the northern field sits further back (north is -z)
+    const span = (p: PlacedShape) => Math.max(...p.shape.rings[0]![0]!.map(([x]) => x)) - Math.min(...p.shape.rings[0]![0]!.map(([x]) => x));
+    expect(span(a) / span(b)).toBeCloseTo(2, 1); // one scale for the whole farm
+    expect(lay.halfW * 2).toBeLessThanOrEqual(24);
+    expect(lay.halfD * 2).toBeLessThanOrEqual(11);
+  });
+
+  it("caps a single field at the per-field size and skips unusable outlines", () => {
+    const lay = farmLayout([rect(-80.55, 34.98, 0.01, 0.01), null], 24, 11, 7.4)!;
+    expect(lay.fields[1]).toBeNull();
+    const ring = lay.fields[0]!.shape.rings[0]![0]!;
+    expect(Math.max(...ring.map(([x]) => x)) - Math.min(...ring.map(([x]) => x))).toBeLessThanOrEqual(7.4);
+    expect(farmLayout([null], 24, 11, 7.4)).toBeNull();
   });
 });

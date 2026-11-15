@@ -197,7 +197,7 @@ export function Dashboard({ api: given }: { api?: GlobalApi }) {
           ) : null}
           {route.page === "field" ? (
             current ? (
-              <FieldWorkspace key={current.field.field_id} api={api} farm={current.farm} field={current.field} tab={route.tab} onTab={(tab) => go({ page: "field", id: current.field.field_id, tab })} onClose={() => go({ page: "fields" })} onCopy={() => { const id = copyToMyFields(current.farm, current.field, mine[0] ?? null); open(id); }} />
+              <FieldWorkspace key={current.field.field_id} api={api} farm={current.farm} field={current.field} tab={route.tab} onTab={(tab) => go({ page: "field", id: current.field.field_id, tab })} onClose={() => go({ page: "fields" })} onOpenField={(id) => open(id)} onCopy={() => { const id = copyToMyFields(current.farm, current.field, mine[0] ?? null); open(id); }} />
             ) : (
               <Banner kind="info">
                 That field is not saved in this browser. <button type="button" className="btn btn-quiet" onClick={() => go({ page: "fields" })}>Back to fields</button>

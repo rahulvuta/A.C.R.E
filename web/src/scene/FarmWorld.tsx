@@ -6,7 +6,7 @@ import type { CardKey } from "../content/strategies";
 import type { StripVM } from "../view/build";
 import { fieldStateAt, type FieldState } from "./growth";
 import type { FieldGeometry } from "../farm/types";
-import { insideStage, slabGeometry, stageShape, type StageShape } from "./polygonShape";
+import { insideStage, slabGeometry, stageShape, type FarmLayout, type PlacedShape, type StageShape } from "./polygonShape";
 
 /*
   The 3D farm. Three fields side by side in card order. Everything shown is driven by plan
@@ -410,6 +410,26 @@ function SelectionFrame({ color }: { color: string }) {
   );
 }
 
+/** The selection frame for a drawn outline: an accent line along each outer ring, just above the soil. */
+function OutlineFrame({ shape, color }: { shape: StageShape; color: string }) {
+  const lines = useMemo(
+    () =>
+      shape.rings.map(([outerRing]) => {
+        const g = new THREE.BufferGeometry().setFromPoints(outerRing!.map(([x, y]) => new THREE.Vector3(x, 0.04, -y)));
+        return new THREE.LineLoop(g, new THREE.LineBasicMaterial({ color }));
+      }),
+    [shape, color],
+  );
+  useEffect(() => () => lines.forEach((l) => (l.geometry.dispose(), (l.material as THREE.Material).dispose())), [lines]);
+  return (
+    <group>
+      {lines.map((l, i) => (
+        <primitive key={i} object={l} />
+      ))}
+    </group>
+  );
+}
+
 function Field({
   strip,
   state,
@@ -421,8 +441,11 @@ function Field({
   flat,
   onSelect,
   outline,
+  placed,
 }: {
   strip: StripVM;
+  /** Farm layout: this field's outline at the farm's shared scale and its place on the stage. */
+  placed?: PlacedShape | null;
   /** The drawn outline (card C3). Without one the field is the classic square slab. */
   outline?: FieldGeometry | null;
   state: FieldState | null;
@@ -436,7 +459,7 @@ function Field({
   flat: boolean;
   onSelect: (k: CardKey) => void;
 }) {
-  const shape = useMemo(() => stageShape(outline, FIELD_W, FIELD_D), [outline]);
+  const shape = useMemo(() => placed?.shape ?? stageShape(outline, FIELD_W, FIELD_D), [outline, placed]);
   // Soil layers as slabs cut to the outline: topsoil, subsoil, deep layer, and the pale "not evaluated" slab.
   const slabs = useMemo(
     () => (shape ? { top: slabGeometry(shape, 0.35), sub: slabGeometry(shape, 0.55), deep: slabGeometry(shape, 0.7), ghost: slabGeometry(shape, 0.5) } : null),
@@ -545,7 +568,7 @@ function Field({
   };
 
   return (
-    <group ref={outer} position={[x, 0, 0]}>
+    <group ref={outer} position={[placed?.x ?? x, 0, placed?.z ?? 0]}>
       <mesh position={[0, -SOIL_H - 0.45, 0.4]} rotation={[-Math.PI / 2, 0, 0]} visible={!flat}>
         <planeGeometry args={[FIELD_W * 1.7, FIELD_D * 1.7]} />
         <meshBasicMaterial map={shadow} transparent depthWrite={false} />
@@ -617,7 +640,7 @@ function Field({
           </>
         )}
 
-        {strip.selected ? <SelectionFrame color={palette.accent} /> : null}
+        {strip.selected ? placed && shape ? <OutlineFrame shape={shape} color={palette.accent} /> : <SelectionFrame color={palette.accent} /> : null}
 
         {state ? (
           <>
@@ -664,25 +687,37 @@ function fit(look: [number, number, number], hw: number, hd: number, hh: number,
   };
 }
 
-function presetFor(preset: CameraPreset, x: number, aspect: number, sway = 0) {
+/** Where the camera looks: the selected field's centre, and the half extents of the whole stage. */
+interface Focus {
+  x: number;
+  z: number;
+  halfW: number;
+  halfD: number;
+  /** Half the height the overview must fit on screen (a deep farm seen from above is taller). */
+  halfH: number;
+}
+const STRIP_FOCUS = (x: number): Focus => ({ x, z: 0, halfW: SCENE_HALF_W + 0.3, halfD: FIELD_D / 2 + 0.6, halfH: 3.6 });
+
+function presetFor(preset: CameraPreset, f: Focus, aspect: number, sway = 0) {
   // One field: close and a little lower, so the plants' shapes and height are the subject.
-  if (preset === "field") return fit([x, 0.1, 0.4], FIELD_W / 2 + 0.2, FIELD_D / 2 + 0.2, 2.7, 24, -34 + sway, aspect);
+  if (preset === "field") return fit([f.x, 0.1, f.z + 0.4], FIELD_W / 2 + 0.2, FIELD_D / 2 + 0.2, 2.7, 24, -34 + sway, aspect);
   // Soil: straight at the cut face, almost level, so the layers, roots and water line fill the view.
-  if (preset === "cutaway") return fit([x, -0.55, FIELD_D / 2], FIELD_W / 2 + 0.2, 0, 1.45, 3, 0, aspect);
-  return fit([0, -0.9, 0], SCENE_HALF_W + 0.3, FIELD_D / 2 + 0.6, 3.6, 33, -20 + sway, aspect);
+  if (preset === "cutaway") return fit([f.x, -0.55, f.z + FIELD_D / 2], FIELD_W / 2 + 0.2, 0, 1.45, 3, 0, aspect);
+  return fit([0, -0.9, 0], f.halfW, f.halfD, f.halfH, 33, -20 + sway, aspect);
 }
 
-function CameraRig({ preset, focusX, animate }: { preset: CameraPreset; focusX: number; animate: boolean }) {
+function CameraRig({ preset, focus, animate }: { preset: CameraPreset; focus: Focus; animate: boolean }) {
   const { camera, invalidate, size } = useThree();
   const aspect = size.width / Math.max(1, size.height);
   // With animation off the canvas renders on demand, so a new view must ask for a frame.
-  useEffect(() => invalidate(), [preset, focusX, aspect, invalidate]);
-  const look = useRef(new THREE.Vector3(...presetFor(preset, focusX, aspect).look));
+  const fx = focus.x, fz = focus.z, fw = focus.halfW, fd = focus.halfD, fh = focus.halfH;
+  useEffect(() => invalidate(), [preset, fx, fz, fw, fd, fh, aspect, invalidate]);
+  const look = useRef(new THREE.Vector3(...presetFor(preset, focus, aspect).look));
   const first = useRef(true);
   useFrame((state, dt) => {
     // A slow few-degree drift keeps the scene alive without moving anything the reader is reading.
     const sway = animate && preset !== "cutaway" ? Math.sin(state.clock.elapsedTime * 0.28) * 2.2 : 0;
-    const target = presetFor(preset, focusX, aspect, sway);
+    const target = presetFor(preset, focus, aspect, sway);
     const k = animate && !first.current ? 1 - Math.pow(0.0015, dt) : 1;
     first.current = false;
     camera.position.lerp(new THREE.Vector3(...target.pos), k);
@@ -701,8 +736,14 @@ export default function FarmWorld({
   onSelect,
   children,
   outlines,
+  layout,
 }: {
   strips: StripVM[];
+  /**
+   * Farm layout (field workspace): each strip is a field drawn at its real shape, size and
+   * place on the farm, from farmLayout in ./polygonShape, in the same order as strips.
+   */
+  layout?: FarmLayout | null;
   /**
    * Card C3: the drawn outline for each strip, in the same order. A strip with no outline
    * (and the NC demo, which passes none) keeps the square field. Label the view with
@@ -748,7 +789,7 @@ export default function FarmWorld({
           key={s.key}
           strip={s}
           state={states[i]!}
-          x={X[i]!}
+          x={X[i] ?? 0}
           index={i}
           palette={palette}
           animate={animate}
@@ -756,9 +797,18 @@ export default function FarmWorld({
           flat={preset === "cutaway"}
           onSelect={onSelect}
           outline={outlines?.[i]}
+          placed={layout?.fields[i]}
         />
       ))}
-      <CameraRig preset={preset} focusX={X[selectedIndex]!} animate={animate} />
+      <CameraRig
+        preset={preset}
+        focus={
+          layout
+            ? { x: layout.fields[selectedIndex]?.x ?? 0, z: layout.fields[selectedIndex]?.z ?? 0, halfW: Math.max(layout.halfW, FIELD_W / 2) + 0.9, halfD: Math.max(layout.halfD, FIELD_D / 2) + 0.9, halfH: Math.max(3.6, (layout.halfD + 0.9) * Math.sin((33 * Math.PI) / 180) + 2.2) }
+            : STRIP_FOCUS(X[selectedIndex]!)
+        }
+        animate={animate}
+      />
       {children}
     </Canvas>
   );
