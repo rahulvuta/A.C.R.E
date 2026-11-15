@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
 import { areaHa, formatArea } from "../../farm/geometry";
 import { farmActions } from "../../farm/hooks";
 import type { Farm, Field } from "../../farm/types";
@@ -16,7 +16,8 @@ import { ReadingsLog, StepPlan } from "../guided/StepPlan";
 import { StepSimulate } from "../guided/StepSimulate";
 import { StepTry } from "../guided/StepTry";
 import { ResearchPanel } from "../workspace/ResearchPanel";
-import { FarmScene } from "./FarmScene";
+// The 3D farm (three.js) loads only when the Overview shows it.
+const FarmScene = lazy(() => import("./FarmScene").then((m) => ({ default: m.FarmScene })));
 
 /*
   One field's workspace: seven sections that reuse the guided simulator's step components
@@ -126,7 +127,9 @@ function Overview({ ctx, farm, field, onTab, onClose, onOpenField }: { ctx: Step
           </button>
         </div>
       </section>
-      <FarmScene farm={farm} fieldId={field.field_id} rotation={sim.rotation} onOpen={onOpenField} />
+      <Suspense fallback={null}>
+        <FarmScene farm={farm} fieldId={field.field_id} rotation={sim.rotation} onOpen={onOpenField} />
+      </Suspense>
     </div>
   );
 }

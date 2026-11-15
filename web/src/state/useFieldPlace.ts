@@ -23,40 +23,65 @@ export function fieldPoint(field: Field): LatLon {
   return { latitude: Math.round(c.latitude * 100) / 100, longitude: Math.round(c.longitude * 100) / 100 };
 }
 
+// Every hook showing the same point is told when its lookup moves on, so one request serves
+// all of them (the field cards, the workspace and its sections) instead of one each.
+const listeners = new Map<string, Set<() => void>>();
+const regionProfiles = new Map<string, Promise<Loadable<RegionProfile> | null>>();
+
+function publish(key: string, value: { place: Loadable<PlaceInfo>; profile: Loadable<RegionProfile> }) {
+  cache.set(key, value);
+  listeners.get(key)?.forEach((f) => f());
+}
+
+function profileFor(client: GlobalClient, regionKey: string): Promise<Loadable<RegionProfile> | null> {
+  let p = regionProfiles.get(regionKey);
+  if (!p) {
+    p = client.regionProfile(regionKey).then((r) => (r.ok ? { state: "ready" as const, data: r.data } : null));
+    regionProfiles.set(regionKey, p);
+    // A failed profile may be tried again later.
+    void p.then((v) => (v ? undefined : regionProfiles.delete(regionKey)));
+  }
+  return p;
+}
+
+function load(client: GlobalClient, key: string, point: LatLon) {
+  publish(key, { place: { state: "loading" }, profile: { state: "idle" } });
+  void (async () => {
+    const p = await client.geoReverse(point);
+    if (!p.ok) {
+      // An error is shown, then forgotten, so the next view of this field tries again.
+      publish(key, { place: { state: "error", message: p.message }, profile: { state: "idle" } });
+      cache.delete(key);
+      return;
+    }
+    publish(key, { place: { state: "ready", data: p.data }, profile: { state: "loading" } });
+    let profile: Loadable<RegionProfile> = { state: "error", message: "No regional profile for this place yet." };
+    for (const k of p.data.regionKeys) {
+      const r = await profileFor(client, k);
+      if (r) {
+        profile = r;
+        break;
+      }
+    }
+    publish(key, { place: { state: "ready", data: p.data }, profile });
+  })();
+}
+
 export function useFieldPlace(client: GlobalClient, field: Field | null): FieldPlace | null {
   const point = field ? fieldPoint(field) : null;
   const key = point ? `${point.latitude},${point.longitude}` : null;
   const [, bump] = useState(0);
 
   useEffect(() => {
-    if (!key || !point || cache.has(key)) return;
-    let live = true;
-    cache.set(key, { place: { state: "loading" }, profile: { state: "idle" } });
-    bump((n) => n + 1);
-    (async () => {
-      const p = await client.geoReverse(point);
-      if (!p.ok) {
-        cache.set(key, { place: { state: "error", message: p.message }, profile: { state: "idle" } });
-        if (live) bump((n) => n + 1);
-        return;
-      }
-      cache.set(key, { place: { state: "ready", data: p.data }, profile: { state: "loading" } });
-      if (live) bump((n) => n + 1);
-      let profile: Loadable<RegionProfile> = { state: "error", message: "No regional profile for this place yet." };
-      for (const k of p.data.regionKeys) {
-        const r = await client.regionProfile(k);
-        if (r.ok) {
-          profile = { state: "ready", data: r.data };
-          break;
-        }
-      }
-      cache.set(key, { place: { state: "ready", data: p.data }, profile });
-      if (live) bump((n) => n + 1);
-    })();
+    if (!key || !point) return;
+    const on = () => bump((n) => n + 1);
+    let set = listeners.get(key);
+    if (!set) listeners.set(key, (set = new Set()));
+    set.add(on);
+    if (!cache.has(key)) load(client, key, point);
+    else on();
     return () => {
-      live = false;
-      // A cancelled lookup is tried again next time.
-      if (cache.get(key)?.place.state === "loading") cache.delete(key);
+      set!.delete(on);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, client]);
@@ -68,4 +93,5 @@ export function useFieldPlace(client: GlobalClient, field: Field | null): FieldP
 
 export function resetFieldPlaceCache() {
   cache.clear();
+  regionProfiles.clear();
 }

@@ -764,7 +764,7 @@ export default function FarmWorld({
     <Canvas
       className="world-canvas"
       shadows
-      dpr={[1, 2]}
+      dpr={[1, 1.5]}
       camera={{ position: [0, 9, 14], fov: FOV, near: 0.1, far: 200 }}
       gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
       frameloop={animate ? "always" : "demand"}
@@ -775,7 +775,7 @@ export default function FarmWorld({
         position={[-9, 16, 9]}
         intensity={1.9}
         castShadow
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={[1024, 1024]}
         shadow-bias={-0.0006}
         shadow-camera-left={-18}
         shadow-camera-right={18}

@@ -1,19 +1,17 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { APP_NAME } from "../../config";
 import { farmActions, putFarm, selectField, useFarms } from "../../farm/hooks";
 import { centroid, formatArea } from "../../farm/geometry";
 import type { Farm, Field } from "../../farm/types";
-import { FarmMap } from "../../map/FarmMap";
 import { useFieldPlace } from "../../state/useFieldPlace";
 import { useGlobalApi, type GlobalApi } from "../../state/useGlobal";
 import { getSimField, loadDemoFields, removeSimField, updateSimField, useSimField } from "../../state/simField";
 import { Banner } from "../../ui/components";
-import { SourceBanner } from "../workspace/Workspace";
+import { SourceBanner } from "../workspace/SourceBanner";
 import { cropsOf, rotationReady } from "../guided/context";
 import { cropLabel } from "../guided/format";
 import { FieldWorkspace, TABS } from "./FieldWorkspace";
 import { navIcon } from "../planner/SideNav";
-import { DEEP_DIVE_HREF } from "../guided/Guided";
 
 /*
   The front door of the app: an empty farm dashboard. Fields are cards; "Add field" opens the
@@ -22,6 +20,10 @@ import { DEEP_DIVE_HREF } from "../guided/Guided";
   field can be copied into the grower's fields. Everything stays in this browser.
 */
 type Route = { page: "fields" } | { page: "add" } | { page: "field"; id: string; tab: string };
+
+// The map editor (MapLibre) loads only when a field is being added.
+const FarmMap = lazy(() => import("../../map/FarmMap").then((m) => ({ default: m.FarmMap })));
+const DEEP_DIVE_HREF = "?view=demo";
 
 function readRoute(): Route {
   const m = window.location.hash.match(/[#&]d=([^&]*)/);
@@ -191,7 +193,9 @@ export function Dashboard({ api: given }: { api?: GlobalApi }) {
                 <p className="gf-sentence">Find your farm on the map, draw the boundary and name the field. Acres show as soon as you finish the shape.</p>
               </header>
               <div className="ws-map gf-map">
-                <FarmMap api={api.geo} />
+                <Suspense fallback={<p className="gf-muted">Loading the map…</p>}>
+                  <FarmMap api={api.geo} />
+                </Suspense>
               </div>
             </section>
           ) : null}
