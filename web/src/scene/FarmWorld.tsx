@@ -781,9 +781,12 @@ export default function FarmWorld({
   outlines,
   layout,
   resetKey,
+  states: givenStates,
 }: {
   /** Changing this flies the camera back to the chosen view after the reader moved it. */
   resetKey?: number;
+  /** Field states worked out by the caller (multi-year strategy simulations) instead of from `day`. */
+  states?: Array<FieldState | null>;
   strips: StripVM[];
   /**
    * Farm layout (field workspace): each strip is a field drawn at its real shape, size and
@@ -803,7 +806,7 @@ export default function FarmWorld({
   onSelect: (k: CardKey) => void;
   children?: ReactNode;
 }) {
-  const states = strips.map((s) => (s.plan ? fieldStateAt(s.plan, day) : null));
+  const states = givenStates ?? strips.map((s) => (s.plan ? fieldStateAt(s.plan, day) : null));
   const selectedIndex = Math.max(0, strips.findIndex((s) => s.selected));
   const solo = preset !== "overview";
   return (

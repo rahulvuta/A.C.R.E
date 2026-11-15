@@ -108,3 +108,28 @@
 .sb-summary { margin: 0; padding: 12px 16px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--accent-soft); color: var(--accent-ink); font-size: 14px; }
 .sb-suggested { display: grid; gap: 8px; justify-items: start; }
 .sb-money-grid dd { font-size: 17px; }
+
+/* Strategy simulations: one shared timeline, and per plan a 3D field with the money so far. */
+.sb-timeline { display: grid; grid-template-columns: auto auto minmax(160px, 1fr); align-items: center; gap: 8px 16px; position: sticky; top: 8px; z-index: 5; }
+.sb-timeline-date { font-size: 18px; font-weight: 500; min-width: 96px; }
+.sb-timeline input[type="range"] { width: 100%; accent-color: var(--action); padding: 0; border: 0; }
+.sb-timeline > span { grid-column: 1 / -1; }
+.ss { display: grid; gap: 8px; }
+.ss-hud { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.ss-hud > div { padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface-2); }
+.ss-hud dt { font-size: 12px; color: var(--ink-muted); }
+.ss-hud dd { margin: 0; font-size: 18px; font-weight: 500; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.ss-hud dd.ss-range { font-size: 11px; font-weight: 400; color: var(--ink-muted); }
+.ss-hud .ss-neg dd:first-of-type { color: var(--error); }
+.ss-hud .ss-pos dd:first-of-type { color: var(--cover); }
+.ss-stage { position: relative; height: 260px; border-radius: var(--radius-md); overflow: hidden; background: radial-gradient(circle, rgb(21 25 28 / 0.09) 1px, transparent 1.3px) 0 0 / 16px 16px, var(--surface-2); }
+.ss-stage .world-canvas { position: absolute !important; inset: 0 !important; }
+.ss-fallback { position: absolute; inset: 0; display: grid; place-content: center; color: var(--ink-muted); font-size: 14px; }
+.ss-date { position: absolute; top: 8px; left: 8px; margin: 0; padding: 2px 8px; border-radius: 6px; background: rgb(255 255 255 / 0.88); font-size: 13px; font-weight: 500; pointer-events: none; }
+.ss-tools { position: absolute; right: 8px; bottom: 8px; display: flex; gap: 6px; }
+.ss-tools button { padding: 3px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); font: inherit; font-size: 12px; cursor: pointer; }
+.ss-now { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 13px; }
+.ss-now strong { font-weight: 500; }
+.ss-wet { display: inline-block; width: 64px; height: 8px; border-radius: 4px; background: #e2d2b6; vertical-align: middle; overflow: hidden; }
+.ss-wet span { display: block; height: 100%; background: #2aa8c4; }
+.ss-src { color: var(--ink-muted); font-size: 12px; }
