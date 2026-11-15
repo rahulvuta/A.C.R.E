@@ -12,7 +12,7 @@ import hashlib
 import json
 import threading
 from collections import OrderedDict
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 
 import numpy as np
 
@@ -58,7 +58,7 @@ def _compute(plan: Plan, ctx: Context, ts: ThresholdSet,
     series = ctx.series
     if adjusted is not None:  # judged against the unadjusted record's cutoffs and thresholds
         series = adjusted
-        ref = replace(ref, series_fingerprint=adjusted.fingerprint)
+        ref = ref.model_copy(update={"series_fingerprint": adjusted.fingerprint})
     years = tuple(engine.YEARS)
     rain, heavy, dry, wet = [], [], [], []
     cover = None
@@ -93,12 +93,12 @@ def leg_seasons(plan: Plan, ctx: Context, ts: ThresholdSet,
         if hit is not None:
             _CACHE.move_to_end(key)
             return hit
-    leg = _compute(plan, ctx, ts, adjusted)
-    with _LOCK:
+        # Concurrent views of a field share this calculation, including its first run.
+        leg = _compute(plan, ctx, ts, adjusted)
         _CACHE[key] = leg
         while len(_CACHE) > _CACHE_MAX:
             _CACHE.popitem(last=False)
-    return leg
+        return leg
 
 
 def clear_cache() -> None:

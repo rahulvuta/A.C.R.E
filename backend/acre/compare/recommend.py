@@ -13,6 +13,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import threading
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -193,13 +194,15 @@ def analyze_candidates(cands: list[Candidate], ctx: Context) -> tuple[dict[str, 
         out = []
         for p in c.plans:
             k = (*base, _plan_key(p))
-            if k not in _LEG_CACHE:
-                if len(_LEG_CACHE) >= _LEG_CACHE_MAX:
-                    _LEG_CACHE.pop(next(iter(_LEG_CACHE)))
-                _LEG_CACHE[k] = engine.analyze_plan(
-                    _analysis_plan(p), ctx, ts,
-                    full_season_plan=_analysis_plan(full) if full else None)[0]
-            out.append(_candidate_leg(_LEG_CACHE[k], p, full))
+            with _LEG_CACHE_LOCK:
+                if k not in _LEG_CACHE:
+                    if len(_LEG_CACHE) >= _LEG_CACHE_MAX:
+                        _LEG_CACHE.pop(next(iter(_LEG_CACHE)))
+                    _LEG_CACHE[k] = engine.analyze_plan(
+                        _analysis_plan(p), ctx, ts,
+                        full_season_plan=_analysis_plan(full) if full else None)[0]
+                cached = _LEG_CACHE[k]
+            out.append(_candidate_leg(cached, p, full))
         legs[c.candidate_id] = out
     return legs, ts
 
@@ -207,6 +210,7 @@ def analyze_candidates(cands: list[Candidate], ctx: Context) -> tuple[dict[str, 
 #: One analysis per (snapshot, scope, thresholds, catalog, plan): generated candidates share legs.
 _LEG_CACHE: dict[tuple[Any, ...], PlanComparison] = {}
 _LEG_CACHE_MAX = 2048
+_LEG_CACHE_LOCK = threading.Lock()
 
 
 # --------------------------------------------------------------------------- explanations
