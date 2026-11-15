@@ -75,6 +75,7 @@ def example_specs() -> list[Example]:
         Example("rotations", "get", "/v1/rotations", "/v1/rotations", None, 200),
         Example("health", "get", "/health", "/health", None, 200),
         *global_specs(),
+        *simulator_specs(),
     ]
 
 
@@ -103,6 +104,64 @@ def _farm(*fields: tuple[str, str, dict[str, Any], dict[str, Any]]) -> dict[str,
     return {"farm": {"farm_id": "example_farm", "name": "Example farm (synthetic)", "fields": [
         {"field_id": fid, "name": name, "geometry": geom, "plan": {**plan, "plan_id": f"{fid}_plan"}}
         for fid, name, geom, plan in fields]}, "options": {"include_capabilities": False}}  # fmt: skip
+
+
+#: Synthetic example numbers for the simulator examples (not sourced; labelled as such).
+SIM_ECON = {
+    "soybean": {"price": {"value": 11.2, "unit": "USD/bu"}, "yield": {"value": 48, "unit": "bu/acre"},
+                "costs": {"value": 410, "unit": "USD/acre"}},
+    "field_corn": {"price": {"value": 4.5, "unit": "USD/bu"}, "yield": {"value": 170, "unit": "bu/acre"},
+                   "costs": {"value": 700, "unit": "USD/acre"}},
+    "cereal_rye": {"costs": {"value": 45, "unit": "USD/acre"}},
+}  # fmt: skip
+NC_SOY_CORN = {"plan_id": "nc_soy_corn_rye", "previous_crop_id": "soybean", "next_crop_id": "field_corn",
+               "prev_harvest": "10-20", "next_plant": "04-20",
+               "winter": {"kind": "cover", "crop_id": "cereal_rye", "seed": "10-30",
+                          "terminate": "04-01"}}  # fmt: skip
+
+
+def simulator_specs() -> list[Example]:
+    bare = {**NC_PLAN, "plan_id": "nc_bare", "winter": {"kind": "none"}}
+    bare2 = {**NC_SOY_CORN, "plan_id": "nc_soy_corn_bare", "winter": {"kind": "none"}}
+    body = {"location": {"latitude": 34.98, "longitude": -80.55},
+            "field": {"field_id": "fld_example", "name": "Example field", "area_ha": 16.2,
+                      "equipment": ["planter", "grain_drill", "sprayer", "combine"],
+                      "readings": [{"date": "2025-04-02", "kind": "soil_moisture_pct",
+                                    "value": 23.5, "depth_cm": 10}]},
+            "goals": {"priorities": {"soil_cover": 2, "profit": 3}},
+            "economics": {"overrides": SIM_ECON, "loss_assumptions": {"dry_spring_pct": 15}},
+            "scenarios": [{"scenario_id": "current", "label": "What I do now", "is_baseline": True,
+                           "rotation": [bare, bare2]},
+                          {"scenario_id": "rye", "label": "Add cereal rye",
+                           "rotation": [NC_PLAN, NC_SOY_CORN]}],
+            "years": 10, "runs": 200, "seed": 7, "start_season": "2027"}
+    no_money = {**body, "economics": {}, "field": {"area_ha": 16.2}, "years": 5, "runs": 50}
+    return [
+        Example("simulate_union", "post", "/v1/scenarios/simulate", "/v1/scenarios/simulate",
+                body, 200),
+        Example("simulate_union_no_money", "post", "/v1/scenarios/simulate",
+                "/v1/scenarios/simulate", no_money, 200),
+        Example("simulate_pergamino", "post", "/v1/scenarios/simulate", "/v1/scenarios/simulate",
+                {"location": PERG, "years": 5, "runs": 50, "scenarios": [
+                    {"scenario_id": "now", "rotation": [{**PERG_PLAN, "plan_id": "perg_bare",
+                                                         "winter": {"kind": "none"}}]},
+                    {"scenario_id": "rye", "rotation": [PERG_PLAN]}]}, 200),
+        Example("simulate_invalid_runs", "post", "/v1/scenarios/simulate",
+                "/v1/scenarios/simulate", {**no_money, "runs": 10}, 400),
+        Example("vocab_priorities", "get", "/v1/vocab/priorities", "/v1/vocab/priorities", None,
+                200),
+        Example("demo_union", "get", "/v1/demo/farm", "/v1/demo/farm?scenario=union", None, 200),
+        Example("demo_pergamino", "get", "/v1/demo/farm", "/v1/demo/farm?scenario=pergamino",
+                None, 200),
+        Example("autofill_union", "post", "/v1/plans/autofill", "/v1/plans/autofill",
+                {"location": {"latitude": 34.98, "longitude": -80.55}, "crops": [
+                    {"role": "previous", "crop_id": "field_corn"},
+                    {"role": "cover", "crop_id": "cereal_rye"},
+                    {"role": "next", "crop_id": "soybean"}]}, 200),
+        Example("autofill_pergamino", "post", "/v1/plans/autofill", "/v1/plans/autofill",
+                {"location": PERG, "crops": [{"role": "previous", "crop_id": "maize"},
+                    {"role": "next", "crop_id": "soybean"}]}, 200),
+    ]  # fmt: skip
 
 
 def global_specs() -> list[Example]:

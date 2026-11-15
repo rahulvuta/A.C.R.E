@@ -43,7 +43,8 @@ _SALT = secrets.token_bytes(16)
 
 CHEAP, ANALYSIS, GEO, WEATHER, RESEARCH = "cheap", "analysis", "geo", "weather_prepare", "research"
 RESEARCH_PATH = "/v1/regions/research"
-REFRESH_PATHS = frozenset({"/v1/weather/prepare", RESEARCH_PATH})
+RESEARCH_PATHS = frozenset({RESEARCH_PATH, "/v1/crops/research"})
+REFRESH_PATHS = RESEARCH_PATHS | {"/v1/weather/prepare"}
 # GETs that compute or call an outside service; every other GET is cheap.
 _ANALYSIS_GET = re.compile(r"^/v1/(soil|live|locations/capabilities|seasons/[^/]+/replay"
                            r"|plans/[^/]+/note)$")  # fmt: skip
@@ -106,7 +107,7 @@ def route_class(method: str, path: str) -> str | None:
     if method == "POST":
         if path == "/v1/weather/prepare":
             return WEATHER
-        if path == RESEARCH_PATH:
+        if path in RESEARCH_PATHS:
             return RESEARCH
         return CHEAP if path in _CHEAP_POST else ANALYSIS
     return ANALYSIS if _ANALYSIS_GET.match(path) else CHEAP

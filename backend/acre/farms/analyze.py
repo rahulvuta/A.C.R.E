@@ -37,6 +37,7 @@ class FieldInput:
     geometry: Any
     plan: Plan
     goals: dict[str, Any] | None = None
+    equipment: list[str] | None = None
 
 
 @dataclass
@@ -207,7 +208,8 @@ def _recommend(m: Measured, ctx: Any) -> dict[str, Any]:
 
     goals = m.f.goals or {}
     point = {"latitude": m.shape.centroid_lat, "longitude": m.shape.centroid_lon}  # in-process only
-    gen = generate(ctx, point, {"field_id": m.f.field_id, "area_ha": _r2(m.shape.area_ha)}, goals)
+    gen = generate(ctx, point, {"field_id": m.f.field_id, "area_ha": _r2(m.shape.area_ha),
+                              "equipment": m.f.equipment or []}, goals)
     if not gen["candidates"]:
         return {"status": "insufficient_data", "gaps": gen.get("gaps", []), "shortlist": [],
                 "generation_log": gen.get("generation_log", [])}  # fmt: skip

@@ -1,0 +1,3 @@
+region_key,operation,equipment,value,unit,currency,year,source_title,source_url,locator,retrieved
+US-NC,drill,grain_drill,18.5,USD/acre,USD,2024,SYNTHETIC fixture custom rates,https://fixture.invalid/rates,drill,2026-11-01
+US,spray,sprayer,8,USD/acre,USD,2024,SYNTHETIC fixture custom rates,https://fixture.invalid/rates-us,spray,2026-11-01

@@ -1,0 +1,252 @@
+{
+  "current_plans": {
+    "fld_demo_pergamino_north": [
+      {
+        "label": "Synthetic example crop plan",
+        "next_crop_id": "soybean",
+        "next_plant": "11-15",
+        "plan_id": "fld_demo_pergamino_north_0",
+        "prev_harvest": "04-20",
+        "previous_crop_id": "maize",
+        "winter": {
+          "kind": "none"
+        }
+      },
+      {
+        "label": "Synthetic example crop plan",
+        "next_crop_id": "maize",
+        "next_plant": "10-15",
+        "plan_id": "fld_demo_pergamino_north_1",
+        "prev_harvest": "05-01",
+        "previous_crop_id": "soybean",
+        "winter": {
+          "kind": "none"
+        }
+      }
+    ],
+    "fld_demo_pergamino_south": [
+      {
+        "label": "Synthetic example crop plan",
+        "next_crop_id": "maize",
+        "next_plant": "10-15",
+        "plan_id": "fld_demo_pergamino_south_1",
+        "prev_harvest": "05-01",
+        "previous_crop_id": "soybean",
+        "winter": {
+          "kind": "none"
+        }
+      },
+      {
+        "label": "Synthetic example crop plan",
+        "next_crop_id": "soybean",
+        "next_plant": "11-15",
+        "plan_id": "fld_demo_pergamino_south_0",
+        "prev_harvest": "04-20",
+        "previous_crop_id": "maize",
+        "winter": {
+          "kind": "none"
+        }
+      }
+    ]
+  },
+  "economics_note": "Synthetic example values, not sourced; edit to your own numbers.",
+  "economics_overrides": {
+    "cereal_rye": {
+      "costs": {
+        "unit": "USD/ha",
+        "value": 100
+      }
+    },
+    "maize": {
+      "costs": {
+        "unit": "USD/ha",
+        "value": 1000
+      },
+      "price": {
+        "unit": "USD/t",
+        "value": 180
+      },
+      "yield": {
+        "unit": "t/ha",
+        "value": 8
+      }
+    },
+    "soybean": {
+      "costs": {
+        "unit": "USD/ha",
+        "value": 650
+      },
+      "price": {
+        "unit": "USD/t",
+        "value": 350
+      },
+      "yield": {
+        "unit": "t/ha",
+        "value": 3.2
+      }
+    }
+  },
+  "farm": {
+    "anchor": {
+      "latitude": -33.89,
+      "longitude": -60.57
+    },
+    "farm_id": "farm_demo_pergamino",
+    "fields": [
+      {
+        "area_ha": 16.295,
+        "area_origin": "calculation",
+        "equipment": [
+          "planter",
+          "grain_drill",
+          "sprayer",
+          "combine"
+        ],
+        "field_id": "fld_demo_pergamino_north",
+        "geometry": {
+          "coordinates": [
+            [
+              [
+                -60.57,
+                -33.89
+              ],
+              [
+                -60.5656,
+                -33.89
+              ],
+              [
+                -60.5656,
+                -33.8864
+              ],
+              [
+                -60.57,
+                -33.8864
+              ],
+              [
+                -60.57,
+                -33.89
+              ]
+            ]
+          ],
+          "type": "Polygon"
+        },
+        "location": {
+          "latitude": -33.8882,
+          "longitude": -60.5678
+        },
+        "name": "North field (synthetic)",
+        "origin": "assumed",
+        "plan": {
+          "label": "Synthetic example crop plan",
+          "next_crop_id": "soybean",
+          "next_plant": "11-15",
+          "plan_id": "fld_demo_pergamino_north_0",
+          "prev_harvest": "04-20",
+          "previous_crop_id": "maize",
+          "winter": {
+            "kind": "none"
+          }
+        },
+        "readings": [
+          {
+            "date": "2025-10-02",
+            "depth_cm": 10,
+            "kind": "soil_moisture_pct",
+            "note": "Synthetic demo reading",
+            "origin": "assumed",
+            "value": 23.5
+          }
+        ]
+      },
+      {
+        "area_ha": 16.296,
+        "area_origin": "calculation",
+        "equipment": [
+          "planter",
+          "grain_drill",
+          "sprayer",
+          "combine"
+        ],
+        "field_id": "fld_demo_pergamino_south",
+        "geometry": {
+          "coordinates": [
+            [
+              [
+                -60.563,
+                -33.884
+              ],
+              [
+                -60.5586,
+                -33.884
+              ],
+              [
+                -60.5586,
+                -33.8804
+              ],
+              [
+                -60.563,
+                -33.8804
+              ],
+              [
+                -60.563,
+                -33.884
+              ]
+            ]
+          ],
+          "type": "Polygon"
+        },
+        "location": {
+          "latitude": -33.8822,
+          "longitude": -60.5608
+        },
+        "name": "South field (synthetic)",
+        "origin": "assumed",
+        "plan": {
+          "label": "Synthetic example crop plan",
+          "next_crop_id": "maize",
+          "next_plant": "10-15",
+          "plan_id": "fld_demo_pergamino_south_1",
+          "prev_harvest": "05-01",
+          "previous_crop_id": "soybean",
+          "winter": {
+            "kind": "none"
+          }
+        },
+        "readings": [
+          {
+            "date": "2025-10-02",
+            "depth_cm": 10,
+            "kind": "soil_moisture_pct",
+            "note": "Synthetic demo reading",
+            "origin": "assumed",
+            "value": 24.5
+          }
+        ]
+      }
+    ],
+    "name": "Pergamino demo farm (synthetic)"
+  },
+  "goals": {
+    "priorities": {
+      "profit": 3,
+      "soil_cover": 2,
+      "weather_resilience": 2
+    }
+  },
+  "label": "Demo farm (example values)",
+  "loss_assumptions": {
+    "dry_spring_pct": null,
+    "heavy_rain_pct": null
+  },
+  "meta": {
+    "catalog_version": "v2:8eeb5bf961eb",
+    "plan_version": null,
+    "request_id": "req_example",
+    "snapshot_hash": null
+  },
+  "note": "Synthetic boundaries, crop dates, equipment, readings and economics for a demo, not a real farm. Money values are example inputs, not sourced references. An evidence-based outlook from this field's real past seasons. It shows what to plan for under conditions seen here; it cannot say what any single year will bring.",
+  "origin": "assumed",
+  "resolution_note": "These fields share one NASA POWER weather cell (about 0.5 x 0.625 degrees) and the same historical weather series.",
+  "status": "complete",
+  "synthetic": true
+}

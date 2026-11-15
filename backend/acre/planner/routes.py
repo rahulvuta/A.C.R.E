@@ -310,7 +310,8 @@ def candidate_body(c: Any) -> dict[str, Any]:
     seasons = [s.model_dump(mode="json") for s in c.seasons]
     return {**seasons[0]["plan"], "candidate_id": c.candidate_id, "label": c.label,
             "crops": c.crops, "seasons": seasons, "origins": c.origins,
-            "checks_summary": c.checks_summary, "matches_rotation": c.matches_rotation}  # fmt: skip
+            "checks_summary": c.checks_summary, "matches_rotation": c.matches_rotation,
+            "feasibility": c.feasibility}  # fmt: skip
 
 
 @router.post("/plans/generate")
@@ -495,6 +496,7 @@ async def post_future(request: Request) -> Any:
 
     from acre.catalogs.regional import regional_catalog
     from acre.planner.future import (
+        MAX_SEASONS,
         Edit,
         FuturePlanError,
         apply_edits,
@@ -518,8 +520,9 @@ async def post_future(request: Request) -> Any:
     if isinstance(start, bool) or not isinstance(start, int) or not MIN_YEAR <= start <= MAX_YEAR:
         issues.append(issue("start_season", "invalid_year", "start_season is a year like 2027"))
     n = body.get("seasons", len(legs) or 1)
-    if isinstance(n, bool) or not isinstance(n, int) or not 1 <= n <= 4:
-        issues.append(issue("seasons", "invalid_seasons", "seasons must be a whole number 1-4"))
+    if isinstance(n, bool) or not isinstance(n, int) or not 1 <= n <= MAX_SEASONS:
+        issues.append(issue("seasons", "invalid_seasons",
+                            f"seasons must be a whole number 1-{MAX_SEASONS}"))
     as_of = None
     if body.get("as_of") is not None:
         try:

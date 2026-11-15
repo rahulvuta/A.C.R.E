@@ -63,3 +63,36 @@ A→Rahul: render.yaml `acre-api` (on main):
   - `ACRE_RESEARCH_DAILY_LIMIT` = `20`
   - optional overrides (defaults shown): `ACRE_RATE_CHEAP_PER_MIN`=120, `ACRE_RATE_ANALYSIS_PER_MIN`=30, `ACRE_RATE_GEO_PER_MIN`=20, `ACRE_RATE_WEATHER_PER_MIN`=10, `ACRE_RATE_RESEARCH_PER_HOUR`=3, `ACRE_MAX_BODY_BYTES`=1048576, `ACRE_MAX_QUERY_BYTES`=2048, `ACRE_RATE_MAX_CLIENTS`=10000
   - `ACRE_CORS_ORIGINS` stays `sync: false` and must be set to the acre-web URL (no `*`).
+
+## HANDOFF 2026-11-14 (Agent A → Codex)
+
+Card state:
+- **S1** (scenario engine, `POST /v1/scenarios/simulate`): **done in code, committed WIP**. Files: `backend/acre/simulate/{engine,seasons,money,compare,vocab}.py`, `backend/acre/api/simulate_routes.py` (mounted in `app.py`), tests `backend/tests/simulate/test_simulate.py` (30 tests, all pass in the shared tree). Perf: 6 scenarios × 200 runs × 10 years cold ≈ 0.9 s (also sped up `acre/weather/series.py` `DailySeries.window` with a position-slice fast path, 2× faster everywhere). Contract §11 "As shipped" written; examples `simulate_union`, `simulate_union_no_money`, `simulate_pergamino`, `simulate_invalid_runs`, `vocab_priorities` generated.
+- **S2** (comparison and badges, money): **done in code**, same files (`compare.py`, `money.py`). Uses B's `acre.economics.estimate.estimate_economics` when importable (B's records, your values first); falls back to grower overrides only. Weather affects money only through `loss_assumptions`, flagged `includes_assumption`. Priority weights are shared among a priority's metrics.
+- **S6** (demo farms, autofill): **partial**. `GET /v1/vocab/priorities` (with `profit`) is done (in `simulate_routes.py`; recommend accepts and ignores `profit`). **Not started:** `GET /v1/demo/farm` and `POST /v1/plans/autofill`.
+
+What's left:
+1. **Verify:** the full suite + ruff + `python -m acre.api.contract --check` in a clean tree (a run was started at handoff; result not read). Run in a detached worktree of HEAD, since B's uncommitted `croplib/`, `catalogs/crop_ids.py`, `catalogs/regional.py` and `field/routes.py` change openapi.json. `tests/api/test_api_contract.py` fails in the shared tree because of B's uncommitted routes, not because of A's work.
+2. **S6 autofill** in a new `backend/acre/simulate/autofill.py`, route `POST /v1/plans/autofill` in `simulate_routes.py`. Body `{location, crops: [{role: previous|cover|next, crop_id}]}`. Return `{meta, plan, dates: [{field, value, origin, source}], gaps}`.
+   - Previous crop's harvest: SAGE harvest `typical` (`acre.catalogs.sage.calendars_at`; map `field_corn`→`maize`, `cereal_rye`→`winter_rye`; origin `dataset_estimate`, source `sage.source()`).
+   - Next crop's planting: in NC, the catalog planting-window rule (e.g. `fc_pw_03`, `sb_pw_01`: window midpoint, origin `verified_source`, source = the rule's title and URL); elsewhere, SAGE plant `typical`.
+   - Cover seeding: the NC rule `cr_pw_01` / `cc_pw_01` midpoint, clamped to ≥ harvest + 7 days (`calculation`).
+   - Cover termination: the NC rule `days_between_termination_and_planting` (`cr_tt_01` for corn: use `value_max` 14; `cr_tt_03` for soybean: `value_min` 14), so planting minus N days. With no rule: 14 days, origin `assumed`.
+   - Get the catalog with `acre.compare.regional.catalog_for(lat, lon, in_nc=acre.field.location.in_nc_bounds(lat, lon))`. Validate with `engine.build_calendar`; on `InvalidPlanError`, return `plan: null` plus gaps.
+3. **S6 demo farms:** a new `backend/acre/simulate/demo.py` and `GET /v1/demo/farm?scenario=union|pergamino`. Return `{meta, label: "Demo farm (example values)", farm: {farm_id, name, fields: [2–3 synthetic rectangles near (34.98, -80.55) / (-33.89, -60.57), labelled synthetic, with equipment and sample readings]}, current_plans: {field_id: [rotation plans]}, economics_overrides, goals}`.
+   - Economics are example values labelled "not sourced"; reuse `SIM_ECON` in `acre/api/contract.py` for NC; Pergamino uses USD/t, t/ha, USD/ha.
+   - Make it deterministic. The response should be a valid simulate body when combined. Add contract examples and fill in contract §15 "shipped".
+4. **One Codex review** (high) over S1/S2/S6 into `docs/global/reviews/A-sim.md`; fix the high and medium findings; push.
+
+Failing tests: none known in `tests/simulate`. Shared tree: `tests/api/test_api_contract.py` (B's uncommitted openapi changes).
+
+For B:
+- simulate calls `estimate_economics(location=, crops=, area={value, unit:"ha"}, equipment=, overrides=)` with costs converted to `{total: {value, unit}}`. It reads `crops[].price{low, typical, high, unit, origin}`, `yield{value, unit, origin}`, `costs{items[], total_per_area{value, unit}}`, and matches crop ids through `crop_ids.canonical`. `EconomicsInputError` (`.field`, `.code`) becomes a 400 at `economics.<field>`. Keep these stable.
+- S5 readings: simulate validates readings with its own `ReadingIn` (same kinds as §14). It could switch to `acre.field.equipment`'s model now that S5 is committed.
+
+## 2026-11-14 lead integration
+
+- S6 implemented: deterministic Union County and Pergamino demo farms, per-date sourced autofill, null plans with gaps for unavailable calendars, and contract examples.
+- S1/S2 fix pass covers mass units, explicit zero loss, currency comparisons, short horizons and mismatched area bases. S5 replay now returns readings beside NASA values; farm analysis accepts field context.
+- The high-effort GPT-6.1 Sol review stopped at its usage limit before a verdict; reproduced findings were checked and fixed. See `reviews/A-sim.md`. Targeted simulator/farm checks and the final integrated release checks are recorded by the lead.
+2026-11-15 climate-trend: done | opt-in climate="trend" on POST /v1/scenarios/simulate (acre/weather/trend.py: Theil-Sen + Mann-Kendall on annual rain, applied only if p<=0.10, factor clamped ±25%, thresholds stay frozen from the unadjusted record; temperature trend reported as context). Frontend: add toggle, send two runs for baseline vs adjusted, show method.climate_adjustment. Rahul: CLAUDE.md science rule 'never a forecast' needs a line allowing labelled scenarios.

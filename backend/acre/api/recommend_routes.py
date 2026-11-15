@@ -18,7 +18,7 @@ from acre.compare import engine, text
 from acre.compare import locations as places
 from acre.compare.indicators import PRIORITIES
 from acre.compare.recommend import Candidate, generate, recommend
-from acre.contracts import InvalidPlanError, Plan
+from acre.contracts import MAX_ROTATION_LEGS, InvalidPlanError, Plan
 from acre.report.http import issue
 from acre.weather.snapshot import set_active_snapshot_dir
 
@@ -39,18 +39,18 @@ class GoalsIn(BaseModel):
     @field_validator("priorities")
     @classmethod
     def _known(cls, v: dict[str, int]) -> dict[str, int]:
-        if set(v) - set(PRIORITIES):  # the unknown names are not echoed (they are client text)
-            raise ValueError(f"unknown priority; known priorities: {', '.join(PRIORITIES)}")
-        return v
+        if set(v) - set(PRIORITIES) - {"profit"}:  # unknown names are not echoed (client text)
+            raise ValueError(f"unknown priority; known priorities: {', '.join(PRIORITIES)}, profit")
+        return {k: w for k, w in v.items() if k != "profit"}  # no money here: profit is simulate's
 
 
 class CandidateIn(BaseModel):
-    """A farmer-edited candidate: one plan per season (1-4)."""
+    """A farmer-edited candidate: one plan per season (1-10)."""
 
     model_config = ConfigDict(extra="forbid")
     candidate_id: Annotated[str, Field(min_length=1)]
     label: str | None = None
-    plans: Annotated[list[Plan], Field(min_length=1, max_length=4)]
+    plans: Annotated[list[Plan], Field(min_length=1, max_length=MAX_ROTATION_LEGS)]
 
 
 class RecommendRequest(BaseModel):

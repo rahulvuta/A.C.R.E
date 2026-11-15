@@ -10,10 +10,12 @@
         "latitude": 41.89,
         "longitude": -93.6
       },
+      "equipment": [],
       "field_id": "fld_ia",
       "job_status": "failed",
       "name": "Unprepared cell (synthetic)",
       "poll": null,
+      "readings_context": [],
       "reason": "offline_no_snapshot",
       "reason_text": "The server is in offline mode and has no stored weather for this grid cell.",
       "result": null,

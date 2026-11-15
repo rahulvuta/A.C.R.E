@@ -1,0 +1,86 @@
+{
+  "body": {
+    "economics": {},
+    "field": {
+      "area_ha": 16.2
+    },
+    "goals": {
+      "priorities": {
+        "profit": 3,
+        "soil_cover": 2
+      }
+    },
+    "location": {
+      "latitude": 34.98,
+      "longitude": -80.55
+    },
+    "runs": 10,
+    "scenarios": [
+      {
+        "is_baseline": true,
+        "label": "What I do now",
+        "rotation": [
+          {
+            "next_crop_id": "soybean",
+            "next_plant": "05-12",
+            "plan_id": "nc_bare",
+            "prev_harvest": "10-15",
+            "previous_crop_id": "field_corn",
+            "winter": {
+              "kind": "none"
+            }
+          },
+          {
+            "next_crop_id": "field_corn",
+            "next_plant": "04-20",
+            "plan_id": "nc_soy_corn_bare",
+            "prev_harvest": "10-20",
+            "previous_crop_id": "soybean",
+            "winter": {
+              "kind": "none"
+            }
+          }
+        ],
+        "scenario_id": "current"
+      },
+      {
+        "label": "Add cereal rye",
+        "rotation": [
+          {
+            "next_crop_id": "soybean",
+            "next_plant": "05-12",
+            "plan_id": "nc_rye",
+            "prev_harvest": "10-15",
+            "previous_crop_id": "field_corn",
+            "winter": {
+              "crop_id": "cereal_rye",
+              "kind": "cover",
+              "seed": "10-25",
+              "terminate": "04-20"
+            }
+          },
+          {
+            "next_crop_id": "field_corn",
+            "next_plant": "04-20",
+            "plan_id": "nc_soy_corn_rye",
+            "prev_harvest": "10-20",
+            "previous_crop_id": "soybean",
+            "winter": {
+              "crop_id": "cereal_rye",
+              "kind": "cover",
+              "seed": "10-30",
+              "terminate": "04-01"
+            }
+          }
+        ],
+        "scenario_id": "rye"
+      }
+    ],
+    "seed": 7,
+    "start_season": "2027",
+    "years": 5
+  },
+  "method": "POST",
+  "status": 400,
+  "url": "/v1/scenarios/simulate"
+}

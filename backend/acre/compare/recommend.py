@@ -151,7 +151,26 @@ def _from_generated(raw: Any, i: int) -> Candidate:
 
 
 def _plan_key(p: Plan) -> str:
-    return hashlib.sha256(json.dumps(p.model_dump(mode="json"), sort_keys=True).encode()).hexdigest()
+    return hashlib.sha256(json.dumps(
+        p.model_dump(mode="json", exclude={"plan_id", "label"}), sort_keys=True).encode()).hexdigest()
+
+
+def _analysis_plan(plan: Plan) -> Plan:
+    """Presentation does not affect agronomy; keep caller objects outside the shared cache."""
+    return plan.model_copy(deep=True, update={"plan_id": _plan_key(plan), "label": None})
+
+
+def _candidate_leg(cached: PlanComparison, plan: Plan, full: Plan | None) -> PlanComparison:
+    result = cached.model_copy(deep=True, update={
+        "plan_id": plan.plan_id, "label": plan.label, "plan": plan.model_copy(deep=True)})
+    if result.double_crop is not None:
+        result.double_crop["plan_id"] = plan.plan_id
+        cross = result.double_crop.get("cross_calendar", {})
+        if "full_season" in cross and full is not None:
+            cross["full_season"]["plan_id"] = full.plan_id
+        if "double_crop" in cross:
+            cross["double_crop"]["plan_id"] = plan.plan_id
+    return result
 
 
 def analyze_candidates(cands: list[Candidate], ctx: Context) -> tuple[dict[str, list[PlanComparison]],
@@ -177,8 +196,10 @@ def analyze_candidates(cands: list[Candidate], ctx: Context) -> tuple[dict[str, 
             if k not in _LEG_CACHE:
                 if len(_LEG_CACHE) >= _LEG_CACHE_MAX:
                     _LEG_CACHE.pop(next(iter(_LEG_CACHE)))
-                _LEG_CACHE[k] = engine.analyze_plan(p, ctx, ts, full_season_plan=full)[0]
-            out.append(_LEG_CACHE[k])  # read-only here: recommendation never edits a leg
+                _LEG_CACHE[k] = engine.analyze_plan(
+                    _analysis_plan(p), ctx, ts,
+                    full_season_plan=_analysis_plan(full) if full else None)[0]
+            out.append(_candidate_leg(_LEG_CACHE[k], p, full))
         legs[c.candidate_id] = out
     return legs, ts
 
@@ -392,6 +413,17 @@ def recommend(cands: list[Candidate], ctx: Context, priorities: dict[str, int],
     # unevaluable rules) makes the candidate not comparable on that indicator, never a number
     vectors = {cid: {n: (i.value if i.status == "complete" else None) for n, i in v.items()}
                for cid, v in inds.items()}  # fmt: skip
+    # an indicator no candidate has fully evaluated cannot separate any of them: it leaves the
+    # ranking (reported in method.excluded_indicators) instead of making every plan not
+    # comparable; its partial values are still shown on each card, never ranked
+    excluded = {n: "no candidate has a complete value" for n in list(weights)
+                if vectors and all(vectors[c].get(n) is None for c in vectors)}  # fmt: skip
+    if len(excluded) < len(weights):
+        for n in excluded:
+            weights.pop(n)
+            directions.pop(n)
+    else:
+        excluded = {}
     res = pareto(vectors, directions, weights)
     by_id = {c.candidate_id: c for c in cands}
     cat = ctx.index.catalog
@@ -432,6 +464,7 @@ def recommend(cands: list[Candidate], ctx: Context, priorities: dict[str, int],
             "shortlist": "pareto_non_dominated",
             "ordering": "weighted_rank_positions",
             "indicators_used": list(weights),
+            "excluded_indicators": excluded,
             "weights": weights,
             "ordering_text": "For each indicator the shortlisted plans are ranked (1 = best, ties "
                              "share a rank); they are listed by the sum of weight x rank "

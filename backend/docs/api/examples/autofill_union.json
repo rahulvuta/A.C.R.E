@@ -1,0 +1,97 @@
+{
+  "dates": [
+    {
+      "field": "prev_harvest",
+      "origin": "dataset_estimate",
+      "source": {
+        "citation": "Sacks, Deryng, Foley & Ramankutty 2010, Crop planting dates: an analysis of global patterns, Global Ecology and Biogeography 19, 607-620",
+        "doi": "10.1111/j.1466-8238.2010.00551.x",
+        "extrapolated": false,
+        "resolution_deg": 0.5,
+        "sage_cell": "sage_+34.75_-80.75",
+        "title": "Sacks et al. 2010 crop calendar (SAGE, 0.5\u00b0)",
+        "url": "https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/"
+      },
+      "status": "complete",
+      "value": "09-01"
+    },
+    {
+      "field": "next_plant",
+      "origin": "verified_source",
+      "source": {
+        "applies_when": "Full-season planting across NC",
+        "locator": "Optimum Planting Period; Figure 5-5",
+        "method": "window_midpoint",
+        "production_system": "full season",
+        "rule_id": "sb_pw_01",
+        "title": "5. Planting Decisions (NC Soybean Production Guide AG-835)",
+        "url": "https://content.ces.ncsu.edu/north-carolina-soybean-production-guide/soybean-planting-decisions"
+      },
+      "status": "complete",
+      "value": "05-05"
+    },
+    {
+      "field": "winter.seed",
+      "origin": "verified_source",
+      "source": {
+        "applies_when": "Piedmont fall seeding",
+        "locator": "Table 4",
+        "method": "window_midpoint",
+        "production_system": "winter cover crop",
+        "rule_id": "cr_pw_01",
+        "title": "Winter Annual Cover Crops (NC State Extension AG-439-58)",
+        "url": "https://content.ces.ncsu.edu/winter-annual-cover-crops"
+      },
+      "status": "complete",
+      "value": "09-30"
+    },
+    {
+      "field": "winter.terminate",
+      "origin": "calculation",
+      "source": {
+        "applies_when": "Low soil moisture is a concern before soybean planting",
+        "locator": "Soil Moisture Considerations",
+        "method": "next planting minus 14 days",
+        "production_system": null,
+        "rule_id": "cr_tt_03",
+        "spacing_origin": "verified_source",
+        "title": "NC State Soybean Production Guide: Rotational Considerations",
+        "url": "https://content.ces.ncsu.edu/north-carolina-soybean-production-guide/rotational-considerations"
+      },
+      "status": "complete",
+      "value": "04-21"
+    }
+  ],
+  "gaps": [],
+  "meta": {
+    "catalog_version": "v2:8eeb5bf961eb",
+    "plan_version": null,
+    "request_id": "req_example",
+    "snapshot_hash": null
+  },
+  "note": "Typical calendar dates, not a forecast or planting advice; confirm them for this field. SAGE is a 0.5-degree gridded estimate.",
+  "plan": {
+    "grower": {
+      "low_moisture_concern": null,
+      "observations": [],
+      "residue_report": null
+    },
+    "label": "Typical dates; confirm for this field",
+    "next_crop_id": "soybean",
+    "next_plant": "05-05",
+    "plan_id": "autofill_a4f49ba94497",
+    "prev_harvest": "09-01",
+    "previous_crop_id": "field_corn",
+    "production_system": null,
+    "region": "piedmont",
+    "winter": {
+      "crop_id": "cereal_rye",
+      "harvest": null,
+      "kind": "cover",
+      "plant": null,
+      "seed": "09-30",
+      "terminate": "04-21"
+    }
+  },
+  "status": "complete"
+}

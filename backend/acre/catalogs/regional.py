@@ -222,6 +222,16 @@ def clean_profile(doc: dict[str, Any]) -> tuple[dict[str, Any] | None, list[str]
     return out, gaps
 
 
+def _library_calendars(region_keys: tuple[str, ...]) -> dict[str, dict[str, Any]]:
+    """Calendars of crops researched into the crop library (S4) for this place's own regions."""
+    try:
+        from acre.croplib import library
+
+        return library.calendars_for(list(region_keys))
+    except Exception:  # noqa: BLE001 - the library is optional context
+        return {}
+
+
 @lru_cache(maxsize=256)
 def _build(region_keys: tuple[str, ...], in_nc: bool, sage_cell: str, lat_r: float, lon_r: float,
            stamp: tuple[Any, ...]) -> RegionalIndex:  # fmt: skip
@@ -235,11 +245,14 @@ def _build(region_keys: tuple[str, ...], in_nc: bool, sage_cell: str, lat_r: flo
     gaps += sage_gaps
     calendars: dict[str, dict[str, Any]] = {c.crop_id: c.as_dict() for c in cals}
     sage_names = {c.crop_id: c.name for c in cals}
+    library_cals = _library_calendars(region_keys)
 
     if in_nc:
         from acre.report.meta import get_index
 
         nc = get_index().catalog
+        for cid, cal in library_cals.items():  # researched crops (S4); never over SAGE or the catalog
+            calendars.setdefault(cid, cal)
         return RegionalIndex(nc, region_key=NC_KEY, region_keys=list(region_keys), in_nc=True,
                              calendars=calendars, profile=None, profile_key=None, gaps=[])  # fmt: skip
 
@@ -271,6 +284,8 @@ def _build(region_keys: tuple[str, ...], in_nc: bool, sage_cell: str, lat_r: flo
         calendars.update(_profile_calendars(profile))
         break
 
+    for cid, cal in library_cals.items():  # researched crops (S4) fill gaps only
+        calendars.setdefault(cid, cal)
     crops: dict[str, Crop] = {}
     for cid, cal in calendars.items():
         crops[cid] = _crop_row(cid, cal.get("origin") or sage.ORIGIN, cal.get("source"),
@@ -338,6 +353,15 @@ def _point(loc: Any) -> tuple[float, float] | None:
     return la, lo
 
 
+def _library_version() -> str:
+    try:
+        from acre.croplib import library
+
+        return library.version()
+    except Exception:  # noqa: BLE001
+        return "none"
+
+
 def regional_catalog(lat: float, lon: float, *, allow_network: bool = False) -> RegionalIndex:
     """The full regional catalog at a point (NC included, with SAGE calendars as context)."""
     from acre.geo.locate import describe
@@ -348,7 +372,7 @@ def regional_catalog(lat: float, lon: float, *, allow_network: bool = False) -> 
     ]
     row, col = sage.cell_of(lat, lon)
     lat_r, lon_r = 89.75 - 0.5 * row, -179.75 + 0.5 * col
-    stamps: list[Any] = []
+    stamps: list[Any] = [_library_version()]
     for k in keys:
         for pd in profile_dirs(k):
             stamps.append(_stamp(pd))

@@ -1,0 +1,101 @@
+{
+  "meta": {
+    "catalog_version": "v2:8eeb5bf961eb",
+    "plan_version": null,
+    "request_id": "req_example",
+    "snapshot_hash": null
+  },
+  "priorities": [
+    {
+      "explanation": "More days with living cover and less rain falling on bare soil.",
+      "label": "Keep the soil covered",
+      "priority_id": "soil_cover",
+      "used_by": [
+        "simulate",
+        "recommend"
+      ],
+      "weights": {
+        "max": 3,
+        "min": 0
+      }
+    },
+    {
+      "explanation": "Fewer heavy-rain days landing on bare soil.",
+      "label": "Protect water and soil",
+      "priority_id": "water_conservation",
+      "used_by": [
+        "simulate",
+        "recommend"
+      ],
+      "weights": {
+        "max": 3,
+        "min": 0
+      }
+    },
+    {
+      "explanation": "Fewer dry planting windows and heavy-rain years in past weather.",
+      "label": "Lower weather risk",
+      "priority_id": "weather_resilience",
+      "used_by": [
+        "simulate",
+        "recommend"
+      ],
+      "weights": {
+        "max": 3,
+        "min": 0
+      }
+    },
+    {
+      "explanation": "More plant families in the rotation.",
+      "label": "Grow more kinds of crops",
+      "priority_id": "crop_diversity",
+      "used_by": [
+        "simulate",
+        "recommend"
+      ],
+      "weights": {
+        "max": 3,
+        "min": 0
+      }
+    },
+    {
+      "explanation": "More planned days with a growing cover or grain crop.",
+      "label": "Living roots longer",
+      "priority_id": "living_cover_duration",
+      "used_by": [
+        "simulate",
+        "recommend"
+      ],
+      "weights": {
+        "max": 3,
+        "min": 0
+      }
+    },
+    {
+      "explanation": "Fewer field operations a year.",
+      "label": "Keep it simple",
+      "priority_id": "management_simplicity",
+      "used_by": [
+        "simulate",
+        "recommend"
+      ],
+      "weights": {
+        "max": 3,
+        "min": 0
+      }
+    },
+    {
+      "explanation": "Higher median margin over the period, from your prices, yields and costs (or sourced regional references).",
+      "label": "Make more money",
+      "priority_id": "profit",
+      "used_by": [
+        "simulate"
+      ],
+      "weights": {
+        "max": 3,
+        "min": 0
+      }
+    }
+  ],
+  "status": "complete"
+}

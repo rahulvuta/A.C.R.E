@@ -57,6 +57,7 @@ def _fake_app(research_reply=None) -> Starlette:
         Route("/v1/geo/search", echo),
         Route("/v1/crops", echo),
         Route("/v1/regions/research", research, methods=["POST"]),
+        Route("/v1/crops/research", research, methods=["POST"]),
     ])  # fmt: skip
     return app
 
@@ -85,6 +86,7 @@ def _assert_envelope(r, http: int, status: str, code: str) -> None:
     ("GET", "/v1/plans/p1/note", ANALYSIS), ("POST", "/v1/fertilizer/calc", ANALYSIS),
     ("GET", "/v1/geo/search", GEO), ("GET", "/v1/geo/reverse", GEO),
     ("POST", "/v1/weather/prepare", WEATHER), ("POST", "/v1/regions/research", RESEARCH),
+    ("POST", "/v1/crops/research", RESEARCH), ("GET", "/v1/crops/research/cj_1", CHEAP),
     ("GET", "/v1/regions/research/rj_1", CHEAP), ("OPTIONS", "/v1/plans/compare", None),
 ])  # fmt: skip
 def test_route_classes(method, path, cls):
@@ -174,17 +176,19 @@ def test_research_daily_cap_is_global_across_clients():
     assert int(r.headers["Retry-After"]) <= 86_400
 
 
-def test_research_cache_hits_do_not_use_the_budget():
+@pytest.mark.parametrize("path", ["/v1/regions/research", "/v1/crops/research"])
+def test_research_cache_hits_do_not_use_the_budget(path):
     def cached(n):
         return {"job_id": f"rj_{n}", "job_status": "ready", "status": "partial", "check": None}
 
     c = _client(_settings(research_daily=1), research_reply=cached)
-    assert all(c.post("/v1/regions/research", json={}).status_code == 200 for _ in range(5))
+    assert all(c.post(path, json={}).status_code == 200 for _ in range(5))
 
 
-def test_research_per_client_limit():
+@pytest.mark.parametrize("path", ["/v1/regions/research", "/v1/crops/research"])
+def test_research_per_client_limit(path):
     c = _client(_settings(limits={RESEARCH: (3, 3600.0)}), research_reply=_new_job)
-    codes = [c.post("/v1/regions/research", json={}).status_code for _ in range(4)]
+    codes = [c.post(path, json={}).status_code for _ in range(4)]
     assert codes == [200, 200, 200, 429]
 
 
@@ -230,7 +234,8 @@ def test_long_query_string_is_refused():
     _assert_envelope(c.get("/v1/crops?x=" + "a" * 200), 400, "invalid_input", "query_too_long")
 
 
-@pytest.mark.parametrize("path", ["/v1/weather/prepare", "/v1/regions/research"])
+@pytest.mark.parametrize("path", ["/v1/weather/prepare", "/v1/regions/research",
+                                  "/v1/crops/research"])
 def test_refresh_needs_the_admin_token(path):
     c = _client(_settings(admin_token="s3cret", limits={WEATHER: (10, 60.0)}))
     body = {"refresh": True}
@@ -353,3 +358,10 @@ def test_headers_middleware_replaces_cache_control_on_posts():
 
     r = TestClient(HeadersMiddleware(app, production=False)).post("/x")
     assert r.headers["cache-control"] == "no-store" and "server" not in r.headers
+
+
+def test_crop_and_region_research_share_the_daily_budget():
+    c = _client(_settings(research_daily=1), research_reply=_new_job)
+    assert c.post("/v1/crops/research", json={}).status_code == 200
+    _assert_envelope(c.post("/v1/regions/research", json={}),
+                     429, "unavailable", "rate_limited")
