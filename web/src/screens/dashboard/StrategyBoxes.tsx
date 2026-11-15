@@ -583,7 +583,7 @@ export function outlookBasis(raw: Record<string, unknown> | null, runs: number |
     if (climate.text) lines.push(climate.text);
     else if (climate.applied != null) lines.push(climate.applied ? "Rain is adjusted for the trend observed in this field's record." : "Rain is used as recorded; no clear trend was found in this field's record.");
   }
-  lines.push("Prices, yields and costs are the ones you entered or that came from published sources, held at today's values. Weather changes the money only if you enter a loss estimate under Financial Analysis.");
+  lines.push("Prices, yields and costs are the ones you entered or that came from published sources, held at today's values (AI-found figures are used only when their quote was checked on the cited page). Weather changes the money only if you enter a loss estimate under Financial Analysis.");
   lines.push("It shows what to plan for and which plan holds up better under these conditions; it cannot say what any single year will bring.");
   return lines;
 }

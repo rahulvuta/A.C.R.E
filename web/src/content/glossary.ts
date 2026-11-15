@@ -101,7 +101,7 @@ export const GLOSSARY: Record<TermId, { term: string; definition: string }> = {
   },
   margin: {
     term: "Margin",
-    definition: "Revenue minus costs, from your own prices, yields and costs or from sourced regional figures (USDA, university surveys, FAOSTAT). A crop with neither has no money result.",
+    definition: "Revenue minus costs, from your own prices, yields and costs or from sourced regional figures (USDA, university surveys, FAOSTAT), including AI-found figures whose quote was checked on the cited page (labelled \"AI-found, quote checked\"). A crop with none has no money result.",
   },
   "loss-assumption": {
     term: "Your loss estimate",

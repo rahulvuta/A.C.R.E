@@ -83,7 +83,8 @@ export function MethodsPage() {
           </li>
           <li>
             <strong>The money.</strong> Prices, yields and costs are the ones you entered or that came from published sources, held at
-            today's values. Weather changes the money only through a loss estimate you enter, labelled as an assumption.
+            today's values. Where nothing is published in our tables, the app may fill blanks with figures AI found on an official page and the code then
+            checked against that page, labelled &ldquo;AI-found, quote checked&rdquo;; finds it could not check are only offered as suggestions you can accept. Weather changes the money only through a loss estimate you enter, labelled as an assumption.
           </li>
           <li>
             <strong>What it can tell you.</strong> What to plan for, and which plan holds up better in most of the simulated years.
@@ -304,7 +305,7 @@ export function PrivacyPage() {
           </li>
           <li>Searching or clicking the map sends the place name or point to the service to find where it is.</li>
           <li>The service asks NASA for the grid cell's center, not your exact point.</li>
-          <li>AI research on regional guidance receives only the region (country, state or province, climate class), never your fields or coordinates.</li>
+          <li>AI research on regional guidance, and the lookup of missing prices, yields and costs, receives only the crop and the region (country, state or province, climate class), never your fields, coordinates or numbers.</li>
           <li>Shared links hold view choices only (plan, year, winter, priorities, listed place). Never your dates or typed coordinates.</li>
         </ul>
       </Section>

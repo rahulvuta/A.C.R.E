@@ -94,7 +94,11 @@ export function FieldWorkspace({ api, farm, field, tab, onTab, onClose, onCopy, 
       {pane("simulation", () => (
         <div className="gf-now">
           {rotationReady(sim.rotation) ? null : <Banner kind="info">Set a complete crop rotation first. <button type="button" className="btn btn-quiet" onClick={() => onTab("rotation")}>Open Crop Rotation</button></Banner>}
-          <StepSimulate ctx={ctxFor("simulation")} />
+          {rotationReady(sim.rotation) ? <StrategyView ctx={ctxFor("simulation")} onTab={onTab} /> : null}
+          <details className="db-card">
+            <summary>Your current plan in detail: yearly results, loss estimate and first season</summary>
+            <StepSimulate ctx={ctxFor("simulation")} />
+          </details>
           {sim.scenarios.length ? <StepCompare ctx={ctxFor("simulation")} /> : <p className="dash-muted">Add other plans under Recommendations to compare them here.</p>}
         </div>
       ))}
