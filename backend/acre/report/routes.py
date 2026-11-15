@@ -322,13 +322,15 @@ def _future_input(body: dict[str, Any], plan: Any, year: int, assumed: bool
         return None, []
     if not isinstance(f, dict):
         return None, [issue("future", "not_an_object", "future must be an object")]
+    from acre.planner.future import MAX_SEASONS
+
     n = f.get("seasons", 2)
     start = f.get("start_season", year)
     if isinstance(start, str) and start.isdigit():
         start = int(start)
     problems = []
-    if isinstance(n, bool) or not isinstance(n, int) or not 1 <= n <= 4:
-        problems.append(issue("future.seasons", "invalid_seasons", "seasons must be 1-4"))
+    if isinstance(n, bool) or not isinstance(n, int) or not 1 <= n <= MAX_SEASONS:
+        problems.append(issue("future.seasons", "invalid_seasons", f"seasons must be 1-{MAX_SEASONS}"))
     if isinstance(start, bool) or not isinstance(start, int) or not 1900 <= start <= 2200:
         problems.append(issue("future.start_season", "invalid_year", "start_season is a year"))
     from acre.contracts import Plan as _Plan

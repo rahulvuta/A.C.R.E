@@ -1256,7 +1256,7 @@
       },
       "CandidateIn": {
         "additionalProperties": false,
-        "description": "A farmer-edited candidate: one plan per season (1-4).",
+        "description": "A farmer-edited candidate: one plan per season (1-10).",
         "properties": {
           "candidate_id": {
             "minLength": 1,
@@ -1278,7 +1278,7 @@
             "items": {
               "$ref": "#/components/schemas/Plan"
             },
-            "maxItems": 4,
+            "maxItems": 10,
             "minItems": 1,
             "title": "Plans",
             "type": "array"
@@ -6108,7 +6108,7 @@
             "items": {
               "$ref": "#/components/schemas/Plan"
             },
-            "maxItems": 4,
+            "maxItems": 10,
             "minItems": 1,
             "title": "Rotation",
             "type": "array"

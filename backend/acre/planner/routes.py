@@ -496,6 +496,7 @@ async def post_future(request: Request) -> Any:
 
     from acre.catalogs.regional import regional_catalog
     from acre.planner.future import (
+        MAX_SEASONS,
         Edit,
         FuturePlanError,
         apply_edits,
@@ -519,8 +520,8 @@ async def post_future(request: Request) -> Any:
     if isinstance(start, bool) or not isinstance(start, int) or not MIN_YEAR <= start <= MAX_YEAR:
         issues.append(issue("start_season", "invalid_year", "start_season is a year like 2027"))
     n = body.get("seasons", len(legs) or 1)
-    if isinstance(n, bool) or not isinstance(n, int) or not 1 <= n <= 4:
-        issues.append(issue("seasons", "invalid_seasons", "seasons must be a whole number 1-4"))
+    if isinstance(n, bool) or not isinstance(n, int) or not 1 <= n <= MAX_SEASONS:
+        issues.append(issue("seasons", "invalid_seasons", "seasons must be a whole number 1-10"))
     as_of = None
     if body.get("as_of") is not None:
         try:

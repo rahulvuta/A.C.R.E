@@ -116,7 +116,7 @@ def test_pergamino_plan_gives_southern_dates_crossing_the_year(client):
     ({"plan_id": "nope"}, "plan_id"),
     ({"rotation_id": "nope"}, "rotation_id"),
     ({}, "plan"),
-    ({"plan_id": "corn_soy__rye", "seasons": 9}, "seasons"),
+    ({"plan_id": "corn_soy__rye", "seasons": 11}, "seasons"),
     ({"plan_id": "corn_soy__rye", "start_season": "soon"}, "start_season"),
     ({"plan_id": "corn_soy__rye", "edits": [{"field": "next_crop_id", "value": "rice"}]},
      "edits[0].field"),

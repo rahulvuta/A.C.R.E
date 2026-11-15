@@ -29,7 +29,7 @@ from acre.planner.calendar import ActionCalendar, build_action_calendar, diff_ca
 DATE_FIELDS = ("prev_harvest", "next_plant", "winter.seed", "winter.terminate", "winter.plant",
                "winter.harvest")  # fmt: skip
 EDITABLE = (*DATE_FIELDS, "winter.crop_id")
-MAX_SEASONS = 4
+MAX_SEASONS = 10  # the 10-year planning horizon; legs repeat when fewer are given
 NOT_A_FORECAST = ("Planned dates on future calendars, from the plan and its sources. They are not "
                   "a forecast: the weather in these seasons is unknown.")  # fmt: skip
 
