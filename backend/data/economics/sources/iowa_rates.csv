@@ -1,0 +1,13 @@
+equipment,operation,value,page,source_line
+chisel_plow,chisel_plowing,20.75,2,Chisel plowing / acre 20.75 20.00 10.00 - 28.00 37
+disk,disking_tandem,19.80,2,"Disking, tandem / acre 19.80 20.00 10.00 - 30.00 59"
+field_cultivator,field_cultivating,19.20,2,Field cultivating / acre 19.20 19.00 7.60 - 32.00 82
+planter,planting_without_attachments,26.50,2,-without attachments / acre 26.50 26.00 15.00 - 38.00 69
+no_till_drill,drilling_soybean_no_till,24.15,2,"Drilling soybean, no-till / acre 24.15 25.00 15.00 - 32.00 40"
+grain_drill,drilling_small_grain,19.45,2,Drilling small grain / acre 19.45 20.00 10.00 - 27.00 30
+broadcast_seeder,broadcast_grass_with_tractor,15.65,2,"Seeding grass, broadcast with tractor / acre 15.65 15.00 8.00 - 25.00 19"
+grain_drill,drilling_cover_crop,19.05,2,Drilling cover crop seed / acre 19.05 19.25 9.00 - 25.00 39
+sprayer,spraying_ground_broadcast_no_materials,9.35,3,"Ground, broadcast, not incorporated, self-propelled / acre 9.35 9.00 5.00 - 18.00 121"
+combine,corn_combining,46.05,3,Corn combining / acre $46.05 $45.00 $25.00 - $80.00 119
+combine,soybean_combining,43.05,3,Soybean combining / acre 43.05 42.00 24.00 - 70.00 94
+combine,small_grain_combining,47.00,3,Small grain combining / acre 47.00 45.00 35.00 - 65.00 13

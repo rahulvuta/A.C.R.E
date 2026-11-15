@@ -1,0 +1,31 @@
+Commodity,Category,Item,Units,Size,Region,Country,Year,Value,Survey base year
+Cotton,Gross value of production,"Primary product, cotton lint",dollars per planted acre,No specific size,U.S. total,United States,2024,535.58,Base survey of 2019
+Cotton,Gross value of production,"Secondary product, cottonseed",dollars per planted acre,No specific size,U.S. total,United States,2024,146.54,Base survey of 2019
+Cotton,Gross value of production,"Total, gross value of production",dollars per planted acre,No specific size,U.S. total,United States,2024,682.12,Base survey of 2019
+Cotton,Operating costs,Seed,dollars per planted acre,No specific size,U.S. total,United States,2024,100.04,Base survey of 2019
+Cotton,Operating costs,Fertilizer  ,dollars per planted acre,No specific size,U.S. total,United States,2024,96.77,Base survey of 2019
+Cotton,Operating costs,Chemicals,dollars per planted acre,No specific size,U.S. total,United States,2024,88.58,Base survey of 2019
+Cotton,Operating costs,Custom services,dollars per planted acre,No specific size,U.S. total,United States,2024,34.36,Base survey of 2019
+Cotton,Operating costs,"Fuel, lube, and electricity",dollars per planted acre,No specific size,U.S. total,United States,2024,46.44,Base survey of 2019
+Cotton,Operating costs,Repairs,dollars per planted acre,No specific size,U.S. total,United States,2024,58.46,Base survey of 2019
+Cotton,Operating costs,Ginning,dollars per planted acre,No specific size,U.S. total,United States,2024,108.77,Base survey of 2019
+Cotton,Operating costs,Purchased irrigation water,dollars per planted acre,No specific size,U.S. total,United States,2024,4.1,Base survey of 2019
+Cotton,Operating costs,Interest on operating inputs,dollars per planted acre,No specific size,U.S. total,United States,2024,12.93,Base survey of 2019
+Cotton,Operating costs,"Total, operating costs",dollars per planted acre,No specific size,U.S. total,United States,2024,550.45,Base survey of 2019
+Cotton,Allocated overhead,Hired labor,dollars per planted acre,No specific size,U.S. total,United States,2024,27.09,Base survey of 2019
+Cotton,Allocated overhead,Opportunity cost of unpaid labor,dollars per planted acre,No specific size,U.S. total,United States,2024,25.98,Base survey of 2019
+Cotton,Allocated overhead,Capital recovery of machinery and equipment,dollars per planted acre,No specific size,U.S. total,United States,2024,193.29,Base survey of 2019
+Cotton,Allocated overhead,Opportunity cost of land,dollars per planted acre,No specific size,U.S. total,United States,2024,100.47,Base survey of 2019
+Cotton,Allocated overhead,Taxes and insurance,dollars per planted acre,No specific size,U.S. total,United States,2024,12.16,Base survey of 2019
+Cotton,Allocated overhead,General farm overhead,dollars per planted acre,No specific size,U.S. total,United States,2024,18.93,Base survey of 2019
+Cotton,Allocated overhead,"Total, allocated overhead",dollars per planted acre,No specific size,U.S. total,United States,2024,377.92,Base survey of 2019
+Cotton,Costs listed,"Total, costs listed",dollars per planted acre,No specific size,U.S. total,United States,2024,928.37,Base survey of 2019
+Cotton,Net value,Value of production less total costs listed,dollars per planted acre,No specific size,U.S. total,United States,2024,-246.25,Base survey of 2019
+Cotton,Net value,Value of production less operating costs,dollars per planted acre,No specific size,U.S. total,United States,2024,131.67,Base survey of 2019
+Cotton,Supporting information,Yield,pounds per planted acre,No specific size,U.S. total,United States,2024,799,Base survey of 2019
+Cotton,Supporting information,Price,dollars per pound,No specific size,U.S. total,United States,2024,0.67,Base survey of 2019
+Cotton,Supporting information,Cottonseed yield,pounds per planted acre,No specific size,U.S. total,United States,2024,1292,Base survey of 2019
+Cotton,Supporting information,Cottonseed price,dollars per pound,No specific size,U.S. total,United States,2024,0.11,Base survey of 2019
+Cotton,Supporting information,Enterprise size,planted acres,No specific size,U.S. total,United States,2024,1095,Base survey of 2019
+Cotton,Production practices,Dryland,percent of acres,No specific size,U.S. total,United States,2024,63,Base survey of 2019
+Cotton,Production practices,Irrigated,percent of acres,No specific size,U.S. total,United States,2024,37,Base survey of 2019

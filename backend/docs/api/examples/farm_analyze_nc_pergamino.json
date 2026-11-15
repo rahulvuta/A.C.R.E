@@ -10,10 +10,12 @@
         "latitude": 34.97,
         "longitude": -80.56
       },
+      "equipment": [],
       "field_id": "fld_nc",
       "job_status": "ready",
       "name": "Union field (synthetic)",
       "poll": null,
+      "readings_context": [],
       "reason": null,
       "reason_text": null,
       "result": {
@@ -1830,10 +1832,12 @@
         "latitude": -33.89,
         "longitude": -60.57
       },
+      "equipment": [],
       "field_id": "fld_ar",
       "job_status": "ready",
       "name": "Pergamino field (synthetic)",
       "poll": null,
+      "readings_context": [],
       "reason": null,
       "reason_text": null,
       "result": {

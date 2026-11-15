@@ -310,7 +310,8 @@ def candidate_body(c: Any) -> dict[str, Any]:
     seasons = [s.model_dump(mode="json") for s in c.seasons]
     return {**seasons[0]["plan"], "candidate_id": c.candidate_id, "label": c.label,
             "crops": c.crops, "seasons": seasons, "origins": c.origins,
-            "checks_summary": c.checks_summary, "matches_rotation": c.matches_rotation}  # fmt: skip
+            "checks_summary": c.checks_summary, "matches_rotation": c.matches_rotation,
+            "feasibility": c.feasibility}  # fmt: skip
 
 
 @router.post("/plans/generate")

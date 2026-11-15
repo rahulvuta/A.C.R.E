@@ -1,0 +1,392 @@
+"""The central crop library (card S4, contract §13): one SQLite file, shared by all users.
+
+``$ACRE_CACHE_DIR/croplib.sqlite`` is a file, not a server. It is seeded on first use (and
+re-seeded when its inputs change) from the built-in crop list (catalogs v2/v3 ids and aliases),
+the SAGE crop list, and the economics reference data (E0). Crops researched by AI (``research.py``)
+are added with ``origin: ai_suggested`` or ``source_checked``, never ``verified_source``.
+
+Nothing about a farm is ever stored here: only crops, regional calendars and source references.
+"""
+
+from __future__ import annotations
+
+import csv
+import hashlib
+import json
+import sqlite3
+import threading
+import time
+from contextlib import contextmanager
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import Any
+
+from acre.catalogs import crop_ids
+from acre.geo.config import BACKEND_ROOT, cache_root
+
+DB_FILE = "croplib.sqlite"
+SCHEMA_VERSION = "1"
+_LOCK = threading.RLock()
+_SEEDED: dict[str, str] = {}  # db path -> seed stamp
+_VERSIONS: dict[str, tuple[float, str]] = {}
+VERSION_TTL_SECONDS = 2.0
+
+SCHEMA = """
+CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT);
+CREATE TABLE IF NOT EXISTS crops (
+    crop_id TEXT PRIMARY KEY, name TEXT NOT NULL, scientific_name TEXT, family TEXT,
+    roles TEXT NOT NULL, aliases TEXT NOT NULL, season_length_days INTEGER, origin TEXT NOT NULL,
+    sources TEXT NOT NULL, researched INTEGER NOT NULL DEFAULT 0, in_sage INTEGER NOT NULL DEFAULT 0,
+    in_catalog INTEGER NOT NULL DEFAULT 0, cached_at TEXT NOT NULL, notes TEXT);
+CREATE TABLE IF NOT EXISTS calendars (
+    crop_id TEXT NOT NULL, region_key TEXT NOT NULL, plant TEXT, harvest TEXT, origin TEXT NOT NULL,
+    source TEXT, review TEXT, sage_check TEXT, cached_at TEXT NOT NULL,
+    PRIMARY KEY (crop_id, region_key));
+CREATE TABLE IF NOT EXISTS economics_refs (
+    crop_id TEXT NOT NULL, region_key TEXT NOT NULL, kind TEXT NOT NULL, value REAL, unit TEXT,
+    currency TEXT, year TEXT, origin TEXT NOT NULL, source TEXT, from_research INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS research (
+    cache_key TEXT PRIMARY KEY, name TEXT NOT NULL, region_key TEXT NOT NULL, crop_id TEXT,
+    raw TEXT, guardrails TEXT, created_at TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS econ_crop ON economics_refs (crop_id, region_key);
+"""
+
+
+def _now() -> str:
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def db_path() -> Path:
+    return cache_root() / DB_FILE
+
+
+@contextmanager
+def connect(seed: bool = True):
+    """A connection to the library (seeded first). Writes are serialised by a process lock."""
+    path = db_path()
+    with _LOCK:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        con = sqlite3.connect(path, timeout=30, check_same_thread=False)
+        con.row_factory = sqlite3.Row
+        try:
+            con.execute("PRAGMA journal_mode=WAL")
+            con.executescript(SCHEMA)
+            if seed:
+                _seed(con, path)
+            yield con
+            if con.total_changes:
+                con.execute("INSERT INTO meta (key, value) VALUES ('revision', '1') "
+                            "ON CONFLICT(key) DO UPDATE SET value=CAST(value AS INTEGER)+1")
+            con.commit()
+            if con.total_changes:
+                _VERSIONS.pop(str(path), None)
+        finally:
+            con.close()
+
+
+# --------------------------------------------------------------------------- seeding
+
+
+def _catalog_ids() -> set[str]:
+    p = BACKEND_ROOT / "data" / "catalogs" / "v2" / "crops.csv"
+    if not p.exists():
+        return set()
+    with p.open(encoding="utf-8") as f:
+        return {crop_ids.canonical(r["crop_id"]) or r["crop_id"] for r in csv.DictReader(f)}
+
+
+def _sage_ids() -> set[str]:
+    try:
+        from acre.catalogs import sage
+
+        return set(sage._load().meta["crops"])
+    except Exception:  # noqa: BLE001 - SAGE missing leaves in_sage false
+        return set()
+
+
+def _economics_rows() -> list[dict[str, Any]]:
+    from acre.economics import data
+
+    t = data.load()
+    out = []
+    for kind, rows in (("price", t.prices), ("yield", t.yields)):
+        for r in rows:
+            out.append({"crop_id": r["crop_id"], "region_key": (r["region_key"] or "").upper(),
+                        "kind": kind, "value": r.get("typical", r.get("value")),
+                        "unit": r["unit"], "currency": r.get("currency"),
+                        "year": r.get("years") or r.get("year"), "origin": r["origin"],
+                        "source": data.source_of(r)})  # fmt: skip
+    for r in t.costs:
+        out.append({"crop_id": r["crop_id"], "region_key": (r["region_key"] or "").upper(),
+                    "kind": f"cost:{r['item']}", "value": r["value"], "unit": r["unit"],
+                    "currency": r["currency"], "year": r.get("year"), "origin": r["origin"],
+                    "source": data.source_of(r)})  # fmt: skip
+    return out
+
+
+def _seed_stamp() -> str:
+    from acre.economics import data
+
+    parts = [SCHEMA_VERSION, sorted(c.crop_id for c in crop_ids.CROPS)]
+    d = data.data_dir()
+    for name in data.FILES:
+        p = d / f"{name}.csv"
+        parts.append((str(p), p.stat().st_mtime_ns if p.exists() else None))
+    return hashlib.sha256(repr(parts).encode()).hexdigest()[:16]
+
+
+def _seed(con: sqlite3.Connection, path: Path) -> None:
+    stamp = _seed_stamp()
+    if _SEEDED.get(str(path)) == stamp:
+        return
+    row = con.execute("SELECT value FROM meta WHERE key='seed'").fetchone()
+    if row is None or row["value"] != stamp:
+        now = _now()
+        cat, sg = _catalog_ids(), _sage_ids()
+        for c in crop_ids.CROPS:
+            origin = ("verified_source" if c.crop_id in cat else
+                      "dataset_estimate" if c.crop_id in sg else "assumed")  # fmt: skip
+            src = ([{"title": "A.C.R.E verified NC catalog (v2)", "url": None}] if c.crop_id in cat
+                   else [{"title": "Sacks et al. 2010 crop calendar (SAGE)", "url":
+                          "https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/"}]
+                   if c.crop_id in sg else [{"title": "A.C.R.E crop list", "url": None}])  # fmt: skip
+            con.execute(
+                "INSERT INTO crops (crop_id, name, family, roles, aliases, origin, sources, "
+                "researched, in_sage, in_catalog, cached_at) VALUES (?,?,?,?,?,?,?,0,?,?,?) "
+                "ON CONFLICT(crop_id) DO UPDATE SET name=excluded.name, family=excluded.family, "
+                "roles=excluded.roles, aliases=excluded.aliases, origin=excluded.origin, "
+                "sources=excluded.sources, in_sage=excluded.in_sage, "
+                "in_catalog=excluded.in_catalog WHERE researched=0",
+                (c.crop_id, c.name, c.family, json.dumps(list(c.all_roles())),
+                 json.dumps(list(c.aliases)), origin, json.dumps(src), int(c.crop_id in sg),
+                 int(c.crop_id in cat), now))  # fmt: skip
+        con.execute("DELETE FROM economics_refs WHERE from_research=0")
+        for e in _economics_rows():
+            con.execute(
+                "INSERT OR IGNORE INTO crops (crop_id, name, roles, aliases, origin, sources, "
+                "cached_at) VALUES (?,?,?,?,?,?,?)",
+                (e["crop_id"], e["crop_id"].replace("_", " ").capitalize(),
+                 json.dumps(["cash_crop"]), "[]", e["origin"], json.dumps([e["source"]]), now))
+            con.execute(
+                "INSERT INTO economics_refs (crop_id, region_key, kind, value, unit, currency, "
+                "year, origin, source, from_research) VALUES (?,?,?,?,?,?,?,?,?,0)",
+                (e["crop_id"], e["region_key"], e["kind"], e["value"], e["unit"], e["currency"],
+                 e["year"], e["origin"], json.dumps(e["source"])))  # fmt: skip
+        con.execute("INSERT OR REPLACE INTO meta (key, value) VALUES ('seed', ?)", (stamp,))
+        con.commit()
+    _SEEDED[str(path)] = stamp
+
+
+def reset() -> None:
+    """Tests: forget what was seeded and loaded in this process."""
+    with _LOCK:
+        _SEEDED.clear()
+        _VERSIONS.clear()
+        crop_ids.clear_extra()
+
+
+# --------------------------------------------------------------------------- reads
+
+
+def version() -> str:
+    """Changes whenever a researched crop or calendar is stored (part of regional cache keys)."""
+    path = db_path()
+    with _LOCK:
+        if not path.exists():
+            _VERSIONS.pop(str(path), None)
+            return "empty"
+        cached = _VERSIONS.get(str(path))
+        now = time.monotonic()
+        if cached and now - cached[0] < VERSION_TTL_SECONDS:
+            return cached[1]
+        with connect(seed=False) as con:
+            revision = con.execute("SELECT value FROM meta WHERE key='revision'").fetchone()
+            r = con.execute("SELECT COUNT(*) n, MAX(cached_at) m FROM calendars").fetchone()
+            c = con.execute("SELECT COUNT(*) n FROM crops WHERE researched=1").fetchone()
+        value = f"{revision['value'] if revision else '0'}:{r['n']}:{r['m']}:{c['n']}"
+        _VERSIONS[str(path)] = (now, value)
+        return value
+
+
+def load_extras(loaded: list[str]) -> bool:
+    """Register researched crops with ``crop_ids`` if the library changed; True if it did."""
+    if not db_path().exists():
+        return False
+    v = version()
+    if loaded and loaded[0] == v:
+        return False
+    with connect(seed=False) as con:
+        rows = con.execute("SELECT * FROM crops").fetchall()
+    for r in rows:
+        if r["crop_id"] not in crop_ids.BY_ID:
+            crop_ids.register(_crop_id_obj(r))
+    loaded[:] = [v]
+    return True
+
+
+def _crop_id_obj(r: sqlite3.Row) -> crop_ids.CropId:
+    roles = tuple(json.loads(r["roles"]))
+    return crop_ids.CropId(r["crop_id"], r["name"], roles[0] if roles else "cash_crop",
+                           r["family"] or "unknown", tuple(json.loads(r["aliases"])), roles)  # fmt: skip
+
+
+def _region_match(rk: str, keys: list[str]) -> bool:
+    return rk.upper() in {k.upper() for k in keys}
+
+
+def calendars_for(region_keys: list[str]) -> dict[str, dict[str, Any]]:
+    """Researched calendars usable at a place: the most specific own region, not flagged."""
+    if not db_path().exists() or not region_keys:
+        return {}
+    keys = [k for k in region_keys if not k.startswith("koppen:")]
+    with connect(seed=False) as con:
+        rows = con.execute("SELECT * FROM calendars").fetchall()
+    out: dict[str, dict[str, Any]] = {}
+    for k in keys:  # most specific first
+        for r in rows:
+            if r["region_key"].upper() != k.upper() or r["crop_id"] in out:
+                continue
+            if r["review"] == "manual_check" or not r["plant"] or not r["harvest"]:
+                continue
+            out[r["crop_id"]] = {"plant": json.loads(r["plant"]),
+                                 "harvest": json.loads(r["harvest"]), "origin": r["origin"],
+                                 "source": json.loads(r["source"]) if r["source"] else None,
+                                 "region_key": r["region_key"], "library": True}  # fmt: skip
+    return out
+
+
+def _chain(region_key: str | None) -> list[str]:
+    if not region_key:
+        return []
+    rk = region_key.upper()
+    return [rk, rk.split("-", 1)[0]] if "-" in rk else [rk]
+
+
+def get_crop(crop_id: str, region_key: str | None = None) -> dict[str, Any] | None:
+    cid = crop_ids.canonical(crop_id) or (crop_id or "").strip().lower()
+    with connect() as con:
+        r = con.execute("SELECT * FROM crops WHERE crop_id=?", (cid,)).fetchone()
+        if r is None:
+            return None
+        cals = con.execute("SELECT * FROM calendars WHERE crop_id=? ORDER BY region_key",
+                           (cid,)).fetchall()  # fmt: skip
+        refs = con.execute("SELECT * FROM economics_refs WHERE crop_id=? ORDER BY region_key, "
+                           "kind", (cid,)).fetchall()  # fmt: skip
+    chain = _chain(region_key)
+    keep = (lambda rk: rk.upper() in chain) if chain else (lambda rk: True)  # noqa: E731
+    return {
+        "crop_id": r["crop_id"], "name": r["name"], "scientific_name": r["scientific_name"],
+        "family": r["family"], "roles": json.loads(r["roles"]),
+        "aliases": json.loads(r["aliases"]),
+        "season_length_days": r["season_length_days"],
+        "calendars": [{"region_key": c["region_key"],
+                       "plant": json.loads(c["plant"]) if c["plant"] else None,
+                       "harvest": json.loads(c["harvest"]) if c["harvest"] else None,
+                       "origin": c["origin"],
+                       "source": json.loads(c["source"]) if c["source"] else None,
+                       "review": c["review"],
+                       "sage_check": json.loads(c["sage_check"]) if c["sage_check"] else None}
+                      for c in cals if keep(c["region_key"])],
+        "economics_refs": [{"region_key": e["region_key"], "kind": e["kind"], "value": e["value"],
+                            "unit": e["unit"], "currency": e["currency"], "year": e["year"],
+                            "origin": e["origin"],
+                            "source": json.loads(e["source"]) if e["source"] else None,
+                            "used_for_money": e["origin"] in ("verified_source",
+                                                              "dataset_estimate")}
+                           for e in refs if keep(e["region_key"])],
+        "origin": r["origin"], "sources": json.loads(r["sources"]),
+        "researched": bool(r["researched"]), "in_sage": bool(r["in_sage"]),
+        "notes": r["notes"], "cached_at": r["cached_at"],
+    }  # fmt: skip
+
+
+def search(q: str, region_key: str | None = None, limit: int = 25) -> list[dict[str, Any]]:
+    needle = (q or "").strip().lower()
+    chain = _chain(region_key)
+    with connect() as con:
+        rows = con.execute("SELECT * FROM crops ORDER BY crop_id").fetchall()
+        cal = {(r["crop_id"], r["region_key"].upper()) for r in
+               con.execute("SELECT crop_id, region_key FROM calendars WHERE review IS NULL OR "
+                           "review != 'manual_check'")}  # fmt: skip
+        econ = {(r["crop_id"], r["region_key"].upper()) for r in
+                con.execute("SELECT crop_id, region_key FROM economics_refs WHERE origin IN "
+                            "('verified_source', 'dataset_estimate')")}  # fmt: skip
+    hits = []
+    for r in rows:
+        hay = [r["crop_id"], r["name"].lower(), *(a.lower() for a in json.loads(r["aliases"])),
+               (r["scientific_name"] or "").lower()]  # fmt: skip
+        if needle and not any(needle in h.replace("_", " ") or needle in h for h in hay):
+            continue
+        exact = needle in (r["crop_id"], r["name"].lower(), *json.loads(r["aliases"]))
+        has_cal = any((r["crop_id"], k) in cal for k in chain) or bool(r["in_sage"])
+        has_econ = any((r["crop_id"], k) in econ for k in chain) if chain else any(
+            c == r["crop_id"] for c, _ in econ)
+        note = ("SAGE gridded calendar where it is grown in your field's cell"
+                if r["in_sage"] and not any((r["crop_id"], k) in cal for k in chain) else
+                "Researched calendar for this region" if has_cal else
+                "No calendar for this region yet")  # fmt: skip
+        hits.append((not exact, r["crop_id"], {
+            "crop_id": r["crop_id"], "name": r["name"], "family": r["family"],
+            "roles": json.loads(r["roles"]), "origin": r["origin"], "has_calendar": has_cal,
+            "has_economics": has_econ, "region_note": note, "researched": bool(r["researched"])}))  # fmt: skip
+    return [h[2] for h in sorted(hits, key=lambda h: (h[0], h[1]))[:limit]]
+
+
+# --------------------------------------------------------------------------- writes (research)
+
+
+def cached_research(cache_key: str) -> str | None:
+    with connect() as con:
+        r = con.execute("SELECT crop_id FROM research WHERE cache_key=?", (cache_key,)).fetchone()
+    return r["crop_id"] if r else None
+
+
+def store_research(*, cache_key: str, name: str, region_key: str, crop: dict[str, Any],
+                   calendars: list[dict[str, Any]], refs: list[dict[str, Any]], raw: Any,
+                   guardrails: dict[str, Any]) -> str:  # fmt: skip
+    now = _now()
+    cid = crop["crop_id"]
+    with connect() as con:
+        existing = con.execute("SELECT researched FROM crops WHERE crop_id=?", (cid,)).fetchone()
+        if existing is not None and not existing["researched"]:
+            raise ValueError(f"{cid} is a built-in crop")  # never overwrite a built-in crop
+        con.execute(
+            "INSERT INTO crops (crop_id, name, scientific_name, family, roles, aliases, "
+            "season_length_days, origin, sources, researched, cached_at, notes) "
+            "VALUES (?,?,?,?,?,?,?,?,?,1,?,?) ON CONFLICT(crop_id) DO UPDATE SET "
+            "name=excluded.name, scientific_name=excluded.scientific_name, family=excluded.family, "
+            "roles=excluded.roles, aliases=excluded.aliases, "
+            "season_length_days=excluded.season_length_days, origin=excluded.origin, "
+            "sources=excluded.sources, cached_at=excluded.cached_at, notes=excluded.notes",
+            (cid, crop["name"], crop.get("scientific_name"), crop.get("family"),
+             json.dumps(crop["roles"]), json.dumps(crop.get("aliases") or []),
+             crop.get("season_length_days"), crop["origin"], json.dumps(crop.get("sources") or []),
+             now, crop.get("notes")))  # fmt: skip
+        con.execute("DELETE FROM calendars WHERE crop_id=? AND region_key=?", (cid, region_key))
+        for c in calendars:
+            con.execute(
+                "INSERT OR REPLACE INTO calendars (crop_id, region_key, plant, harvest, origin, "
+                "source, review, sage_check, cached_at) VALUES (?,?,?,?,?,?,?,?,?)",
+                (cid, region_key, json.dumps(c.get("plant")) if c.get("plant") else None,
+                 json.dumps(c.get("harvest")) if c.get("harvest") else None, c["origin"],
+                 json.dumps(c.get("source")), c.get("review"),
+                 json.dumps(c.get("sage_check")) if c.get("sage_check") else None, now))  # fmt: skip
+        con.execute("DELETE FROM economics_refs WHERE crop_id=? AND region_key=? AND "
+                    "from_research=1", (cid, region_key))  # fmt: skip
+        for e in refs:
+            con.execute(
+                "INSERT INTO economics_refs (crop_id, region_key, kind, value, unit, currency, "
+                "year, origin, source, from_research) VALUES (?,?,?,?,?,?,?,?,?,1)",
+                (cid, region_key, e["kind"], e["value"], e["unit"], e.get("currency"),
+                 e.get("year"), e["origin"], json.dumps(e.get("source"))))  # fmt: skip
+        con.execute("INSERT OR REPLACE INTO research (cache_key, name, region_key, crop_id, raw, "
+                    "guardrails, created_at) VALUES (?,?,?,?,?,?,?)",
+                    (cache_key, name, region_key, cid, json.dumps(raw), json.dumps(guardrails),
+                     now))  # fmt: skip
+    crop_ids.register(crop_ids.CropId(cid, crop["name"], crop["roles"][0],
+                                      crop.get("family") or "unknown",
+                                      tuple(crop.get("aliases") or []), tuple(crop["roles"])))  # fmt: skip
+    from acre.catalogs import regional
+
+    regional.clear_cache()
+    return cid

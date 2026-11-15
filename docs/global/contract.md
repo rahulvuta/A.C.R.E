@@ -243,7 +243,7 @@ Location handling (A2):
 
 Common: every response has `meta`, the 9 status words, `origin` on every value, `null` for blanks, and money as `{value, currency, unit, origin, source?}`. `currency` is the location's currency where a source gives it, else `USD`; area units are `acre | ha` (US default acre, elsewhere ha).
 
-## 11. Simulate and compare scenarios (S1, S2)
+## 11. Simulate and compare scenarios (S1, S2; shipped)
 
 `POST /v1/scenarios/simulate`:
 ```json
@@ -296,6 +296,58 @@ Response:
 - A badge is omitted when it can't be decided fairly. For example, `best_profit` needs money for every scenario; otherwise it is left out and the reason goes in `comparison.not_decided[]`.
 - At most 6 scenarios, 1–10 years and 50–500 runs. Rate class: analysis.
 
+**As shipped (S1, S2, 2026-11-14).** Frozen examples: `simulate_union` (money and a loss assumption), `simulate_union_no_money`, `simulate_pergamino` (the prepared cell, no money), `simulate_invalid_runs` (400). Where this list and the draft above differ, this list is right.
+- Request:
+  - `field.area_ha`, or `field.geometry` (the backend measures it; `field.area_origin` says which). With neither, there is no money result (`money_gaps[].reason: "no_area"`).
+  - `economics.overrides[crop]`: any of `price {value|typical, low?, high?, unit: "USD/bu"}`, `yield {value, unit: "bu/acre" | "t/ha"}`, `costs` (`{value, unit: "USD/acre"}`, `{total: {value, unit}}` or a list of `{item, value, unit}`). The price unit's quantity must match the yield's (`USD/bu` with `bu/acre`); otherwise it's a `unit_mismatch` gap, never a guess.
+  - `economics.loss_assumptions`: `dry_spring_pct`, `heavy_rain_pct` (0–100 or null). No other keys.
+  - `goals.priorities` accepts `profit` (and `/v1/plans/recommend` now accepts and ignores it).
+  - No `is_baseline`: the first scenario is the baseline. Two baselines, or duplicate ids: 400.
+- `method`:
+  - `{weather: "historical_resampling", runs, seed, years, start_season, source_years, pool_years, note, draws, threshold_set_id, resolution, money_source}`.
+  - `pool_years` is the number of past seasons in which every plan of every scenario can be evaluated. Fewer than 15: `status: "insufficient_data"` with an empty `scenarios`.
+  - `draws` says that every scenario replays the same past seasons in each run (common random numbers).
+  - `money_source` is `economics_library` (B's S3: your values first, then sourced references) or `grower_only`.
+- `scenarios[]` adds `is_baseline`, `money_status` (`complete | partial | unavailable`), `money_gaps[{crop_id?, field, reason, text}]` and `replayed_seasons_sample` (the past years replayed in run 0).
+- `yearly[].indicators`:
+  - `rain_on_bare_soil_mm` and `heavy_rain_days_on_bare_soil`: `{p10, median, p90, unit, origin}`.
+  - `living_cover_days`: `{median, unit, origin, planned: true}`.
+  - `dry_pre_plant`: `{probability, origin}`.
+  - `operations`: `{value, unit, origin}`.
+  - These are P2's definitions (`backend/docs/indicators.md`).
+- `yearly[].money`:
+  - `{revenue, costs, margin}`, each `{p10, median, p90, currency, origin}`; null when `money_status` isn't complete.
+  - `includes_assumption` is `null`, `"dry_spring_pct"`, `"heavy_rain_pct"` or `"dry_spring_pct+heavy_rain_pct"`.
+  - A loss is applied only to the crop planted after the event, and only in replayed years when that event happened.
+- `totals`:
+  - Distributions: `rain_on_bare_soil_mm_per_year`, `heavy_rain_days_on_bare_soil_per_year`, `dry_springs` and `stress_events` (dry pre-planting windows plus years with heavy rain on bare soil). The last two add a `mean`.
+  - Values: `living_cover_days_per_year {median}`, `crop_families` (null when a crop has no family) with `crop_families_detail`, and `operations_per_year`.
+  - With money:
+    - `margin_10y {p10, median, p90, currency, origin, includes_assumption}` covers the requested number of years.
+    - `margin_10y_price_cases {low, typical, high}` appears only when every revenue crop has a sourced price range.
+    - `weather_link` says whether money moved with weather (`none` without a loss assumption).
+- `events[]`:
+  - `dry_springs_ge_3_in_<N>y` and `heavy_rain_on_bare_soil_years_ge_3_in_<N>y` (when N ≥ 3).
+  - `back_to_back_dry_springs` (when N ≥ 2).
+- `readings_context[]` (the same in every scenario): each reading as sent plus `origin: "grower"` and:
+  - `modeled_same_day` (`{gwettop | precip_mm | tmean_c, origin: "nasa_modeled"}`), or null with `modeled_same_day_reason` when the date is outside the record;
+  - `modeled_typical_for_date` (`{variable, p10, median, p90, years, origin, note}`).
+  - Readings never enter the run.
+- `crop_money`: per crop `{status, currency, price {low, typical, high, origin}, yield_per_area, costs_per_area}`, as used.
+- `comparison`:
+  - `badges[{badge, scenario_id, why}]`.
+  - `not_decided[{badge, reason: money_missing | tie | indicator_missing | only_one_scenario, text}]`.
+  - `deltas[{scenario_id, versus, changes[{indicator, delta | median_delta, currency?, text}]}]`.
+  - `trade_offs[{scenario_id, better[], worse[], text}]`.
+  - `caveat`.
+- Badge rules:
+  - `best_profit`: highest `margin_10y.median`, only when every scenario has one.
+  - `most_sustainable`: non-dominated on living-cover days, rain on bare soil and crop families, ordered by rank positions.
+  - `lowest_weather_risk`: lowest mean `stress_events`.
+  - `best_for_priorities`: P2's method, using rank positions only. Each priority's weight is shared among the metrics it names: `soil_cover` covers cover days and rain on bare soil; `water_conservation` covers heavy-rain days on bare soil; `weather_resilience` covers stress events; `crop_diversity` covers families; `living_cover_duration` covers cover days; `management_simplicity` covers operations; `profit` covers `margin_10y`.
+  - A tie is never broken arbitrarily; it goes in `not_decided`.
+- No weather for the point: HTTP 200 `{status: "unavailable", code, reason, reason_text, weather_location, scenarios: [], comparison: null}`, as compare does.
+
 ## 12. Economics estimate (S3)
 
 `POST /v1/economics/estimate` with body `{location, crops: ["field_corn", "soybean"], area: {value, unit}, equipment: [], overrides: {}}`:
@@ -314,6 +366,10 @@ Response:
 ```
 A crop with no source and no override gets `status: "unavailable"`, null values and a `reason_text`.
 
+Sourced yields and cost totals may carry `area_basis: harvested|planted|unknown`. Conflicting
+known bases leave margin blank with a reason; no area-basis conversion is assumed. Exact mass
+and area unit conversions are supported; bushel-to-mass conversions are not inferred.
+
 ## 13. Crop library (S4)
 
 - `GET /v1/crops/search?q=okra&region_key=US-NC` returns `{meta, results: [{crop_id, name, family, roles, origin, has_calendar, has_economics, region_note}], can_research: true}`.
@@ -323,6 +379,12 @@ A crop with no source and no override gets `status: "unavailable"`, null values 
 
 The library is shared by all users (cached centrally). Every research call goes through the guardrails, research caps and rate limits. The request carries only the crop name and region.
 
+**Shipped (S4).** Crop details also carry `aliases`, `researched`, `in_sage` and `notes`.
+Calendars include `review` and `sage_check`. Economics references include `used_for_money`;
+AI references are never used for money. Research jobs carry `name`, `region_key`, `status`,
+`reason`, `reason_text` and an optional `check`. A known crop or cached answer can be ready
+without a new AI call. Crop research shares the regional-research rate limit and daily budget.
+
 ## 14. Field context: equipment and readings (S5)
 
 The field object in §11/§5 gains:
@@ -331,11 +393,30 @@ The field object in §11/§5 gains:
 
 Both stay in the browser and are sent per request, never stored on the server. `GET /v1/vocab/equipment` and `GET /v1/vocab/readings` return the vocabularies with labels.
 
+`POST /v1/seasons/{year}/replay` accepts `field: {equipment, readings}` and returns
+`readings_context`, including available same-day modeled context. Readings do not change the
+NASA series or replay metrics. Farm analysis accepts the same field context and returns it
+per field; equipment is passed to the recommendation feasibility check.
+
 ## 15. Demo and autofill (S6)
 
 - `GET /v1/demo/farm?scenario=union|pergamino` returns `{meta, farm: Farm (contract §5 shape plus equipment and readings), current_plans, economics_overrides, goals, label: "Demo farm (example values)"}`.
 - `POST /v1/plans/autofill` with body `{location, crops: [{role: "previous|cover|next", crop_id}]}` returns `{meta, plan: Plan, dates: [{field, value, origin, source}], gaps}`.
 
+**Shipped (S6).** Both demo farms contain two synthetic fields with geometry, measured area,
+equipment and example readings. `current_plans[field_id]` contains a two-season rotation.
+`economics_overrides` contains explicit example inputs, labelled not sourced; there is no
+default weather-loss assumption. `note`, `economics_note` and `resolution_note` describe the
+synthetic inputs, historical replay and shared NASA cell.
+
+Autofill accepts a point or `cell_id`, one previous crop, one next crop and an optional cover.
+The response adds `status` and `note`; each date adds `status`. Missing dates have null values
+and origins, with `{field, reason, text}` entries in `gaps`. An incomplete or invalid calendar
+has `plan: null`. NC catalog windows apply only within their NC region; other planting and
+harvest dates use the local SAGE calendar. Unsourced cover spacing is labelled `assumed`.
+
 ## 16. Vocabularies
 
 `GET /v1/vocab/priorities` returns the priority list, now including `profit`, with plain labels and one-line explanations for the UI.
+
+**Shipped (A):** `{meta, status, priorities: [{priority_id, label, explanation, weights: {min: 0, max: 3}, used_by: ["simulate", "recommend"?]}]}`. `profit` is used by simulate only. Example: `vocab_priorities`.

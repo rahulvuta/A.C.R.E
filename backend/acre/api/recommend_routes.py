@@ -39,9 +39,9 @@ class GoalsIn(BaseModel):
     @field_validator("priorities")
     @classmethod
     def _known(cls, v: dict[str, int]) -> dict[str, int]:
-        if set(v) - set(PRIORITIES):  # the unknown names are not echoed (they are client text)
-            raise ValueError(f"unknown priority; known priorities: {', '.join(PRIORITIES)}")
-        return v
+        if set(v) - set(PRIORITIES) - {"profit"}:  # unknown names are not echoed (client text)
+            raise ValueError(f"unknown priority; known priorities: {', '.join(PRIORITIES)}, profit")
+        return {k: w for k, w in v.items() if k != "profit"}  # no money here: profit is simulate's
 
 
 class CandidateIn(BaseModel):

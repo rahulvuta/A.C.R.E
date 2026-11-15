@@ -305,6 +305,7 @@ class ReplayResponse(_M):
     daily: list[ReplayDay]
     weather_location: WeatherLocation | None = None
     hemisphere: Literal["north", "south"] | None = None  # A2
+    readings_context: list[dict[str, Any]] = Field(default_factory=list)
 
 
 # --------------------------------------------------------------------------- sensitivity

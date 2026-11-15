@@ -1,0 +1,29 @@
+Commodity,Category,Item,Units,Size,Region,Country,Year,Value,Survey base year
+Oats,Operating costs,Other variable expenses  ,dollars per planted acre,No specific size,U.S. total,United States,2024,1.67,Base survey of 2023
+Oats,Operating costs,Interest on operating inputs,dollars per planted acre,No specific size,U.S. total,United States,2024,3.95,Base survey of 2023
+Oats,Operating costs,"Total, operating costs",dollars per planted acre,No specific size,U.S. total,United States,2024,168.12,Base survey of 2023
+Oats,Allocated overhead,Hired labor,dollars per planted acre,No specific size,U.S. total,United States,2024,2.67,Base survey of 2023
+Oats,Allocated overhead,Opportunity cost of unpaid labor,dollars per planted acre,No specific size,U.S. total,United States,2024,31.85,Base survey of 2023
+Oats,Allocated overhead,Capital recovery of machinery and equipment,dollars per planted acre,No specific size,U.S. total,United States,2024,133.3,Base survey of 2023
+Oats,Allocated overhead,Opportunity cost of land,dollars per planted acre,No specific size,U.S. total,United States,2024,126.89,Base survey of 2023
+Oats,Allocated overhead,Taxes and insurance,dollars per planted acre,No specific size,U.S. total,United States,2024,9.84,Base survey of 2023
+Oats,Allocated overhead,General farm overhead,dollars per planted acre,No specific size,U.S. total,United States,2024,17.55,Base survey of 2023
+Oats,Allocated overhead,"Total, allocated overhead",dollars per planted acre,No specific size,U.S. total,United States,2024,322.1,Base survey of 2023
+Oats,Costs listed,"Total, costs listed",dollars per planted acre,No specific size,U.S. total,United States,2024,490.22,Base survey of 2023
+Oats,Net value,Value of production less total costs listed,dollars per planted acre,No specific size,U.S. total,United States,2024,-200.25,Base survey of 2023
+Oats,Net value,Value of production less operating costs,dollars per planted acre,No specific size,U.S. total,United States,2024,121.85,Base survey of 2023
+Oats,Supporting information,Yield,bushels per planted acre,No specific size,U.S. total,United States,2024,66,Base survey of 2023
+Oats,Supporting information,Price,dollars per bushel at harvest,No specific size,U.S. total,United States,2024,3.27,Base survey of 2023
+Oats,Supporting information,Enterprise size,planted acres,No specific size,U.S. total,United States,2024,76,Base survey of 2023
+Oats,Production practices,Dryland,percent of acres,No specific size,U.S. total,United States,2024,97,Base survey of 2023
+Oats,Production practices,Irrigated,percent of acres,No specific size,U.S. total,United States,2024,3,Base survey of 2023
+Oats,Gross value of production,"Primary product, grain",dollars per planted acre,No specific size,U.S. total,United States,2024,216.47,Base survey of 2023
+Oats,Gross value of production,"Secondary product, hay/silage/grazing",dollars per planted acre,No specific size,U.S. total,United States,2024,28.37,Base survey of 2023
+Oats,Gross value of production,"Secondary product, straw",dollars per planted acre,No specific size,U.S. total,United States,2024,45.13,Base survey of 2023
+Oats,Gross value of production,"Total, gross value of production",dollars per planted acre,No specific size,U.S. total,United States,2024,289.97,Base survey of 2023
+Oats,Operating costs,Seed,dollars per planted acre,No specific size,U.S. total,United States,2024,26.12,Base survey of 2023
+Oats,Operating costs,Fertilizer  ,dollars per planted acre,No specific size,U.S. total,United States,2024,62.88,Base survey of 2023
+Oats,Operating costs,Chemicals,dollars per planted acre,No specific size,U.S. total,United States,2024,5.5,Base survey of 2023
+Oats,Operating costs,Custom services,dollars per planted acre,No specific size,U.S. total,United States,2024,9.56,Base survey of 2023
+Oats,Operating costs,"Fuel, lube, and electricity",dollars per planted acre,No specific size,U.S. total,United States,2024,22.37,Base survey of 2023
+Oats,Operating costs,Repairs,dollars per planted acre,No specific size,U.S. total,United States,2024,36.07,Base survey of 2023

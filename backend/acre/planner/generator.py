@@ -75,6 +75,8 @@ class Candidate(BaseModel):
     origins: list[str]  # every origin any date or rule of this candidate rests on
     checks_summary: dict[str, Any]
     matches_rotation: str | None = None  # a preset or profile rotation this sequence is
+    #: S5: what the field's equipment can do per season (``unknown`` when no list was given)
+    feasibility: dict[str, Any] = Field(default_factory=dict)
 
     @property
     def plans(self) -> list[Plan]:
@@ -584,6 +586,7 @@ def generate_candidates(location: Any, field_context: FieldContext | None = None
             rule_origins = {r.origin for s in seasons for r in check(s.plan, s.year).rules}
             date_origins = {v for s in seasons for v in s.origins.values()}
             cid = _candidate_id(plans)
+            feas = _feasibility(idx, fc.equipment, seasons)
             for i, s in enumerate(seasons):
                 s.plan = s.plan.model_copy(update={"plan_id": f"{cid}_s{i + 1}"})
             candidates.append(Candidate(
@@ -597,7 +600,7 @@ def generate_candidates(location: Any, field_context: FieldContext | None = None
                     "unknown": len({x for s in seasons for x in s.unknown}),
                     "rules_checked": sum(len(check(s.plan, s.year).rules) for s in seasons),
                 },
-                matches_rotation=match,
+                matches_rotation=match, feasibility=feas,
             ))  # fmt: skip
 
     def order(c: Candidate) -> tuple:
@@ -623,6 +626,37 @@ def generate_candidates(location: Any, field_context: FieldContext | None = None
         "generation_log.",
         candidates=candidates, generation_log=log.out(), total_generated=total, **base,
     )  # fmt: skip
+
+
+def _feasibility(idx: RegionalIndex, equipment: list[str], seasons: list[SeasonLeg]
+                 ) -> dict[str, Any]:  # fmt: skip
+    """S5: per-season equipment feasibility (planting, cover seeding, termination)."""
+    from acre.field.equipment import season_feasibility
+    from acre.field.regions import region_match
+
+    per = []
+    for s in seasons:
+        w = s.plan.winter
+        cover = w.crop_id if w.kind == "cover" else None
+        rules = idx.rules_for_crop(idx.catalog_id(cover) or cover) if cover else []
+        # Equipment availability cannot make a rule for another place or system applicable.
+        rules = [r for r in rules
+                 if (r.region_key != "US-NC" or region_match(r.region, s.plan.region)[0] == "match")
+                 and (not r.previous_crop_id or r.previous_crop_id == s.plan.previous_crop_id)
+                 and (not r.next_crop_id or r.next_crop_id == s.plan.next_crop_id)
+                 and (not r.production_system or r.production_system == s.plan.production_system)
+                 and not r.cultivar_or_maturity_group
+                 and (not r.window_start_mm_dd or not r.window_end_mm_dd or
+                      (w.seed is not None and
+                       _after(r.window_start_mm_dd, w.seed) <=
+                       _after(r.window_start_mm_dd, r.window_end_mm_dd)))]
+        per.append({"season": s.season, **season_feasibility(
+            equipment, crop_ids.canonical(s.plan.next_crop_id) or s.plan.next_crop_id, cover,
+            rules, grain_crop=w.crop_id if w.kind == "winter_grain" else None)})  # fmt: skip
+    statuses = {p["status"] for p in per}
+    status = ("unknown" if "unknown" in statuses else
+              "manual_check" if "manual_check" in statuses else "complete")  # fmt: skip
+    return {"status": status, "seasons": per}
 
 
 MIN_CROP_DAYS = 45  # assumed: no crop in these calendars is harvested sooner after planting

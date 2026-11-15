@@ -1,0 +1,31 @@
+Commodity,Category,Item,Units,Size,Region,Country,Year,Value,Survey base year
+Wheat,Gross value of production,"Primary product, grain",dollars per planted acre,No specific size,U.S. total,United States,2024,289.41,Base survey of 2022
+Wheat,Gross value of production,"Secondary product, silage/straw/grazing",dollars per planted acre,No specific size,U.S. total,United States,2024,7.49,Base survey of 2022
+Wheat,Gross value of production,"Total, gross value of production",dollars per planted acre,No specific size,U.S. total,United States,2024,296.91,Base survey of 2022
+Wheat,Operating costs,Seed,dollars per planted acre,No specific size,U.S. total,United States,2024,18.04,Base survey of 2022
+Wheat,Operating costs,Fertilizer  ,dollars per planted acre,No specific size,U.S. total,United States,2024,56.51,Base survey of 2022
+Wheat,Operating costs,Chemicals,dollars per planted acre,No specific size,U.S. total,United States,2024,17.35,Base survey of 2022
+Wheat,Operating costs,Custom services,dollars per planted acre,No specific size,U.S. total,United States,2024,15.43,Base survey of 2022
+Wheat,Operating costs,"Fuel, lube, and electricity",dollars per planted acre,No specific size,U.S. total,United States,2024,12.74,Base survey of 2022
+Wheat,Operating costs,Repairs,dollars per planted acre,No specific size,U.S. total,United States,2024,31.78,Base survey of 2022
+Wheat,Operating costs,Other variable expenses  ,dollars per planted acre,No specific size,U.S. total,United States,2024,0.77,Base survey of 2022
+Wheat,Operating costs,Interest on operating inputs,dollars per planted acre,No specific size,U.S. total,United States,2024,3.67,Base survey of 2022
+Wheat,Operating costs,"Total, operating costs",dollars per planted acre,No specific size,U.S. total,United States,2024,156.29,Base survey of 2022
+Wheat,Allocated overhead,Hired labor,dollars per planted acre,No specific size,U.S. total,United States,2024,2.91,Base survey of 2022
+Wheat,Allocated overhead,Opportunity cost of unpaid labor,dollars per planted acre,No specific size,U.S. total,United States,2024,16.97,Base survey of 2022
+Wheat,Allocated overhead,Capital recovery of machinery and equipment,dollars per planted acre,No specific size,U.S. total,United States,2024,134.68,Base survey of 2022
+Wheat,Allocated overhead,Opportunity cost of land,dollars per planted acre,No specific size,U.S. total,United States,2024,67.46,Base survey of 2022
+Wheat,Allocated overhead,Taxes and insurance,dollars per planted acre,No specific size,U.S. total,United States,2024,7.87,Base survey of 2022
+Wheat,Allocated overhead,General farm overhead,dollars per planted acre,No specific size,U.S. total,United States,2024,12.17,Base survey of 2022
+Wheat,Allocated overhead,"Total, allocated overhead",dollars per planted acre,No specific size,U.S. total,United States,2024,242.06,Base survey of 2022
+Wheat,Costs listed,"Total, costs listed",dollars per planted acre,No specific size,U.S. total,United States,2024,398.35,Base survey of 2022
+Wheat,Net value,Value of production less total costs listed,dollars per planted acre,No specific size,U.S. total,United States,2024,-101.44,Base survey of 2022
+Wheat,Production practices,Durum wheat,percent of acres,No specific size,U.S. total,United States,2024,4,Base survey of 2022
+Wheat,Production practices,Dryland,percent of acres,No specific size,U.S. total,United States,2024,97,Base survey of 2022
+Wheat,Production practices,Irrigated,percent of acres,No specific size,U.S. total,United States,2024,3,Base survey of 2022
+Wheat,Net value,Value of production less operating costs,dollars per planted acre,No specific size,U.S. total,United States,2024,140.62,Base survey of 2022
+Wheat,Supporting information,Yield,bushels per planted acre,No specific size,U.S. total,United States,2024,52,Base survey of 2022
+Wheat,Supporting information,Price,dollars per bushel at harvest,No specific size,U.S. total,United States,2024,5.54,Base survey of 2022
+Wheat,Supporting information,Enterprise size,planted acres,No specific size,U.S. total,United States,2024,440,Base survey of 2022
+Wheat,Production practices,Winter wheat,percent of acres,No specific size,U.S. total,United States,2024,70,Base survey of 2022
+Wheat,Production practices,Spring wheat,percent of acres,No specific size,U.S. total,United States,2024,26,Base survey of 2022

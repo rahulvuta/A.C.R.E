@@ -34,6 +34,7 @@ from acre.compare.replay import replay_season
 from acre.compare.sensitivity import DEFAULT_RULE, sweep_termination
 from acre.compare.years import years_payload
 from acre.contracts import InvalidPlanError, Plan, Status
+from acre.field.equipment import FieldExtras
 from acre.planner.calendar import plan_year_issues
 from acre.planner.checker import plan_version
 from acre.report.http import invalid, issue
@@ -99,6 +100,7 @@ class ReplayRequest(BaseModel):
     plan: Plan
     location: LocationIn | None = None
     location_id: str | None = None
+    field: FieldExtras | None = None
 
 
 def _meta(
@@ -495,7 +497,8 @@ def _wl(choice: places.Choice) -> WeatherLocation:
     return places.weather_location(choice)
 
 
-def _replay(plan: Plan, year: int, choice: places.Choice) -> Any:
+def _replay(plan: Plan, year: int, choice: places.Choice,
+            field: FieldExtras | None = None) -> Any:
     ctx = choice.ctx
     assert ctx is not None
     err = _check_year(year)
@@ -509,8 +512,12 @@ def _replay(plan: Plan, year: int, choice: places.Choice) -> Any:
         payload = replay_season(plan, year, ctx, ts)
     except InvalidPlanError as exc:
         return invalid(_issues_from_plan_error(exc, "plan"))
+    from acre.simulate.engine import readings_context
+
     return ReplayResponse(
         meta=_meta(plan_version(plan, year), ctx.snapshot_hash, ctx), weather_location=_wl(choice),
+        readings_context=readings_context(
+            [r.model_dump(mode="json") for r in field.readings], ctx) if field else [],
         **payload,
     )
 
@@ -552,7 +559,7 @@ def replay_post(year: int, body: ReplayRequest) -> Any:
     choice, bad = _place(body.location_id, **_loc_args(body.location))
     if bad is not None:
         return bad
-    return _no_weather(choice, body.plan.plan_id) or _replay(body.plan, year, choice)
+    return _no_weather(choice, body.plan.plan_id) or _replay(body.plan, year, choice, body.field)
 
 
 @router.post("/plans/sensitivity", response_model=SensitivityResponse | UnsupportedResponse)

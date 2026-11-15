@@ -1,0 +1,21 @@
+{
+  "body": {
+    "crops": [
+      {
+        "crop_id": "maize",
+        "role": "previous"
+      },
+      {
+        "crop_id": "soybean",
+        "role": "next"
+      }
+    ],
+    "location": {
+      "latitude": -33.89,
+      "longitude": -60.57
+    }
+  },
+  "method": "POST",
+  "status": 200,
+  "url": "/v1/plans/autofill"
+}

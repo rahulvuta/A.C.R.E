@@ -12,6 +12,7 @@ from acre.api.recommend_routes import GoalsIn
 from acre.compare.models import Meta
 from acre.contracts import Plan
 from acre.farms.analyze import FieldInput, analyze_farm, validate
+from acre.field.equipment import FieldExtras, readings_context
 from acre.report.meta import response_meta
 
 router = APIRouter(prefix="/v1/farms", tags=["farms"])
@@ -19,7 +20,7 @@ router = APIRouter(prefix="/v1/farms", tags=["farms"])
 MAX_FIELDS = 50
 
 
-class FieldIn(BaseModel):
+class FieldIn(FieldExtras):
     model_config = ConfigDict(extra="forbid")
     field_id: Annotated[str, Field(min_length=1, max_length=100)]
     name: str | None = None
@@ -64,7 +65,7 @@ class FarmResponse(BaseModel):
 @router.post("/analyze", response_model=FarmResponse)
 def analyze(body: FarmRequest) -> Any:
     fields = [FieldInput(i, f.field_id, f.name, f.geometry, f.plan,
-                         f.goals.model_dump() if f.goals else None)
+                         f.goals.model_dump() if f.goals else None, f.equipment)
               for i, f in enumerate(body.farm.fields)]  # fmt: skip
     measured, issues = validate(fields)
     meta = {**response_meta(), "snapshot_hash": None}  # one farm can span several snapshots
@@ -74,4 +75,9 @@ def analyze(body: FarmRequest) -> Any:
     o = body.options
     out = analyze_farm(measured, prepare_weather=o.prepare_weather, wait_s=o.wait_s,
                        include_capabilities=o.include_capabilities, recommend=o.recommend)  # fmt: skip
+    by_id = {f.field_id: f for f in body.farm.fields}
+    for result in out["fields"]:
+        field = by_id[result["field_id"]]
+        result["equipment"] = field.equipment
+        result["readings_context"] = readings_context(field.readings)
     return {"meta": meta, "farm_id": body.farm.farm_id, **out}
