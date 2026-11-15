@@ -40,8 +40,8 @@ export function MethodNote({ sim }: { sim: Simulation }) {
   const m = sim.method;
   return (
     <p className="gf-method">
-      <strong>{m.note}</strong> {m.runs != null ? `${m.runs} replays` : null}
-      {m.sourceYears ? ` of seasons from ${m.sourceYears}` : null}
+      <strong>{m.note}</strong> {m.runs != null ? `Run ${m.runs} times` : null}
+      {m.sourceYears ? ` with the seasons from ${m.sourceYears} in new orders` : null}
       {m.seed != null ? ` (seed ${m.seed}, so the same inputs give the same answer)` : null}.
     </p>
   );
@@ -135,7 +135,7 @@ export function YearTable({ s }: { s: ScenarioResult }) {
                 </td>
                 {keys.map((k) => {
                   const v = y.indicators[k];
-                  return <td key={k}>{isOdds(v) ? `${pct(v.probability)} of replays` : isDist(v) ? num(v.median, v.unit) : NA}</td>;
+                  return <td key={k}>{isOdds(v) ? `${pct(v.probability)} of simulated years` : isDist(v) ? num(v.median, v.unit) : NA}</td>;
                 })}
               </tr>
             );

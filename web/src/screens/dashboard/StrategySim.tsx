@@ -37,6 +37,29 @@ export function conditionsOf(raw: Record<string, unknown> | null): FieldConditio
   return parsed?.success ? parsed.data : null;
 }
 
+const trendSchema = z.object({ slope_per_decade: z.number().nullable().optional(), unit: z.string().nullable().optional(), p_value: z.number().nullable().optional(), years: z.number().nullable().optional(), significant: z.boolean().nullable().optional(), pct_per_decade: z.number().nullable().optional() }).passthrough();
+const climateSchema = z
+  .object({
+    mode: z.enum(["trend", "none"]).optional(),
+    target_year: z.number().nullable().optional(),
+    applied: z.boolean().optional(),
+    reason: z.string().nullable().optional(),
+    text: z.string().optional(),
+    note: z.string().optional(),
+    precip_trend: trendSchema.nullable().optional(),
+    temperature_trend: trendSchema.nullable().optional(),
+    factor_range: z.tuple([z.number(), z.number()]).nullable().optional(),
+  })
+  .passthrough();
+export type ClimateAdjustment = z.infer<typeof climateSchema>;
+/** The backend's `method.climate_adjustment` block; null when absent or not in the expected shape. */
+export function climateAdjustmentOf(raw: Record<string, unknown> | null): ClimateAdjustment | null {
+  const method = raw?.method;
+  const block = method != null && typeof method === "object" && !Array.isArray(method) ? (method as Record<string, unknown>).climate_adjustment : null;
+  const parsed = block == null ? null : climateSchema.safeParse(block);
+  return parsed?.success ? parsed.data : null;
+}
+
 const OP_TEXT: Record<string, string> = { plant: "Plant", harvest: "Harvest", seed_cover: "Seed cover crop:", end_cover: "End cover crop:", plant_grain: "Plant winter grain:", harvest_grain: "Harvest winter grain:" };
 const monthTitle = (ym: string) => new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${ym}-01T00:00:00Z`));
 const monthShort = (m: number) => new Intl.DateTimeFormat("en-US", { month: "long", timeZone: "UTC" }).format(new Date(Date.UTC(2001, m - 1, 1)));

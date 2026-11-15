@@ -1297,8 +1297,8 @@ export const BackendSimulation = z
   })
   .passthrough();
 
-const NOT_A_FORECAST = "Replays real past weather in new orders; not a forecast.";
-const CAVEAT = "Best of the scenarios you compared, given these numbers and past weather. Not a forecast.";
+const OUTLOOK_NOTE = "An evidence-based outlook from this field's real past seasons. It shows what to plan for under conditions seen here; it cannot say what any single year will bring.";
+const CAVEAT = "The stronger of the plans you compared, given these numbers and the conditions seen at this field. An evidence-based outlook, not a guarantee.";
 
 export function adaptSimulation(r: z.infer<typeof BackendSimulation>): Simulation {
   const c = r.comparison;
@@ -1311,7 +1311,7 @@ export function adaptSimulation(r: z.infer<typeof BackendSimulation>): Simulatio
       seed: nn(r.method?.seed),
       sourceYears: nn(r.method?.source_years),
       // The label is always there, whether or not the backend repeated it.
-      note: r.method?.note || NOT_A_FORECAST,
+      note: r.method?.note || OUTLOOK_NOTE,
     },
     scenarios: r.scenarios.map((s) => ({
       scenarioId: s.scenario_id,
@@ -1370,6 +1370,8 @@ export interface SimulateRequest {
   years?: number;
   runs?: number;
   seed?: number;
+  /** "trend" adjusts rain for the trend seen in the field's own record when it is statistically clear; "none" uses the record as recorded. Defaults to "trend". */
+  climate?: "none" | "trend";
   startSeason: string;
 }
 type LatLonPoint = { latitude: number; longitude: number };
@@ -1398,6 +1400,7 @@ export function toBackendSimulate(q: SimulateRequest) {
     years: q.years ?? 10,
     runs: q.runs ?? 200,
     seed: q.seed ?? 7,
+    climate: q.climate ?? "trend",
     start_season: q.startSeason,
   };
 }

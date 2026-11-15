@@ -32,7 +32,7 @@ export function Landing() {
         <Reveal className="st-section-head">
           <p className="st-eyebrow">From a field to a future plan</p>
           <h2 className="st-h2">Plan the next rotation.<span>See where it leads.</span></h2>
-          <p className="st-sub">A rotation starts with your priorities. Historical weather helps you understand the choices.</p>
+          <p className="st-sub">A rotation starts with your priorities. An evidence-based outlook from your field's own record helps you see what to plan for.</p>
         </Reveal>
         <PlanningSteps />
         <a className="st-link st-section-link" href={to("product")}>See how planning works <Chevron /></a>
@@ -42,7 +42,7 @@ export function Landing() {
         <div className="st-wrap st-section">
           <Reveal className="st-section-head st-example-head">
             <div><p className="st-eyebrow">The worked example · Union County, North Carolina</p><h2 className="st-h2">See the evidence in action.<span>Keep the trade-offs in view.</span></h2></div>
-            <div><p className="st-sub">The corn and soybean example replays each plan against the saved NASA record. These recordings use the real planner.</p><a className="st-link" href="?view=demo">Open the NC demo <Chevron /></a></div>
+            <div><p className="st-sub">The corn and soybean example runs each plan against the saved NASA record. These recordings use the real planner.</p><a className="st-link" href="?view=demo">Open the NC demo <Chevron /></a></div>
           </Reveal>
           <div className="st-recording">{data ? <TourScene data={data} /> : <RecordPlaceholder failed={data === null} />}</div>
           {n ? <RecordFacts n={n} /> : null}

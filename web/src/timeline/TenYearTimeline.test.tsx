@@ -20,7 +20,7 @@ describe("TenYearTimeline (U4)", () => {
       /^2027: Cereal rye \(cover\) ended Apr 30; Soybean planted May 12, harvested Oct 25; Crimson clover \(cover\) seeded Oct 30\./,
     );
     expect(screen.getByText("10-year margin, median")).toBeInTheDocument();
-    expect(screen.getByText(/not a forecast/)).toBeInTheDocument();
+    expect(screen.getByText(/cannot say what any single year will bring/)).toBeInTheDocument();
   });
 
   it("hover or focus shows the year's margin median", () => {

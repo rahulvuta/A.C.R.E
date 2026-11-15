@@ -1,7 +1,7 @@
 // Product-level constants. Change the name here and it changes everywhere.
 export const APP_NAME = "A.C.R.E";
 export const TASK_TITLE = "Compare winter crop plans";
-export const TAGLINE = "Compare three winter plans for this farm against past springs recorded by NASA.";
+export const TAGLINE = "Compare crop plans for your fields with an evidence-based 10-year outlook built from NASA weather.";
 export const CHALLENGE_LABEL = "NASA Space Apps 2026 · A.C.R.E";
 
 // The saved Union County sample, shaped like the backend API (backend docs/api/examples).

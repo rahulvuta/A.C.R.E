@@ -71,6 +71,10 @@
 .sb-range { font-size: 14px; }
 .sb-prov { white-space: nowrap; }
 .sb-small { font-size: 13px; }
+.sb .sb-basis { padding: 8px 12px; font-size: 13px; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-md); }
+.sb-basis summary { cursor: pointer; font-size: 14px; font-weight: 500; }
+.sb-basis ul { margin: 8px 0 2px; padding-left: 18px; display: grid; gap: 6px; max-width: 70ch; color: var(--ink-muted); overflow-wrap: anywhere; }
+.sb-basis ul li:last-child { color: inherit; }
 .sb-gap-title { font-weight: 500; }
 .sb-gaps { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14px; }
 .sb-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

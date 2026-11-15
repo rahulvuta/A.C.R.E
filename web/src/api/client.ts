@@ -291,7 +291,7 @@ export function latestOnly() {
   screens say so instead of inventing data; tests and the fixture mode pass `fixtureFetch`.
   Coordinates go only in the request to the service, never in a log.
 */
-/** A simulation replays ~200 seasons per plan; on a small server (or one waking up) that can take a minute. */
+/** A simulation runs ~200 sequences of seasons per plan; on a small server (or one waking up) that can take a minute. */
 export const SIMULATE_TIMEOUT_MS = 120_000;
 
 export function createGlobalClient(opts: { apiBase: string | null; timeoutMs: number; fetchImpl?: FetchLike }) {
@@ -352,7 +352,7 @@ export function createGlobalClient(opts: { apiBase: string | null; timeoutMs: nu
       call("/v1/plans/future", BackendFuture, adaptFuture, post({ ...toBackendPlace(place), ...what, start_season: startSeason, seasons, ...(edits?.length ? { edits } : {}) })),
 
     // ---- Scenario Simulator (§11–§16)
-    /** §11: simulate the baseline and up to 5 alternatives over 10 years of resampled past weather. */
+    /** §11: simulate the baseline and up to 5 alternatives over the next 10 years, from the field's real past seasons in new orders (an evidence-based outlook). */
     simulate: (q: SimulateRequest): Promise<Result<Simulation>> => call("/v1/scenarios/simulate", BackendSimulation, adaptSimulation, post(toBackendSimulate(q)), Math.max(base.timeoutMs, SIMULATE_TIMEOUT_MS)),
     /** §12: sourced prices, yields and costs for these crops at this place (the farmer's overrides win). */
     economics: (q: Parameters<typeof toBackendEconomics>[0]): Promise<Result<Economics>> => call("/v1/economics/estimate", BackendEconomics, adaptEconomics, post(toBackendEconomics(q))),

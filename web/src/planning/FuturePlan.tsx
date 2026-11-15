@@ -156,7 +156,7 @@ function FuturePlanSession({
   const result = data ?? previous;
   const onEdit = (edit: FutureEdit) => setEdits(current => [...current.filter(e => e.season !== edit.season || e.field !== edit.field), edit]);
   return <div className="pl pl-future" aria-busy={loading} ref={root}>
-    <header className="pl-section-heading"><div><h2>Future field plan</h2><p className="pl-muted">{result?.note ?? "Planned dates, not a forecast. Future weather is unknown."}</p></div><button className="pl-button pl-no-print" disabled={!result || loading || !!error} onClick={() => window.print()}>Print plan</button></header>
+    <header className="pl-section-heading"><div><h2>Future field plan</h2><p className="pl-muted">{result?.note ?? "Planned dates. They cannot say what the weather in these seasons will bring."}</p></div><button className="pl-button pl-no-print" disabled={!result || loading || !!error} onClick={() => window.print()}>Print plan</button></header>
     <div className="pl-origin-legend" aria-label="Date origin legend">{(["verified_source", "dataset_estimate", "grower", "assumed"] as const).map(o => <OriginBadge key={o} origin={o} />)}</div>
     {loading && <p role="status">{previous ? "Updating dates and historical analysis…" : "Building the multi-season calendar…"}</p>}
     {error && <RequestError message={error} onRetry={retry} />}

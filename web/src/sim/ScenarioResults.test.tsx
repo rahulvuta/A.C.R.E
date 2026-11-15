@@ -18,7 +18,7 @@ it("renders both ten-year fan charts, actual ranges, living cover, and event sen
   expect(within(cover).getAllByRole("row")).toHaveLength(11);
   expect(within(cover).getByRole("rowheader", { name: "2036" })).toBeVisible();
   expect(screen.getByText(/3 or more dry springs in 10 years occurred in 34%/)).toBeVisible();
-  expect(screen.getByText(/Replays real past weather in new orders; not a forecast/)).toBeVisible();
+  expect(screen.getByText(/An evidence-based outlook from this field.s real past seasons/)).toBeVisible();
   expect(screen.getByText(/Includes your dry-spring loss estimate/)).toBeVisible();
   expect(container.textContent).not.toMatch(/\bscore\b/i);
 });
@@ -43,7 +43,7 @@ it("keeps zeroes distinct from null values in summaries, charts, events, and fie
   render(<ScenarioResults scenario={scenario} />);
   expect(screen.getAllByText("$0").length).toBeGreaterThan(1);
   expect(screen.getAllByText("0 days").length).toBeGreaterThan(1);
-  expect(screen.getByText(/0% of historical replays included this event/)).toBeVisible();
+  expect(screen.getByText(/0% of simulated years included this event/)).toBeVisible();
   expect(screen.getAllByText("Not available").length).toBeGreaterThan(0);
   expect(screen.getByText("0 mm")).toBeInTheDocument();
 });

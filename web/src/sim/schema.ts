@@ -123,7 +123,7 @@ export const simulateRequestSchema = z.object({
     loss_assumptions: z.object({ dry_spring_pct: number.min(0).max(100).nullable().optional(), heavy_rain_pct: number.min(0).max(100).nullable().optional() }).passthrough(),
   }).passthrough(),
   scenarios: z.array(scenarioInput).min(1).max(6), years: number.int().min(1).max(10),
-  runs: number.int().min(50).max(500), seed: number.int(), start_season: z.string().regex(/^\d{4}$/),
+  runs: number.int().min(50).max(500), seed: number.int(), climate: z.enum(["none", "trend"]).optional(), start_season: z.string().regex(/^\d{4}$/),
 }).superRefine((request, ctx) => {
   if (new Set(request.scenarios.map(s => s.scenario_id)).size !== request.scenarios.length) ctx.addIssue({ code: "custom", path: ["scenarios"], message: "Each scenario needs a different ID." });
   if (request.scenarios.filter(s => s.is_baseline).length > 1) ctx.addIssue({ code: "custom", path: ["scenarios"], message: "Choose only one current plan." });

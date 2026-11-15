@@ -45,13 +45,14 @@ describe("§11 simulate", () => {
     expect((s.scenarios[0]!.totals.margin_10y as Dist).includesAssumption).toBe("dry_spring_pct");
   });
 
-  it("always carries the not-a-forecast label and the comparison caveat", () => {
+  it("always carries the outlook note and the comparison caveat", () => {
     const raw = JSON.parse(JSON.stringify(FIXTURES.simulateUnion));
     delete raw.method.note;
     delete raw.comparison.caveat;
     const s = adaptSimulation(BackendSimulation.parse(raw));
-    expect(s.method.note).toMatch(/not a forecast/);
-    expect(s.comparison?.caveat).toMatch(/Best of the scenarios you compared/);
+    expect(s.method.note).toMatch(/evidence-based outlook/);
+    expect(s.method.note).not.toMatch(/forecast/i);
+    expect(s.comparison?.caveat).toMatch(/The stronger of the plans you compared/);
   });
 
   it("preserves backend money metadata without reading it as a numeric total", () => {

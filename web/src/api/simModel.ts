@@ -7,7 +7,7 @@ import type { Origin, SourceRef, Status, JobStatus } from "./model";
   name, and nothing here is computed in the browser. Missing values stay `null`.
 */
 
-/** A distribution over the replays (p10, median, p90); any part can be blank. */
+/** A distribution over the simulated years (p10, median, p90); any part can be blank. */
 export interface Dist {
   p10: number | null;
   median: number | null;

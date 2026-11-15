@@ -15,4 +15,4 @@ export function moneyRange(d: Dist | undefined | null): string | null {
 /** 0.38 → "38%". */
 export const pct = (p: number) => `${Math.round(p * 100)}%`;
 
-export const SIM_NOTE = "Replays real past weather in new orders; not a forecast.";
+export const OUTLOOK_NOTE = "An evidence-based outlook from this field's real past seasons. It shows what to plan for under conditions seen here; it cannot say what any single year will bring.";

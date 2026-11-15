@@ -8,14 +8,14 @@ import { MethodNote, ReadingsBeside, ScenarioSummary, YearTable } from "./SimVie
 import { ScenarioResults, simulationResultSchema } from "../../sim";
 
 /*
-  Step 3: the current plan alone, over 10 years of resampled past weather (§11 with only the
+  Step 3: the current plan alone, through the next 10 years of this field's real past seasons in new orders (§11 with only the
   baseline). The farmer's optional loss estimate is the only bridge from weather to money.
 */
 export function SimStatus({ sim, onRetry, what }: { sim: SimState; onRetry: () => void; what: string }) {
   if (sim.state === "loading" || sim.state === "idle")
     return (
       <p className="gf-running" role="status">
-        {sim.state === "loading" && sim.note ? sim.note : `Replaying ${what} over past weather… This can take up to a minute on the first run.`}
+        {sim.state === "loading" && sim.note ? sim.note : `Running ${what} through the coming years… This can take up to a minute on the first run.`}
       </p>
     );
   if (sim.state === "error")
@@ -87,7 +87,7 @@ export function SimulationResult({ data }: { data: Simulation }) {
         <MethodNote sim={data} />
         {u2 ? <ScenarioResults scenario={u2} /> : <ScenarioSummary s={s} />}
         <p className="gf-muted">
-          Each value is the middle of all replays, with its <G id="band">typical range</G>. <G id="margin">Margin</G> uses your numbers where you gave them.
+          Each value is the middle of all the simulated years, with its <G id="band">typical range</G>. <G id="margin">Margin</G> uses your numbers where you gave them.
         </p>
       </section>
       {u2 ? null : (

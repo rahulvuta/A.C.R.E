@@ -77,7 +77,7 @@ describe("guided flow (U1)", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /Next: Simulate current plan/ }));
     await screen.findByRole("heading", { name: "How would your current plan do over 10 years?" });
-    expect((await screen.findAllByText(/Replays real past weather in new orders; not a forecast/)).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText(/An evidence-based outlook from this field.s real past seasons/)).length).toBeGreaterThan(0);
     // The demo's 15% dry-spring loss estimate is labelled as the farmer's.
     expect(screen.getByRole("textbox", { name: /dry spring/ })).toHaveValue("15");
 
@@ -89,7 +89,7 @@ describe("guided flow (U1)", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /Next: Compare/ }));
     await screen.findByRole("region", { name: "Compare scenario plans" });
-    expect(screen.getAllByText(/Best of the scenarios you compared/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/The stronger of the plans you compared/).length).toBeGreaterThan(0);
     const choose = screen.getAllByRole("button", { name: /Choose this plan/ });
     expect(choose).toHaveLength(3);
     fireEvent.click(choose[2]!);

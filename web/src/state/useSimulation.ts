@@ -5,7 +5,7 @@ import type { Simulation } from "../api/simModel";
 
 /*
   Runs POST /v1/scenarios/simulate and keeps each answer for this page, keyed by the full
-  request, so stepping Back and Next does not re-run a 200-replay simulation. Nothing is
+  request, so stepping Back and Next does not re-run a 200-run simulation. Nothing is
   computed here; the answer is the backend's.
 */
 export type SimState = { state: "idle" } | { state: "loading"; note?: string } | { state: "error"; message: string; detail: string | null } | { state: "ready"; data: Simulation };
@@ -31,7 +31,7 @@ export function runSimulation(client: GlobalClient, q: SimulateRequest): Promise
     let r: Result<Simulation> = await client.simulate(q);
     // A field whose weather cell has not been fetched yet: fetch it from NASA POWER, then run again.
     if (r.ok && r.data.status === "unavailable" && r.data.raw.code === "weather_not_prepared") {
-      set({ state: "loading", note: "Fetching this field's past weather from NASA for the first time. This can take a minute or two." });
+      set({ state: "loading", note: "Fetching this field's weather record from NASA for the first time. This can take a minute or two." });
       const ready = await prepareWeather(client, q.point);
       if (!ready.ok) {
         set({ state: "error", message: ready.message, detail: null });

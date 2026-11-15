@@ -150,7 +150,7 @@ export function EvidencePage() {
           <a className="st-link st-section-link" href="?view=methods">Read the method and source definitions <Chevron /></a>
         </div>
       </section>
-      <section className="st-wrap st-section st-limit-note"><h2 className="st-h2">Use the history to ask better questions.<span>Keep future outcomes open.</span></h2><p>Historical replays are not forecasts. Modeled wetness, gridded weather and sourced soil or water indicators have different limits. They do not predict yield, profit or measured improvements on your farm.</p></section>
+      <section className="st-wrap st-section st-limit-note"><h2 className="st-h2">Use the evidence to ask better questions.<span>Keep every single year open.</span></h2><p>An evidence-based outlook shows what to plan for under conditions seen at your field; it cannot say what any single year will bring. Modeled wetness, gridded weather and sourced soil or water indicators have different limits. They do not measure yield, profit or improvements on your farm.</p></section>
     </SiteShell>
   );
 }
@@ -182,7 +182,7 @@ export function ResourcesPage() {
               <span className="st-rlead-art" aria-hidden="true">
                 <span className="fb-mark" />
               </span>
-              <strong>How {APP_NAME} replays a plan against the saved NC weather record</strong>
+              <strong>How {APP_NAME} builds its 10-year outlook and checks plans against the saved NC weather record</strong>
               <span className="st-link is-light">
                 Read more <i />
               </span>
@@ -237,7 +237,7 @@ export function AboutPage() {
         <dl className="st-incl">
           <div><dt>Your field</dt><dd>Location, boundaries, soil context and crop history.</dd></div>
           <div><dt>Your priorities</dt><dd>Goals, crop preferences, equipment and date constraints.</dd></div>
-          <div><dt>The historical record</dt><dd>NASA POWER weather, with coverage and resolution limits.</dd></div>
+          <div><dt>The observed record</dt><dd>NASA POWER weather, with coverage and resolution limits.</dd></div>
           <div><dt>The local guidance</dt><dd>Sources that apply to the selected region, with gaps kept visible.</dd></div>
         </dl>
       </section>

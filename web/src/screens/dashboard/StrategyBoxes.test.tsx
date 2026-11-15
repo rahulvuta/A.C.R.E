@@ -23,10 +23,10 @@ const scenario = (id: string, label: string, complete: boolean) => ({
   monthly: complete ? { currency: "USD", origin: "calculation", timing_origin: "assumed", timing_text: "Costs are counted in the planting month.", includes_assumption: "dry_spring_pct", funding_gap: { p10: 200, median: 400, p90: 500, currency: "USD", origin: "calculation", deepest_month: "2027-05", text: "Out of pocket most in May 2027." }, break_even_month: "2027-10", months } : null,
 });
 const raw = {
-  status: "complete", method: { weather: "historical_resampling", runs: 200, seed: 7, source_years: "1981–2025", note: "Replays real past weather in new orders; not a forecast." },
+  status: "complete", method: { weather: "historical_resampling", runs: 200, seed: 7, source_years: "1981–2025", note: "An evidence-based outlook: this field's real past seasons (1981-2025) replayed in new orders over the next 10 seasons. Rain is adjusted for the trend observed in this record. It shows what to plan for under conditions seen here; it cannot say what any single year will bring." },
   scenarios: [scenario("current", "What I do now", true), scenario("alt1", "Soy first", false)],
   crop_money: { soybean: { crop_id: "soybean", status: "complete", currency: "USD", price: { low: 9, typical: 11, high: 13, origin: "grower" }, yield_per_area: { value: 50, area_unit: "acre", origin: "grower" }, costs_per_area: { value: 420, area_unit: "acre", origin: "verified_source" } }, corn: { crop_id: "corn", status: "partial", currency: "USD", price: null, yield_per_area: null, costs_per_area: { value: null, area_unit: "acre", origin: null } } },
-  comparison: { baseline: "current", badges: [{ badge: "best_profit", scenario_id: "current", why: "Most money in a typical run" }], deltas: [{ scenario_id: "alt1", versus: "current", changes: [{ indicator: "margin_10y", median_delta: 4200, currency: "USD", text: "More crop margin." }] }], trade_offs: [{ scenario_id: "alt1", text: "Holds up best in dry springs" }], not_decided: [], caveat: "Not a forecast." },
+  comparison: { baseline: "current", badges: [{ badge: "best_profit", scenario_id: "current", why: "Most money in a typical run" }], deltas: [{ scenario_id: "alt1", versus: "current", changes: [{ indicator: "margin_10y", median_delta: 4200, currency: "USD", text: "More crop margin." }] }], trade_offs: [{ scenario_id: "alt1", text: "Holds up best in dry springs" }], not_decided: [], caveat: "The stronger of the plans you compared, given these numbers and the conditions seen at this field. An evidence-based outlook, not a guarantee." },
 };
 const data = adaptSimulation(BackendSimulation.parse(raw));
 const mk = (id: string, label: string, isBaseline = false): Scenario => ({ scenarioId: id, label, isBaseline, rotation: [], from: isBaseline ? "current" : "suggested" });
@@ -48,11 +48,11 @@ describe("strategy boxes", () => {
     expect(monthlyOf(data.raw, "alt1")).toBeNull();
   });
 
-  it("shows the crop margin, the bad-to-good range, and spent and sold over 5 seasons with their origin", () => {
+  it("shows the crop margin, the bad-to-good range, and spent and sold over 10 years with their origin", () => {
     render(<StrategyBox box={boxes[0]!} badges={[]} highlight={false} waiting={false} onTab={() => {}} />);
-    const money = screen.getByRole("group", { name: "Money over 5 seasons" });
-    expect(money.textContent).toContain("Spent $2,000 · Sold $5,000 over 5 seasons"); // backend costs_total and revenue_total medians
-    expect(within(money).getByText("Forecast crop margin over 5 seasons").nextSibling?.textContent).toBe("$3,000");
+    const money = screen.getByRole("group", { name: "Money over 10 years" });
+    expect(money.textContent).toContain("Spent $2,000 · Sold $5,000 over 10 years"); // backend costs_total and revenue_total medians
+    expect(within(money).getByText("Expected crop margin over 10 years").nextSibling?.textContent).toBe("$3,000");
     expect(money.textContent).toContain("Bad years $1,000");
     expect(money.textContent).toContain("good years $5,000");
     expect(money.textContent).toContain("assumed");
@@ -112,7 +112,7 @@ describe("strategy boxes", () => {
     expect(onAdd).toHaveBeenCalledWith(expect.objectContaining({ scenarioId: "sug_x" }));
     cleanup();
     render(<StrategyBox box={bs[0]!} badges={[]} highlight={false} waiting={false} onTab={onTab} />);
-    expect(screen.getByText(/Same in every replayed season/)).toBeInTheDocument();
+    expect(screen.getByText(/Same in every simulated year/)).toBeInTheDocument();
     expect(screen.queryByText(/Bad years/)).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Add a loss estimate" }));
     expect(onTab).toHaveBeenCalledWith("financial");
@@ -134,10 +134,10 @@ describe("strategy boxes", () => {
   it("leads with the margin per acre per year, the funding gap with its month, the break-even month and the signed difference versus the current plan", () => {
     const d = adapt([complete("current"), complete("alt1")]);
     renderBox(boxFor(d, "alt1", false));
-    const money = screen.getByRole("group", { name: "Money over 5 seasons" });
-    expect(within(money).getByText("Forecast crop margin per acre per year").nextSibling?.textContent).toBe("$240");
+    const money = screen.getByRole("group", { name: "Money over 10 years" });
+    expect(within(money).getByText("Expected crop margin per acre per year").nextSibling?.textContent).toBe("$240");
     expect(within(money).getByText("Compared with what I do now").nextSibling?.textContent).toBe("+$4,200");
-    expect(money.textContent).toContain("more crop margin over 5 seasons");
+    expect(money.textContent).toContain("more crop margin over 10 years");
     expect(within(money).getByText("Largest funding gap").nextSibling?.textContent).toBe("$400");
     expect(money.textContent).toContain("in May 2027");
     expect(within(money).getByText("Back above zero from").nextSibling?.textContent).toBe("Oct 2027");
@@ -149,7 +149,7 @@ describe("strategy boxes", () => {
   it("shows a negative difference with a minus sign and the word less", () => {
     const d = adapt([complete("current"), complete("alt1")], { comparison: { ...raw.comparison, deltas: [{ scenario_id: "alt1", versus: "current", changes: [{ indicator: "margin_10y", median_delta: -1300, currency: "USD", text: "" }] }] } });
     renderBox(boxFor(d, "alt1", false));
-    const money = screen.getByRole("group", { name: "Money over 5 seasons" });
+    const money = screen.getByRole("group", { name: "Money over 10 years" });
     expect(within(money).getByText("Compared with what I do now").nextSibling?.textContent).toBe("\u2212$1,300");
     expect(money.textContent).toContain("less crop margin");
   });
@@ -160,20 +160,20 @@ describe("strategy boxes", () => {
     const { crop_money: _d, ...older } = raw; // eslint-disable-line @typescript-eslint/no-unused-vars
     const d = adaptSimulation(BackendSimulation.parse({ ...older, comparison: { ...raw.comparison, deltas: [] }, scenarios: [complete("current"), { ...complete("alt1"), totals, monthly }] }));
     renderBox(boxFor(d, "alt1", false));
-    const money = screen.getByRole("group", { name: "Money over 5 seasons" });
+    const money = screen.getByRole("group", { name: "Money over 10 years" });
     expect(within(money).queryByText(/Crop margin per/)).toBeNull();
     expect(within(money).queryByText("Largest funding gap")).toBeNull();
     expect(within(money).queryByText("Back above zero from")).toBeNull();
     expect(within(money).getByText("Compared with what I do now").nextSibling?.textContent).toBe("Not available");
-    expect(within(money).getByText("Forecast crop margin over 5 seasons")).toBeInTheDocument();
+    expect(within(money).getByText("Expected crop margin over 10 years")).toBeInTheDocument();
     expect(screen.queryByText("Costs counted per crop")).toBeNull();
   });
 
-  it("a funding gap of 0 says none, and a null break-even month says not within these 5 seasons", () => {
+  it("a funding gap of 0 says none, and a null break-even month says not within these 10 years", () => {
     const d = adapt([complete("current"), complete("alt1", {}, { funding_gap: { median: 0, p10: 0, p90: 0, currency: "USD", origin: "calculation", deepest_month: null, text: "" }, break_even_month: null })]);
     renderBox(boxFor(d, "alt1", false));
     expect(screen.getByText("None: the running total never goes below zero")).toBeInTheDocument();
-    expect(within(screen.getByRole("group", { name: "Money over 5 seasons" })).getByText("Back above zero from").nextSibling?.textContent).toBe("Not within these 5 seasons");
+    expect(within(screen.getByRole("group", { name: "Money over 10 years" })).getByText("Back above zero from").nextSibling?.textContent).toBe("Not within these 10 years");
   });
 
   it("marks the month of the largest funding gap on the chart and in its hover text", () => {

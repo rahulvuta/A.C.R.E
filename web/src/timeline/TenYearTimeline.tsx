@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { cropName } from "./crops";
-import { money, moneyRange, pct, SIM_NOTE } from "./format";
+import { money, moneyRange, pct, OUTLOOK_NOTE } from "./format";
 import { buildRows, MONTHS, type Row } from "./schedule";
 import { Legend, Track } from "./Track";
 import type { TimelineScenario, YearResult } from "./types";
@@ -15,7 +15,7 @@ import "./timeline.css";
 */
 export interface TenYearTimelineProps {
   scenario: TimelineScenario;
-  /** Show the risk dot when a year's dry-before-planting or heavy-rain odds reach this share of replays. */
+  /** Show the risk dot when a year's dry-before-planting or heavy-rain odds reach this share of simulated years. */
   riskAt?: number;
   /** The method note from the response (`method.note`). */
   note?: string;
@@ -30,7 +30,7 @@ export function riskOf(y: YearResult | undefined): { p: number; what: string } |
   return (dry ?? -1) >= (heavy ?? -1) ? { p: dry!, what: "Dry before planting" } : { p: heavy!, what: "Heavy rain at planting" };
 }
 
-export function TenYearTimeline({ scenario, riskAt = 0.3, note = SIM_NOTE, compact = false }: TenYearTimelineProps) {
+export function TenYearTimeline({ scenario, riskAt = 0.3, note = OUTLOOK_NOTE, compact = false }: TenYearTimelineProps) {
   const rows = useMemo(() => buildRows(scenario.timeline, scenario.rotation ?? []), [scenario]);
   const byYear = useMemo(() => new Map(scenario.yearly.map((y) => [y.year, y])), [scenario]);
   const [hover, setHover] = useState<{ i: number; x: number } | null>(null);
@@ -52,7 +52,7 @@ export function TenYearTimeline({ scenario, riskAt = 0.3, note = SIM_NOTE, compa
             <div className="tl-total">
               <p className="tl-total-label">10-year margin, median</p>
               <p className="tl-total-value">{money(total.median, total.currency)}</p>
-              {range ? <p className="tl-sub">Most replays: {range}</p> : null}
+              {range ? <p className="tl-sub">Most years: {range}</p> : null}
             </div>
           ) : null}
         </header>
@@ -104,7 +104,7 @@ export function TenYearTimeline({ scenario, riskAt = 0.3, note = SIM_NOTE, compa
                   <Track bands={r.bands} />
                   {hover?.i === i ? <YearTip row={r} y={y} x={hover.x} /> : null}
                 </div>
-                <span className="tl-risk-cell">{high ? <span className="tl-risk" title={`${risk!.what} in ${pct(risk!.p)} of replays`} /> : null}</span>
+                <span className="tl-risk-cell">{high ? <span className="tl-risk" title={`${risk!.what} in ${pct(risk!.p)} of simulated years`} /> : null}</span>
               </li>
             );
           })}

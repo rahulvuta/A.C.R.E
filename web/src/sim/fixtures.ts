@@ -53,7 +53,7 @@ export const diverseExample = scenarioSchema.parse({
 });
 export const simulationExample = simulationResultSchema.parse({
   meta: { fixture: EXAMPLE_LABEL }, example_label: EXAMPLE_LABEL, status: "complete",
-  method: { weather: "historical_resampling", runs: 200, seed: 7, source_years: "1981–2025", note: "Replays real past weather in new orders; not a forecast.", origin: "calculation" },
+  method: { weather: "historical_resampling", runs: 200, seed: 7, source_years: "1981–2025", note: "An evidence-based outlook: this field's real past seasons (1981-2025) replayed in new orders over the next 10 seasons. Rain is adjusted for the trend observed in this record. It shows what to plan for under conditions seen here; it cannot say what any single year will bring.", origin: "calculation" },
   scenarios: [currentExample, ryeExample, diverseExample],
   comparison: {
     baseline: "current",
@@ -68,7 +68,7 @@ export const simulationExample = simulationResultSchema.parse({
       { scenario_id: "diverse", versus: "current", changes: [{ indicator: "margin_10y", median_delta: -12000, currency: "USD", text: "$12,000 less over 10 years (median).", origin: "calculation" }, { indicator: "living_cover_days_per_year", median_delta: 69, unit: "days", text: "69 more days with a living crop each year.", origin: "calculation" }] },
     ],
     trade_offs: [{ scenario_id: "current", text: "Fewer field passes, but more rain falls without living cover than in the alternatives.", origin: "calculation" }, { scenario_id: "rye", text: "More living cover and a higher example margin, with one extra field operation each year and more dry-spring events.", origin: "calculation" }, { scenario_id: "diverse", text: "More cover and fewer stress events, with a lower median margin and two extra field operations each year.", origin: "calculation" }],
-    not_decided: [], caveat: "Best of the scenarios you compared, given these numbers and past weather. Not a forecast.",
+    not_decided: [], caveat: "The stronger of the plans you compared, given these numbers and the conditions seen at this field. An evidence-based outlook, not a guarantee.",
   },
 });
 export const missingMoneyExample: Scenario = scenarioSchema.parse({

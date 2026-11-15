@@ -10,7 +10,18 @@
   "runs": 200,
   "seed": 7,
   "source_years": "1981-2025",
-  "note": "Replays real past weather in new orders; not a forecast."
+  "note": "An evidence-based outlook: this field's real past seasons (1981-2025) replayed in new orders over the next 10 seasons. Rain is adjusted for the trend observed in this record. It shows what to plan for under conditions seen here; it cannot say what any single year will bring.",
+  "pool_years": 45,
+  "climate_adjustment": {
+   "mode": "trend",
+   "target_year": 2027,
+   "applied": false,
+   "reason": "not_significant",
+   "text": "No statistically clear trend in yearly rain at this field since 1981 (about -1.1% per decade, within normal year-to-year variation), so rain is used as recorded. Temperature has risen about 0.45 C per decade; it is shown as context and does not change the results.",
+   "precip_trend": { "slope_per_decade": -11.2, "unit": "mm", "p_value": 0.41, "years": 45, "significant": false, "pct_per_decade": -1.1 },
+   "temperature_trend": { "slope_per_decade": 0.45, "unit": "C", "p_value": 0.01, "years": 45, "significant": true },
+   "factor_range": null
+  }
  },
  "scenarios": [
   {
@@ -3747,6 +3758,6 @@
    }
   ],
   "not_decided": [],
-  "caveat": "Best of the scenarios you compared, given these numbers and past weather. Not a forecast."
+  "caveat": "The stronger of the plans you compared, given these numbers and the conditions seen at this field. An evidence-based outlook, not a guarantee."
  }
 }

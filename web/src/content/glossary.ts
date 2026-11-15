@@ -65,7 +65,7 @@ export const GLOSSARY: Record<TermId, { term: string; definition: string }> = {
   },
   replay: {
     term: "Historical replay",
-    definition: "Running this year's planned dates against the weather of a past year. It shows how a plan would have fared; it does not forecast next spring.",
+    definition: "Running this year's planned dates against the weather of a past year. It shows how a plan would have fared in that year; it cannot say what next spring will bring.",
   },
   extension: {
     term: "Extension agent",
@@ -80,16 +80,16 @@ export const GLOSSARY: Record<TermId, { term: string; definition: string }> = {
     definition: "The crops and dates you use now, as a rotation of one to ten seasons that repeats. It is the baseline every other plan is compared with.",
   },
   resampling: {
-    term: "Replaying past weather",
-    definition: "A 10-year run picks whole past seasons (1981 to 2025) from your field's NASA weather record in a new random order, about 200 times. It shows the range of what has happened here, not a forecast.",
+    term: "How the outlook is built",
+    definition: "Your plan is carried through the next 10 years about 200 times. Each time, the field's real past seasons (1981 to 2025, from NASA weather data) are put in a different order, and rain is adjusted when the field's own record shows a clear trend. It shows what to plan for under the conditions seen here. It cannot say what any single year will bring.",
   },
   scenario: {
     term: "Scenario",
-    definition: "Another plan for the same field, such as adding a cover crop or a winter grain. Each one is replayed over the same past weather as your current plan, so they can be compared fairly.",
+    definition: "Another plan for the same field, such as adding a cover crop or a winter grain. Each one is run through the same simulated years as your current plan, so they can be compared fairly.",
   },
   "comparison-badge": {
     term: "Badges",
-    definition: "Highest estimated margin of these plans, most sustainable, lowest weather risk and best for your priorities. Each is the best of the plans you compared (not of every possible plan), given these numbers and past weather; a badge is left out when it cannot be decided fairly.",
+    definition: "Highest estimated margin of these plans, most sustainable, lowest weather risk and best for your priorities. Each is the best of the plans you compared (not of every possible plan), given these numbers and the conditions seen at this field; a badge is left out when it cannot be decided fairly.",
   },
   "ten-year-plan": {
     term: "Your 10-year plan",
@@ -97,7 +97,7 @@ export const GLOSSARY: Record<TermId, { term: string; definition: string }> = {
   },
   band: {
     term: "Typical range",
-    definition: "The middle value (median) of all the replays, with the low (10th percentile) and high (90th percentile) ends. Eight in ten replays fall inside the range.",
+    definition: "The middle result across all the simulated years, with the bad-year end and the good-year end. Eight in ten simulated years fall inside the range.",
   },
   margin: {
     term: "Margin",

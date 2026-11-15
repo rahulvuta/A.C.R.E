@@ -57,7 +57,7 @@ export function Springs({ view, stage, onSelect }: { view: ViewModel; stage: Rea
           {y ? `Spring ${y.year} on your field` : "Past springs"}
         </h2>
         <p className="sp-key">
-          Rain in the 30 days before planting · a <G id="replay">replay</G>, not a forecast
+          Rain in the 30 days before planting · a <G id="replay">replay</G> of one past spring
         </p>
       </header>
 
