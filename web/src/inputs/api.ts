@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { autofillRequestSchema, autofillResponseSchema, cropSchema, cropSearchSchema, economicsRequestSchema, economicsResponseSchema, equipmentResponseSchema, researchJobSchema, type AutofillRequest, type EconomicsRequest } from "./schema";
+import { autofillRequestSchema, autofillResponseSchema, calendarResearchJobSchema, cropSchema, cropSearchSchema, economicsRequestSchema, economicsResearchJobSchema, economicsResponseSchema, equipmentResponseSchema, researchJobSchema, type AutofillRequest, type EconomicsRequest } from "./schema";
 
 export class InputsApiError extends Error {
   constructor(message: string, public readonly httpStatus?: number) { super(message); this.name = "InputsApiError"; }
@@ -28,6 +28,10 @@ export function createInputsApi(base = import.meta.env.VITE_API_BASE ?? "http://
     crop: (cropId: string, regionKey: string, signal?: AbortSignal) => request(`/v1/crops/${encodeURIComponent(cropId)}?${new URLSearchParams({ region_key: regionKey })}`, cropSchema, signal),
     autofill: (body: AutofillRequest, signal?: AbortSignal) => request("/v1/plans/autofill", autofillResponseSchema, signal, autofillRequestSchema.parse(body)),
     estimate: (body: EconomicsRequest, signal?: AbortSignal) => request("/v1/economics/estimate", economicsResponseSchema, signal, economicsRequestSchema.parse({ ...body, area: body.area?.value != null && body.area.value > 0 ? body.area : null })),
+    economicsResearch: (cropId: string, regionKey: string, signal?: AbortSignal, refresh?: boolean) => request("/v1/economics/research", economicsResearchJobSchema, signal, { crop_id: cropId, region_key: regionKey, ...(refresh ? { refresh: true } : {}) }),
+    economicsResearchJob: (jobId: string, signal?: AbortSignal) => request(`/v1/economics/research/${encodeURIComponent(jobId)}`, economicsResearchJobSchema, signal),
+    calendarResearch: (cropId: string, regionKey: string, signal?: AbortSignal, refresh?: boolean) => request("/v1/calendars/research", calendarResearchJobSchema, signal, { crop_id: cropId, region_key: regionKey, ...(refresh ? { refresh: true } : {}) }),
+    calendarResearchJob: (jobId: string, signal?: AbortSignal) => request(`/v1/calendars/research/${encodeURIComponent(jobId)}`, calendarResearchJobSchema, signal),
     equipment: (signal?: AbortSignal) => request("/v1/vocab/equipment", equipmentResponseSchema, signal),
   };
 }

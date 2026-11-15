@@ -3,7 +3,7 @@ import { z } from "zod";
 export const originSchema = z.enum(["grower", "verified_source", "dataset_estimate", "ai_suggested", "source_checked", "assumed", "calculation", "nasa_measured", "nasa_modeled"]);
 export type Origin = z.infer<typeof originSchema>;
 export const statusSchema = z.enum(["complete", "partial", "unavailable", "unknown", "inapplicable", "unsupported", "invalid_input", "manual_check", "insufficient_data"]);
-export const sourceSchema = z.object({ title: z.string().optional(), url: z.string().nullable().optional(), years: z.string().optional(), year: z.union([z.string(), z.number()]).optional() }).passthrough();
+export const sourceSchema = z.object({ title: z.string().optional(), url: z.string().nullable().optional(), years: z.string().optional(), year: z.union([z.string(), z.number()]).optional(), locator: z.string().nullable().optional(), evidence_quote: z.string().nullable().optional() }).passthrough();
 export type Source = z.infer<typeof sourceSchema>;
 const meta = z.record(z.unknown());
 export const locationSchema = z.union([
@@ -47,16 +47,42 @@ export type PlanDraft = z.infer<typeof planDraftSchema>;
 export type PlanEditorValue = { plan: PlanDraft; dates: DateEvidence[]; cropDetails: Crop[] };
 export const autofillRequestSchema = z.object({ location: locationSchema, crops: z.array(z.object({ role: z.enum(["previous", "cover", "next"]), crop_id: z.string().min(1) })).min(1) });
 export type AutofillRequest = z.infer<typeof autofillRequestSchema>;
-export const autofillResponseSchema = z.object({ meta, plan: planDraftSchema.nullable(), dates: z.array(dateEvidenceSchema), gaps: z.array(z.union([z.string(), z.object({ text: z.string() }).passthrough()]).transform(gap => typeof gap === "string" ? gap : gap.text)) });
+export const calendarResearchEntrySchema = z.object({ crop_id: z.string().min(1), role: z.enum(["previous", "cover", "next"]), researched_at: z.string().nullable().optional(), missing: z.boolean() }).passthrough();
+export type CalendarResearchEntry = z.infer<typeof calendarResearchEntrySchema>;
+export const autofillResponseSchema = z.object({
+  meta, plan: planDraftSchema.nullable(), dates: z.array(dateEvidenceSchema), gaps: z.array(z.union([z.string(), z.object({ text: z.string() }).passthrough()]).transform(gap => typeof gap === "string" ? gap : gap.text)),
+  research: z.object({ available: z.boolean(), region_key: z.string().nullable().optional() }).passthrough().nullable().optional(),
+  calendar_research: z.array(calendarResearchEntrySchema).nullable().optional(),
+});
+export const calendarResearchJobSchema = z.object({
+  meta, job_id: z.string().min(1), job_status: z.enum(["pending", "ready", "failed"]), status: z.string().nullable().optional(),
+  crop_id: z.string().nullable().optional(), region_key: z.string().nullable().optional(), reason: z.string().nullable().optional(), reason_text: z.string().nullable().optional(),
+  found: z.object({ calendars: z.number() }).passthrough().nullable().optional(),
+}).passthrough();
+export type CalendarResearchJob = z.infer<typeof calendarResearchJobSchema>;
 export const quantitySchema = z.object({ value: z.number().finite().nullable(), unit: z.string(), origin: originSchema, source: sourceSchema.nullable().optional() });
 export type Quantity = z.infer<typeof quantitySchema>;
 export const priceSchema = z.object({ low: z.number().finite().nullable(), typical: z.number().finite().nullable(), high: z.number().finite().nullable(), unit: z.string(), origin: originSchema, source: sourceSchema.nullable().optional() });
+export const economicsSuggestionSchema = z.object({
+  field: z.enum(["price", "yield", "costs"]), item: z.string().nullable().optional(), value: z.number().finite(), unit: z.string(),
+  currency: z.string().nullable().optional(), year: z.union([z.string(), z.number()]).nullable().optional(),
+  origin: z.enum(["ai_suggested", "source_checked"]), source: sourceSchema.nullable().optional(), note: z.string().nullable().optional(),
+}).passthrough();
+export type EconomicsSuggestion = z.infer<typeof economicsSuggestionSchema>;
 export const economicsCropSchema = z.object({
   crop_id: z.string(), aliases: z.array(z.string()).default([]), price: priceSchema.nullable(), yield: quantitySchema.nullable(),
   costs: z.object({ items: z.array(quantitySchema.extend({ item: z.string() })), total_per_area: quantitySchema.partial({ origin: true }).nullable().optional() }),
   status: statusSchema, reason_text: z.string().nullable().optional(),
+  economics_research: z.object({ researched_at: z.string().nullable().optional(), status: z.string().nullable().optional() }).passthrough().nullable().optional(),
+  suggestions: z.array(economicsSuggestionSchema).nullable().optional(),
 });
-export const economicsResponseSchema = z.object({ meta, status: statusSchema.optional(), currency: z.string().nullable(), area_unit: z.enum(["acre", "ha"]), crops: z.array(economicsCropSchema), equipment_costs: z.array(quantitySchema.extend({ equipment: z.string(), pass: z.string() })).default([]), gaps: z.array(z.string()) });
+export const economicsResponseSchema = z.object({ meta, status: statusSchema.optional(), currency: z.string().nullable(), area_unit: z.enum(["acre", "ha"]), crops: z.array(economicsCropSchema), equipment_costs: z.array(quantitySchema.extend({ equipment: z.string(), pass: z.string() })).default([]), gaps: z.array(z.string()), research: z.object({ available: z.boolean(), region_key: z.string().nullable().optional() }).passthrough().nullable().optional() });
+export const economicsResearchJobSchema = z.object({
+  meta, job_id: z.string().min(1), job_status: z.enum(["pending", "ready", "failed"]), status: z.string().nullable().optional(),
+  crop_id: z.string().nullable().optional(), region_key: z.string().nullable().optional(), reason: z.string().nullable().optional(), reason_text: z.string().nullable().optional(),
+  found: z.object({ price: z.number(), yield: z.number(), cost: z.number() }).passthrough().nullable().optional(),
+}).passthrough();
+export type EconomicsResearchJob = z.infer<typeof economicsResearchJobSchema>;
 export type EconomicsDefaults = z.infer<typeof economicsResponseSchema>;
 export type CropEconomics = z.infer<typeof economicsCropSchema>;
 export type PriceCase = "low" | "typical" | "high";

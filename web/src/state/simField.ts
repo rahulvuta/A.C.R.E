@@ -40,6 +40,10 @@ export interface SimField {
 }
 export const MAX_ALTERNATIVES = 5;
 export const MAX_ZONES = 8;
+/** Zones are switched off for now: the editor is hidden and a field is always simulated as one plan. */
+export const ZONES_ENABLED = false;
+/** The field's zones, or none while zones are switched off. */
+export const zonesOf = (f: Pick<SimField, "zones">): SimZone[] => (ZONES_ENABLED ? (f.zones ?? []) : []);
 export const BASELINE_ID = "current";
 const KEY = "acre.simfield.v1";
 
@@ -135,7 +139,7 @@ export function useSimField(fieldId: string | null): SimField {
 
 /** The baseline scenario: the field's current rotation (per zone when the field has zones). */
 export function baselineOf(f: SimField): Scenario {
-  const zoned = (f.zones ?? []).length > 0;
+  const zoned = zonesOf(f).length > 0;
   return { scenarioId: BASELINE_ID, label: "What I do now", isBaseline: true, rotation: f.rotation, ...(zoned ? { zoneRotations: f.zoneRotations ?? {} } : {}), from: "current" };
 }
 

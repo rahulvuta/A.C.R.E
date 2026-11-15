@@ -1,4 +1,4 @@
-import { Component, lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
+import { Component, lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { z } from "zod";
 import type { CardKey } from "../../content/strategies";
 import { centroid } from "../../farm/geometry";
@@ -85,13 +85,34 @@ class Boundary extends Component<{ fallback: ReactNode; children: ReactNode }, {
   }
 }
 
+let canWebgl: boolean | null = null;
+/** Checked once per page, and the test context is released: every live WebGL context counts against the browser's limit. */
 function webgl(): boolean {
+  if (canWebgl != null) return canWebgl;
   try {
     const c = document.createElement("canvas");
-    return Boolean(c.getContext("webgl2") ?? c.getContext("webgl"));
+    const gl = c.getContext("webgl2") ?? c.getContext("webgl");
+    canWebgl = Boolean(gl);
+    gl?.getExtension("WEBGL_lose_context")?.loseContext();
   } catch {
-    return false;
+    canWebgl = false;
   }
+  return canWebgl;
+}
+
+/** The field's usual weather for the timeline's month, shown once because it is the same for every plan. */
+export function ConditionsLine({ conditions, at }: { conditions: FieldConditions | null; at: string }) {
+  const month = Number(at.split("-")[1]);
+  const cond = conditions?.months.find((m) => m.month === month) ?? null;
+  if (!cond) return null;
+  const wet = cond.soil_wetness_top?.median ?? null;
+  const parts = [wet != null ? `topsoil ${pctOf(wet)} wet` : null, cond.rain_mm?.median != null ? `rain ${Math.round(cond.rain_mm.median)} mm` : null, cond.air_temp_c?.median != null ? `${Math.round(cond.air_temp_c.median)}°C` : null].filter(Boolean);
+  if (!parts.length) return null;
+  return (
+    <span className="gf-muted sb-small">
+      Typical {monthShort(month)} here: {parts.join(" · ")} <span className="ss-src">(NASA model, ~50 km area{conditions?.years ? `, ${conditions.years}` : ""})</span>
+    </span>
+  );
 }
 
 export function StrategySim({ title, rotation, geometry, monthly, conditions, at, startSeason }: { title: string; rotation: FieldPlan[]; geometry: FieldGeometry; monthly: ScenarioMonthly | null; conditions: FieldConditions | null; at: string; startSeason: number }) {
@@ -102,9 +123,28 @@ export function StrategySim({ title, rotation, geometry, monthly, conditions, at
   const [mounted, setMounted] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const [view, setView] = useState<"field" | "cutaway">("field");
+  // A lost WebGL context (the browser reclaimed it) leaves a blank canvas: start the scene again, a few times at most.
+  const [gen, setGen] = useState(0);
+  const stage = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const id = window.setTimeout(() => setMounted(true), 80);
     return () => window.clearTimeout(id);
+  }, []);
+  // The scene draws on demand; ask for one more frame once it has had time to load, so it never starts blank.
+  useEffect(() => {
+    if (!mounted) return;
+    const id = window.setTimeout(() => setResetKey((n) => n + 1), 900);
+    return () => window.clearTimeout(id);
+  }, [mounted, gen]);
+  useEffect(() => {
+    const el = stage.current;
+    if (!el) return;
+    const lost = () => window.setTimeout(() => setGen((g) => (g < 3 ? g + 1 : g)), 300);
+    // The mouse wheel scrolls the page, not the camera (pinch, or Ctrl + wheel, still zooms).
+    const wheel = (e: WheelEvent) => { if (!e.ctrlKey) e.stopPropagation(); };
+    el.addEventListener("webglcontextlost", lost, true);
+    el.addEventListener("wheel", wheel, true);
+    return () => { el.removeEventListener("webglcontextlost", lost, true); el.removeEventListener("wheel", wheel, true); };
   }, []);
 
   const [year, month] = at.split("-").map(Number) as [number, number];
@@ -133,40 +173,19 @@ export function StrategySim({ title, rotation, geometry, monthly, conditions, at
   const c = monthly?.currency ?? null;
   const fmt = (v: number | null | undefined) => (v == null ? "Not available" : money(v, c));
   const before = monthly != null && cur == null;
-  const spent = before ? 0 : cur?.cumulative_costs?.median;
-  const earned = before ? 0 : cur?.cumulative_revenue?.median;
   const net = before ? 0 : cur?.cumulative_net?.median;
   const ops = now?.operations ?? [];
-  const spentNow = now?.costs?.median ?? 0;
-  const earnedNow = now?.revenue?.median ?? 0;
-  const wet = top?.median ?? null;
+  // A month with no entry in the plan's calendar has no spending or sales: a real 0, not a gap.
+  const spentNow = monthly ? Math.abs(now?.costs?.median ?? 0) : null;
+  const earnedNow = monthly ? (now?.revenue?.median ?? 0) : null;
+  const netNow = monthly ? (now?.net?.median ?? (earnedNow ?? 0) - (spentNow ?? 0)) : null;
+  const tone = (v: number | null | undefined) => (v == null || v === 0 ? undefined : v < 0 ? "ss-neg" : "ss-pos");
 
   return (
     <div className="ss" aria-label={`${title}: simulation at ${monthTitle(at)}`}>
-      <dl className="ss-hud">
-        <div>
-          <dt title="All money spent since the start of the timeline">Spent so far</dt>
-          <dd>{fmt(spent)}</dd>
-        </div>
-        <div>
-          <dt title="All money earned since the start of the timeline">Earned so far</dt>
-          <dd>{fmt(earned)}</dd>
-        </div>
-        <div className={net != null && net < 0 ? "ss-neg" : "ss-pos"}>
-          <dt title="Running total: earned minus spent, added up month by month since the start of the timeline">Running total</dt>
-          <dd>{fmt(net)}</dd>
-          <dd className="ss-range">since the start</dd>
-          {!before && cur?.cumulative_net?.p10 != null && cur.cumulative_net.p90 != null && cur.cumulative_net.p10 !== cur.cumulative_net.p90 ? (
-            <dd className="ss-range">
-              bad year {fmt(cur.cumulative_net.p10)} · good year {fmt(cur.cumulative_net.p90)}
-            </dd>
-          ) : null}
-        </div>
-      </dl>
-      {monthly == null ? <p className="gf-muted sb-small">No money result for this plan, so only the field is shown.</p> : null}
-      <div className="ss-stage">
+      <div className="ss-stage" ref={stage}>
         {can3d && mounted ? (
-          <Boundary fallback={<p className="ss-fallback">The 3D field could not start on this device.</p>}>
+          <Boundary key={gen} fallback={<p className="ss-fallback">The 3D field could not start on this device.</p>}>
             <Suspense fallback={<p className="ss-fallback" role="status">Loading the 3D field…</p>}>
               <FarmWorld strips={[strip]} states={[state]} outlines={[geometry]} day={0} preset={view} animate={false} palette={palette} onSelect={() => {}} resetKey={resetKey} />
             </Suspense>
@@ -184,38 +203,31 @@ export function StrategySim({ title, rotation, geometry, monthly, conditions, at
           </button>
         </div>
       </div>
-      <ul className="ss-now">
-        <li>
-          <strong>On the field:</strong> {state?.label ?? "No complete plan for this season"}
-          {leg?.sequence ? ` (${cropLabel(rotation[t % rotation.length]!.next_crop_id)} season)` : ""}
-        </li>
-        <li>
-          <strong>This month:</strong>{" "}
-          {ops.length ? ops.map((o) => `${OP_TEXT[o.kind] ?? o.kind} ${o.crop_id ? cropLabel(o.crop_id).toLowerCase() : ""}`.trim()).join("; ") : "No field work planned"}
-          {spentNow > 0 ? ` · spend ${fmt(spentNow)}` : ""}
-          {earnedNow > 0 ? ` · sell ${fmt(earnedNow)}` : ""}
-          {now?.risks.length ? ` · Watch: ${now.risks.map((r) => r.text ?? r.kind).join("; ")}` : ""}
-        </li>
-        {cond ? (
-          <li className="ss-cond">
-            <strong>Expected conditions for {monthShort(month)} (same for every plan):</strong>{" "}
-            {wet != null ? (
-              <>
-                <span className="ss-wet" role="img" aria-label={`Topsoil wetness ${pctOf(wet)}`}>
-                  <span style={{ width: `${Math.round(wet * 100)}%` }} />
-                </span>{" "}
-                {pctOf(wet)} wet (dry year {pctOf(top?.p10)}, wet year {pctOf(top?.p90)})
-              </>
-            ) : (
-              "Not available"
-            )}
-            {cond.rain_mm?.median != null ? ` · rain ${Math.round(cond.rain_mm.median)} mm` : ""}
-            {cond.air_temp_c?.median != null ? ` · ${Math.round(cond.air_temp_c.median)}°C` : ""}
-            <span className="ss-src"> NASA model, ~50 km area{conditions?.years ? `, ${conditions.years}` : ""}</span>
-            <small className="ss-note">From this field's weather record: what the month is usually like, not what this plan does to the soil.</small>
-          </li>
-        ) : null}
-      </ul>
+      <p className="ss-now">
+        <strong>{state?.label ?? "No complete plan for this season"}</strong>
+        {ops.length ? ` · ${ops.map((o) => `${OP_TEXT[o.kind] ?? o.kind} ${o.crop_id ? cropLabel(o.crop_id).toLowerCase() : ""}`.trim()).join("; ")}` : ""}
+        {now?.risks.length ? ` · Watch: ${now.risks.map((r) => r.text ?? r.kind).join("; ")}` : ""}
+      </p>
+      {monthly ? (
+        <dl className="ss-hud">
+          <div>
+            <dt>Spent this month</dt>
+            <dd>{fmt(spentNow)}</dd>
+          </div>
+          <div>
+            <dt>Sold this month</dt>
+            <dd>{fmt(earnedNow)}</dd>
+          </div>
+          <div className={tone(netNow)}>
+            <dt>Net this month</dt>
+            <dd>{fmt(netNow)}</dd>
+          </div>
+          <div className={tone(net)}>
+            <dt title="Sold minus spent, added up month by month since the start of the timeline">Running total</dt>
+            <dd>{fmt(net)}</dd>
+          </div>
+        </dl>
+      ) : null}
     </div>
   );
 }
