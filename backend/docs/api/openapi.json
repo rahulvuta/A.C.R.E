@@ -2268,6 +2268,25 @@
         "title": "DrainageItem",
         "type": "object"
       },
+      "EconomicsIn": {
+        "additionalProperties": false,
+        "properties": {
+          "loss_assumptions": {
+            "$ref": "#/components/schemas/LossIn"
+          },
+          "overrides": {
+            "additionalProperties": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "maxProperties": 60,
+            "title": "Overrides",
+            "type": "object"
+          }
+        },
+        "title": "EconomicsIn",
+        "type": "object"
+      },
       "EraBlockOut": {
         "additionalProperties": true,
         "properties": {
@@ -3196,6 +3215,78 @@
         "title": "FieldNote",
         "type": "object"
       },
+      "FieldSimIn": {
+        "properties": {
+          "area_ha": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "maximum": 1000000.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Area Ha"
+          },
+          "equipment": {
+            "items": {
+              "maxLength": 100,
+              "type": "string"
+            },
+            "maxItems": 50,
+            "title": "Equipment",
+            "type": "array"
+          },
+          "field_id": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field Id"
+          },
+          "geometry": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Geometry"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "readings": {
+            "items": {
+              "$ref": "#/components/schemas/ReadingIn"
+            },
+            "maxItems": 500,
+            "title": "Readings",
+            "type": "array"
+          }
+        },
+        "title": "FieldSimIn",
+        "type": "object"
+      },
       "GapPair": {
         "additionalProperties": false,
         "properties": {
@@ -3571,6 +3662,39 @@
           }
         },
         "title": "LocationIn",
+        "type": "object"
+      },
+      "LossIn": {
+        "additionalProperties": false,
+        "properties": {
+          "dry_spring_pct": {
+            "anyOf": [
+              {
+                "maximum": 100.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dry Spring Pct"
+          },
+          "heavy_rain_pct": {
+            "anyOf": [
+              {
+                "maximum": 100.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heavy Rain Pct"
+          }
+        },
+        "title": "LossIn",
         "type": "object"
       },
       "MaturityGroupOut": {
@@ -4836,6 +4960,69 @@
         "title": "RawWinter",
         "type": "object"
       },
+      "ReadingIn": {
+        "description": "Contract \u00a714. A farmer's own reading: shown beside modeled values, never mixed in.",
+        "properties": {
+          "date": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "title": "Date",
+            "type": "string"
+          },
+          "depth_cm": {
+            "anyOf": [
+              {
+                "maximum": 500.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Depth Cm"
+          },
+          "kind": {
+            "enum": [
+              "soil_moisture_pct",
+              "soil_moisture_vwc",
+              "rainfall_mm",
+              "soil_temp_c",
+              "note"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "date",
+          "kind"
+        ],
+        "title": "ReadingIn",
+        "type": "object"
+      },
       "RecommendRequest": {
         "additionalProperties": false,
         "properties": {
@@ -5732,6 +5919,49 @@
         "title": "RuleSource",
         "type": "object"
       },
+      "ScenarioIn": {
+        "additionalProperties": false,
+        "properties": {
+          "is_baseline": {
+            "default": false,
+            "title": "Is Baseline",
+            "type": "boolean"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "rotation": {
+            "items": {
+              "$ref": "#/components/schemas/Plan"
+            },
+            "maxItems": 4,
+            "minItems": 1,
+            "title": "Rotation",
+            "type": "array"
+          },
+          "scenario_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Scenario Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario_id",
+          "rotation"
+        ],
+        "title": "ScenarioIn",
+        "type": "object"
+      },
       "ScenarioOut": {
         "additionalProperties": true,
         "properties": {
@@ -6492,6 +6722,98 @@
           "note"
         ],
         "title": "SharedYears",
+        "type": "object"
+      },
+      "SimGoalsIn": {
+        "additionalProperties": true,
+        "properties": {
+          "priorities": {
+            "additionalProperties": {
+              "maximum": 3.0,
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "title": "Priorities",
+            "type": "object"
+          }
+        },
+        "title": "SimGoalsIn",
+        "type": "object"
+      },
+      "SimulateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "economics": {
+            "$ref": "#/components/schemas/EconomicsIn"
+          },
+          "field": {
+            "$ref": "#/components/schemas/FieldSimIn"
+          },
+          "goals": {
+            "$ref": "#/components/schemas/SimGoalsIn"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocationIn"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "location_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location Id"
+          },
+          "runs": {
+            "default": 200,
+            "maximum": 500.0,
+            "minimum": 50.0,
+            "title": "Runs",
+            "type": "integer"
+          },
+          "scenarios": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioIn"
+            },
+            "maxItems": 6,
+            "minItems": 1,
+            "title": "Scenarios",
+            "type": "array"
+          },
+          "seed": {
+            "default": 7,
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Seed",
+            "type": "integer"
+          },
+          "start_season": {
+            "default": "2027",
+            "pattern": "^\\d{4}$",
+            "title": "Start Season",
+            "type": "string"
+          },
+          "years": {
+            "default": 10,
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Years",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "scenarios"
+        ],
+        "title": "SimulateRequest",
         "type": "object"
       },
       "SkippedYearOut": {
@@ -8692,6 +9014,49 @@
         ]
       }
     },
+    "/v1/economics/estimate": {
+      "post": {
+        "description": "Body: ``{location, crops, area?, equipment?, overrides?, loss_assumptions?}``.",
+        "operationId": "post_estimate_v1_economics_estimate_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Post Estimate V1 Economics Estimate Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Post Estimate",
+        "tags": [
+          "field",
+          "economics"
+        ]
+      }
+    },
     "/v1/farms/analyze": {
       "post": {
         "operationId": "analyze_v1_farms_analyze_post",
@@ -10042,6 +10407,57 @@
         ]
       }
     },
+    "/v1/scenarios/simulate": {
+      "post": {
+        "operationId": "simulate_scenarios_v1_scenarios_simulate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Simulate Scenarios V1 Scenarios Simulate Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Simulate Scenarios",
+        "tags": [
+          "simulate"
+        ]
+      }
+    },
     "/v1/seasons/{year}/replay": {
       "get": {
         "operationId": "replay_get_v1_seasons__year__replay_get",
@@ -10366,6 +10782,131 @@
           }
         },
         "summary": "Get Soil Route",
+        "tags": [
+          "field"
+        ]
+      }
+    },
+    "/v1/vocab/equipment": {
+      "get": {
+        "description": "Contract \u00a714: the equipment vocabulary with labels (plus ``other:<text>``).",
+        "operationId": "get_vocab_equipment_v1_vocab_equipment_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Vocab Equipment V1 Vocab Equipment Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Vocab Equipment",
+        "tags": [
+          "field"
+        ]
+      }
+    },
+    "/v1/vocab/priorities": {
+      "get": {
+        "operationId": "get_vocab_priorities_v1_vocab_priorities_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Vocab Priorities V1 Vocab Priorities Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Vocab Priorities",
+        "tags": [
+          "simulate"
+        ]
+      }
+    },
+    "/v1/vocab/readings": {
+      "get": {
+        "description": "Contract \u00a714: reading kinds with labels, units and plausible bounds.",
+        "operationId": "get_vocab_readings_v1_vocab_readings_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Vocab Readings V1 Vocab Readings Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Vocab Readings",
         "tags": [
           "field"
         ]
