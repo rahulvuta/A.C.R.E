@@ -62,6 +62,7 @@ export function FieldWorkspace({ api, farm, field, tab, onTab, onClose, onCopy, 
   }, [field]);
 
   const ctx: StepContext = { api, farm, field, sim, point, regionKey, profile, go: (s) => onTab(STEP_TO_TAB[s]) };
+  const ctxFor = (id: TabId): StepContext => ({ ...ctx, active: active === id });
   const pane = (id: TabId, body: () => ReactNode) => (visited.has(id) ? <div key={id} role="tabpanel" id={`pane-${id}`} aria-label={TABS.find((t) => t.id === id)!.label} hidden={active !== id} className="fw-pane">{body()}</div> : null);
 
   return (
@@ -72,8 +73,14 @@ export function FieldWorkspace({ api, farm, field, tab, onTab, onClose, onCopy, 
           <button type="button" className="btn btn-quiet" onClick={onCopy}>Copy this field to my fields</button>
         </Banner>
       ) : null}
-      {pane("overview", () => <Overview ctx={ctx} farm={farm} field={field} onTab={onTab} onClose={onClose} onOpenField={onOpenField} />)}
-      {pane("rotation", () => <StepNow ctx={ctx} part="rotation" />)}
+      {pane("overview", () => <Overview ctx={ctxFor("overview")} farm={farm} field={field} onTab={onTab} onClose={onClose} onOpenField={onOpenField} />)}
+      {pane("rotation", () => <>
+        <StepNow ctx={ctx} part="rotation" />
+        <div className="dash-actions">
+          <span className="dash-muted">Changes are saved automatically.</span>
+          <button type="button" className="btn btn-primary" onClick={() => onTab("overview")}>Done, back to field</button>
+        </div>
+      </>)}
       {pane("conditions", () => (
         <div className="gf-now">
           {profile ? <ResearchPanel profile={profile} field={field} /> : <p className="dash-muted">{place?.profile.state === "error" ? place.profile.message : "Loading this place's regional profile…"}</p>}
@@ -83,12 +90,12 @@ export function FieldWorkspace({ api, farm, field, tab, onTab, onClose, onCopy, 
           </details>
         </div>
       ))}
-      {pane("recommendations", () => <StepTry ctx={ctx} />)}
+      {pane("recommendations", () => <StepTry ctx={ctxFor("recommendations")} />)}
       {pane("simulation", () => (
         <div className="gf-now">
           {rotationReady(sim.rotation) ? null : <Banner kind="info">Set a complete crop rotation first. <button type="button" className="btn btn-quiet" onClick={() => onTab("rotation")}>Open Crop Rotation</button></Banner>}
-          <StepSimulate ctx={ctx} />
-          {sim.scenarios.length ? <StepCompare ctx={ctx} /> : <p className="dash-muted">Add other plans under Recommendations to compare them here.</p>}
+          <StepSimulate ctx={ctxFor("simulation")} />
+          {sim.scenarios.length ? <StepCompare ctx={ctxFor("simulation")} /> : <p className="dash-muted">Add other plans under Recommendations to compare them here.</p>}
         </div>
       ))}
       {pane("financial", () => (
@@ -97,7 +104,7 @@ export function FieldWorkspace({ api, farm, field, tab, onTab, onClose, onCopy, 
           <StepNow ctx={ctx} part="money" />
         </div>
       ))}
-      {pane("future", () => <StepPlan ctx={ctx} />)}
+      {pane("future", () => <StepPlan ctx={ctxFor("future")} />)}
     </section>
   );
 }

@@ -18,6 +18,7 @@ export interface StepContext {
   point: LatLon | null;
   regionKey: string | null;
   profile: RegionProfile | null;
+  active?: boolean;
   go: (s: StepId) => void;
 }
 

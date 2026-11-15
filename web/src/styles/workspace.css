@@ -7,8 +7,7 @@
 }
 .ws-map {
   flex: none;
-  /* A fixed height so the farm panel scrolls inside the map card and its tools stay reachable. */
-  height: max(520px, calc(100vh - 112px));
+  min-height: max(520px, calc(100dvh - 112px));
   display: flex;
   background: var(--surface);
   border: 1px solid var(--line);

@@ -63,12 +63,13 @@ export function StepTry({ ctx }: { ctx: StepContext }) {
   const { field, sim, point } = ctx;
   const [rec, setRec] = useState<{ state: "idle" | "loading" } | { state: "ready"; data: Recommendation } | { state: "error"; message: string }>({ state: "idle" });
   const [editing, setEditing] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
   const full = sim.scenarios.length >= MAX_ALTERNATIVES;
   // /recommend knows the six soil and water priorities; profit is weighed in Compare.
   const goalPriorities = Object.fromEntries(PRIORITY_NAMES.map((n) => [n, sim.priorities[n] ?? 0]));
   const key = JSON.stringify([point, goalPriorities, sim.equipment]);
   useEffect(() => {
-    if (!point || !field) return;
+    if (!point || !field || ctx.active === false) return;
     let live = true;
     setRec({ state: "loading" });
     const ha = areaHa(field.geometry);
@@ -79,7 +80,7 @@ export function StepTry({ ctx }: { ctx: StepContext }) {
       live = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key]);
+  }, [key, attempt, ctx.active]);
 
   if (!field) return null;
   const save = (scenarios: Scenario[]) => updateSimField(field.field_id, { scenarios });
@@ -153,7 +154,7 @@ export function StepTry({ ctx }: { ctx: StepContext }) {
             Finding plans that fit this place and your priorities…
           </p>
         ) : null}
-        {rec.state === "error" ? <Banner kind="info">{rec.message} You can still build your own.</Banner> : null}
+        {rec.state === "error" ? <Banner kind="info">{rec.message} You can still build your own. <button type="button" className="btn btn-quiet" onClick={() => setAttempt((n) => n + 1)}>Try suggestions again</button></Banner> : null}
         {rec.state === "ready" && !suggestions.length ? <p className="gf-muted">{rec.data.reasonText ?? "No suggestions for these priorities. Try other weights, or build your own."}</p> : null}
         <ul className="gf-suggest">
           {suggestions.map((o) => {

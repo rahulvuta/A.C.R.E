@@ -106,3 +106,15 @@ describe("outlookBasis", () => {
     expect(climateAdjustmentOf(null)).toBeNull();
   });
 });
+
+it("waits until the overview is visible before starting a simulation", async () => {
+  const ctx = ctxWith();
+  const { rerender } = render(<StrategyView ctx={{ ...ctx, active: false }} onTab={() => {}} />);
+  expect(bodies).toHaveLength(0);
+  rerender(<StrategyView ctx={{ ...ctx, active: true }} onTab={() => {}} />);
+  await screen.findByText("What this outlook is built on");
+  expect(bodies).toHaveLength(1);
+  const rotation = ctx.sim.rotation.map((p) => ({ ...p, next_plant: "05-11" }));
+  rerender(<StrategyView ctx={{ ...ctx, active: false, sim: { ...ctx.sim, rotation } }} onTab={() => {}} />);
+  expect(bodies).toHaveLength(1);
+});

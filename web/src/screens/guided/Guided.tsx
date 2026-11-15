@@ -23,9 +23,8 @@ import { ReadingsLog, StepPlan } from "./StepPlan";
   The Scenario Simulator's guided flow (card U1, docs/global/simulator.md): Your farm → What
   you do now → Simulate current plan → Try other plans → Compare → Your 10-year plan. The
   sidebar shows progress; each step asks one question. State is kept per field in the browser
-  (state/simField.ts). The older NC dashboard stays under "Union County deep-dive".
+  (state/simField.ts).
 */
-export const DEEP_DIVE_HREF = "?view=demo";
 
 function readStep(): StepId {
   const m = window.location.hash.match(/[#&]u=([a-z]+)/);
@@ -185,10 +184,6 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
         </nav>
         <div className="db-side-foot">
           <div className="db-links">
-            <a href={DEEP_DIVE_HREF}>
-              {navIcon("M3 8l6-5 6 5v7H3zM7.500 15v-4h3v4")}
-              Union County deep-dive
-            </a>
             <a href="?view=fields">{navIcon("M4 3h10v12H4zM7 7h4M7 10h4")}Field tools</a>
             <a href="?view=methods">{navIcon("M9 16A7 7 0 1 0 9 2a7 7 0 0 0 0 14zM7 7a2 2 0 1 1 3 1.700c-.600.400-1 .800-1 1.500M9 12.700v.100")}How it works</a>
             <a href="?view=privacy">{navIcon("M9 2l5.500 2v4.500c0 3.500-2.300 6-5.500 7.500-3.200-1.500-5.500-4-5.500-7.500V4zM6.700 9l1.700 1.700 3-3.200")}Privacy and terms</a>

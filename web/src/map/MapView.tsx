@@ -52,6 +52,8 @@ export function MapView({ initialCenter = { latitude: 20, longitude: 0 }, initia
       return;
     }
     mapRef.current = map;
+    const resize = new ResizeObserver(() => map.resize());
+    resize.observe(host.current);
     map.touchZoomRotate.disableRotation();
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
     map.addControl(new maplibregl.ScaleControl({ unit: "metric", maxWidth: 120 }), "bottom-left");
@@ -74,6 +76,7 @@ export function MapView({ initialCenter = { latitude: 20, longitude: 0 }, initia
       onReady?.(map);
     });
     return () => {
+      resize.disconnect();
       map.remove();
       mapRef.current = null;
     };

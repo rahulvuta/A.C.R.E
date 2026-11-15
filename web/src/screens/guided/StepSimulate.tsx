@@ -105,7 +105,7 @@ export function SimulationResult({ data }: { data: Simulation }) {
 
 export function StepSimulate({ ctx }: { ctx: StepContext }) {
   const req = simulateRequest(ctx, []);
-  const { sim, run } = useSimulation(ctx.api.client, req, true);
+  const { sim, run } = useSimulation(ctx.api.client, req, ctx.active !== false);
   return (
     <div className="gf-sim">
       <LossEditor ctx={ctx} />

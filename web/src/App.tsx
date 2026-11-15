@@ -48,6 +48,7 @@ function Route() {
   if (view === "evidence") return <EvidencePage />;
   if (view === "resources") return <ResourcesPage />;
   if (view === "about") return <AboutPage />;
+  if (view === "app" && /[#&]u=/.test(window.location.hash)) return <Guided />;
   const plannerHash = /(^|[#&])(s|pg|y|l|r|p|e|v|loc)=/.test(window.location.hash);
   if (view === "demo" || plannerHash) return <PlannerRoute />;
   if (view === "app") return <Guided />;

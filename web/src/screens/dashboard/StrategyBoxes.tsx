@@ -453,8 +453,8 @@ export function StrategyBox({ box, badges, highlight, waiting, onTab, onAdd, can
         <p className="gf-muted" role="status">Running this plan through the next {HORIZON_YEARS} years…</p>
       ) : (
         <>
-          <p className="gf-muted">This plan is not complete yet, so it was not run. Finish its dates under Recommendations.</p>
-          <button type="button" className="btn btn-secondary" onClick={() => onTab("recommendations")}>Open Recommendations</button>
+          <p className="gf-muted">{rotationReady(box.scenario.rotation) ? "Results are not available for this plan yet. Check the simulation status above." : `Finish this plan's crops and dates under ${box.slot === 0 ? "Crop Rotation" : "Recommendations"}.`}</p>
+          <button type="button" className="btn btn-secondary" onClick={() => onTab(box.slot === 0 ? "rotation" : "recommendations")}>{box.slot === 0 ? "Open Crop Rotation" : "Open Recommendations"}</button>
         </>
       )}
     </section>
@@ -605,7 +605,7 @@ export function StrategyView({ ctx, onTab }: { ctx: StepContext; onTab: (t: stri
   const { sim, field } = ctx;
   const own = sim.scenarios.slice(0, SLOTS - 1);
   const needMore = own.length < SLOTS - 1 && rotationReady(sim.rotation);
-  const rec = useShortlist(ctx, needMore);
+  const rec = useShortlist(ctx, needMore && ctx.active !== false);
   const finding = needMore && (rec.state === "loading" || rec.state === "idle") && Boolean(ctx.point);
   const picks = needMore && rec.state === "ready" ? pickSuggestions(rec.data.shortlist, sim.rotation, sim.scenarios, SLOTS - 1 - own.length) : [];
   const alternatives = [...own, ...picks.map((p) => p.scenario)];
@@ -613,7 +613,7 @@ export function StrategyView({ ctx, onTab }: { ctx: StepContext; onTab: (t: stri
   const base = simulateRequest(ctx, alternatives);
   // Hold the request until the plan finder has answered, so the boxes are simulated once.
   const req = base && !finding ? { ...base, years: HORIZON_YEARS } : null;
-  const { sim: result, run } = useSimulation(ctx.api.client, req, true);
+  const { sim: result, run } = useSimulation(ctx.api.client, req, ctx.active !== false);
   const data = result.state === "ready" ? result.data : null;
   const baseline = base?.scenarios[0] ?? { scenarioId: "current", label: "What I do now", isBaseline: true, rotation: sim.rotation, from: "current" as const };
   const boxes = buildBoxes(baseline, alternatives, data, suggested);
