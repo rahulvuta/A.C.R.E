@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Plan } from "../../api/schema";
 import type { CardKey } from "../../content/strategies";
 import { centroid } from "../../farm/geometry";
@@ -23,7 +23,14 @@ const FIELD = 7.4;
 const STAGE_W = 3 * FIELD + 2 * 1.1;
 const STAGE_D = FIELD * 1.5;
 
-const NO_WEATHER: StripVM["weather"] = { year: null, complete: false, totalMm: null, medianMm: null, wetness: null, wetnessRange: null };
+const NO_WEATHER: StripVM["weather"] = {
+  year: null,
+  complete: false,
+  totalMm: null,
+  medianMm: null,
+  wetness: null,
+  wetnessRange: null,
+};
 
 // The stage runs September to June (a northern winter). A southern-hemisphere field's dates
 // are moved six months so its own winter lands on the same stage; the timeline months are then
@@ -39,34 +46,78 @@ function shiftMd(md: string): string {
 const drawn = (id: string) => (id === "maize" ? "field_corn" : id);
 
 function scenePlan(p: FieldPlan, south: boolean): Plan | null {
-  if (!p.previous_crop_id || !p.next_crop_id || !p.prev_harvest || !p.next_plant) return null;
+  if (
+    !p.previous_crop_id ||
+    !p.next_crop_id ||
+    !p.prev_harvest ||
+    !p.next_plant
+  )
+    return null;
   const md = (x: string) => (south ? shiftMd(x) : x);
   const w = p.winter;
   const winter =
     w.kind === "cover"
-      ? { type: "cover" as const, crop_id: w.crop_id, seed: md(w.seed), terminate: md(w.terminate) }
+      ? {
+          type: "cover" as const,
+          crop_id: w.crop_id,
+          seed: md(w.seed),
+          terminate: md(w.terminate),
+        }
       : w.kind === "winter_grain"
-        ? { type: "winter_grain" as const, crop_id: w.crop_id, plant: md(w.plant), harvest: md(w.harvest) }
+        ? {
+            type: "winter_grain" as const,
+            crop_id: w.crop_id,
+            plant: md(w.plant),
+            harvest: md(w.harvest),
+          }
         : { type: "none" as const };
-  if (winter.type === "cover" && !(winter.seed && winter.terminate)) return null;
-  if (winter.type === "winter_grain" && !(winter.plant && winter.harvest)) return null;
+  if (winter.type === "cover" && !(winter.seed && winter.terminate))
+    return null;
+  if (winter.type === "winter_grain" && !(winter.plant && winter.harvest))
+    return null;
   return {
     plan_id: p.plan_id,
     label: p.label ?? p.plan_id,
-    sequence: { previous_crop_id: drawn(p.previous_crop_id), prev_harvest: md(p.prev_harvest), winter, next_crop_id: drawn(p.next_crop_id), next_plant: md(p.next_plant) },
+    sequence: {
+      previous_crop_id: drawn(p.previous_crop_id),
+      prev_harvest: md(p.prev_harvest),
+      winter,
+      next_crop_id: drawn(p.next_crop_id),
+      next_plant: md(p.next_plant),
+    },
     spring_checks: [],
     other_checks: [],
     eras: {},
   };
 }
 
-export function FarmScene({ farm, fieldId, rotation, onOpen }: { farm: Farm; fieldId: string; rotation: FieldPlan[]; onOpen: (fieldId: string) => void }) {
+export function FarmScene({
+  farm,
+  fieldId,
+  rotation,
+  onOpen,
+}: {
+  farm: Farm;
+  fieldId: string;
+  rotation: FieldPlan[];
+  onOpen: (fieldId: string) => void;
+}) {
   const fields = farm.fields;
-  const layout = useMemo(() => farmLayout(fields.map((f) => f.geometry), STAGE_W, STAGE_D, FIELD), [fields]);
+  const layout = useMemo(
+    () =>
+      farmLayout(
+        fields.map((f) => f.geometry),
+        STAGE_W,
+        STAGE_D,
+        FIELD,
+      ),
+    [fields],
+  );
   const south = fields.some((f) => centroid(f.geometry).latitude < 0);
   const strips: StripVM[] = fields.map((f) => {
     // The open field uses its live rotation; the others read their saved one.
-    const rot = f.field_id === fieldId ? rotation : getSimField(f.field_id).rotation;
+    const rot =
+      f.field_id === fieldId ? rotation : getSimField(f.field_id).rotation;
     const first = rot[0] ?? f.plan;
     return {
       // FarmWorld keys and reports clicks by strip key; here the key is the field id.
@@ -78,29 +129,56 @@ export function FarmScene({ farm, fieldId, rotation, onOpen }: { farm: Farm; fie
       weather: NO_WEATHER,
     };
   });
+  // The 3D starts only when the card scrolls into view.
+  const box = useRef<HTMLElement>(null);
+  const [seen, setSeen] = useState(false);
+  useEffect(() => {
+    const el = box.current;
+    if (seen || !el) return;
+    if (typeof IntersectionObserver === "undefined") return setSeen(true);
+    const io = new IntersectionObserver(
+      (es) => es.some((e) => e.isIntersecting) && setSeen(true),
+      { rootMargin: "200px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [seen, layout]);
   if (!layout) return null;
   return (
-    <section className="db-card db-fields fb-stage-wrap" aria-label="Farm in 3D">
+    <section
+      ref={box}
+      className="db-card db-fields fb-stage-wrap"
+      aria-label="Farm in 3D"
+    >
       <header className="db-card-head">
         <div>
           <h2>{farm.name} in 3D</h2>
           <p className="gf-muted">
-            Each field at its drawn shape and place on the farm, growing the first season of its own rotation. Click a field to open it. A field without a complete rotation is
-            shown as a pale slab.{south ? " Southern-hemisphere dates are shifted six months onto this September–June stage (read Sep as Mar)." : ""}
+            Each field at its drawn shape and place on the farm, growing the
+            first season of its own rotation. Click a field to open it. A field
+            without a complete rotation is shown as a pale slab.
+            {south
+              ? " Southern-hemisphere dates are shifted six months onto this September–June stage (read Sep as Mar)."
+              : ""}
           </p>
         </div>
       </header>
-      <FarmView
-        strips={strips}
-        layout={layout}
-        spring={null}
-        tag={SCENE_SHAPE_LABEL}
-        waterKey={false}
-        onSelectCard={(k) => {
-          if (k !== fieldId) onOpen(k);
-        }}
-        onSpring={() => {}}
-      />
+      {seen ? (
+        <FarmView
+          still
+          strips={strips}
+          layout={layout}
+          spring={null}
+          tag={SCENE_SHAPE_LABEL}
+          waterKey={false}
+          onSelectCard={(k) => {
+            if (k !== fieldId) onOpen(k);
+          }}
+          onSpring={() => {}}
+        />
+      ) : (
+        <div className="fb-stage" aria-hidden="true" />
+      )}
     </section>
   );
 }

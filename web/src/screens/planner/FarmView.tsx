@@ -79,7 +79,10 @@ export function FarmView({
   layout,
   tag = "Illustration of your plan",
   waterKey = true,
+  still = false,
 }: {
+  /** Draw on demand with no camera drift or opening sweep (cheaper; the farm view uses it). */
+  still?: boolean;
   /** Farm layout: strips are fields drawn at their real shapes and places (field workspace). */
   layout?: FarmLayout | null;
   /** The small label on the stage. */
@@ -94,7 +97,7 @@ export function FarmView({
   /** Past springs page: hold the scene inside the 30 days before planting, where the replayed rain falls. */
   replay?: boolean;
 }) {
-  const reducedMotion = useMedia("(prefers-reduced-motion: reduce)");
+  const reducedMotion = useMedia("(prefers-reduced-motion: reduce)") || still;
   const webgl = useMemo(hasWebGL, []);
   const [day, setDay] = useState(reducedMotion ? DEFAULT_DAY : 0);
   const [playing, setPlaying] = useState(false);

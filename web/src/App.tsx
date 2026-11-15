@@ -1,14 +1,34 @@
+import { lazy, Suspense, type ComponentType } from "react";
 import { useData } from "./state/useData";
-import { Planner } from "./screens/Planner";
-import { Gallery } from "./screens/Gallery";
-import { CreditsPage, MethodsPage, PrivacyPage } from "./screens/Pages";
 import { Banner, Button } from "./ui/components";
 import { APP_NAME } from "./config";
-import { Landing } from "./site/Landing";
-import { AboutPage, EvidencePage, GrowersPage, ProductPage, ResourcesPage } from "./site/pages";
-import { Workspace } from "./screens/workspace/Workspace";
-import { Guided } from "./screens/guided/Guided";
 import { Dashboard } from "./screens/dashboard/Dashboard";
+
+// Only the dashboard (the front door) is in the first download; every other route, and the
+// map and 3D libraries they use, load when that route is opened.
+const named = <K extends string>(load: () => Promise<Record<K, ComponentType>>, name: K) =>
+  lazy(() => load().then((m) => ({ default: m[name] })));
+const Planner = lazy(() => import("./screens/Planner").then((m) => ({ default: m.Planner })));
+const Gallery = named(() => import("./screens/Gallery"), "Gallery");
+const MethodsPage = named(() => import("./screens/Pages"), "MethodsPage");
+const CreditsPage = named(() => import("./screens/Pages"), "CreditsPage");
+const PrivacyPage = named(() => import("./screens/Pages"), "PrivacyPage");
+const Landing = named(() => import("./site/Landing"), "Landing");
+const ProductPage = named(() => import("./site/pages"), "ProductPage");
+const GrowersPage = named(() => import("./site/pages"), "GrowersPage");
+const EvidencePage = named(() => import("./site/pages"), "EvidencePage");
+const ResourcesPage = named(() => import("./site/pages"), "ResourcesPage");
+const AboutPage = named(() => import("./site/pages"), "AboutPage");
+const Workspace = named(() => import("./screens/workspace/Workspace"), "Workspace");
+const Guided = named(() => import("./screens/guided/Guided"), "Guided");
+
+export function App() {
+  return (
+    <Suspense fallback={<main className="center-state" aria-busy="true"><p className="marker">{APP_NAME}</p></main>}>
+      <Route />
+    </Suspense>
+  );
+}
 
 /*
   Routes (query `view`): the farm dashboard is the front door (no sign-in; `?view=home` is the marketing site); `?view=app` opens the map
@@ -17,7 +37,7 @@ import { Dashboard } from "./screens/dashboard/Dashboard";
   from the saved record. A link that carries planner state in its hash (older shared links,
   including `?view=app#s=…`) still opens the demo, so nothing shared before the map breaks.
 */
-export function App() {
+function Route() {
   const view = new URLSearchParams(window.location.search).get("view");
   if (view === "gallery") return <Gallery />;
   if (view === "methods") return <MethodsPage />;

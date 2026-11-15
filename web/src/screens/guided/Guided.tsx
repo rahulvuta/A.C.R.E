@@ -8,7 +8,7 @@ import { hasSimField, loadDemoFields, updateSimField, useSimField } from "../../
 import { peekSimulation } from "../../state/useSimulation";
 import { Banner, Term } from "../../ui/components";
 import { navIcon } from "../planner/SideNav";
-import { SourceBanner } from "../workspace/Workspace";
+import { SourceBanner } from "../workspace/SourceBanner";
 import { rotationReady, simulateRequest, type StepContext } from "./context";
 import { STEPS, stepIndex, type StepDef, type StepId } from "./steps";
 import { StepFarm } from "./StepFarm";
