@@ -1,0 +1,26 @@
+Commodity,Category,Item,Units,Size,Region,Country,Year,Value,Survey base year
+Rice,Operating costs,Fertilizer  ,dollars per planted acre,No specific size,U.S. total,United States,2024,167.81,Base survey of 2021
+Rice,Operating costs,Chemicals,dollars per planted acre,No specific size,U.S. total,United States,2024,124.16,Base survey of 2021
+Rice,Operating costs,Custom services,dollars per planted acre,No specific size,U.S. total,United States,2024,57.47,Base survey of 2021
+Rice,Operating costs,"Fuel, lube, and electricity",dollars per planted acre,No specific size,U.S. total,United States,2024,125.74,Base survey of 2021
+Rice,Operating costs,Repairs,dollars per planted acre,No specific size,U.S. total,United States,2024,75.07,Base survey of 2021
+Rice,Operating costs,Commercial drying  ,dollars per planted acre,No specific size,U.S. total,United States,2024,56.6,Base survey of 2021
+Rice,Operating costs,Purchased irrigation water,dollars per planted acre,No specific size,U.S. total,United States,2024,18.57,Base survey of 2021
+Rice,Operating costs,Interest on operating capital,dollars per planted acre,No specific size,U.S. total,United States,2024,16.54,Base survey of 2021
+Rice,Operating costs,"Total, operating costs",dollars per planted acre,No specific size,U.S. total,United States,2024,760.77,Base survey of 2021
+Rice,Allocated overhead,Hired labor,dollars per planted acre,No specific size,U.S. total,United States,2024,33.45,Base survey of 2021
+Rice,Allocated overhead,Opportunity cost of unpaid labor,dollars per planted acre,No specific size,U.S. total,United States,2024,38.71,Base survey of 2021
+Rice,Allocated overhead,Capital recovery of machinery and equipment,dollars per planted acre,No specific size,U.S. total,United States,2024,206.25,Base survey of 2021
+Rice,Allocated overhead,Opportunity cost of land,dollars per planted acre,No specific size,U.S. total,United States,2024,187.34,Base survey of 2021
+Rice,Allocated overhead,Taxes and insurance,dollars per planted acre,No specific size,U.S. total,United States,2024,24.2,Base survey of 2021
+Rice,Allocated overhead,General farm overhead,dollars per planted acre,No specific size,U.S. total,United States,2024,45.75,Base survey of 2021
+Rice,Allocated overhead,"Total, allocated overhead",dollars per planted acre,No specific size,U.S. total,United States,2024,535.7,Base survey of 2021
+Rice,Costs listed,"Total, costs listed",dollars per planted acre,No specific size,U.S. total,United States,2024,1296.47,Base survey of 2021
+Rice,Net value,Value of production less total costs listed,dollars per planted acre,No specific size,U.S. total,United States,2024,-14.67,Base survey of 2021
+Rice,Net value,Value of production less operating costs,dollars per planted acre,No specific size,U.S. total,United States,2024,521.03,Base survey of 2021
+Rice,Supporting information,Yield,hundredweight per planted acre,No specific size,U.S. total,United States,2024,84,Base survey of 2021
+Rice,Supporting information,Price,dollars per hundredweight at harvest,No specific size,U.S. total,United States,2024,15.23,Base survey of 2021
+Rice,Supporting information,Enterprise size,planted acres,No specific size,U.S. total,United States,2024,605,Base survey of 2021
+Rice,Gross value of production,"Primary product, grain",dollars per planted acre,No specific size,U.S. total,United States,2024,1281.8,Base survey of 2021
+Rice,Gross value of production,"Total, gross value of production",dollars per planted acre,No specific size,U.S. total,United States,2024,1281.8,Base survey of 2021
+Rice,Operating costs,Seed,dollars per planted acre,No specific size,U.S. total,United States,2024,118.81,Base survey of 2021

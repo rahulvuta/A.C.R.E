@@ -1,0 +1,320 @@
+{
+  "AR": {
+    "prices": 0,
+    "yields": 23,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "AU": {
+    "prices": 13,
+    "yields": 23,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "BR": {
+    "prices": 18,
+    "yields": 20,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "CN": {
+    "prices": 13,
+    "yields": 24,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "FR": {
+    "prices": 11,
+    "yields": 14,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "IN": {
+    "prices": 0,
+    "yields": 21,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "KE": {
+    "prices": 20,
+    "yields": 22,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "MX": {
+    "prices": 23,
+    "yields": 24,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "NG": {
+    "prices": 4,
+    "yields": 14,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US": {
+    "prices": 22,
+    "yields": 27,
+    "costs": 9,
+    "custom_rates": 0
+  },
+  "US-AK": {
+    "prices": 0,
+    "yields": 1,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-AL": {
+    "prices": 0,
+    "yields": 7,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-AR": {
+    "prices": 0,
+    "yields": 8,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-AZ": {
+    "prices": 0,
+    "yields": 5,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-CA": {
+    "prices": 0,
+    "yields": 8,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-CO": {
+    "prices": 0,
+    "yields": 6,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-DE": {
+    "prices": 0,
+    "yields": 5,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-FL": {
+    "prices": 0,
+    "yields": 4,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-GA": {
+    "prices": 0,
+    "yields": 8,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-IA": {
+    "prices": 0,
+    "yields": 3,
+    "costs": 0,
+    "custom_rates": 12
+  },
+  "US-ID": {
+    "prices": 0,
+    "yields": 7,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-IL": {
+    "prices": 0,
+    "yields": 5,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-IN": {
+    "prices": 0,
+    "yields": 4,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-KS": {
+    "prices": 0,
+    "yields": 11,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-KY": {
+    "prices": 0,
+    "yields": 4,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-LA": {
+    "prices": 0,
+    "yields": 5,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-MD": {
+    "prices": 0,
+    "yields": 5,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-ME": {
+    "prices": 0,
+    "yields": 2,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-MI": {
+    "prices": 0,
+    "yields": 6,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-MN": {
+    "prices": 0,
+    "yields": 8,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-MO": {
+    "prices": 0,
+    "yields": 8,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-MS": {
+    "prices": 0,
+    "yields": 8,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-MT": {
+    "prices": 0,
+    "yields": 7,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-NC": {
+    "prices": 0,
+    "yields": 9,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-ND": {
+    "prices": 0,
+    "yields": 9,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-NE": {
+    "prices": 0,
+    "yields": 7,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-NJ": {
+    "prices": 0,
+    "yields": 2,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-NM": {
+    "prices": 0,
+    "yields": 5,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-NY": {
+    "prices": 0,
+    "yields": 6,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-OH": {
+    "prices": 0,
+    "yields": 5,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-OK": {
+    "prices": 0,
+    "yields": 9,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-OR": {
+    "prices": 0,
+    "yields": 5,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-PA": {
+    "prices": 0,
+    "yields": 6,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-SC": {
+    "prices": 0,
+    "yields": 7,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-SD": {
+    "prices": 0,
+    "yields": 9,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-TN": {
+    "prices": 0,
+    "yields": 6,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-TX": {
+    "prices": 0,
+    "yields": 11,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-UT": {
+    "prices": 0,
+    "yields": 4,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-VA": {
+    "prices": 0,
+    "yields": 8,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-WA": {
+    "prices": 0,
+    "yields": 6,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-WI": {
+    "prices": 0,
+    "yields": 6,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-WV": {
+    "prices": 0,
+    "yields": 1,
+    "costs": 0,
+    "custom_rates": 0
+  },
+  "US-WY": {
+    "prices": 0,
+    "yields": 4,
+    "costs": 0,
+    "custom_rates": 0
+  }
+}

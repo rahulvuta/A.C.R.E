@@ -1,0 +1,28 @@
+Commodity,Category,Item,Units,Size,Region,Country,Year,Value,Survey base year
+Corn,Gross value of production,"Primary product, grain",dollars per planted acre,No specific size,U.S. total,United States,2024,755.28,Base survey of 2021
+Corn,Gross value of production,"Secondary product, silage",dollars per planted acre,No specific size,U.S. total,United States,2024,2.69,Base survey of 2021
+Corn,Gross value of production,"Total, gross value of production",dollars per planted acre,No specific size,U.S. total,United States,2024,757.97,Base survey of 2021
+Corn,Operating costs,Seed,dollars per planted acre,No specific size,U.S. total,United States,2024,111.33,Base survey of 2021
+Corn,Operating costs,Fertilizer  ,dollars per planted acre,No specific size,U.S. total,United States,2024,152.41,Base survey of 2021
+Corn,Operating costs,Chemicals,dollars per planted acre,No specific size,U.S. total,United States,2024,48.94,Base survey of 2021
+Corn,Operating costs,Custom services  ,dollars per planted acre,No specific size,U.S. total,United States,2024,35.99,Base survey of 2021
+Corn,Allocated overhead,Opportunity cost of unpaid labor,dollars per planted acre,No specific size,U.S. total,United States,2024,30.76,Base survey of 2021
+Corn,Allocated overhead,Capital recovery of machinery and equipment,dollars per planted acre,No specific size,U.S. total,United States,2024,170.92,Base survey of 2021
+Corn,Allocated overhead,Opportunity cost of land,dollars per planted acre,No specific size,U.S. total,United States,2024,191.67,Base survey of 2021
+Corn,Allocated overhead,Taxes and insurance,dollars per planted acre,No specific size,U.S. total,United States,2024,19.89,Base survey of 2021
+Corn,Allocated overhead,General farm overhead,dollars per planted acre,No specific size,U.S. total,United States,2024,25.86,Base survey of 2021
+Corn,Allocated overhead,"Total, allocated overhead",dollars per planted acre,No specific size,U.S. total,United States,2024,443.65,Base survey of 2021
+Corn,Costs listed,"Total, costs listed",dollars per planted acre,No specific size,U.S. total,United States,2024,878.31,Base survey of 2021
+Corn,Net value,Value of production less total costs listed,dollars per planted acre,No specific size,U.S. total,United States,2024,-120.34,Base survey of 2021
+Corn,Net value,Value of production less operating costs,dollars per planted acre,No specific size,U.S. total,United States,2024,323.31,Base survey of 2021
+Corn,Supporting information,Yield,bushels per planted acre,No specific size,U.S. total,United States,2024,190,Base survey of 2021
+Corn,Supporting information,Price,dollars per bushel at harvest,No specific size,U.S. total,United States,2024,3.97,Base survey of 2021
+Corn,Supporting information,Enterprise size,planted acres,No specific size,U.S. total,United States,2024,296,Base survey of 2021
+Corn,Production practices,Dryland,percent of acres,No specific size,U.S. total,United States,2024,90,Base survey of 2021
+Corn,Production practices,Irrigated,percent of acres,No specific size,U.S. total,United States,2024,10,Base survey of 2021
+Corn,Operating costs,"Fuel, lube, and electricity",dollars per planted acre,No specific size,U.S. total,United States,2024,27.79,Base survey of 2021
+Corn,Operating costs,Repairs,dollars per planted acre,No specific size,U.S. total,United States,2024,47.71,Base survey of 2021
+Corn,Operating costs,Purchased irrigation water,dollars per planted acre,No specific size,U.S. total,United States,2024,0.29,Base survey of 2021
+Corn,Operating costs,Interest on operating capital,dollars per planted acre,No specific size,U.S. total,United States,2024,10.21,Base survey of 2021
+Corn,Operating costs,"Total, operating costs",dollars per planted acre,No specific size,U.S. total,United States,2024,434.66,Base survey of 2021
+Corn,Allocated overhead,Hired labor,dollars per planted acre,No specific size,U.S. total,United States,2024,4.55,Base survey of 2021
