@@ -1,4 +1,4 @@
-"""Climate-trend adjustment of a cell's daily weather (opt-in; a scenario, never a forecast).
+"""Climate-trend adjustment of a cell's daily weather (on by default in simulate; opt out with "none").
 
 Historical resampling assumes the past 45 seasons are equally likely draws for the coming ones.
 Where the record shows a statistically clear trend in annual precipitation, this module rescales
@@ -29,8 +29,9 @@ ALPHA = 0.10
 MIN_YEARS = 30
 MIN_VALID_DAYS = 360
 MAX_SHIFT = 0.25
-NOTE = ("Observed trend carried forward; a scenario, not a forecast. Rain in every past season is "
-        "rescaled by the fitted trend; temperature is context only.")  # fmt: skip
+NOTE = ("The trend observed in this field's own record, carried forward to the middle of the "
+        "outlook. Rain in every replayed season is rescaled by it when the trend is statistically "
+        "clear; temperature is reported as context only.")  # fmt: skip
 
 
 @dataclass(frozen=True)
@@ -80,6 +81,35 @@ def _fit_public(f: Fit | None, unit: str, mean: float | None) -> dict[str, Any] 
             "pct_per_decade": (round(100 * f.slope_per_year * 10 / mean, 2) if mean else None)}
 
 
+def _temperature_sentence(tf: Fit | None) -> str:
+    if tf is None or tf.slope_per_year == 0:
+        return ""
+    per_decade = abs(tf.slope_per_year * 10)
+    verb = "risen" if tf.slope_per_year > 0 else "fallen"
+    return (f" Temperature has {verb} about {per_decade:.2f} C per decade; it is shown as context "
+            "and does not change the results.")
+
+
+def _text(pf: Fit | None, tf: Fit | None, first_year: int | None, target_year: int,
+          pmean: float | None, applied: bool) -> str:
+    """What was found and done, for a farmer, from the fitted numbers only."""
+    temp = _temperature_sentence(tf)
+    if pf is None:
+        return ("The record is too short to fit a trend in yearly rain at this field, so rain is "
+                "used as recorded." + temp)
+    pct = 100 * pf.slope_per_year * 10 / pmean if pmean else None
+    if pct is None:
+        size = "a small change per decade"
+    else:
+        size = f"about {pct:+.0f}% per decade" if abs(pct) >= 2 else f"about {pct:+.1f}% per decade"
+    since = f" since {first_year}" if first_year is not None else ""
+    if applied:
+        return (f"Rain at this field has changed by {size}{since} (a statistically clear trend), "
+                f"so each replayed season's rain is adjusted to {target_year} levels." + temp)
+    return (f"No statistically clear trend in yearly rain at this field{since} ({size}, within "
+            "normal year-to-year variation), so rain is used as recorded." + temp)
+
+
 def adjust(daily: pd.DataFrame, target_year: int) -> tuple[pd.DataFrame | None, dict[str, Any]]:
     """Return ``(adjusted_daily, report)``. ``adjusted_daily`` is None when nothing was applied.
 
@@ -92,13 +122,18 @@ def adjust(daily: pd.DataFrame, target_year: int) -> tuple[pd.DataFrame | None, 
     report: dict[str, Any] = {
         "mode": "trend", "target_year": target_year, "alpha": ALPHA, "applied": False,
         "precip_trend": _fit_public(pf, "mm/yr", pmean),
-        "temperature_trend": _fit_public(tf, "C", None), "note": NOTE,
+        "temperature_trend": _fit_public(tf, "C", None), "note": NOTE, "text": "",
         "origin": "calculation", "reason": None, "factor_range": None}  # fmt: skip
+    first = min(precip) if precip else None
+
+    def say(applied: bool) -> str:
+        return _text(pf, tf, first, target_year, pmean, applied)
+
     if pf is None:
-        report["reason"] = "insufficient_years"
+        report["reason"], report["text"] = "insufficient_years", say(False)
         return None, report
     if pf.p_value > ALPHA:
-        report["reason"] = "no_significant_precip_trend"
+        report["reason"], report["text"] = "no_significant_precip_trend", say(False)
         return None, report
     lo, hi = 1 - MAX_SHIFT, 1 + MAX_SHIFT
     target = pf.line(target_year)
@@ -110,5 +145,5 @@ def adjust(daily: pd.DataFrame, target_year: int) -> tuple[pd.DataFrame | None, 
     f = out.index.year.map(lambda y: factors.get(int(y), 1.0)).to_numpy(dtype="float64")
     out["precip_mm"] = out["precip_mm"].astype("float64") * f
     vals = list(factors.values())
-    report.update(applied=True, factor_range=[round(min(vals), 3), round(max(vals), 3)])
+    report.update(applied=True, text=say(True), factor_range=[round(min(vals), 3), round(max(vals), 3)])
     return out, report

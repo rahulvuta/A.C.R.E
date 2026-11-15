@@ -7,11 +7,12 @@ from typing import Any
 
 from acre.farms.geometry import parse_field
 from acre.report.meta import response_meta
+from acre.simulate.vocab import OUTLOOK_NOTE
 
 LABEL = "Demo farm (example values)"
 NOTE = ("Synthetic boundaries, crop dates, equipment, readings and economics for a demo, "
         "not a real farm. Money values are example inputs, not sourced references. "
-        "Replays real past NASA weather in new orders; not a forecast.")
+        + OUTLOOK_NOTE)
 UNION_ECON = {
     "soybean": {"price": {"value": 11.2, "unit": "USD/bu"},
                 "yield": {"value": 48, "unit": "bu/acre"},

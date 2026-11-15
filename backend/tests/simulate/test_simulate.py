@@ -93,7 +93,8 @@ def test_simulate_shape_vocab_and_label(client):
     out = _sim(client)
     assert out["status"] == "complete"
     assert out["method"]["weather"] == "historical_resampling"
-    assert "not a forecast" in out["method"]["note"]
+    assert "forecast" not in out["method"]["note"].lower()
+    assert "evidence-based outlook" in out["method"]["note"]
     assert out["method"]["pool_years"] >= MIN_POOL
     assert all(e["origin"] == "calculation" for s in out["scenarios"] for e in s["events"])
     assert out["meta"]["plan_version"].startswith("sim_") and out["meta"]["snapshot_hash"]
@@ -266,7 +267,7 @@ def test_badges_deltas_trade_offs_and_caveat(client):
     out = _sim(client, economics={"overrides": ECON}, field={"area_ha": 16.2},
                goals={"priorities": {"soil_cover": 3, "profit": 1}})  # fmt: skip
     c = out["comparison"]
-    assert c["baseline"] == "current" and "Not a forecast" in c["caveat"]
+    assert c["baseline"] == "current" and "evidence-based outlook" in c["caveat"]
     badges = {b["badge"]: b for b in c["badges"]}
     assert badges["most_sustainable"]["scenario_id"] == "rye"
     assert badges["best_profit"]["scenario_id"] == "current"  # rye only adds a cost here

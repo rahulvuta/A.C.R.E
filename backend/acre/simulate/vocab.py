@@ -7,6 +7,10 @@ from typing import Any
 
 from acre.compare.indicators import PRIORITIES as P2_PRIORITIES
 
+#: Used where the record's years and the number of seasons are not known (demo, no-weather reply).
+OUTLOOK_NOTE = ("An evidence-based outlook from this field's real past seasons. It shows what to "
+                "plan for under conditions seen here; it cannot say what any single year will bring.")
+
 PRIORITY_TEXT: dict[str, tuple[str, str]] = {
     "soil_cover": ("Keep the soil covered",
                    "More days with living cover and less rain falling on bare soil."),

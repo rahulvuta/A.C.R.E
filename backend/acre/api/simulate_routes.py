@@ -26,7 +26,7 @@ from acre.simulate.autofill import autofill
 from acre.simulate.demo import demo_farm
 from acre.simulate.engine import Inputs, Scenario, readings_context, simulate
 from acre.simulate.money import MoneyInputError
-from acre.simulate.vocab import PRIORITIES, priorities_vocab
+from acre.simulate.vocab import OUTLOOK_NOTE, PRIORITIES, priorities_vocab
 from acre.weather.ondemand import Cell, CellIdError
 from acre.weather.snapshot import set_active_snapshot_dir
 
@@ -101,7 +101,7 @@ class SimulateRequest(BaseModel):
     runs: Annotated[int, Field(ge=50, le=500)] = 200
     seed: Annotated[int, Field(ge=0, le=2**31 - 1)] = 7
     start_season: Annotated[str, Field(pattern=r"^\d{4}$")] = "2027"
-    climate: Literal["none", "trend"] = "none"  # "trend": opt-in observed-trend scenario
+    climate: Literal["none", "trend"] = "trend"  # "trend": rain follows the trend seen in the record
 
 
 def _result_id(body: SimulateRequest) -> str:
@@ -152,8 +152,7 @@ def simulate_scenarios(body: SimulateRequest) -> Any:
         return {"meta": _meta(None, None).model_dump(), "status": "unavailable",
                 "code": choice.code, "reason": choice.reason, "reason_text": rt,
                 "weather_location": places.weather_location(choice, rt).model_dump(mode="json"),
-                "method": {"weather": "historical_resampling", "note": "Replays real past "
-                           "weather in new orders; not a forecast."},
+                "method": {"weather": "historical_resampling", "note": OUTLOOK_NOTE},
                 "scenarios": [], "comparison": None}  # fmt: skip
     ctx = choice.ctx
     assert ctx is not None

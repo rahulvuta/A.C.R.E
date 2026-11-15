@@ -27,7 +27,7 @@
       }
     ],
     "baseline": "current",
-    "caveat": "Best of the scenarios you compared, given these numbers and past weather. Not a forecast.",
+    "caveat": "The stronger of the plans you compared, given these numbers and the conditions seen at this field. An evidence-based outlook, not a guarantee.",
     "deltas": [
       {
         "changes": [
@@ -452,17 +452,43 @@
   },
   "meta": {
     "catalog_version": "v2:8eeb5bf961eb",
-    "plan_version": "sim_e2be0d2b9efdc056",
+    "plan_version": "sim_7a51fdcb4a06a575",
     "request_id": "req_example",
     "snapshot_hash": "5ce131cfcd1f07d3738ecb9afaec6c3ef6a4764b6a3528bdd2b64debe7ba5f4e"
   },
   "method": {
     "climate_adjustment": {
-      "mode": "none"
+      "alpha": 0.1,
+      "applied": false,
+      "factor_range": null,
+      "mode": "trend",
+      "note": "The trend observed in this field's own record, carried forward to the middle of the outlook. Rain in every replayed season is rescaled by it when the trend is statistically clear; temperature is reported as context only.",
+      "origin": "calculation",
+      "precip_trend": {
+        "origin": "calculation",
+        "p_value": 0.6932,
+        "pct_per_decade": -1.11,
+        "significant": false,
+        "slope_per_decade": -12.937,
+        "unit": "mm/yr per decade",
+        "years": 44
+      },
+      "reason": "no_significant_precip_trend",
+      "target_year": 2031,
+      "temperature_trend": {
+        "origin": "calculation",
+        "p_value": 0.0,
+        "pct_per_decade": null,
+        "significant": true,
+        "slope_per_decade": 0.453,
+        "unit": "C per decade",
+        "years": 44
+      },
+      "text": "No statistically clear trend in yearly rain at this field since 1981 (about -1.1% per decade, within normal year-to-year variation), so rain is used as recorded. Temperature has risen about 0.45 C per decade; it is shown as context and does not change the results."
     },
     "draws": "Every scenario replays the same sequence of past seasons in each run, so differences come from the plans, not from the draw.",
     "money_source": "economics_library",
-    "note": "Replays real past weather in new orders; not a forecast.",
+    "note": "An evidence-based outlook: this field's real past seasons (1981-2025) replayed in new orders over the next 10 seasons. It shows what to plan for under conditions seen here; it cannot say what any single year will bring.",
     "origin": "calculation",
     "pool_years": 44,
     "resolution": "One NASA POWER cell (~0.5 x 0.625 degrees): fields in one cell share one weather series.",

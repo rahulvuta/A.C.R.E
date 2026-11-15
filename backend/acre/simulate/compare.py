@@ -12,8 +12,8 @@ from typing import Any
 
 from acre.compare.pareto import pareto
 
-CAVEAT = ("Best of the scenarios you compared, given these numbers and past weather. "
-          "Not a forecast.")  # fmt: skip
+CAVEAT = ("The stronger of the plans you compared, given these numbers and the conditions seen at "
+          "this field. An evidence-based outlook, not a guarantee.")  # fmt: skip
 LOWER, HIGHER = "lower_better", "higher_better"
 
 #: comparison indicator -> (how to read it from totals, direction, label, unit)

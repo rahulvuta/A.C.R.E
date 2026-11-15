@@ -6909,7 +6909,7 @@
         "additionalProperties": false,
         "properties": {
           "climate": {
-            "default": "none",
+            "default": "trend",
             "enum": [
               "none",
               "trend"

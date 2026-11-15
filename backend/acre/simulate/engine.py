@@ -28,7 +28,16 @@ from acre.weather import trend as climate_trend
 from acre.weather.series import DailySeries
 
 MIN_POOL = 15
-NOTE = "Replays real past weather in new orders; not a forecast."
+
+
+def method_note(source_years: str, years: int, rain_adjusted: bool) -> str:
+    """The plain-language framing of a simulate result (an evidence-based outlook)."""
+    adjusted = " Rain is adjusted for the trend observed in this record." if rain_adjusted else ""
+    return (f"An evidence-based outlook: this field's real past seasons ({source_years}) replayed "
+            f"in new orders over the next {years} seasons.{adjusted} It shows what to plan for "
+            "under conditions seen here; it cannot say what any single year will bring.")
+
+
 CRN_NOTE = ("Every scenario replays the same sequence of past seasons in each run, so differences "
             "come from the plans, not from the draw.")  # fmt: skip
 
@@ -53,7 +62,7 @@ class Inputs:
     overrides: dict[str, Any] = field(default_factory=dict)
     loss: dict[str, float | None] = field(default_factory=dict)
     location: dict[str, Any] = field(default_factory=dict)
-    climate: str = "none"  # "none" | "trend" (acre.weather.trend)
+    climate: str = "trend"  # "none" | "trend" (acre.weather.trend)
 
 
 _DAY = timedelta(days=1)
@@ -504,10 +513,12 @@ def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
         adjusted = DailySeries(frame.reset_index()) if frame is not None else None
     legs = {k: leg_seasons(p, ctx, ts, adjusted) for k, p in plans.items()}
     d = draws(list(legs.values()), inp.runs, inp.years, inp.seed)
+    source_years = f"{engine.YEARS[0]}-{engine.YEARS[-1]}"
+    note = method_note(source_years, inp.years, bool(climate and climate.get("applied")))
     method = {"origin": "calculation", "weather": "historical_resampling", "runs": inp.runs, "seed": inp.seed,
               "years": inp.years, "start_season": str(inp.start_season),
-              "source_years": f"{engine.YEARS[0]}-{engine.YEARS[-1]}",
-              "pool_years": len(d.pool), "note": NOTE, "draws": CRN_NOTE,
+              "source_years": source_years,
+              "pool_years": len(d.pool), "note": note, "draws": CRN_NOTE,
               "threshold_set_id": ts.threshold_set_id,
               "climate_adjustment": climate or {"mode": "none"},
               "resolution": "One NASA POWER cell (~0.5 x 0.625 degrees): fields in one cell share "
