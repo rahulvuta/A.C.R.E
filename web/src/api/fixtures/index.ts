@@ -185,12 +185,25 @@ function analyzeForRequest(body: string | undefined): unknown {
  * scenario the request did not send are dropped.
  */
 function simulateForRequest(body: string | undefined): unknown {
-  const req = JSON.parse(body ?? "{}") as { scenarios?: Array<{ scenario_id: string; label?: string }> };
+  type R = { previous_crop_id: string; next_crop_id: string; winter: { kind: string; crop_id?: string } };
+  const req = JSON.parse(body ?? "{}") as { scenarios?: Array<{ scenario_id: string; label?: string; rotation?: R[] }>; start_season?: string };
   const asked = req.scenarios ?? [];
   type S = { scenario_id: string; label: string };
   const base = FIXTURES.simulateUnion as unknown as { scenarios: S[]; comparison: Record<string, unknown> & { badges: Array<{ scenario_id: string }>; deltas: Array<{ scenario_id: string; versus: string }>; trade_offs: Array<{ scenario_id: string }> } };
   const idOf = new Map(base.scenarios.slice(0, asked.length).map((s, i) => [s.scenario_id, asked[i]!.scenario_id]));
-  const scenarios = asked.map((a, i) => ({ ...(base.scenarios[i % base.scenarios.length] as S), scenario_id: a.scenario_id, label: a.label ?? a.scenario_id }));
+  const start = Number(req.start_season ?? 2027) || 2027;
+  // The timeline follows the request's own rotation, cycled, so a sample answer names the right crops.
+  const timelineOf = (rot: R[] | undefined) =>
+    rot?.length
+      ? Array.from({ length: 10 }, (_, y) => {
+          const p = rot[y % rot.length]!;
+          return { year: start + y, season: String(start + y), crop_sequence: [p.previous_crop_id, ...(p.winter.kind !== "none" && p.winter.crop_id ? [p.winter.crop_id] : []), p.next_crop_id], plan_id: null };
+        })
+      : undefined;
+  const scenarios = asked.map((a, i) => {
+    const t = base.scenarios[i % base.scenarios.length] as S & { timeline: unknown[]; yearly: Array<{ year: number }> };
+    return { ...t, scenario_id: a.scenario_id, label: a.label ?? a.scenario_id, timeline: timelineOf(a.rotation) ?? t.timeline, yearly: t.yearly.map((y, j) => ({ ...y, year: start + j })) };
+  });
   const c = base.comparison;
   const keep = <T extends { scenario_id: string }>(xs: T[]) => xs.filter((x) => idOf.has(x.scenario_id)).map((x) => ({ ...x, scenario_id: idOf.get(x.scenario_id)! }));
   const comparison =

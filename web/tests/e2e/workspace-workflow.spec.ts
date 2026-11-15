@@ -66,7 +66,7 @@ async function fillPlan(page: Page, id: string, next: { crop: string; plant: str
 test("search, draw two fields, plan each, analyse, overview, export, reload", async ({ page }) => {
   await mockTiles(page);
   const calls = LIVE ? [] : await mockBackend(page);
-  await page.goto("/?view=app");
+  await page.goto("/?view=fields");
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   await page.locator(".mp-map[data-ready='true']").waitFor();

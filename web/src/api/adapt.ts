@@ -1357,7 +1357,7 @@ export function adaptSimulation(r: z.infer<typeof BackendSimulation>): Simulatio
 
 export interface SimulateRequest {
   point: LatLonPoint;
-  field: { fieldId: string; name: string; areaHa: number | null; equipment: string[]; readings: Reading[] };
+  field: { fieldId: string; name: string; areaHa: number | null; geometry?: Farm["fields"][number]["geometry"] | null; equipment: string[]; readings: Reading[] };
   priorities: Record<string, number>;
   overrides: Record<string, CropOverride>;
   loss: LossAssumptions;
@@ -1383,7 +1383,7 @@ const toBackendOverrides = (o: Record<string, CropOverride>) =>
 export function toBackendSimulate(q: SimulateRequest) {
   return {
     location: { latitude: q.point.latitude, longitude: q.point.longitude },
-    field: { field_id: q.field.fieldId, name: q.field.name, area_ha: q.field.areaHa, geometry: null, equipment: q.field.equipment, readings: q.field.readings.map(toBackendReading) },
+    field: { field_id: q.field.fieldId, name: q.field.name, area_ha: q.field.areaHa, geometry: q.field.geometry ?? null, equipment: q.field.equipment, readings: q.field.readings.map(toBackendReading) },
     goals: { priorities: q.priorities },
     economics: {
       overrides: toBackendOverrides(q.overrides),

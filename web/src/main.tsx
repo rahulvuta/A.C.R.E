@@ -7,6 +7,7 @@ import "./styles/layout.css";
 import "./styles/acre.css";
 import "./styles/site.css";
 import "./styles/workspace.css";
+import "./styles/guided.css";
 import { App } from "./App";
 import { trackInputMode } from "./ui/inputMode";
 
