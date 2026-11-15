@@ -118,6 +118,19 @@ def test_ai_cannot_rate_from_unchecked_or_wrong_unit_evidence():
     assert research.checked_references({"references": [{**ref, "unit": "%"}]}, variables, ["soybean"]) == []
 
 
+def test_provider_failure_reports_only_safe_error_metadata():
+    def failed(_params):
+        raise client.ResearchError("provider_error", "HTTP 402 PRIVATE-PROVIDER-DETAIL")
+
+    client.set_caller(failed)
+    result = research.assess(effective_conditions([reading("soil_ph", 4.2)], at=AT),
+                             ["soybean"], "US-NC", allow_research=True)
+    assert result["reason_code"] == "provider_error"
+    assert result["provider_http_status"] == 402
+    assert "PRIVATE-PROVIDER-DETAIL" not in str(result)
+    assert result["impacts"][0]["rating"] == "unknown"
+
+
 def test_conditions_endpoint_accepts_extra_values_without_a_weather_record(monkeypatch):
     monkeypatch.setattr("acre.field.conditions_routes.get_soilgrids", lambda *args: SoilGridsResult(status="unavailable"))
     with TestClient(create_app()) as api:

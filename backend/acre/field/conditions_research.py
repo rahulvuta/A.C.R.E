@@ -7,6 +7,7 @@ field names and coordinates are never sent to the AI or stored in the reference 
 from __future__ import annotations
 
 import math
+import re
 import threading
 import time
 import uuid
@@ -107,6 +108,7 @@ def assess(conditions: dict[str, Any], crops: list[str], region: str,
     key = _key(crops, region, variables)
     references, reason = [], None
     research_job_id = None
+    failure = {}
     with _LOCK:
         cached = _CACHE.get(key)
         if cached and time.monotonic() - cached[0] < CACHE_SECONDS:
@@ -150,6 +152,10 @@ def assess(conditions: dict[str, Any], crops: list[str], region: str,
                 if not references:
                     reason = "No published interval could be source-checked for these conditions."
             except client.ResearchError as exc:
+                failure["reason_code"] = exc.code
+                http_status = re.search(r"\bHTTP (\d{3})\b", str(exc))
+                if http_status:
+                    failure["provider_http_status"] = int(http_status[1])
                 reason = ("AI assessment is not configured on this server." if exc.code ==
                           "research_not_configured" else "AI assessment is unavailable. Your measurements are still used.")
         elif not references:
@@ -180,6 +186,7 @@ def assess(conditions: dict[str, Any], crops: list[str], region: str,
                         "source": {"title": r["source_title"], "url": r["source_url"],
                                    "quote": r["evidence_quote"]}})
     return {"status": "complete" if references else "unavailable", "reason_text": reason,
+            **failure,
             **({"_research_job_id": research_job_id} if research_job_id else {}),
             "impacts": impacts,
             "note": "Crop effects are qualitative; no yield or margin penalty is assumed. Published ranges are used only after their source quotes have been checked."}
