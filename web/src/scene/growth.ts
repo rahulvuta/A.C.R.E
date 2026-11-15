@@ -121,3 +121,31 @@ export function fieldStateAt(plan: Plan, day: number): FieldState | null {
 
   return { corn, cover, wheat, soy, residue, inSpringWindow: day >= plant - 30 && day < plant, label };
 }
+
+const pad = (n: number) => String(n).padStart(2, "0");
+
+/**
+ * The field on a calendar month of a multi-year rotation (the strategy simulations). Season t
+ * runs from September of the year before `startSeason + t` to the next August and uses
+ * rotation leg t (cycled). July and August, which the Sep-Jun stage does not cover, show the
+ * season's main crop at full height (ripening in August). An illustration of planned dates.
+ */
+export function rotationStateAt(rotation: Array<Plan | null>, startSeason: number, year: number, month: number, dayOfMonth = 15): FieldState | null {
+  if (!rotation.length) return null;
+  const t = Math.max(0, year + (month >= 9 ? 1 : 0) - startSeason);
+  const plan = rotation[t % rotation.length];
+  if (!plan?.sequence) return null;
+  if (month !== 7 && month !== 8) return fieldStateAt(plan, seasonDay(`${pad(month)}-${pad(dayOfMonth)}`));
+  const next = plan.sequence.next_crop_id;
+  const ripe = month === 8;
+  const name = NAME[next] ?? "Crop";
+  return {
+    corn: { show: next === "field_corn", h: 1, mature: ripe },
+    soy: { show: next !== "field_corn", h: 0.9, mature: ripe },
+    cover: { show: false, h: 0, ended: false },
+    wheat: { show: false, h: 0, ripe: 0 },
+    residue: 0.2,
+    inSpringWindow: false,
+    label: ripe ? `${name} ripening (planned)` : `${name} growing (planned)`,
+  };
+}

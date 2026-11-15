@@ -39,7 +39,7 @@ function useMedia(query: string): boolean {
 }
 
 /** Illustration colors. The selection frame uses the theme's accent. */
-function readPalette(): ScenePalette {
+export function readPalette(): ScenePalette {
   const css = getComputedStyle(document.documentElement);
   const v = (name: string, fallback: string) => css.getPropertyValue(name).trim() || fallback;
   return {

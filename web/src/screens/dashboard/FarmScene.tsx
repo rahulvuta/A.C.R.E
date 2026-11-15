@@ -43,9 +43,11 @@ function shiftMd(md: string): string {
 }
 
 // The stage draws corn, soybean, winter grain and cover plants; maize is drawn as corn.
-const drawn = (id: string) => (id === "maize" ? "field_corn" : id);
+// Other crops borrow the nearest look: tall row crops as corn, everything else as a low leafy crop.
+const TALL = new Set(["maize", "field_corn", "corn", "sorghum", "sunflower", "sugarcane", "millet", "cotton", "cotton_upland", "cotton_all", "tobacco"]);
+const drawn = (id: string) => (TALL.has(id) ? "field_corn" : id === "soybean" ? id : "soybean");
 
-function scenePlan(p: FieldPlan, south: boolean): Plan | null {
+export function scenePlan(p: FieldPlan, south: boolean): Plan | null {
   if (
     !p.previous_crop_id ||
     !p.next_crop_id ||

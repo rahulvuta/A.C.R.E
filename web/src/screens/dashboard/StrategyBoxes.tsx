@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { asFieldPlan } from "../../api/adapt";
 import { PRIORITY_NAMES, type Option, type Recommendation } from "../../api/model";
 import type { Dist, Scenario, ScenarioResult, Simulation } from "../../api/simModel";
@@ -13,6 +13,8 @@ import { useSimulation } from "../../state/useSimulation";
 import { rotationReady, simulateRequest, type StepContext } from "../guided/context";
 import { cropLabel, money, pct } from "../guided/format";
 import { SimStatus } from "../guided/StepSimulate";
+import { StrategySim, conditionsOf, type FieldConditions } from "./StrategySim";
+import type { FieldGeometry } from "../../farm/types";
 
 /*
   The Overview's decision view: up to three strategies side by side, each with what it spends
@@ -269,8 +271,10 @@ export interface StrategyBoxProps {
   canAdd?: boolean;
   /** The plan finder is still looking, so an empty box says so instead of prompting. */
   finding?: boolean;
+  /** The running simulation: the shared timeline's month, the field's outline and its typical conditions. */
+  live?: { at: string; geometry: FieldGeometry; conditions: FieldConditions | null; startSeason: number };
 }
-export function StrategyBox({ box, badges, highlight, waiting, onTab, onAdd, canAdd = true, finding = false }: StrategyBoxProps) {
+export function StrategyBox({ box, badges, highlight, waiting, onTab, onAdd, canAdd = true, finding = false, live }: StrategyBoxProps) {
   const heading = <div className="db-card-head"><h3>{box.title || `Plan ${box.slot + 1}`}</h3></div>;
   if (!box.scenario)
     return (
@@ -298,6 +302,7 @@ export function StrategyBox({ box, badges, highlight, waiting, onTab, onAdd, can
       {badges.length ? <ul className="sb-badges" aria-label="Where this plan comes out ahead">{badges.map((b, i) => <li key={i}>{b.badge}</li>)}</ul> : null}
       {box.result ? (
         <>
+          {live && rotationReady(box.scenario.rotation) ? <StrategySim title={box.title} rotation={box.scenario.rotation} geometry={live.geometry} monthly={box.monthly} conditions={live.conditions} at={live.at} startSeason={live.startSeason} /> : null}
           <MoneySummary result={box.result} monthly={box.monthly} raw={box.raw} onFinancial={() => onTab("financial")} />
           {box.result.moneyStatus === "complete" ? (box.monthly ? <MonthChart monthly={box.monthly} title={box.title} /> : <p className="gf-muted">The month-by-month view is not available for this plan yet.</p>) : null}
         </>
@@ -420,6 +425,8 @@ export function decisionSummary(boxes: BoxModel[], data: Simulation): string[] {
 }
 
 // ------------------------------------------------------------------ the whole view
+const timelineDate = (ym: string) => new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${ym}-01T00:00:00Z`));
+
 export function StrategyView({ ctx, onTab }: { ctx: StepContext; onTab: (t: string) => void }) {
   const { sim, field } = ctx;
   const own = sim.scenarios.slice(0, SLOTS - 1);
@@ -439,12 +446,38 @@ export function StrategyView({ ctx, onTab }: { ctx: StepContext; onTab: (t: stri
   const badgesFor = (id: string | undefined) => (id && data?.comparison ? data.comparison.badges.filter((b) => b.scenarioId === id).map((b) => ({ badge: badgeText(b.badge), why: b.why })) : []);
   const years = data?.method.sourceYears;
   const summary = data ? decisionSummary(boxes, data) : [];
+  // One timeline for every box, so the strategies are compared at the same month.
+  const span = useMemo(() => {
+    const all = boxes.flatMap((b) => b.monthly?.months.map((m) => m.month) ?? []).sort();
+    if (!all.length) return [] as string[];
+    const out: string[] = [];
+    let [y, m] = all[0]!.split("-").map(Number) as [number, number];
+    const last = all[all.length - 1]!;
+    for (let guard = 0; guard < 240; guard++) {
+      const ym = `${y}-${String(m).padStart(2, "0")}`;
+      out.push(ym);
+      if (ym >= last) break;
+      [y, m] = m === 12 ? [y + 1, 1] : [y, m + 1];
+    }
+    return out;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+  const [pos, setPos] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const at = span[Math.min(pos, span.length - 1)] ?? null;
+  useEffect(() => {
+    if (!playing) return;
+    const id = window.setInterval(() => setPos((p) => (p >= span.length - 1 ? (setPlaying(false), p) : p + 1)), 500);
+    return () => window.clearInterval(id);
+  }, [playing, span.length]);
+  const conditions = useMemo(() => conditionsOf(data?.raw ?? null), [data]);
+  const live = at && field ? { at, geometry: field.geometry, conditions, startSeason: Number(sim.startSeason) } : undefined;
   const add = (s: Scenario) => field && sim.scenarios.length < MAX_ALTERNATIVES && updateSimField(field.field_id, (cur) => ({ scenarios: cur.scenarios.some((x) => x.scenarioId === s.scenarioId) ? cur.scenarios : [...cur.scenarios, s] }));
   return (
     <section className="sb" aria-label="Your strategies">
       <div className="sb-head">
         <h2>Your strategies, season by season</h2>
-        <p className="gf-muted">{HORIZON_YEARS} seasons of past weather replayed{years ? ` (${years})` : ""}, not a forecast. Prices and costs stay at the values you entered.</p>
+        <p className="gf-muted">Each plan run month by month over the next {HORIZON_YEARS} seasons: what you spend, what you earn and what is left, with the field as it would look. Expected values with a bad-year and good-year range, worked out from this field's past weather{years ? ` (${years})` : ""}. Prices and costs stay at the values you entered.</p>
       </div>
       {!rotationReady(sim.rotation) ? (
         <section className="db-card">
@@ -462,10 +495,20 @@ export function StrategyView({ ctx, onTab }: { ctx: StepContext; onTab: (t: stri
           {summary.length ? (
             <p className="sb-summary"><strong>What this means.</strong> {summary.join(" ")} <OriginLabel origin="calculation" /></p>
           ) : null}
+          {at && span.length > 1 ? (
+            <div className="db-card sb-timeline" role="group" aria-label="Simulation timeline">
+              <button type="button" className="btn btn-primary" onClick={() => { if (!playing && pos >= span.length - 1) setPos(0); setPlaying(!playing); }}>
+                {playing ? "Pause" : pos >= span.length - 1 ? "Play again" : "Play"}
+              </button>
+              <strong className="sb-timeline-date">{timelineDate(at)}</strong>
+              <input type="range" aria-label="Month of the simulation" min={0} max={span.length - 1} step={1} value={Math.min(pos, span.length - 1)} aria-valuetext={timelineDate(at)} onChange={(e) => { setPlaying(false); setPos(Number(e.target.value)); }} />
+              <span className="gf-muted sb-small">{timelineDate(span[0]!)} to {timelineDate(span[span.length - 1]!)}. Press Play, or drag, to run all three plans through the same months.</span>
+            </div>
+          ) : null}
           <div className="sb-grid">
             {boxes.map((b) => {
               const bs = badgesFor(b.scenario?.scenarioId);
-              return <StrategyBox key={b.slot} box={b} badges={bs} highlight={bs.length > 0} waiting={!finding && (result.state === "loading" || result.state === "idle")} finding={finding} canAdd={sim.scenarios.length < MAX_ALTERNATIVES} onAdd={add} onTab={onTab} />;
+              return <StrategyBox key={b.slot} box={b} badges={bs} highlight={bs.length > 0} waiting={!finding && (result.state === "loading" || result.state === "idle")} finding={finding} canAdd={sim.scenarios.length < MAX_ALTERNATIVES} onAdd={add} onTab={onTab} live={live} />;
             })}
           </div>
           {data ? <VerdictRow boxes={boxes} data={data} /> : null}

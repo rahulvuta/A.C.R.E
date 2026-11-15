@@ -49,6 +49,7 @@ export const monthlySchema = z.object({
     month: z.string().regex(/^\d{4}-\d{2}$/),
     costs: monthDist.nullable().optional(), revenue: monthDist.nullable().optional(),
     net: monthDist.nullable().optional(), cumulative_net: monthDist.nullable().optional(),
+    cumulative_costs: monthDist.nullable().optional(), cumulative_revenue: monthDist.nullable().optional(),
     operations: z.array(z.object({ kind: z.string(), crop_id: z.string().nullable().optional() }).passthrough()).default([]),
     risks: z.array(z.object({ kind: z.string(), probability: number.min(0).max(1).nullable().optional(), text: z.string().nullable().optional() }).passthrough()).default([]),
   }).passthrough()).default([]),
