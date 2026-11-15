@@ -59,32 +59,16 @@ export function FieldWorkspace({ api, farm, field, tab, onTab, onClose, onCopy }
   }, [field]);
 
   const ctx: StepContext = { api, farm, field, sim, point, regionKey, profile, go: (s) => onTab(STEP_TO_TAB[s]) };
-  const pane = (id: TabId, body: () => ReactNode) => (visited.has(id) ? <div key={id} role="tabpanel" id={`pane-${id}`} aria-labelledby={`tab-${id}`} hidden={active !== id} className="fw-pane">{body()}</div> : null);
+  const pane = (id: TabId, body: () => ReactNode) => (visited.has(id) ? <div key={id} role="tabpanel" id={`pane-${id}`} aria-label={TABS.find((t) => t.id === id)!.label} hidden={active !== id} className="fw-pane">{body()}</div> : null);
 
   return (
     <section className="fw" aria-label={`Field ${field.name}`}>
-      <div className="dash-bar">
-        <div>
-          <button type="button" className="btn btn-quiet" onClick={onClose}>
-            ← All fields
-          </button>
-          <h1>{field.name}</h1>
-        </div>
-        <span className="dash-muted">{formatArea(field.geometry).ac} · {farm.demo ? `Demo: ${farm.demo}` : farm.name}</span>
-      </div>
       {farm.demo ? (
         <Banner kind="synthetic">
           <strong>Demo farm.</strong> Example values, kept apart from your own fields.{" "}
           <button type="button" className="btn btn-quiet" onClick={onCopy}>Copy this field to my fields</button>
         </Banner>
       ) : null}
-      <div className="fw-tabs" role="tablist" aria-label="Field sections">
-        {TABS.map((t) => (
-          <button key={t.id} type="button" role="tab" id={`tab-${t.id}`} aria-selected={active === t.id} aria-controls={`pane-${t.id}`} onClick={() => onTab(t.id)}>
-            {t.label}
-          </button>
-        ))}
-      </div>
       {pane("overview", () => <Overview ctx={ctx} farm={farm} field={field} onTab={onTab} onClose={onClose} />)}
       {pane("rotation", () => <StepNow ctx={ctx} part="rotation" />)}
       {pane("conditions", () => (
