@@ -95,6 +95,7 @@ def test_simulate_shape_vocab_and_label(client):
     assert out["method"]["weather"] == "historical_resampling"
     assert "not a forecast" in out["method"]["note"]
     assert out["method"]["pool_years"] >= MIN_POOL
+    assert all(e["origin"] == "calculation" for s in out["scenarios"] for e in s["events"])
     assert out["meta"]["plan_version"].startswith("sim_") and out["meta"]["snapshot_hash"]
     assert set(_walk(out, "status")) <= STATUS
     assert set(_walk(out, "origin")) - {None} <= ORIGINS
