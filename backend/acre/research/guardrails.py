@@ -78,6 +78,7 @@ _ALLOWED_PATTERNS = (
     re.compile(r"(^|\.)icar\.(gov|org)\.in$"),
     re.compile(r"(^|\.)(inrae|cirad|arvalis|terresinovia)\.fr$"),
     re.compile(r"(^|\.)extension\.[a-z.]+$"),
+    re.compile(r"(^|\.)agmanager\.info$"),  # Kansas State University agricultural economics
     re.compile(r"(^|\.)(uni|univ|universidad|universite|universidade)[a-z-]*\.[a-z.]+$"),
 )
 _MMDD = re.compile(r"^(\d{2})-(\d{2})$")
