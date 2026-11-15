@@ -553,6 +553,9 @@ def _crop(cid: str, chain: list[str], t: data.Tables, ov: dict[str, Any], area_u
             for item in out["costs"]["items"]:
                 item["origin"] = "assumed"
         out["reason_text"] = "Demo mock values: rough illustrative inputs, not sourced estimates. Margin is crop sales minus the costs listed; seed-only samples exclude other production costs."
+    from acre.confidence import economics_confidence
+
+    out["confidence"] = economics_confidence(price, yld, costs)
     crop_info = crop_ids.info(cid)
     out["aliases"] = list(crop_info.aliases) if crop_info else []
     out["suggestions"] = _suggestions(refs)
