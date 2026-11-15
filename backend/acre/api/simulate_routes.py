@@ -24,7 +24,7 @@ from acre.report.meta import response_meta
 from acre.simulate import compare as sim_compare
 from acre.simulate.autofill import autofill
 from acre.simulate.demo import demo_farm
-from acre.simulate.engine import Inputs, Scenario, readings_context, simulate
+from acre.simulate.engine import Inputs, Scenario, Zone, readings_context, simulate
 from acre.simulate.money import MoneyInputError
 from acre.simulate.vocab import OUTLOOK_NOTE, PRIORITIES, priorities_vocab
 from acre.weather.ondemand import Cell, CellIdError
@@ -53,6 +53,21 @@ class ReadingIn(Reading):
     model_config = ConfigDict(extra="ignore")
 
 
+MAX_ZONES = 20
+
+
+class ZoneIn(BaseModel):
+    """One part of the field with its own plan. Give its size as ``share`` (of the field),
+    ``area_ha`` or a drawn ``geometry`` (all zones of a field use the same one)."""
+
+    model_config = ConfigDict(extra="ignore")
+    zone_id: Annotated[str, Field(min_length=1, max_length=64)]
+    name: Annotated[str | None, Field(max_length=120)] = None
+    share: Annotated[float | None, Field(gt=0, le=1)] = None
+    area_ha: Annotated[float | None, Field(gt=0, le=1_000_000)] = None
+    geometry: dict[str, Any] | None = None  # never logged or echoed
+
+
 class FieldSimIn(BaseModel):
     model_config = ConfigDict(extra="ignore")
     field_id: Annotated[str | None, Field(max_length=100)] = None
@@ -62,6 +77,7 @@ class FieldSimIn(BaseModel):
     equipment: Annotated[list[Annotated[str, Field(max_length=100)]], Field(max_length=50)] = \
         Field(default_factory=list)  # fmt: skip
     readings: Annotated[list[ReadingIn], Field(max_length=500)] = Field(default_factory=list)
+    zones: Annotated[list[ZoneIn], Field(max_length=MAX_ZONES)] = Field(default_factory=list)
 
     @field_validator("equipment")
     @classmethod
@@ -86,7 +102,11 @@ class ScenarioIn(BaseModel):
     scenario_id: Annotated[str, Field(min_length=1, max_length=64)]
     label: Annotated[str | None, Field(max_length=120)] = None
     is_baseline: bool = False
-    rotation: Annotated[list[Plan], Field(min_length=1, max_length=MAX_ROTATION_LEGS)]
+    # the whole field's rotation, or the default for zones with no entry in ``zone_rotations``
+    rotation: Annotated[list[Plan], Field(min_length=1, max_length=MAX_ROTATION_LEGS)] | None = None
+    zone_rotations: dict[
+        str, Annotated[list[Plan], Field(min_length=1, max_length=MAX_ROTATION_LEGS)]
+    ] = Field(default_factory=dict)
 
 
 class SimulateRequest(BaseModel):
@@ -105,7 +125,12 @@ class SimulateRequest(BaseModel):
 
 
 def _result_id(body: SimulateRequest) -> str:
-    doc = body.model_dump(mode="json", exclude={"field": {"readings", "geometry", "name"}})
+    doc = body.model_dump(mode="json")
+    for z in doc["field"]["zones"]:
+        z.pop("geometry", None)
+        z.pop("name", None)
+    for k in ("readings", "geometry", "name"):
+        doc["field"].pop(k, None)
     return "sim_" + hashlib.sha256(json.dumps(doc, sort_keys=True).encode()).hexdigest()[:16]
 
 
@@ -117,12 +142,29 @@ def validate(body: SimulateRequest) -> list[dict[str, str]]:
         issues.append(issue("scenarios", "duplicate_scenario_id", "scenario ids must be unique"))
     if sum(s.is_baseline for s in body.scenarios) > 1:
         issues.append(issue("scenarios", "two_baselines", "at most one scenario is the baseline"))
+    zone_ids = [z.zone_id for z in body.field.zones]
+    issues += _zone_issues(body)
     for i, s in enumerate(body.scenarios):
-        for j, p in enumerate(s.rotation):
-            try:
-                engine.build_calendar(p, engine.REFERENCE_YEAR)
-            except InvalidPlanError as exc:
-                issues += _issues_from_plan_error(exc, f"scenarios.{i}.rotation.{j}")
+        if s.rotation is None and not body.field.zones:
+            issues.append(issue(f"scenarios.{i}.rotation", "rotation_missing",
+                                "give a rotation (or define zones on the field)"))  # fmt: skip
+        elif body.field.zones and s.rotation is None and set(zone_ids) - set(s.zone_rotations):
+            issues.append(issue(f"scenarios.{i}.zone_rotations", "zone_rotation_missing",
+                                "give every zone a rotation, or a default rotation"))  # fmt: skip
+        if s.zone_rotations and not body.field.zones:
+            issues.append(issue(f"scenarios.{i}.zone_rotations", "zone_rotations_without_zones",
+                                "define the field's zones first"))  # fmt: skip
+        elif set(s.zone_rotations) - set(zone_ids):
+            issues.append(issue(f"scenarios.{i}.zone_rotations", "unknown_zone",
+                                "zone_rotations names a zone the field does not have"))  # fmt: skip
+        legs = ([("rotation", s.rotation)] if s.rotation else []) + [
+            (f"zone_rotations.{z}", r) for z, r in s.zone_rotations.items()]
+        for where, rot in legs:
+            for j, p in enumerate(rot):
+                try:
+                    engine.build_calendar(p, engine.REFERENCE_YEAR)
+                except InvalidPlanError as exc:
+                    issues += _issues_from_plan_error(exc, f"scenarios.{i}.{where}.{j}")
     if not 1981 <= int(body.start_season) <= 2100:
         issues.append(issue("start_season", "invalid_start_season",
                             "start_season is a year between 1981 and 2100"))  # fmt: skip
@@ -135,6 +177,63 @@ def validate(body: SimulateRequest) -> list[dict[str, str]]:
         issues.append(issue("economics.overrides", "unknown_override",
                             "each crop override has only price, yield and costs"))  # fmt: skip
     return issues
+
+
+def _zone_issues(body: SimulateRequest) -> list[dict[str, str]]:
+    zs = body.field.zones
+    out: list[dict[str, str]] = []
+    if not zs:
+        return out
+    ids = [z.zone_id for z in zs]
+    if len(set(ids)) != len(ids):
+        out.append(issue("field.zones", "duplicate_zone_id", "zone ids must be unique"))
+    basis = [{n for n in ("share", "area_ha", "geometry") if getattr(z, n) is not None} for z in zs]
+    if any(len(b) != 1 for b in basis):
+        out.append(issue("field.zones", "zone_size_missing",
+                         "give each zone exactly one of share, area_ha or geometry"))  # fmt: skip
+        return out
+    if len({next(iter(b)) for b in basis}) > 1:
+        out.append(issue("field.zones", "zones_mixed_size",
+                         "give every zone its size the same way (share, area_ha or geometry)"))  # fmt: skip
+        return out
+    kind = next(iter(basis[0]))
+    if kind == "share":
+        if abs(sum(z.share or 0 for z in zs) - 1.0) > 0.01:
+            out.append(issue("field.zones", "zones_share_sum", "zone shares must add up to 1"))
+        return out
+    try:
+        areas = _zone_areas(zs)
+    except GeometryError as exc:
+        return [issue("field.zones", exc.code, str(exc))]
+    field_ha = body.field.area_ha
+    if field_ha is None and body.field.geometry is not None:
+        try:
+            field_ha = parse_field(body.field.geometry).area_ha
+        except GeometryError:
+            field_ha = None
+    if field_ha is not None and sum(areas) > field_ha * 1.02:
+        out.append(issue("field.zones", "zones_exceed_field",
+                         "the zones add up to more than the field's area"))  # fmt: skip
+    return out
+
+
+def _zone_areas(zs: list[ZoneIn]) -> list[float]:
+    return [z.area_ha if z.area_ha is not None else parse_field(z.geometry or {}).area_ha
+            for z in zs]
+
+
+def _build_zones(body: SimulateRequest, field_ha: float | None) -> tuple[
+        list[tuple[ZoneIn, float | None, float]], float | None]:  # fmt: skip
+    """(zone, area in ha, weight) per zone, and the area of the zoned part of the field."""
+    zs = body.field.zones
+    if zs[0].share is not None:
+        total = sum(z.share or 0 for z in zs)
+        rows = [(z, field_ha * (z.share or 0) / total if field_ha else None, (z.share or 0) / total)
+                for z in zs]  # fmt: skip
+        return rows, field_ha
+    areas = _zone_areas(zs)
+    total = sum(areas)
+    return [(z, a, a / total) for z, a in zip(zs, areas, strict=True)], total
 
 
 @router.post("/scenarios/simulate")
@@ -161,10 +260,19 @@ def simulate_scenarios(body: SimulateRequest) -> Any:
     area_origin = "grower" if area is not None else None
     if area is None and f.geometry is not None:
         area, area_origin = parse_field(f.geometry).area_ha, "calculation"
+    zone_rows: list[tuple[ZoneIn, float | None, float]] = []
+    if f.zones:
+        zone_rows, zoned_ha = _build_zones(body, area)
+        if area is None and zoned_ha:  # zones were sized in hectares: they give the field's area
+            area, area_origin = zoned_ha, "calculation"
     has_base = any(s.is_baseline for s in body.scenarios)
-    scs = [Scenario(s.scenario_id, s.label, list(s.rotation),
-                    s.is_baseline or (not has_base and i == 0))
-           for i, s in enumerate(body.scenarios)]  # fmt: skip
+    scs = []
+    for i, s in enumerate(body.scenarios):
+        zs = [Zone(z.zone_id, z.name, a, w, list(s.zone_rotations.get(z.zone_id) or s.rotation or []))
+              for z, a, w in zone_rows] or None
+        first = s.rotation or next(iter(s.zone_rotations.values()))
+        scs.append(Scenario(s.scenario_id, s.label, list(first),
+                            s.is_baseline or (not has_base and i == 0), zs))
     loc = (body.location.model_dump(exclude_none=True) if body.location else {})
     inp = Inputs(scs, body.years, body.runs, body.seed, int(body.start_season), area,
                  list(f.equipment), body.economics.overrides,
@@ -182,9 +290,21 @@ def simulate_scenarios(body: SimulateRequest) -> Any:
     rid = _result_id(body)
     return {"meta": _meta(rid, ctx.snapshot_hash, ctx).model_dump(), **out,
             "field": {"field_id": f.field_id, "area_ha": round(area, 3) if area else None,
-                      "area_origin": area_origin},
+                      "area_origin": area_origin,
+                      "zones": [{"zone_id": z.zone_id, "name": z.name,
+                                 "area_ha": round(a, 3) if a else None, "share": round(w, 4)}
+                                for z, a, w in zone_rows] or None,
+                      "unzoned_ha": _unzoned(area, zone_rows)},
             "weather_location": places.weather_location(choice).model_dump(mode="json"),
             "comparison": comparison}  # fmt: skip
+
+
+def _unzoned(field_ha: float | None, rows: list[tuple[ZoneIn, float | None, float]]) -> float | None:
+    """Field area not given to any zone (only when zones were sized in hectares)."""
+    if not rows or field_ha is None or rows[0][0].share is not None:
+        return None
+    left = field_ha - sum(a or 0 for _, a, _ in rows)
+    return round(left, 3) if left > field_ha * 0.01 else None
 
 
 @router.get("/vocab/priorities")

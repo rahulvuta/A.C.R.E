@@ -164,7 +164,9 @@
   "field": {
     "area_ha": 16.2,
     "area_origin": "grower",
-    "field_id": null
+    "field_id": null,
+    "unzoned_ha": null,
+    "zones": null
   },
   "field_conditions": {
     "months": [
@@ -451,7 +453,7 @@
   },
   "meta": {
     "catalog_version": "v2:8eeb5bf961eb",
-    "plan_version": "sim_2a44178917757478",
+    "plan_version": "sim_2f0836502e1643ba",
     "request_id": "req_example",
     "snapshot_hash": "5ce131cfcd1f07d3738ecb9afaec6c3ef6a4764b6a3528bdd2b64debe7ba5f4e"
   },
@@ -847,7 +849,8 @@
           "money": null,
           "year": 2031
         }
-      ]
+      ],
+      "zones": null
     },
     {
       "events": [
@@ -1208,7 +1211,8 @@
           "money": null,
           "year": 2031
         }
-      ]
+      ],
+      "zones": null
     }
   ],
   "status": "complete",

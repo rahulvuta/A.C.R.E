@@ -43,11 +43,31 @@ CRN_NOTE = ("Every scenario replays the same sequence of past seasons in each ru
 
 
 @dataclass
+class Zone:
+    """One part of a field with its own rotation. ``weight`` is its share of the zoned area."""
+
+    zone_id: str
+    name: str | None
+    area_ha: float | None  # None when no area is known (then there is no money)
+    weight: float
+    rotation: list[Plan]
+
+
+@dataclass
 class Scenario:
     scenario_id: str
     label: str | None
     rotation: list[Plan]
     is_baseline: bool = False
+    zones: list[Zone] | None = None  # None: the whole field follows ``rotation``
+
+    def all_rotations(self) -> list[list[Plan]]:
+        return [z.rotation for z in self.zones] if self.zones else [self.rotation]
+
+
+def _parts(sc: Scenario, inp: Inputs) -> list[Zone]:
+    """The pieces of the field this scenario treats separately (one piece if there are no zones)."""
+    return sc.zones or [Zone("", None, inp.area_ha, 1.0, sc.rotation)]
 
 
 @dataclass
@@ -103,9 +123,20 @@ class Matrices:
     cover: np.ndarray  # [years]
     ops: np.ndarray  # [years]
     seasons: np.ndarray  # [runs, years] past planting year replayed
+    heavy_area: np.ndarray | None = None  # [runs, years] share of the area with heavy rain days
+
+    @property
+    def dry_flag(self) -> np.ndarray:
+        """Dry window for the whole field: at least half of its area is dry (0/1 for one part)."""
+        return (self.dry >= 0.5).astype(float)
+
+    @property
+    def heavy_flag(self) -> np.ndarray:
+        h = self.heavy_area if self.heavy_area is not None else (self.heavy > 0).astype(float)
+        return (h >= 0.5).astype(float)
 
 
-def matrices(sc: Scenario, legs: dict[str, LegSeasons], d: Draws, years: int) -> Matrices:
+def matrices(sc: Scenario | Zone, legs: dict[str, LegSeasons], d: Draws, years: int) -> Matrices:
     runs = d.index.shape[0]
     rain = np.empty((runs, years))
     heavy = np.empty((runs, years))
@@ -121,12 +152,25 @@ def matrices(sc: Scenario, legs: dict[str, LegSeasons], d: Draws, years: int) ->
         dry[:, t] = leg.dry[ix]
         cover[t] = leg.living_cover_days
         ops[t] = leg.operations
-    return Matrices(rain, heavy, dry, cover, ops, pool[d.index])
+    return Matrices(rain, heavy, dry, cover, ops, pool[d.index], (heavy > 0).astype(float))
 
 
-def _families(sc: Scenario, ctx: Context, years: int) -> tuple[int | None, dict[str, str | None]]:
-    crops = [c for p in sc.rotation[:years] for c in (p.previous_crop_id, p.winter.crop_id,
-                                              p.next_crop_id) if c]  # fmt: skip
+def combine(ms: list[Matrices], weights: list[float]) -> Matrices:
+    """The whole field from its zones: area-weighted means over the SAME replayed seasons."""
+    if len(ms) == 1:
+        return ms[0]
+
+    def mean(attr: str) -> np.ndarray:
+        return sum(w * getattr(m, attr) for w, m in zip(weights, ms, strict=True))
+
+    return Matrices(mean("rain"), mean("heavy"), mean("dry"), mean("cover"), mean("ops"),
+                    ms[0].seasons, mean("heavy_area"))
+
+
+def _families(rotations: list[list[Plan]], ctx: Context, years: int
+              ) -> tuple[int | None, dict[str, str | None]]:  # fmt: skip
+    crops = [c for rot in rotations for p in rot[:years]
+             for c in (p.previous_crop_id, p.winter.crop_id, p.next_crop_id) if c]  # fmt: skip
     fams = {c: family_of(c, ctx.index) for c in dict.fromkeys(crops)}
     if any(f is None for f in fams.values()):
         return None, fams
@@ -135,8 +179,8 @@ def _families(sc: Scenario, ctx: Context, years: int) -> tuple[int | None, dict[
 
 def _events(m: Matrices, years: int) -> list[dict[str, Any]]:
     out = []
-    dry_n = m.dry.sum(axis=1)
-    heavy_years = (m.heavy > 0).sum(axis=1)
+    dry_n = m.dry_flag.sum(axis=1)
+    heavy_years = m.heavy_flag.sum(axis=1)
     if years >= 3:
         p = float((dry_n >= 3).mean())
         out.append({"event": f"dry_springs_ge_3_in_{years}y", "probability": round(p, 3),
@@ -148,17 +192,17 @@ def _events(m: Matrices, years: int) -> list[dict[str, Any]]:
                     "text": f"3 or more years with heavy rain on bare soil in {years} years in "
                             f"{_pct(p)} of replays"})  # fmt: skip
     if years >= 2:
-        b2b = ((m.dry[:, 1:] > 0) & (m.dry[:, :-1] > 0)).any(axis=1)
+        b2b = ((m.dry_flag[:, 1:] > 0) & (m.dry_flag[:, :-1] > 0)).any(axis=1)
         p = float(b2b.mean())
         out.append({"event": "back_to_back_dry_springs", "probability": round(p, 3),
                     "text": f"Two dry pre-planting windows in a row in {_pct(p)} of replays"})
     return [{**event, "origin": "calculation"} for event in out]
 
 
-def _timeline(sc: Scenario, inp: Inputs) -> list[dict[str, Any]]:
+def _timeline(rotation: list[Plan], inp: Inputs) -> list[dict[str, Any]]:
     out = []
     for t in range(inp.years):
-        p = sc.rotation[t % len(sc.rotation)]
+        p = rotation[t % len(rotation)]
         seq = [c for c in (p.previous_crop_id, p.winter.crop_id, p.next_crop_id) if c]
         out.append({"year": inp.start_season + t, "season": str(inp.start_season + t),
                     "crop_sequence": seq, "plan_id": p.plan_id, "winter_kind": p.winter.kind,
@@ -169,27 +213,34 @@ def _timeline(sc: Scenario, inp: Inputs) -> list[dict[str, Any]]:
 # --------------------------------------------------------------------------- money (S2)
 
 
-def _money(sc: Scenario, m: Matrices, inp: Inputs, crops: dict[str, mon.CropMoney]
+def _money(parts: list[Zone], ms: list[Matrices], inp: Inputs, crops: dict[str, mon.CropMoney]
            ) -> dict[str, Any]:  # fmt: skip
+    """Money of the whole field: every zone's amounts are added per run (same replayed seasons)."""
     gaps: list[dict[str, str]] = []
-    if not inp.area_ha:
+    if not parts or any(not z.area_ha for z in parts):
         gaps.append({"field": "area", "reason": "no_area",
                      "text": "Give the field's area (or draw it) to see money results."})  # fmt: skip
         return {"money_status": "unavailable", "money_gaps": gaps, "yearly": None, "totals": None,
                 "monthly": None}  # fmt: skip
-    need_rev: list[list[str]] = []
-    need_cost: list[list[str]] = []
-    for t in range(inp.years):
-        p = sc.rotation[t % len(sc.rotation)]
-        rev = [p.next_crop_id] + ([p.winter.crop_id] if p.winter.kind == "winter_grain"
-                                  and p.winter.crop_id else [])  # fmt: skip
-        cost = rev + ([p.winter.crop_id] if p.winter.kind == "cover" and p.winter.crop_id else [])
-        need_rev.append(rev)
-        need_cost.append(cost)
-    used = sorted({c for cs in need_cost for c in cs})
+    total_ha = sum(z.area_ha for z in parts)  # type: ignore[misc]
+    need_rev: list[list[list[str]]] = []  # [part][year] -> crops sold
+    need_cost: list[list[list[str]]] = []
+    for z in parts:
+        rev_z: list[list[str]] = []
+        cost_z: list[list[str]] = []
+        for t in range(inp.years):
+            p = z.rotation[t % len(z.rotation)]
+            rev = [p.next_crop_id] + ([p.winter.crop_id] if p.winter.kind == "winter_grain"
+                                      and p.winter.crop_id else [])  # fmt: skip
+            cost = rev + ([p.winter.crop_id] if p.winter.kind == "cover" and p.winter.crop_id else [])
+            rev_z.append(rev)
+            cost_z.append(cost)
+        need_rev.append(rev_z)
+        need_cost.append(cost_z)
+    used = sorted({c for pz in need_cost for cs in pz for c in cs})
     for c in used:
         cm = crops[c]
-        is_rev = any(c in r for r in need_rev)
+        is_rev = any(c in r for pz in need_rev for r in pz)
         if (is_rev and not cm.revenue_ok) or cm.cost_per_area is None:
             gaps += [g for g in cm.gaps if not (not is_rev and g["field"] in ("price", "yield"))]
     currencies = {crops[c].currency for c in used if crops[c].currency}
@@ -203,43 +254,43 @@ def _money(sc: Scenario, m: Matrices, inp: Inputs, crops: dict[str, mon.CropMone
     cur = next(iter(currencies), None)
     dry_l = (inp.loss.get("dry_spring_pct") or 0) / 100.0
     heavy_l = (inp.loss.get("heavy_rain_pct") or 0) / 100.0
-    runs = m.rain.shape[0]
+    runs = ms[0].rain.shape[0]
 
-    # (season, crop, "revenue" | "cost", per-run amounts) of the last run_with call
-    parts: list[tuple[int, str, str, np.ndarray]] = []
+    # (zone index, season, crop, "revenue" | "cost", per-run amounts) of the last run_with call
+    pieces: list[tuple[int, int, str, str, np.ndarray]] = []
 
     def run_with(price_of: dict[str, float]) -> tuple[np.ndarray, np.ndarray, np.ndarray, list]:
         rev = np.zeros((runs, inp.years))
         cost = np.zeros((runs, inp.years))
-        flags: list[list[str]] = []
-        parts.clear()
-        for t in range(inp.years):
-            p = sc.rotation[t % len(sc.rotation)]
-            used_t: list[str] = []
-            for c in need_rev[t]:
-                cm = crops[c]
-                base = cm.yield_per_area * price_of[c] * mon.area_in(cm.area_unit, inp.area_ha)  # type: ignore[operator, arg-type]
-                factor = np.ones(runs)
-                if c == p.next_crop_id:  # the crop planted after the window the events describe
-                    if inp.loss.get("dry_spring_pct") is not None and (m.dry[:, t] > 0).any():
-                        factor *= 1 - dry_l * (m.dry[:, t] > 0)
-                        used_t.append("dry_spring_pct")
-                    if inp.loss.get("heavy_rain_pct") is not None and (m.heavy[:, t] > 0).any():
-                        factor *= 1 - heavy_l * (m.heavy[:, t] > 0)
-                        used_t.append("heavy_rain_pct")
-                rev[:, t] += base * factor
-                parts.append((t, c, "revenue", base * factor))
-            for c in need_cost[t]:
-                cm = crops[c]
-                c_cost = cm.cost_per_area * mon.area_in(cm.area_unit, inp.area_ha)  # type: ignore[operator, arg-type]
-                cost[:, t] += c_cost
-                parts.append((t, c, "cost", np.full(runs, float(c_cost))))
-            flags.append(sorted(set(used_t)))
-        return rev, cost, rev - cost, flags
+        used_by_year: list[set[str]] = [set() for _ in range(inp.years)]
+        pieces.clear()
+        for i, z in enumerate(parts):
+            m = ms[i]
+            for t in range(inp.years):
+                p = z.rotation[t % len(z.rotation)]
+                for c in need_rev[i][t]:
+                    cm = crops[c]
+                    base = cm.yield_per_area * price_of[c] * mon.area_in(cm.area_unit, z.area_ha)  # type: ignore[operator, arg-type]
+                    factor = np.ones(runs)
+                    if c == p.next_crop_id:  # the crop planted after the window the events describe
+                        if inp.loss.get("dry_spring_pct") is not None and (m.dry[:, t] > 0).any():
+                            factor *= 1 - dry_l * (m.dry[:, t] > 0)
+                            used_by_year[t].add("dry_spring_pct")
+                        if inp.loss.get("heavy_rain_pct") is not None and (m.heavy[:, t] > 0).any():
+                            factor *= 1 - heavy_l * (m.heavy[:, t] > 0)
+                            used_by_year[t].add("heavy_rain_pct")
+                    rev[:, t] += base * factor
+                    pieces.append((i, t, c, "revenue", base * factor))
+                for c in need_cost[i][t]:
+                    cm = crops[c]
+                    c_cost = cm.cost_per_area * mon.area_in(cm.area_unit, z.area_ha)  # type: ignore[operator, arg-type]
+                    cost[:, t] += c_cost
+                    pieces.append((i, t, c, "cost", np.full(runs, float(c_cost))))
+        return rev, cost, rev - cost, [sorted(u) for u in used_by_year]
 
     typical = {c: crops[c].price for c in used if crops[c].price is not None}
     rev, cost, margin, flags = run_with(typical)  # type: ignore[arg-type]
-    typical_parts = list(parts)
+    typical_pieces = list(pieces)
 
     def money(values: np.ndarray, assumption: list[str] | None = None) -> dict[str, Any]:
         out = {**q(values, 0), "currency": cur, "origin": "calculation"}
@@ -255,12 +306,12 @@ def _money(sc: Scenario, m: Matrices, inp: Inputs, crops: dict[str, mon.CropMone
                               "costs_total": money(cost.sum(axis=1)),
                               "revenue_total": money(rev.sum(axis=1), all_flags)}  # fmt: skip
     units = {crops[c].area_unit for c in used if crops[c].area_unit}
-    if len(units) == 1 and inp.area_ha and inp.years:
+    if len(units) == 1 and total_ha and inp.years:
         unit = next(iter(units))
-        per = margin.sum(axis=1) / (mon.area_in(unit, inp.area_ha) * inp.years)
+        per = margin.sum(axis=1) / (mon.area_in(unit, total_ha) * inp.years)
         totals["margin_per_area_per_year"] = {**q(per, 0), "currency": cur, "area_unit": unit,
                                               "origin": "calculation"}  # fmt: skip
-    rev_crops = sorted({c for r in need_rev for c in r})
+    rev_crops = sorted({c for pz in need_rev for r in pz for c in r})
     if all(crops[c].price_low is not None and crops[c].price_high is not None for c in rev_crops):
         cases = {}
         for case in ("low", "high"):
@@ -276,7 +327,7 @@ def _money(sc: Scenario, m: Matrices, inp: Inputs, crops: dict[str, mon.CropMone
     else:
         totals["weather_link"] = ("assumed (your estimate): your loss assumption is applied only "
                                   "in replayed years with that event")  # fmt: skip
-    monthly = _monthly(sc, m, inp, typical_parts, cur, all_flags)
+    monthly = _monthly(parts, ms, inp, typical_pieces, cur, all_flags)
     return {"money_status": "complete", "money_gaps": [], "yearly": yearly, "totals": totals,
             "monthly": monthly}  # fmt: skip
 
@@ -304,7 +355,7 @@ def _before(md: str, ref: date) -> date:
     return d if d < ref else _on(md, ref.year - 1)
 
 
-def _season_dates(sc: Scenario, t: int, start: int) -> dict[str, Any]:
+def _season_dates(sc: Scenario | Zone, t: int, start: int) -> dict[str, Any]:
     """Calendar dates of season ``t``: planting in its season year, the rest walked from there."""
     n = len(sc.rotation)
     p, nxt = sc.rotation[t % n], sc.rotation[(t + 1) % n]
@@ -326,16 +377,18 @@ def _ym(d: date) -> tuple[int, int]:
     return (d.year, d.month)
 
 
-def _monthly(sc: Scenario, m: Matrices, inp: Inputs, parts: list[tuple[int, str, str, np.ndarray]],
+def _monthly(zones: list[Zone], ms: list[Matrices], inp: Inputs,
+             pieces: list[tuple[int, int, str, str, np.ndarray]],
              cur: str | None, assumption: list[str]) -> dict[str, Any] | None:  # fmt: skip
     """The seasons' money laid on a calendar, month by month (timing assumed, amounts calculated).
 
     Each crop's cost lands in the month it is planted or seeded and its sales in its harvest
-    month. Risks sit on the months they describe: a dry pre-planting window on the 30 days
-    before planting, heavy rain on bare soil on the off-season months with no living cover.
+    month; zones are added together. Risks sit on the months they describe: a dry pre-planting
+    window on the 30 days before planting, heavy rain on bare soil on the off-season months with
+    no living cover.
     """
-    runs = m.rain.shape[0]
-    dates = [_season_dates(sc, t, inp.start_season) for t in range(inp.years)]
+    runs = ms[0].rain.shape[0]
+    dates = [[_season_dates(z, t, inp.start_season) for t in range(inp.years)] for z in zones]
     flows: dict[tuple[int, int], np.ndarray] = {}
     costs: dict[tuple[int, int], np.ndarray] = {}
     revs: dict[tuple[int, int], np.ndarray] = {}
@@ -346,8 +399,8 @@ def _monthly(sc: Scenario, m: Matrices, inp: Inputs, parts: list[tuple[int, str,
         book[ym] = book.get(ym, np.zeros(runs)) + v
         flows.setdefault(ym, np.zeros(runs))
 
-    for t, crop, kind, values in parts:
-        dt, w = dates[t], dates[t]["winter"]
+    for i, t, crop, kind, values in pieces:
+        dt, w = dates[i][t], dates[i][t]["winter"]
         grain = w is not None and w[0] == "winter_grain" and w[1] == crop
         cover = w is not None and w[0] == "cover" and w[1] == crop
         if kind == "cost":
@@ -355,32 +408,36 @@ def _monthly(sc: Scenario, m: Matrices, inp: Inputs, parts: list[tuple[int, str,
             add(costs, _ym(when), values)
         else:
             add(revs, _ym(w[3] if grain else dt["harvest"]), values)
-    for t, dt in enumerate(dates):
-        p = sc.rotation[t % len(sc.rotation)]
-        ops.setdefault(_ym(dt["plant"]), []).append({"kind": "plant", "crop_id": p.next_crop_id})
-        ops.setdefault(_ym(dt["harvest"]), []).append({"kind": "harvest", "crop_id": p.next_crop_id})
-        w = dt["winter"]
-        bare = [(dt["prev_harvest"], dt["plant"])]
-        if w is not None:
-            k0, k1 = ("seed_cover", "end_cover") if w[0] == "cover" else ("plant_grain", "harvest_grain")
-            ops.setdefault(_ym(w[2]), []).append({"kind": k0, "crop_id": w[1]})
-            ops.setdefault(_ym(w[3]), []).append({"kind": k1, "crop_id": w[1]})
-            bare = [(dt["prev_harvest"], w[2]), (w[3], dt["plant"])]
-        p_dry = round(float(m.dry[:, t].mean()), 3)
-        if p_dry > 0:
-            risks.setdefault(_ym(dt["plant"] - 15 * _DAY), []).append({
-                "kind": "dry_pre_plant", "probability": p_dry,
-                "text": f"Dry 30 days before planting {p.next_crop_id.replace('_', ' ')} in "
-                        f"{_pct(p_dry)} of replays"})  # fmt: skip
-        p_heavy = round(float((m.heavy[:, t] > 0).mean()), 3)
-        spans = [(a + _DAY, b - _DAY) for a, b in bare if b - a > _DAY]
-        if p_heavy > 0 and spans:
-            # once per off-season, on its first bare month, naming the bare months
-            when = " and ".join(f"{a.strftime('%b %Y')}-{b.strftime('%b %Y')}" if _ym(a) != _ym(b)
-                                else a.strftime("%b %Y") for a, b in spans)  # fmt: skip
-            risks.setdefault(_ym(spans[0][0]), []).append({
-                "kind": "heavy_rain_on_bare_soil", "probability": p_heavy,
-                "text": f"Heavy rain on bare soil ({when}) in {_pct(p_heavy)} of replays"})  # fmt: skip
+    for i, z in enumerate(zones):
+        m = ms[i]
+        tag = {"zone_id": z.zone_id} if z.zone_id else {}
+        who = f"{z.name or z.zone_id}: " if z.zone_id else ""
+        for t, dt in enumerate(dates[i]):
+            p = z.rotation[t % len(z.rotation)]
+            ops.setdefault(_ym(dt["plant"]), []).append({"kind": "plant", "crop_id": p.next_crop_id, **tag})
+            ops.setdefault(_ym(dt["harvest"]), []).append({"kind": "harvest", "crop_id": p.next_crop_id, **tag})
+            w = dt["winter"]
+            bare = [(dt["prev_harvest"], dt["plant"])]
+            if w is not None:
+                k0, k1 = ("seed_cover", "end_cover") if w[0] == "cover" else ("plant_grain", "harvest_grain")
+                ops.setdefault(_ym(w[2]), []).append({"kind": k0, "crop_id": w[1], **tag})
+                ops.setdefault(_ym(w[3]), []).append({"kind": k1, "crop_id": w[1], **tag})
+                bare = [(dt["prev_harvest"], w[2]), (w[3], dt["plant"])]
+            p_dry = round(float(m.dry[:, t].mean()), 3)
+            if p_dry > 0:
+                risks.setdefault(_ym(dt["plant"] - 15 * _DAY), []).append({
+                    "kind": "dry_pre_plant", "probability": p_dry, **tag,
+                    "text": f"{who}Dry 30 days before planting {p.next_crop_id.replace('_', ' ')} in "
+                            f"{_pct(p_dry)} of replays"})  # fmt: skip
+            p_heavy = round(float((m.heavy[:, t] > 0).mean()), 3)
+            spans = [(a + _DAY, b - _DAY) for a, b in bare if b - a > _DAY]
+            if p_heavy > 0 and spans:
+                # once per off-season, on its first bare month, naming the bare months
+                when = " and ".join(f"{a.strftime('%b %Y')}-{b.strftime('%b %Y')}" if _ym(a) != _ym(b)
+                                    else a.strftime("%b %Y") for a, b in spans)  # fmt: skip
+                risks.setdefault(_ym(spans[0][0]), []).append({
+                    "kind": "heavy_rain_on_bare_soil", "probability": p_heavy, **tag,
+                    "text": f"{who}Heavy rain on bare soil ({when}) in {_pct(p_heavy)} of replays"})  # fmt: skip
     if not flows:
         return None
     first, last = min(flows), max(flows)
@@ -503,8 +560,18 @@ def field_conditions(ctx: Context) -> dict[str, Any] | None:
                     "temperature. Median and the 1-in-10 low and high across the record."}  # fmt: skip
 
 
+def _zone_info(sc: Scenario, parts: list[Zone], inp: Inputs) -> list[dict[str, Any]] | None:
+    """Per-zone plan timelines of a zoned scenario (``timeline`` shows the largest zone)."""
+    if not sc.zones:
+        return None
+    return [{"zone_id": z.zone_id, "name": z.name, "area_ha": z.area_ha,
+             "share": round(z.weight, 4), "timeline": _timeline(z.rotation, inp)}
+            for z in parts]  # fmt: skip
+
+
 def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
-    plans = {plan_key(p): p for sc in inp.scenarios for p in sc.rotation[:inp.years]}
+    plans = {plan_key(p): p for sc in inp.scenarios for rot in sc.all_rotations()
+             for p in rot[:inp.years]}
     ts = engine.threshold_set_for(ctx, [p.next_plant for p in plans.values()])
     adjusted, climate = None, None
     if inp.climate == "trend":
@@ -529,17 +596,19 @@ def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
                 "reason_text": f"Only {len(d.pool)} past seasons can be evaluated for every plan "
                                f"here (at least {MIN_POOL} are needed).",
                 "scenarios": []}  # fmt: skip
-    crops = sorted({c for sc in inp.scenarios for p in sc.rotation[:inp.years]
+    crops = sorted({c for sc in inp.scenarios for rot in sc.all_rotations() for p in rot[:inp.years]
                     for c in (p.next_crop_id, p.winter.crop_id) if c})  # fmt: skip
     cm, money_source = mon.crop_money(inp.location, crops, inp.area_ha, inp.equipment,
                                       inp.overrides)  # fmt: skip
     out = []
     mats: dict[str, Matrices] = {}
     for sc in inp.scenarios:
-        m = matrices(sc, legs, d, inp.years)
+        parts = _parts(sc, inp)
+        part_ms = [matrices(z, legs, d, inp.years) for z in parts]
+        m = combine(part_ms, [z.weight for z in parts])
         mats[sc.scenario_id] = m
-        fam_n, fams = _families(sc, ctx, inp.years)
-        money = _money(sc, m, inp, cm)
+        fam_n, fams = _families(sc.all_rotations(), ctx, inp.years)
+        money = _money(parts, part_ms, inp, cm)
         yearly = []
         for t in range(inp.years):
             row = {"year": inp.start_season + t,
@@ -548,15 +617,15 @@ def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
                                                 "origin": "calculation"},
                        "heavy_rain_days_on_bare_soil": {**q(m.heavy[:, t], 0), "unit": "days",
                                                         "origin": "calculation"},
-                       "living_cover_days": {"median": int(m.cover[t]), "unit": "days",
+                       "living_cover_days": {"median": int(round(m.cover[t])), "unit": "days",
                                              "origin": "calculation", "planned": True},
                        "dry_pre_plant": {"probability": round(float(m.dry[:, t].mean()), 3),
                                          "origin": "calculation"},
-                       "operations": {"value": int(m.ops[t]), "unit": "operations",
+                       "operations": {"value": int(round(m.ops[t])), "unit": "operations",
                                       "origin": "calculation"}},
                    "money": money["yearly"][t] if money["yearly"] else None}  # fmt: skip
             yearly.append(row)
-        stress = m.dry.sum(axis=1) + (m.heavy > 0).sum(axis=1)
+        stress = m.dry_flag.sum(axis=1) + m.heavy_flag.sum(axis=1)
         totals: dict[str, Any] = {
             "living_cover_days_per_year": {"median": round(float(m.cover.mean()), 1),
                                            "unit": "days", "origin": "calculation"},
@@ -564,7 +633,8 @@ def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
                                               "origin": "calculation"},
             "heavy_rain_days_on_bare_soil_per_year": {**q(m.heavy.mean(axis=1), 2),
                                                       "unit": "days", "origin": "calculation"},
-            "dry_springs": {**q(m.dry.sum(axis=1), 0), "mean": round(float(m.dry.sum(1).mean()), 2),
+            "dry_springs": {**q(m.dry_flag.sum(axis=1), 0),
+                            "mean": round(float(m.dry_flag.sum(1).mean()), 2),
                             "unit": f"in {inp.years} years", "origin": "calculation"},
             "stress_events": {**q(stress, 0), "mean": round(float(stress.mean()), 2),
                               "unit": f"in {inp.years} years", "origin": "calculation",
@@ -578,7 +648,8 @@ def simulate(ctx: Context, inp: Inputs) -> dict[str, Any]:
         }  # fmt: skip
         out.append({"scenario_id": sc.scenario_id, "label": sc.label,
                     "is_baseline": sc.is_baseline, "status": "complete",
-                    "timeline": _timeline(sc, inp), "yearly": yearly, "totals": totals,
+                    "timeline": _timeline(max(parts, key=lambda z: z.weight).rotation, inp),
+                    "zones": _zone_info(sc, parts, inp), "yearly": yearly, "totals": totals,
                     "events": _events(m, inp.years), "money_status": money["money_status"],
                     "monthly": money["monthly"],
                     "money_gaps": money["money_gaps"],

@@ -144,7 +144,9 @@
   "field": {
     "area_ha": null,
     "area_origin": null,
-    "field_id": null
+    "field_id": null,
+    "unzoned_ha": null,
+    "zones": null
   },
   "field_conditions": {
     "months": [
@@ -431,7 +433,7 @@
   },
   "meta": {
     "catalog_version": "v3:AR-B:sage_-33.75_-60.75:3edf141b9da9",
-    "plan_version": "sim_6c47f95cf035daac",
+    "plan_version": "sim_3036036117d879e4",
     "request_id": "req_example",
     "snapshot_hash": "7c57f2ea32036ecff67ee1c6e7dece00415f16358b0f4bdc4488fb663953abeb"
   },
@@ -808,7 +810,8 @@
           "money": null,
           "year": 2031
         }
-      ]
+      ],
+      "zones": null
     },
     {
       "events": [
@@ -1144,7 +1147,8 @@
           "money": null,
           "year": 2031
         }
-      ]
+      ],
+      "zones": null
     }
   ],
   "status": "complete",
