@@ -112,7 +112,7 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
     updateSimField(field.field_id, {
       rotation: field.plan ? [field.plan] : [],
       equipment: field.equipment ?? [],
-      readings: (field.readings ?? []).map((r) => ({ date: r.date, kind: r.kind, value: r.value, depthCm: r.depth_cm ?? null, note: r.note ?? null })),
+      readings: (field.readings ?? []).map(({ depth_cm, ...r }) => ({ ...r, depthCm: depth_cm ?? null })),
     });
   }, [field]);
   // A step past "Your farm" needs a field.

@@ -73,6 +73,8 @@ export function createExampleInputsApi(): InputsApi {
   const researched = new Set<string>();
   const withResearch = (data: EconomicsDefaults): EconomicsDefaults => ({ ...data, crops: data.crops.map(crop => researched.has(crop.crop_id) && crop.crop_id === exampleResearchedEconomicsCrop.crop_id ? exampleResearchedEconomicsCrop : crop) });
   return {
+    conditions: async () => ({ status: "unavailable", as_of: "2026-11-15", note: "Synthetic example: no live local baseline.", values: [], assessment: { status: "unavailable", reason_text: "Live AI assessment is unavailable in example mode.", note: "Synthetic example.", impacts: [] } }),
+    assessConditions: async () => ({ assessment: { status: "unavailable", reason_text: "Live AI assessment is unavailable in example mode.", note: "Synthetic example.", impacts: [] } }),
     search: async query => ({ ...exampleSearch, results: exampleCrops.filter(crop => crop.name.toLowerCase().includes(query.toLowerCase())) }),
     research: async name => {
       if (name.toLowerCase() !== "okra") throw new Error("Example research supports 'okra'. Search for okra or use the live service for another crop.");

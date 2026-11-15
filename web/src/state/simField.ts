@@ -26,6 +26,7 @@ export interface SimField {
   zoneRotations?: Record<string, FieldPlan[]>;
   equipment: string[];
   readings: Reading[];
+  conditionAssessment?: { inputsKey: string; assessment: import("../inputs/conditions").ConditionAssessment };
   overrides: Record<string, CropOverride>;
   loss: LossAssumptions;
   priorities: Record<string, number>;

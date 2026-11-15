@@ -166,7 +166,7 @@ export function ReadingsBeside({ s }: { s: ScenarioResult }) {
           </li>
         ))}
       </ul>
-      <p className="gf-muted">Shown side by side; your readings are never mixed into NASA's numbers.</p>
+      <p className="gf-muted">Your measurements take precedence for matching field conditions. Compatible readings replace regional estimates on their recorded dates.</p>
     </div>
   );
 }

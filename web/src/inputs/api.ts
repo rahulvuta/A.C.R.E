@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { conditionsResponseSchema, assessmentResponseSchema, type ConditionsRequest } from "./conditions";
 import { autofillRequestSchema, autofillResponseSchema, calendarResearchJobSchema, cropSchema, cropSearchSchema, economicsRequestSchema, economicsResearchJobSchema, economicsResponseSchema, equipmentResponseSchema, researchJobSchema, type AutofillRequest, type EconomicsRequest } from "./schema";
 
 export class InputsApiError extends Error {
@@ -22,6 +23,8 @@ export function createInputsApi(base = import.meta.env.VITE_API_BASE ?? "http://
     return parsed.data;
   }
   return {
+    conditions: (body: ConditionsRequest, signal?: AbortSignal) => request("/v1/field/conditions", conditionsResponseSchema, signal, body),
+    assessConditions: (body: ConditionsRequest, signal?: AbortSignal) => request("/v1/field/conditions/assess", assessmentResponseSchema, signal, body),
     search: (query: string, regionKey: string, signal?: AbortSignal) => request(`/v1/crops/search?${new URLSearchParams({ q: query, region_key: regionKey })}`, cropSearchSchema, signal),
     research: (name: string, regionKey: string, signal?: AbortSignal) => request("/v1/crops/research", researchJobSchema, signal, { name, region_key: regionKey }),
     researchJob: (jobId: string, signal?: AbortSignal) => request(`/v1/crops/research/${encodeURIComponent(jobId)}`, researchJobSchema, signal),

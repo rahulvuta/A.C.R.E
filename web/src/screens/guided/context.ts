@@ -46,12 +46,13 @@ export function cropsOf(r: FieldPlan[]): string[] {
 }
 
 /** The simulate request for this field: the baseline plus the given alternatives. */
-export function simulateRequest(ctx: Pick<StepContext, "field" | "sim" | "point">, alternatives: Scenario[]): SimulateRequest | null {
+export function simulateRequest(ctx: Pick<StepContext, "field" | "sim" | "point"> & Partial<Pick<StepContext, "regionKey">>, alternatives: Scenario[]): SimulateRequest | null {
   const { field, sim, point } = ctx;
   if (!field || !point || !baselineReady(sim) || !economicsReady(sim)) return null;
   const ha = areaHa(field.geometry);
   return {
     point,
+    regionKey: ctx.regionKey,
     field: { fieldId: field.field_id, name: field.name, areaHa: ha > 0 ? Math.round(ha * 100) / 100 : null, geometry: field.geometry, equipment: sim.equipment, readings: sim.readings, ...(zonesOf(sim).length ? { zones: sim.zones!.map((z) => ({ zoneId: z.zoneId, name: z.name, share: z.share })) } : {}) },
     priorities: sim.priorities,
     overrides: sim.overrides,

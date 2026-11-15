@@ -1362,6 +1362,7 @@ export function adaptSimulation(r: z.infer<typeof BackendSimulation>): Simulatio
 
 export interface SimulateRequest {
   point: LatLonPoint;
+  regionKey?: string | null;
   field: { fieldId: string; name: string; areaHa: number | null; geometry?: Farm["fields"][number]["geometry"] | null; equipment: string[]; readings: Reading[]; zones?: Array<{ zoneId: string; name: string; share: number }> };
   priorities: Record<string, number>;
   overrides: Record<string, CropOverride>;
@@ -1375,7 +1376,7 @@ export interface SimulateRequest {
   startSeason: string;
 }
 type LatLonPoint = { latitude: number; longitude: number };
-const toBackendReading = (r: Reading) => ({ date: r.date, kind: r.kind, value: r.value, ...(r.depthCm != null ? { depth_cm: r.depthCm } : {}), ...(r.note ? { note: r.note } : {}) });
+export const toBackendReading = (r: Reading) => ({ date: r.date, kind: r.kind, value: r.value, ...(r.depthCm != null ? { depth_cm: r.depthCm } : {}), ...(r.note ? { note: r.note } : {}), ...(r.name ? { name: r.name } : {}), ...(r.unit ? { unit: r.unit } : {}), ...(r.moisture_basis ? { moisture_basis: r.moisture_basis } : {}) });
 const toBackendOverrides = (o: Record<string, CropOverride>) =>
   Object.fromEntries(
     Object.entries(o).map(([crop, v]) => [
@@ -1390,7 +1391,7 @@ const toBackendOverrides = (o: Record<string, CropOverride>) =>
 export function toBackendSimulate(q: SimulateRequest) {
   return {
     location: { latitude: q.point.latitude, longitude: q.point.longitude },
-    field: { field_id: q.field.fieldId, name: q.field.name, area_ha: q.field.areaHa, geometry: q.field.geometry ?? null, equipment: q.field.equipment, readings: q.field.readings.map(toBackendReading), ...(q.field.zones?.length ? { zones: q.field.zones.map((z) => ({ zone_id: z.zoneId, name: z.name, share: z.share })) } : {}) },
+    field: { field_id: q.field.fieldId, name: q.field.name, area_ha: q.field.areaHa, geometry: q.field.geometry ?? null, equipment: q.field.equipment, readings: q.field.readings.map(toBackendReading), ...(q.regionKey ? { region_key: q.regionKey } : {}), ...(q.field.zones?.length ? { zones: q.field.zones.map((z) => ({ zone_id: z.zoneId, name: z.name, share: z.share })) } : {}) },
     goals: { priorities: q.priorities },
     economics: {
       overrides: toBackendOverrides(q.overrides),

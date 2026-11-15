@@ -110,7 +110,7 @@ export function ConditionsLine({ conditions, at }: { conditions: FieldConditions
   if (!parts.length) return null;
   return (
     <span className="gf-muted sb-small">
-      Typical {monthShort(month)} here: {parts.join(" · ")} <span className="ss-src">(NASA model, ~50 km area{conditions?.years ? `, ${conditions.years}` : ""})</span>
+      Typical {monthShort(month)} here: {parts.join(" · ")} <span className="ss-src">({conditions?.origin === "calculation" ? "regional record with your dated measurements" : "NASA model, ~50 km area"}{conditions?.years ? `, ${conditions.years}` : ""})</span>
     </span>
   );
 }

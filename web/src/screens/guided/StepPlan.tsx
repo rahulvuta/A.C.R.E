@@ -17,7 +17,7 @@ import { TenYearTimeline, withRotations, type ScenarioResult as TimelineResult }
 export function ReadingsLog({ ctx }: { ctx: StepContext }) {
   const { field, sim } = ctx;
   if (!field) return null;
-  return <U3ReadingsLog value={sim.readings.map(r => ({ date: r.date, kind: r.kind, value: r.value, depth_cm: r.depthCm, note: r.note, origin: "grower" }))} onChange={readings => {
+  return <U3ReadingsLog value={sim.readings.map(({ depthCm, ...r }) => ({ ...r, depth_cm: depthCm, origin: "grower" }))} onChange={readings => {
     const saved = readings.map(({ origin: _origin, depth_cm, ...r }) => ({ ...r, depthCm: depth_cm }));
     updateSimField(field.field_id, { readings: saved });
     farmActions.updateField(field.field_id, { readings: readings.map(({ origin: _origin, ...r }) => r) });

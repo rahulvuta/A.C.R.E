@@ -144,14 +144,17 @@ export const EQUIPMENT = [
   "irrigation_drip",
   "irrigation_none",
 ] as const;
-export type ReadingKind = "soil_moisture_pct" | "soil_moisture_vwc" | "rainfall_mm" | "soil_temp_c" | "note";
-export const READING_KINDS: readonly ReadingKind[] = ["soil_moisture_pct", "soil_moisture_vwc", "rainfall_mm", "soil_temp_c", "note"];
+export type ReadingKind = import("../inputs/schema").ReadingKind;
+export { readingKinds as READING_KINDS } from "../inputs/schema";
 export interface Reading {
   date: string; // YYYY-MM-DD
   kind: ReadingKind;
   value: number | null;
   depthCm?: number | null;
   note?: string | null;
+  name?: string;
+  unit?: string;
+  moisture_basis?: "saturation" | "volumetric" | "sensor_percent" | null;
 }
 export interface VocabItem {
   id: string;
