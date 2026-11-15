@@ -78,7 +78,7 @@ export function RotationEditor({ ctx, rotation, onChange, idPrefix = "rot", show
       }} />
     </section>)}
     {show !== "dates" && seasons.length < MAX_ROTATION_LEGS ? <button type="button" className="btn btn-secondary" onClick={() => onChange([...seasons, emptySeason(seasons.length, seasons.at(-1)?.next_crop_id, seasons.map((p) => p.plan_id))])}>Add a season</button> : null}
-    {show !== "dates" ? <p className="gf-muted">{show === "crops" ? "One season is one main crop, what covers the field over winter, and the next main crop. Add a season if your rotation is longer. " : ""}This rotation repeats through the 10-year historical replay.</p> : null}
+    {show !== "dates" ? <p className="gf-muted">{show === "crops" ? "One season is one main crop, what covers the field over winter, and the next main crop. Add a season if your rotation is longer. " : ""}This rotation repeats through the 10-year outlook.</p> : null}
   </div>;
 }
 type Part = "all" | "rotation" | "money" | NowPart;

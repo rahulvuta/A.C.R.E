@@ -61,7 +61,7 @@ describe("Extension summary", () => {
 
   it("states the disclaimer and numbers every cited source", () => {
     show({ priorities: ["soil"] });
-    expect(screen.getAllByText(/Not a forecast or a field measurement/)).toHaveLength(2);
+    expect(screen.getAllByText(/cannot say what any single year will bring, and it is not a field measurement/)).toHaveLength(2);
     const sources = screen.getByRole("heading", { name: "Sources" }).nextElementSibling!;
     expect(within(sources as HTMLElement).getAllByRole("listitem")[0]).toHaveTextContent("NASA POWER");
     const cited = new Set([...document.querySelectorAll(".xs-ref")].map((e) => e.textContent));

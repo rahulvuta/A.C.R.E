@@ -306,7 +306,7 @@ export function SiteFooter() {
           <p>
             <span className="fb-mark st-foot-mark" aria-hidden="true" /> {APP_NAME}
           </p>
-          <p className="st-foot-note">Crop rotations shaped by your field, your goals and the evidence. Historical weather is context, not a forecast.</p>
+          <p className="st-foot-note">Crop rotations shaped by your field, your goals and the evidence. An evidence-based outlook, not a guarantee.</p>
         </div>
         <div>
           <h3>Worked example</h3>

@@ -7,7 +7,7 @@ import { ScenarioCompare, simulationResultSchema } from "../../sim";
 import { TimelineCompare, withRotations, type ScenarioResult as TimelineResult } from "../../timeline";
 import { BASELINE_ID } from "../../state/simField";
 
-/* Step 5: every plan side by side over the same resampled past weather (§11 with all scenarios). */
+/* Step 5: every plan side by side through the same simulated years (§11 with all scenarios). */
 export function StepCompare({ ctx }: { ctx: StepContext }) {
   const { sim, field } = ctx;
   const req = simulateRequest(ctx, sim.scenarios);

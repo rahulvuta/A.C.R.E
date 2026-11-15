@@ -37,6 +37,29 @@ export function conditionsOf(raw: Record<string, unknown> | null): FieldConditio
   return parsed?.success ? parsed.data : null;
 }
 
+const trendSchema = z.object({ slope_per_decade: z.number().nullable().optional(), unit: z.string().nullable().optional(), p_value: z.number().nullable().optional(), years: z.number().nullable().optional(), significant: z.boolean().nullable().optional(), pct_per_decade: z.number().nullable().optional() }).passthrough();
+const climateSchema = z
+  .object({
+    mode: z.enum(["trend", "none"]).optional(),
+    target_year: z.number().nullable().optional(),
+    applied: z.boolean().optional(),
+    reason: z.string().nullable().optional(),
+    text: z.string().optional(),
+    note: z.string().optional(),
+    precip_trend: trendSchema.nullable().optional(),
+    temperature_trend: trendSchema.nullable().optional(),
+    factor_range: z.tuple([z.number(), z.number()]).nullable().optional(),
+  })
+  .passthrough();
+export type ClimateAdjustment = z.infer<typeof climateSchema>;
+/** The backend's `method.climate_adjustment` block; null when absent or not in the expected shape. */
+export function climateAdjustmentOf(raw: Record<string, unknown> | null): ClimateAdjustment | null {
+  const method = raw?.method;
+  const block = method != null && typeof method === "object" && !Array.isArray(method) ? (method as Record<string, unknown>).climate_adjustment : null;
+  const parsed = block == null ? null : climateSchema.safeParse(block);
+  return parsed?.success ? parsed.data : null;
+}
+
 const OP_TEXT: Record<string, string> = { plant: "Plant", harvest: "Harvest", seed_cover: "Seed cover crop:", end_cover: "End cover crop:", plant_grain: "Plant winter grain:", harvest_grain: "Harvest winter grain:" };
 const monthTitle = (ym: string) => new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${ym}-01T00:00:00Z`));
 const monthShort = (m: number) => new Intl.DateTimeFormat("en-US", { month: "long", timeZone: "UTC" }).format(new Date(Date.UTC(2001, m - 1, 1)));
@@ -122,16 +145,17 @@ export function StrategySim({ title, rotation, geometry, monthly, conditions, at
     <div className="ss" aria-label={`${title}: simulation at ${monthTitle(at)}`}>
       <dl className="ss-hud">
         <div>
-          <dt>Spent so far</dt>
+          <dt title="All money spent since the start of the timeline">Spent so far</dt>
           <dd>{fmt(spent)}</dd>
         </div>
         <div>
-          <dt>Earned so far</dt>
+          <dt title="All money earned since the start of the timeline">Earned so far</dt>
           <dd>{fmt(earned)}</dd>
         </div>
         <div className={net != null && net < 0 ? "ss-neg" : "ss-pos"}>
-          <dt>Net so far</dt>
+          <dt title="Running total: earned minus spent, added up month by month since the start of the timeline">Running total</dt>
           <dd>{fmt(net)}</dd>
+          <dd className="ss-range">since the start</dd>
           {!before && cur?.cumulative_net?.p10 != null && cur.cumulative_net.p90 != null && cur.cumulative_net.p10 !== cur.cumulative_net.p90 ? (
             <dd className="ss-range">
               bad year {fmt(cur.cumulative_net.p10)} · good year {fmt(cur.cumulative_net.p90)}
@@ -174,7 +198,7 @@ export function StrategySim({ title, rotation, geometry, monthly, conditions, at
         </li>
         {cond ? (
           <li className="ss-cond">
-            <strong>Soil in a typical {monthShort(month)}:</strong>{" "}
+            <strong>Expected conditions for {monthShort(month)} (same for every plan):</strong>{" "}
             {wet != null ? (
               <>
                 <span className="ss-wet" role="img" aria-label={`Topsoil wetness ${pctOf(wet)}`}>
@@ -188,6 +212,7 @@ export function StrategySim({ title, rotation, geometry, monthly, conditions, at
             {cond.rain_mm?.median != null ? ` · rain ${Math.round(cond.rain_mm.median)} mm` : ""}
             {cond.air_temp_c?.median != null ? ` · ${Math.round(cond.air_temp_c.median)}°C` : ""}
             <span className="ss-src"> NASA model, ~50 km area{conditions?.years ? `, ${conditions.years}` : ""}</span>
+            <small className="ss-note">From this field's weather record: what the month is usually like, not what this plan does to the soil.</small>
           </li>
         ) : null}
       </ul>

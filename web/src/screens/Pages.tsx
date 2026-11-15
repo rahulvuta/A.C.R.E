@@ -58,8 +58,44 @@ export function MethodsPage() {
   return (
     <DocPage
       title="How A.C.R.E works"
-      lede="A.C.R.E replays a grower's planned winter dates against past springs recorded by NASA and checks them against NC State guidance. It compares plans; it does not forecast next spring or measure a field."
+      lede="A.C.R.E gives an evidence-based outlook: it carries a grower's crop plans through the next 10 years using what has been observed at their field, to show what to plan for and which plan holds up better. It cannot say what any single year will bring or measure a field."
     >
+      <Section id="m-outlook" title="The 10-year outlook">
+        <p>
+          For any field you draw, A.C.R.E builds an evidence-based outlook: based on what has happened at this field, this is what to plan
+          for. It is not 100% predictive of what will happen. It shows how each plan would do under conditions already observed here and
+          the change we expect from the trend in that record, so we can say "we think this plan is better than that one".
+        </p>
+        <ul>
+          <li>
+            <strong>The evidence.</strong> The seasons actually observed at this field, 1981 to 2025, from NASA weather data for the
+            surrounding grid cell (about 50 km across), not a measurement taken on the field itself.
+          </li>
+          <li>
+            <strong>The method.</strong> Each plan is run through the next 10 years about 200 times. Every run uses those real seasons
+            in a different order, and every plan gets the same sequences, so the comparison is fair. The bad-year and good-year range
+            shows how far results spread across the runs.
+          </li>
+          <li>
+            <strong>The climate trend.</strong> When this field's own record shows a statistically clear trend in yearly rain, rain is
+            adjusted for it. When the trend is not clear, rain is used as recorded. Temperature trends are shown as context and do not
+            change the results.
+          </li>
+          <li>
+            <strong>The money.</strong> Prices, yields and costs are the ones you entered or that came from published sources, held at
+            today's values. Weather changes the money only through a loss estimate you enter, labelled as an assumption.
+          </li>
+          <li>
+            <strong>What it can tell you.</strong> What to plan for, and which plan holds up better in most of the simulated years.
+          </li>
+          <li>
+            <strong>What it cannot tell you.</strong> What any single year will bring. It does not measure soil moisture, crop growth or
+            yield, and it compares the plans you give it, not every possible plan.
+          </li>
+        </ul>
+        <p>The sections below describe the Union County, North Carolina winter-cover check in detail.</p>
+      </Section>
+
       <Section id="m-question" title="The question it answers">
         <p>
           A corn grower in the North Carolina Piedmont is planning soybeans. Over winter they can leave no planted cover, plant cereal rye
@@ -129,7 +165,7 @@ export function MethodsPage() {
         <p>
           Counts are compared between 1981–2000 and 2006–2025, with the same cutoff in both. 2001–2005 stays in the full record but in
           neither period. Each period needs at least 15 of its 20 springs. "About as often" means the two periods differ by less than 10
-          percentage points. This describes two periods; it is not a trend, a cause, or a forecast.
+          percentage points. This describes two periods only; it does not show a trend or a cause, and it cannot say what any single spring will bring.
         </p>
       </Section>
 
@@ -150,7 +186,7 @@ export function MethodsPage() {
 
       <Section id="m-limits" title="What A.C.R.E does not claim">
         <ul>
-          <li>It does not forecast next spring.</li>
+          <li>It cannot say what any single year, or next spring, will bring.</li>
           <li>It does not measure soil moisture, crop growth, erosion or yield on your field.</li>
           <li>It does not estimate water savings, costs or profit, and does not name a "best" rotation.</li>
           <li>Wheat planting and harvest windows are not yet sourced, so that timing check shows unknown.</li>
@@ -259,7 +295,7 @@ export function PrivacyPage() {
         <ul>
           <li>The Union County sample is stored with this site. Opening it sends nothing anywhere.</li>
           <li>
-            When the live service is connected, applying dates sends your plan dates to it so it can replay them against past
+            When the live service is connected, applying dates sends your plan dates to it so it can check them against past
             springs. Choosing another place sends that place's coordinates so it can find the NASA POWER grid cell.
           </li>
           <li>
@@ -275,8 +311,8 @@ export function PrivacyPage() {
       <Section id="p-terms" title="Terms of use">
         <ul>
           <li>
-            A.C.R.E replays past weather to support a conversation with your Extension agent. It is not a forecast, a field
-            measurement or professional advice, and it makes no promise about yields, costs or outcomes.
+            A.C.R.E gives an evidence-based outlook, built from past weather, to support a conversation with your Extension agent. It cannot say what any single year will bring, is not a field
+            measurement or professional advice, and makes no promise about yields, costs or outcomes.
           </li>
           <li>It is provided as is, without warranty, as a NASA Space Apps Challenge 2026 project.</li>
           <li>

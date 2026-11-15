@@ -33,7 +33,7 @@ describe("planning endpoints (§8–§10)", () => {
     const s = r.data.seasons[0]!;
     expect(s.windows.length).toBeGreaterThan(0);
     expect(s.deadlines.length).toBeGreaterThan(0);
-    expect(r.data.note).toMatch(/not a forecast/i);
+    expect(r.data.note).toMatch(/cannot say what the weather/i);
   });
 
   it("sends available equipment in field context, separate from equipment limitations", async () => {

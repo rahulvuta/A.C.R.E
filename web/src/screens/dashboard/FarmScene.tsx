@@ -14,7 +14,7 @@ import { FarmView } from "../planner/FarmView";
   season of that field's own rotation. Reuses the deep-dive's FarmView/FarmWorld stage.
 
   An illustration of planned dates only: no weather is passed in, so there is no modeled soil
-  water or replayed rain here (that stays in Simulation), and nothing is measured from it.
+  water or simulated rain here (that stays in Simulation), and nothing is measured from it.
 */
 
 // The stage the deep-dive's three square fields occupy (FarmWorld's FIELD_W = 7.4, GAP = 1.1),

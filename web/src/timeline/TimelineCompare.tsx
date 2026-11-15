@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { money, SIM_NOTE } from "./format";
+import { money, OUTLOOK_NOTE } from "./format";
 import { buildRows } from "./schedule";
 import { Gridlines, riskOf } from "./TenYearTimeline";
 import { Legend, Track } from "./Track";
@@ -18,7 +18,7 @@ export interface TimelineCompareProps {
   note?: string;
 }
 
-export function TimelineCompare({ scenarios, riskAt = 0.3, note = SIM_NOTE }: TimelineCompareProps) {
+export function TimelineCompare({ scenarios, riskAt = 0.3, note = OUTLOOK_NOTE }: TimelineCompareProps) {
   const shown = scenarios.slice(0, 6);
   const lanes = useMemo(() => shown.map((s) => ({ s, rows: buildRows(s.timeline, s.rotation ?? []), byYear: new Map(s.yearly.map((y) => [y.year, y])) })), [shown]);
   const years = lanes[0]?.rows.map((r) => r.year) ?? [];

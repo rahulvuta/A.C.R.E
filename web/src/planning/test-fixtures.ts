@@ -164,7 +164,7 @@ export function futureResponse(request?: Pick<FutureRequest, "edits">) {
   const changed = edits.length > 0;
   return futureResponseSchema.parse({
     status: "complete",
-    note: "Planned dates, not a forecast. Future weather is unknown.",
+    note: "Planned dates. They cannot say what the weather in these seasons will bring.",
     seasons: plans.map((plan, i) => ({
       season: String(2027 + i),
       status: "complete",

@@ -3,7 +3,7 @@ import { OriginLabel, ReasonText } from "./shared";
 import "./sim.css";
 
 export const badgeLabels = {
-  best_profit: "Best for profit", most_sustainable: "Most sustainable",
+  best_profit: "Highest estimated margin of these plans", most_sustainable: "Most sustainable",
   lowest_weather_risk: "Lowest weather risk", best_for_priorities: "Best for your priorities",
 } as const;
 export interface BadgeRowProps {

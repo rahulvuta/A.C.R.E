@@ -19,7 +19,7 @@ export function yearSummary(row: Row, y: YearResult | undefined): string {
   const m = y?.money?.margin;
   if (m) parts.push(`Margin median ${money(m.median, m.currency)}.`);
   const dry = y?.indicators?.dry_pre_plant?.probability;
-  if (dry != null) parts.push(`Dry before planting in ${pct(dry)} of replays.`);
+  if (dry != null) parts.push(`Dry before planting in ${pct(dry)} of simulated years.`);
   return parts.join(" ");
 }
 
@@ -60,20 +60,20 @@ export function YearTip({ row, y, x }: { row: Row; y: YearResult | undefined; x:
         </div>
         {range ? (
           <div>
-            <dt>Most replays</dt>
+            <dt>Most years</dt>
             <dd>{range}</dd>
           </div>
         ) : null}
         {dry != null ? (
           <div>
             <dt>Dry before planting</dt>
-            <dd>{pct(dry)} of replays</dd>
+            <dd>{pct(dry)} of simulated years</dd>
           </div>
         ) : null}
         {heavy != null ? (
           <div>
             <dt>Heavy rain at planting</dt>
-            <dd>{pct(heavy)} of replays</dd>
+            <dd>{pct(heavy)} of simulated years</dd>
           </div>
         ) : null}
         {bare != null ? (
@@ -90,7 +90,7 @@ export function YearTip({ row, y, x }: { row: Row; y: YearResult | undefined; x:
         ) : null}
       </dl>
       {m?.includes_assumption ? <p className="tl-tip-note">Includes your own loss estimate for dry springs.</p> : null}
-      <p className="tl-tip-note">Calculated from replays of past NASA weather.</p>
+      <p className="tl-tip-note">Calculated from this field's past NASA weather, run forward in many orders.</p>
     </div>
   );
 }

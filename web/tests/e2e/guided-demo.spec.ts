@@ -58,7 +58,7 @@ test.describe("guided live demo farms", () => {
       await next(page, "Simulate current plan");
       const baselineResponse = await baseline;
       const baselineBody = await expectOk(baselineResponse);
-      expect(baselineBody.method.note).toMatch(/not a forecast/i);
+      expect(baselineBody.method.note).toMatch(/evidence-based outlook/i);
       expect(baselineBody.scenarios[0].timeline).toHaveLength(10);
       await expect(page.getByRole("region", { name: "10-year result", exact: true })).toBeVisible();
 
@@ -95,7 +95,7 @@ test.describe("guided live demo farms", () => {
       const timeline = page.getByRole("region", { name: "10-year plan: My demo alternative", exact: true });
       await expect(timeline).toBeVisible();
       await expect(timeline.locator(".tl-rows > li")).toHaveCount(10);
-      await expect(timeline.getByText(/not a forecast/i)).toBeVisible();
+      await expect(timeline.getByText(/cannot say what any single year will bring/i)).toBeVisible();
       await page.evaluate(async () => { await document.fonts.ready; window.scrollTo(0, 0); });
       await page.mouse.move(0, 0);
       await page.screenshot({ path: `/private/tmp/acre-demo-${demo.id}-timeline.png` });

@@ -324,7 +324,7 @@ export function PlanDetail({
                   </span>
                 </div>
               ))}
-              <p className="pd-era-say">{ERA_TEXT[card.era.result]} Past records, not a forecast.</p>
+              <p className="pd-era-say">{ERA_TEXT[card.era.result]} Past records; they cannot say what any single year will bring.</p>
             </div>
           ) : (
             <p className="pd-empty">Not available for this winter.</p>

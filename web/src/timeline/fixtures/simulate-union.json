@@ -9,7 +9,7 @@
   "runs": 200,
   "seed": 7,
   "source_years": "1981-2025",
-  "note": "Replays real past weather in new orders; not a forecast."
+  "note": "An evidence-based outlook: this field's real past seasons (1981-2025) replayed in new orders over the next 10 seasons. Rain is adjusted for the trend observed in this record. It shows what to plan for under conditions seen here; it cannot say what any single year will bring."
  },
  "scenarios": [
   {
@@ -1821,6 +1821,6 @@
   "badges": [],
   "deltas": [],
   "trade_offs": [],
-  "caveat": "Best of the scenarios you compared, given these numbers and past weather. Not a forecast."
+  "caveat": "The stronger of the plans you compared, given these numbers and the conditions seen at this field. An evidence-based outlook, not a guarantee."
  }
 }

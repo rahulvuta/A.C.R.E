@@ -1,7 +1,7 @@
 import { BadgeRow } from "./BadgeRow";
 import { DeltaList } from "./DeltaList";
 import type { SimulationResult } from "./schema";
-import { COMPARISON_CAVEAT, EventOdds, HISTORY_NOTE, MarginSummary, MoneyContext, OriginLabel, ReasonText, SummaryMetric, readable } from "./shared";
+import { COMPARISON_CAVEAT, EventOdds, OUTLOOK_NOTE, MarginSummary, MoneyContext, OriginLabel, ReasonText, SummaryMetric, readable } from "./shared";
 import "./sim.css";
 
 export interface ScenarioCompareProps {
@@ -15,10 +15,10 @@ export function ScenarioCompare({ result, baselineId, onChoose }: ScenarioCompar
   const baseline = result.scenarios.find(s => s.scenario_id === baselineId);
   const baselineMismatch = comparison?.baseline != null && comparison.baseline !== baselineId;
   return <section className="sim sim-compare" aria-label="Compare scenario plans">
-    <header className="sim-section-heading"><div><h2>Compare your plans</h2><p className="sim-muted">Historical simulation · {readable(result.status)}</p></div>{result.example_label && <p className="sim-example">{result.example_label}</p>}</header>
-    <p className="sim-honesty">{HISTORY_NOTE}</p>
+    <header className="sim-section-heading"><div><h2>Compare your plans</h2><p className="sim-muted">10-year outlook · {readable(result.status)}</p></div>{result.example_label && <p className="sim-example">{result.example_label}</p>}</header>
+    <p className="sim-honesty">{OUTLOOK_NOTE}</p>
     <div className="sim-caveat" role="note">{comparison?.caveat?.trim() || COMPARISON_CAVEAT}</div>
-    {result.method && <p className="sim-method">{result.method.runs} replays use whole past seasons from {result.method.source_years}.<OriginLabel origin={result.method.origin} /></p>}
+    {result.method && <p className="sim-method">{result.method.runs} runs use whole past seasons from {result.method.source_years}, in new orders.<OriginLabel origin={result.method.origin} /></p>}
     {result.reason_text && <p>{result.reason_text}</p>}{result.gaps.length > 0 && <ul>{result.gaps.map((gap, index) => <li key={index}><ReasonText reason={gap} /></li>)}</ul>}
     <BadgeRow badges={comparison?.badges ?? []} scenarioLabels={labels} notDecided={comparison?.not_decided ?? []} />
     {!baseline && <p className="sim-notice">The current plan is not in these results. Differences are shown only when the service supplied them for the selected current plan.</p>}

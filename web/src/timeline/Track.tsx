@@ -54,7 +54,7 @@ export function Legend({ risk }: { risk: number }) {
       </li>
       <li>
         <span className="tl-risk" aria-hidden="true" />
-        Weather risk in {Math.round(risk * 100)}% or more of replays
+        Weather risk in {Math.round(risk * 100)}% or more of simulated years
       </li>
     </ul>
   );

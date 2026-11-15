@@ -1,7 +1,7 @@
 import type { Distribution, Origin, Reason, Scenario, ScenarioEvent, SummaryValue } from "./schema";
 
-export const HISTORY_NOTE = "Replays real past weather in new orders; not a forecast.";
-export const COMPARISON_CAVEAT = "Best of the scenarios you compared, given these numbers and past weather. Not a forecast.";
+export const OUTLOOK_NOTE = "An evidence-based outlook from this field's real past seasons. It shows what to plan for under conditions seen here; it cannot say what any single year will bring.";
+export const COMPARISON_CAVEAT = "The stronger of the plans you compared, given these numbers and the conditions seen at this field. An evidence-based outlook, not a guarantee.";
 export const readable = (text: string) => text.replaceAll("_", " ");
 export const formatNumber = (value: number | null | undefined) => value == null || !Number.isFinite(value) ? "Not available" : new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(value);
 export function formatMoney(value: number | null | undefined, currency?: string) {
@@ -33,7 +33,7 @@ export function ReasonText({ reason }: { reason: Reason }) {
   return <>{reason.crop_id && `${readable(reason.crop_id)}: `}{reason.reason_text || reason.text || reason.reason || "Not available"}<OriginLabel origin={reason.origin} /></>;
 }
 export function MarginSummary({ margin }: { margin?: Distribution | null }) {
-  return <div className="sim-margin"><p className="sim-label">10-year margin, median</p><div className="sim-headline"><span>{formatMoney(margin?.median, margin?.currency)}</span><OriginLabel origin={margin?.origin} /></div><p>Money left after the costs included in this plan, over the whole field.</p><p className="sim-range">p10: <Value value={margin?.p10} currency={margin?.currency} money origin={margin?.origin} /> <span>to p90: </span><Value value={margin?.p90} currency={margin?.currency} money origin={margin?.origin} /></p><p className="sim-muted">The p10–p90 range contains the middle 80% of historical replays; the median is the middle result.</p><SourceLink source={margin?.source} /></div>;
+  return <div className="sim-margin"><p className="sim-label">10-year margin, median</p><div className="sim-headline"><span>{formatMoney(margin?.median, margin?.currency)}</span><OriginLabel origin={margin?.origin} /></div><p>Money left after the costs included in this plan, over the whole field.</p><p className="sim-range">Bad years: <Value value={margin?.p10} currency={margin?.currency} money origin={margin?.origin} /> <span>to good years: </span><Value value={margin?.p90} currency={margin?.currency} money origin={margin?.origin} /></p><p className="sim-muted">The range from bad years to good years holds the middle 80% of simulated years; the median is the middle result.</p><SourceLink source={margin?.source} /></div>;
 }
 const assumptionLabels: Record<string, string> = { dry_spring_pct: "dry-spring loss estimate", heavy_rain_pct: "heavy-rain loss estimate" };
 export function MoneyContext({ scenario }: { scenario: Scenario }) {
@@ -49,5 +49,5 @@ const eventLabels: Record<string, string> = {
 };
 export function EventOdds({ events }: { events: ScenarioEvent[] }) {
   if (!events.length) return <p className="sim-muted">Not available. No event odds were returned.</p>;
-  return <ul className="sim-events">{events.map((event, index) => <li key={`${event.event}-${index}`}><p>{event.text || eventLabels[event.event] || `The service tracked this event: ${readable(event.event)}.`}<OriginLabel origin={event.origin} /></p><p className="sim-muted">{event.probability == null ? "Event odds: Not available." : `${new Intl.NumberFormat("en-US", { style: "percent", maximumFractionDigits: 1 }).format(event.probability)} of historical replays included this event.`}<OriginLabel origin={event.origin} /></p></li>)}</ul>;
+  return <ul className="sim-events">{events.map((event, index) => <li key={`${event.event}-${index}`}><p>{event.text || eventLabels[event.event] || `The service tracked this event: ${readable(event.event)}.`}<OriginLabel origin={event.origin} /></p><p className="sim-muted">{event.probability == null ? "Event odds: Not available." : `${new Intl.NumberFormat("en-US", { style: "percent", maximumFractionDigits: 1 }).format(event.probability)} of simulated years included this event.`}<OriginLabel origin={event.origin} /></p></li>)}</ul>;
 }

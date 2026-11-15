@@ -40,7 +40,7 @@ const INDICATOR_LABEL: Record<string, string> = {
 export const indicatorLabel = (k: string) => INDICATOR_LABEL[k] ?? k.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase());
 
 export const BADGE_LABEL: Record<string, string> = {
-  best_profit: "Best for profit",
+  best_profit: "Highest estimated margin of these plans",
   most_sustainable: "Most sustainable",
   lowest_weather_risk: "Lowest weather risk",
   best_for_priorities: "Best for your priorities",
