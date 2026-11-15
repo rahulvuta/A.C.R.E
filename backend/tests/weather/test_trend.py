@@ -103,3 +103,39 @@ def test_method_note_adjusted_sentence_is_in_the_agreed_place():
                     "in new orders over the next 7 seasons. Rain is adjusted for the trend observed "
                     "in this record. It shows what to plan for under conditions seen here; it "
                     "cannot say what any single year will bring.")
+
+
+def test_simulate_with_an_applied_trend_keeps_the_historical_reference(monkeypatch):
+    from dataclasses import replace
+
+    from acre.compare import engine as comparison_engine
+    from acre.compare import locations
+    from acre.compare.context import get_context
+    from acre.simulate import seasons
+    from acre.weather.series import DailySeries
+
+    monkeypatch.setenv("ACRE_OFFLINE", "1")
+    daily = _daily(+8)
+    daily["gwettop"] = 0.4
+    daily["gwetroot"] = 0.5
+    daily["tmean_c"] = 18.0
+    ctx = replace(get_context(), series=DailySeries(daily.reset_index()), snapshot_hash="f" * 64)
+    monkeypatch.setattr(locations, "choose", lambda *a, **k: locations.Choice("ok", ctx=ctx))
+    plan = NC_SCENARIOS[0]["rotation"][0]
+    reference = comparison_engine.reference_for(ctx, plan["next_plant"])
+    original = reference.model_dump()
+    seasons.clear_cache()
+    try:
+        client = TestClient(app)
+        body = {"location": UNION, "scenarios": NC_SCENARIOS, "runs": 50}
+        response = client.post("/v1/scenarios/simulate", json=body)
+        assert response.status_code == 200
+        result = response.json()
+        assert result["status"] == "complete"
+        assert result["method"]["climate_adjustment"]["applied"] is True
+        plain = client.post("/v1/scenarios/simulate", json={**body, "climate": "none"}).json()
+        assert result["scenarios"][0]["yearly"] != plain["scenarios"][0]["yearly"]
+        assert reference.model_dump() == original
+        assert reference.series_fingerprint == ctx.series.fingerprint
+    finally:
+        seasons.clear_cache()

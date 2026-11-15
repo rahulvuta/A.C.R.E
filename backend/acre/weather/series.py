@@ -6,6 +6,7 @@ import hashlib
 from dataclasses import dataclass
 from datetime import date, timedelta
 
+import numpy as np
 import pandas as pd
 
 
@@ -31,6 +32,7 @@ class DailySeries:
         # one row per calendar day with no gaps: windows inside the record are position slices
         self._contiguous = (self._frame.index.is_unique and len(self._frame)
                             == (self.last_date - self.first_date).days + 1)  # fmt: skip
+        self._valid_counts: dict[tuple[str, ...], np.ndarray] = {}
 
     @property
     def fingerprint(self) -> str:
@@ -62,9 +64,22 @@ class DailySeries:
         return self._frame[columns].reindex(index)
 
     def stats(self, columns: list[str], start: date, end_exclusive: date) -> WindowStats:
-        rows = self.window(columns, start, end_exclusive)
-        expected = len(rows)
-        valid = int(rows.notna().to_numpy().all(axis=1).sum())
+        if self._contiguous:
+            key = tuple(columns)
+            counts = self._valid_counts.get(key)
+            if counts is None:
+                good = self._frame[columns].notna().to_numpy().all(axis=1)
+                counts = np.concatenate(([0], np.cumsum(good, dtype=np.int64)))
+                self._valid_counts[key] = counts
+            expected = max(0, (end_exclusive - start).days)
+            n = len(self._frame)
+            i0 = min(n, max(0, (start - self.first_date).days))
+            i1 = min(n, max(i0, (end_exclusive - self.first_date).days))
+            valid = int(counts[i1] - counts[i0])
+        else:
+            rows = self.window(columns, start, end_exclusive)
+            expected = len(rows)
+            valid = int(rows.notna().to_numpy().all(axis=1).sum())
         first, last = start, end_exclusive - timedelta(days=1)
         before = max(0, min((self.first_date - first).days, expected))
         after = max(0, min((last - self.last_date).days, expected))
