@@ -168,8 +168,9 @@ def _source(item: dict[str, Any]) -> dict[str, Any]:
             "locator": item.get("source_locator"), "evidence_quote": item.get("evidence_quote")}  # fmt: skip
 
 
-def _drop(g: dict[str, Any], what: str, why: str) -> None:
-    g["dropped"].append({"item": what, "reason": why})
+def _drop(g: dict[str, Any], what: str, why: str, url: str | None = None) -> None:
+    # the cited URL is a public page; it is kept so a dead or mistyped link can be diagnosed
+    g["dropped"].append({"item": what, "reason": why, **({"url": url} if url else {})})
 
 
 def _usable(g: dict[str, Any], kind: str, i: dict[str, Any]) -> bool:
@@ -220,9 +221,11 @@ def check_calendars(items: list[dict[str, Any]], cid: str, sage: dict[str, Any],
                    if w.get(k) is not None for x in ("start", "end")) or not w.get("plant"):  # fmt: skip
             drop(what, "plant window missing or a date is not a valid MM-DD")
             continue
-        origin = _origin(w, pages.get(w["source_url"]))
+        page = pages.get(w["source_url"])
+        origin = _origin(w, page)
         if origin is None:
-            drop(what, "source page unreachable")
+            _drop(g, what, f"source page unreachable ({getattr(page, 'reason', None)})",
+                  w["source_url"])
             continue
         miss = verify.unsupported_numbers(w, (), ("plant.start", "plant.end", "harvest.start",
                                                   "harvest.end"))  # fmt: skip
