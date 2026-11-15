@@ -11,10 +11,10 @@ import { cropLabel } from "../guided/format";
 import { cropsOf } from "../guided/context";
 import type { StepId } from "../guided/steps";
 import { StepNow } from "../guided/StepNow";
-import { ReadingsLog, StepPlan } from "../guided/StepPlan";
+import { StepPlan } from "../guided/StepPlan";
 import { StepTry } from "../guided/StepTry";
 import { StrategyView } from "./StrategyBoxes";
-import { ResearchPanel } from "../workspace/ResearchPanel";
+import { FieldConditions } from "./FieldConditions";
 
 /*
   One field's workspace: the Overview runs the simulation and shows the plans side by side; the other sections that reuse the guided simulator's step components
@@ -52,7 +52,7 @@ export function FieldWorkspace({ api, farm, field, tab, onTab, onClose, onCopy }
     updateSimField(field.field_id, {
       rotation: field.plan ? [field.plan] : [],
       equipment: field.equipment ?? [],
-      readings: (field.readings ?? []).map((r) => ({ date: r.date, kind: r.kind, value: r.value, depthCm: r.depth_cm ?? null, note: r.note ?? null })),
+      readings: (field.readings ?? []).map(({ depth_cm, ...r }) => ({ ...r, depthCm: depth_cm ?? null })),
     });
   }, [field]);
 
@@ -76,15 +76,7 @@ export function FieldWorkspace({ api, farm, field, tab, onTab, onClose, onCopy }
           <button type="button" className="btn btn-primary" onClick={() => onTab("overview")}>Done, back to field</button>
         </div>
       </>)}
-      {pane("conditions", () => (
-        <div className="gf-now">
-          {profile ? <ResearchPanel profile={profile} field={field} /> : <p className="dash-muted">{place?.profile.state === "error" ? place.profile.message : "Loading this place's regional profile…"}</p>}
-          <details className="db-card" open>
-            <summary>Field measurements and readings</summary>
-            <ReadingsLog ctx={ctx} />
-          </details>
-        </div>
-      ))}
+      {pane("conditions", () => <FieldConditions ctx={ctxFor("conditions")} />)}
       {pane("recommendations", () => <StepTry ctx={ctxFor("recommendations")} />)}
       {pane("financial", () => (
         <div className="gf-now">

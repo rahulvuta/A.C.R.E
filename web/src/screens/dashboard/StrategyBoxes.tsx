@@ -1,4 +1,5 @@
 import { ConfidenceBadge } from "../../ui/ConfidenceBadge";
+import { FieldConditionNotice } from "./FieldConditions";
 import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { asFieldPlan } from "../../api/adapt";
@@ -716,6 +717,7 @@ export function StrategyView({ ctx, onTab }: { ctx: StepContext; onTab: (t: stri
       <div className="sb-head">
         <h2>The next {HORIZON_YEARS} years, plan by plan</h2>
       </div>
+      <FieldConditionNotice ctx={ctx} onOpen={() => onTab("conditions")} />
       {!rotationReady(sim.rotation) ? (
         <section className="db-card">
           <p className="gf-muted">Set a complete crop rotation to see what each plan spends and earns.</p>

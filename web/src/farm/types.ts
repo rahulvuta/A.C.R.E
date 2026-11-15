@@ -42,10 +42,13 @@ export interface FieldPlan {
 /** A grower's own dated reading (contract §14). Stays in the browser; `origin` is always grower. */
 export interface FieldReading {
   date: string; // YYYY-MM-DD
-  kind: "soil_moisture_pct" | "soil_moisture_vwc" | "rainfall_mm" | "soil_temp_c" | "note";
+  kind: import("../inputs/schema").ReadingKind;
   value: number | null;
   depth_cm?: number | null;
   note?: string | null;
+  name?: string;
+  unit?: string;
+  moisture_basis?: "saturation" | "volumetric" | "sensor_percent" | null;
 }
 
 export interface Field {

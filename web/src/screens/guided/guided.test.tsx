@@ -121,6 +121,7 @@ describe("guided flow (U1)", () => {
     });
     const log = await screen.findByRole("region", { name: "Field readings" });
     fireEvent.change(within(log).getByLabelText("Date", { exact: true }), { target: { value: "2026-04-02" } });
+    fireEvent.change(within(log).getByRole("combobox", { name: "Reading type" }), { target: { value: "soil_moisture_pct" } });
     fireEvent.change(within(log).getByRole("spinbutton", { name: "Soil moisture (%)" }), { target: { value: "21" } });
     fireEvent.click(within(log).getByRole("button", { name: "Add reading" }));
     await waitFor(() => expect(within(log).getAllByText("You entered").length).toBeGreaterThan(1));

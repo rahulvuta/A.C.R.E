@@ -96,18 +96,19 @@ export const economicsRequestSchema = z.object({ location: locationSchema, crops
 export type EconomicsRequest = z.infer<typeof economicsRequestSchema>;
 export const equipmentResponseSchema = z.object({ meta, equipment: z.array(z.object({ id: z.string().min(1), label: z.string().min(1) })) });
 export type EquipmentOption = z.infer<typeof equipmentResponseSchema>["equipment"][number];
-export const readingKinds = ["soil_moisture_pct", "soil_moisture_vwc", "rainfall_mm", "soil_temp_c", "note"] as const;
+export const readingKinds = ["soil_ph", "soil_moisture_pct", "soil_moisture_vwc", "rainfall_mm", "soil_temp_c", "organic_matter_pct", "salinity_ds_m", "custom", "note"] as const;
 export type ReadingKind = typeof readingKinds[number];
 const calendarDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(v => {
   const date = new Date(`${v}T00:00:00Z`);
   return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === v;
 }, "Choose a valid date.");
-export const readingSchema = z.object({ date: calendarDateSchema, kind: z.enum(readingKinds), value: z.number().finite().nullable(), depth_cm: z.number().finite().min(0).max(300).nullable().optional(), note: z.string().max(500).nullable().optional(), origin: z.literal("grower") }).superRefine((reading, ctx) => {
+export const readingSchema = z.object({ date: calendarDateSchema, kind: z.enum(readingKinds), value: z.number().finite().nullable(), depth_cm: z.number().finite().min(0).max(300).nullable().optional(), note: z.string().max(500).nullable().optional(), name: z.string().max(80).optional(), unit: z.string().max(30).optional(), moisture_basis: z.enum(["saturation", "volumetric", "sensor_percent"]).nullable().optional(), origin: z.literal("grower") }).superRefine((reading, ctx) => {
   if (reading.kind === "note") {
     if (reading.value !== null) ctx.addIssue({ code: "custom", path: ["value"], message: "A field note has no numeric value." });
     if (!reading.note?.trim()) ctx.addIssue({ code: "custom", path: ["note"], message: "Write a note." });
   } else if (reading.value === null) ctx.addIssue({ code: "custom", path: ["value"], message: "Enter a reading; leave it blank if you do not know it." });
-  const bounds: Partial<Record<ReadingKind, [number, number]>> = { soil_moisture_pct: [0, 100], soil_moisture_vwc: [0, 1], rainfall_mm: [0, 1000], soil_temp_c: [-30, 60] };
+  if (reading.kind === "custom" && (!reading.name?.trim() || !reading.unit?.trim())) ctx.addIssue({ code: "custom", message: "Enter a condition name and its unit." });
+  const bounds: Partial<Record<ReadingKind, [number, number]>> = { soil_moisture_pct: [0, 100], soil_moisture_vwc: [0, 1], rainfall_mm: [0, 1000], soil_temp_c: [-30, 60], soil_ph: [0, 14], organic_matter_pct: [0, 100], salinity_ds_m: [0, 100] };
   const range = bounds[reading.kind];
   if (reading.value !== null && range && (reading.value < range[0] || reading.value > range[1])) ctx.addIssue({ code: "custom", path: ["value"], message: `Enter a value between ${range[0]} and ${range[1]}.` });
 });
