@@ -1352,6 +1352,7 @@ export function adaptSimulation(r: z.infer<typeof BackendSimulation>): Simulatio
           caveat: c.caveat || CAVEAT,
         }
       : null,
+    raw: r as Record<string, unknown>,
   };
 }
 

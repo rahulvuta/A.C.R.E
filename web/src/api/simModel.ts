@@ -78,6 +78,8 @@ export interface Simulation {
   method: { weather: string; runs: number | null; seed: number | null; sourceYears: string | null; note: string };
   scenarios: ScenarioResult[];
   comparison: Comparison | null;
+  /** The response as returned, for components that read the backend's shape (U2, U4). */
+  raw: Record<string, unknown>;
 }
 
 // ------------------------------------------------------------------ §12 economics
