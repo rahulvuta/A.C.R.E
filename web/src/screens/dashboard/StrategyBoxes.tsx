@@ -1,3 +1,4 @@
+import { ConfidenceBadge } from "../../ui/ConfidenceBadge";
 import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { asFieldPlan } from "../../api/adapt";
@@ -476,10 +477,12 @@ export function StrategyBox({ box, badges, highlight, waiting, onTab, onAdd, can
         )}
       </section>
     );
+  const rawScenarios = Array.isArray(box.raw?.scenarios) ? box.raw.scenarios as Array<Record<string, unknown>> : [];
+  const confidenceResult = rawScenarios.find(s => s.scenario_id === box.scenario?.scenarioId);
   const complete = box.result?.moneyStatus === "complete";
   return (
     <section className={`db-card sb-box${highlight ? " sb-best" : ""}`} aria-label={box.title}>
-      <div className="db-card-head sb-box-head"><h3 title={box.title}>{box.title || `Plan ${box.slot + 1}`}</h3></div>
+      <div className="db-card-head sb-box-head" style={{ flexWrap: "wrap", gap: 8 }}><h3 title={box.title}>{box.title || `Plan ${box.slot + 1}`}</h3><span><ConfidenceBadge value={confidenceResult?.confidence} label="Simulation support" /><ConfidenceBadge value={confidenceResult?.estimate_confidence} label="Estimate support" /></span></div>
       <ul className="sb-badges" aria-label="Where this plan comes out ahead">{badges.map((b, i) => <li key={i} title={b.why}>{b.badge}</li>)}</ul>
       {box.result ? (
         <>

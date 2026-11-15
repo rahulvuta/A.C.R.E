@@ -240,7 +240,7 @@ describe("farmer inputs", () => {
   it("splits prices from weather-loss estimates and labels the filled-in values", async () => {
     const { unmount } = render(<EconomicsEditor show="prices" location={exampleLocation} crops={["soybean"]} area={{ value: 16.2, unit: "ha" }} value={createEconomicsValue()} onChange={vi.fn()} api={exampleApi} />);
     await waitFor(() => expect(screen.getByRole("spinbutton", { name: "Price · typical value" })).toHaveValue(11.2));
-    expect(screen.getByText(/We filled these in from published sources/)).toBeInTheDocument();
+    expect(screen.getByText(/Demo defaults may use mock prices/)).toBeInTheDocument();
     expect(screen.queryByRole("group", { name: /weather losses/ })).not.toBeInTheDocument();
     unmount();
     const estimate = vi.fn(exampleApi.estimate);

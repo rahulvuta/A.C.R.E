@@ -1,3 +1,4 @@
+import { ConfidenceBadge } from "../../ui/ConfidenceBadge";
 import type { LossAssumptions, Simulation } from "../../api/simModel";
 import { updateSimField } from "../../state/simField";
 import { useSimulation, type SimState } from "../../state/useSimulation";
@@ -83,6 +84,7 @@ export function SimulationResult({ data }: { data: Simulation }) {
       <section className="db-card" aria-label="10-year result">
         <div className="db-card-head">
           <h2>{s.label}: 10 years</h2>
+          <ConfidenceBadge value={(data.raw.method as Record<string, unknown> | undefined)?.confidence} label="Simulation support" />
         </div>
         <MethodNote sim={data} />
         {u2 ? <ScenarioResults scenario={u2} /> : <ScenarioSummary s={s} />}
