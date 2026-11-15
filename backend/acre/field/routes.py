@@ -249,3 +249,8 @@ def get_vocab_readings() -> Any:
 from acre.economics.routes import router as _economics_router  # noqa: E402
 
 router.include_router(_economics_router)
+
+# Card S4: the crop library.
+from acre.croplib.routes import router as _croplib_router  # noqa: E402
+
+router.include_router(_croplib_router)

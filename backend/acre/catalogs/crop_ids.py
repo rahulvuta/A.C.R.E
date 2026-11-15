@@ -75,14 +75,54 @@ BY_ID: dict[str, CropId] = {c.crop_id: c for c in CROPS}
 _ALIAS: dict[str, str] = {a: c.crop_id for c in CROPS for a in c.aliases}
 
 
+#: Crops researched into the crop library (card S4), registered at run time. They are looked up
+#: only after the built-in list, so they can never shadow a built-in id or alias.
+EXTRA: dict[str, CropId] = {}
+_EXTRA_ALIAS: dict[str, str] = {}
+_LOADED: list[str] = []  # the library version last loaded
+
+
+def register(c: CropId) -> None:
+    if c.crop_id in BY_ID or c.crop_id in _ALIAS:
+        return
+    EXTRA[c.crop_id] = c
+    for a in c.aliases:
+        if a not in BY_ID and a not in _ALIAS:
+            _EXTRA_ALIAS[a] = c.crop_id
+
+
+def clear_extra() -> None:
+    EXTRA.clear()
+    _EXTRA_ALIAS.clear()
+    _LOADED.clear()
+
+
+def _extra(key: str) -> str | None:
+    if key in EXTRA:
+        return key
+    if key in _EXTRA_ALIAS:
+        return _EXTRA_ALIAS[key]
+    try:  # a crop researched by another worker since we last looked
+        from acre.croplib import library
+
+        if library.load_extras(_LOADED):
+            return key if key in EXTRA else _EXTRA_ALIAS.get(key)
+    except Exception:  # noqa: BLE001 - the library is optional; a miss stays a miss
+        return None
+    return None
+
+
 def canonical(crop_id: str | None) -> str | None:
-    """The FAO-style id for ``crop_id`` (an id or an alias), or ``None`` if it is not a crop."""
-    if not crop_id:
+    """The FAO-style id for ``crop_id`` (an id or an alias), or ``None`` if it is not a crop.
+    Crops researched into the crop library (S4) are known too."""
+    if not crop_id or not isinstance(crop_id, str):
         return None
     key = crop_id.strip().lower()
     if key in BY_ID:
         return key
-    return _ALIAS.get(key)
+    if key in _ALIAS:
+        return _ALIAS[key]
+    return _extra(key)
 
 
 def is_known(crop_id: str | None) -> bool:
@@ -91,7 +131,7 @@ def is_known(crop_id: str | None) -> bool:
 
 def info(crop_id: str | None) -> CropId | None:
     c = canonical(crop_id)
-    return BY_ID.get(c) if c else None
+    return (BY_ID.get(c) or EXTRA.get(c)) if c else None
 
 
 def family_of(crop_id: str | None) -> str | None:
@@ -101,10 +141,10 @@ def family_of(crop_id: str | None) -> str | None:
 
 def equivalents(crop_id: str) -> list[str]:
     """``crop_id``, its canonical id and every alias of it (deterministic order)."""
-    c = canonical(crop_id)
-    if c is None:
+    i = info(crop_id)
+    if i is None:
         return [crop_id]
-    out = [crop_id, c, *BY_ID[c].aliases]
+    out = [crop_id, i.crop_id, *i.aliases]
     return list(dict.fromkeys(out))
 
 
