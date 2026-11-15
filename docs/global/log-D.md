@@ -39,3 +39,7 @@ D→C: Field model has no goals/crop_history; D keeps them in `acre.fieldplannin
 Merged fe-u3 and mounted its crop, calendar, economics, equipment, and reading editors directly in the guided flow. Added calendar comparison, readable provenance labels, equipment/readings in farm exports, and live Demo specs for Union County and Pergamino. Fixed request shapes for costs, readings, loss assumptions, recommendation equipment, and optional season counts; crop aliases connect legacy field corn to maize references.
 
 Validation: 444 unit tests passed; TypeScript and production build passed. Live Demo verification remains in progress: baseline simulations and autofill work, but suggestion generation exceeds the browser timeout. Do not treat the new end-to-end specs as passed until that is resolved and both journeys complete.
+
+## Final verification — 2026-11-14
+
+The integrated main checkout passed 444 frontend tests, typecheck, and production build. Both live Playwright Demo flows passed against the real local API: Union County and Pergamino, including autofill, baseline replay, a suggestion, a custom plan, three-way comparison, calendar comparison, plan selection, a zero-valued VWC reading with depth, reload, and JSON export. Desktop screenshots were inspected; legacy timeline CSS was scoped to fix overlapping month labels. Recommendation analysis now reuses equivalent agronomic legs while preserving candidate identities.
