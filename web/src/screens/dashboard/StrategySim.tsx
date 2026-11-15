@@ -187,7 +187,7 @@ export function StrategySim({ title, rotation, geometry, monthly, conditions, at
         {can3d && mounted ? (
           <Boundary key={gen} fallback={<p className="ss-fallback">The 3D field could not start on this device.</p>}>
             <Suspense fallback={<p className="ss-fallback" role="status">Loading the 3D field…</p>}>
-              <FarmWorld strips={[strip]} states={[state]} outlines={[geometry]} day={0} preset={view} animate={false} palette={palette} onSelect={() => {}} resetKey={resetKey} />
+              <FarmWorld strips={[strip]} states={[state]} outlines={[geometry]} day={0} preset={view} animate={true} palette={palette} onSelect={() => {}} resetKey={resetKey} />
             </Suspense>
           </Boundary>
         ) : (
