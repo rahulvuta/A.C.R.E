@@ -11,8 +11,19 @@ import type { CropOverride, DemoFarm, LossAssumptions, Reading, Scenario } from 
   (localStorage `acre.simfield.v1`, keyed by field_id), next to the farms in `acre.farms.v1`.
   It leaves the browser only inside a simulate / economics request (contract §14).
 */
+/** One part of the field with its own crops. `share` is a fraction of the field (0 to 1). */
+export interface SimZone {
+  zoneId: string;
+  name: string;
+  share: number;
+}
 export interface SimField {
+  /** The field's rotation; with zones, the largest zone's (so screens that show one plan keep working). */
   rotation: FieldPlan[];
+  /** Zones of the field, empty when the whole field has one plan. */
+  zones?: SimZone[];
+  /** Each zone's own current rotation. */
+  zoneRotations?: Record<string, FieldPlan[]>;
   equipment: string[];
   readings: Reading[];
   overrides: Record<string, CropOverride>;
@@ -28,6 +39,7 @@ export interface SimField {
   demo: string | null;
 }
 export const MAX_ALTERNATIVES = 5;
+export const MAX_ZONES = 8;
 export const BASELINE_ID = "current";
 const KEY = "acre.simfield.v1";
 
@@ -42,6 +54,8 @@ export const DEFAULT_PRIORITIES: Record<string, number> = {
 };
 export const emptySimField = (): SimField => ({
   rotation: [],
+  zones: [],
+  zoneRotations: {},
   equipment: [],
   readings: [],
   overrides: {},
@@ -119,9 +133,27 @@ export function useSimField(fieldId: string | null): SimField {
   return useSyncExternalStore(subscribe, () => (fieldId ? (get()[fieldId] ?? EMPTY) : EMPTY));
 }
 
-/** The baseline scenario: the field's current rotation. */
+/** The baseline scenario: the field's current rotation (per zone when the field has zones). */
 export function baselineOf(f: SimField): Scenario {
-  return { scenarioId: BASELINE_ID, label: "What I do now", isBaseline: true, rotation: f.rotation, from: "current" };
+  const zoned = (f.zones ?? []).length > 0;
+  return { scenarioId: BASELINE_ID, label: "What I do now", isBaseline: true, rotation: f.rotation, ...(zoned ? { zoneRotations: f.zoneRotations ?? {} } : {}), from: "current" };
+}
+
+/** Sets the zones and their rotations together; `rotation` follows the largest zone. Fewer than two zones means no zones. */
+export function setZoneLayout(fieldId: string, zones: SimZone[], zoneRotations: Record<string, FieldPlan[]>) {
+  if (zones.length < 2) {
+    const only = zones[0] ? (zoneRotations[zones[0].zoneId] ?? []) : getSimField(fieldId).rotation;
+    updateSimField(fieldId, { zones: [], zoneRotations: {}, rotation: only });
+    return;
+  }
+  const biggest = zones.reduce((a, z) => (z.share > a.share ? z : a), zones[0]!);
+  updateSimField(fieldId, { zones, zoneRotations, rotation: zoneRotations[biggest.zoneId] ?? [] });
+}
+export const newZoneId = () => `zn_${Math.random().toString(36).slice(2, 8)}`;
+/** Equal shares that add up to exactly 1. */
+export function evenShares(n: number): number[] {
+  const each = Math.floor(10000 / n) / 10000;
+  return Array.from({ length: n }, (_, i) => (i === n - 1 ? Math.round((1 - each * (n - 1)) * 10000) / 10000 : each));
 }
 
 export function resetSimFieldsForTests() {

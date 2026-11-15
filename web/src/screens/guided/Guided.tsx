@@ -9,7 +9,7 @@ import { peekSimulation } from "../../state/useSimulation";
 import { Banner, Term } from "../../ui/components";
 import { navIcon } from "../planner/SideNav";
 import { SourceBanner } from "../workspace/SourceBanner";
-import { rotationReady, simulateRequest, type StepContext } from "./context";
+import { baselineReady, simulateRequest, type StepContext } from "./context";
 import { STEPS, stepIndex, type StepDef, type StepId } from "./steps";
 import { StepFarm } from "./StepFarm";
 import { economicsReady } from "./inputState";
@@ -125,7 +125,7 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
   const fullReq = simulateRequest(ctx, sim.scenarios);
   const done: Record<StepId, boolean> = {
     farm: Boolean(farm?.fields.length),
-    now: rotationReady(sim.rotation) && economicsReady(sim),
+    now: baselineReady(sim) && economicsReady(sim),
     simulate: peekSimulation(baseReq).state === "ready",
     try: sim.scenarios.length > 0,
     compare: sim.scenarios.length > 0 && peekSimulation(fullReq).state === "ready",
