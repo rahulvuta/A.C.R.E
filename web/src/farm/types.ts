@@ -39,6 +39,18 @@ export interface FieldPlan {
   origins?: Partial<Record<"crops" | "dates" | "winter", Origin>>;
 }
 
+/** A grower's own dated reading (contract §14). Stays in the browser; `origin` is always grower. */
+export interface FieldReading {
+  date: string; // YYYY-MM-DD
+  kind: import("../inputs/schema").ReadingKind;
+  value: number | null;
+  depth_cm?: number | null;
+  note?: string | null;
+  name?: string;
+  unit?: string;
+  moisture_basis?: "saturation" | "volumetric" | "sensor_percent" | null;
+}
+
 export interface Field {
   field_id: string; // stable, e.g. "fld_" + random
   name: string;
@@ -47,6 +59,9 @@ export interface Field {
   display_area_ha?: number;
   plan: FieldPlan | null;
   notes?: string;
+  /** Equipment ids from the §14 vocabulary (`other:<text>` allowed). */
+  equipment?: string[];
+  readings?: FieldReading[];
 }
 
 export interface Farm {
@@ -56,6 +71,8 @@ export interface Farm {
   /** Where the map was centred when the farm was created; not sent anywhere on its own. */
   anchor: { latitude: number; longitude: number };
   fields: Field[];
+  /** Set (to the demo's label) on an example farm, so it stays apart from the grower's own fields. */
+  demo?: string;
   created_at: string; // ISO
   updated_at: string; // ISO
 }

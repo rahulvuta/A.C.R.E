@@ -1,3 +1,4 @@
+import { createInputsApi } from "../inputs/api";
 import type { ZodType, ZodTypeDef } from "zod";
 import {
   adaptCompare,
@@ -29,9 +30,39 @@ import {
   BackendReverse,
   BackendWeather,
   toBackendFarm,
+  adaptFuture,
+  adaptGeneration,
+  adaptRecommendation,
+  BackendFuture,
+  BackendGeneration,
+  BackendRecommendation,
+  toBackendGoals,
+  toBackendPlace,
+  toBackendPlanningField,
 } from "./adapt";
-import type { Capabilities, FarmAnalysis, GeoSearch, InputIssue, PlaceInfo, RegionProfile, ResearchJob, WeatherCell } from "./model";
+import type { Capabilities, FarmAnalysis, FuturePlan, Generation, GeoSearch, Goals, InputIssue, PlaceInfo, PlanningField, PlanPlace, Recommendation, RegionProfile, ResearchJob, WeatherCell } from "./model";
 import type { Farm } from "../farm/types";
+import {
+  BackendAutofill,
+  BackendCropJob,
+  BackendCropSearch,
+  BackendDemo,
+  BackendEconomics,
+  BackendSimulation,
+  BackendVocab,
+  adaptAutofill,
+  adaptCropJob,
+  adaptCropSearch,
+  adaptDemo,
+  adaptEconomics,
+  adaptSimulation,
+  adaptVocab,
+  toBackendAutofill,
+  toBackendEconomics,
+  toBackendSimulate,
+  type SimulateRequest,
+} from "./adapt";
+import type { Autofill, CropJob, CropSearch, DemoFarm, Economics, Simulation, VocabItem } from "./simModel";
 import { LocationResolveResponse, ReplayResponse, type CompareResponse, type PlanInput, type SensitivityResponse, type YearsResponse } from "./schema";
 
 /*
@@ -280,6 +311,10 @@ export function latestOnly() {
   screens say so instead of inventing data; tests and the fixture mode pass `fixtureFetch`.
   Coordinates go only in the request to the service, never in a log.
 */
+/** A simulation runs ~200 sequences of seasons per plan; on a small server (or one waking up) that can take a minute. */
+export const SIMULATE_TIMEOUT_MS = 120_000;
+export const PLANNING_TIMEOUT_MS = 120_000;
+
 export function createGlobalClient(opts: { apiBase: string | null; timeoutMs: number; fetchImpl?: FetchLike }) {
   const fetchImpl: FetchLike = opts.fetchImpl ?? ((u, init) => fetch(u, init));
   const base = { timeoutMs: opts.timeoutMs, fetchImpl };
@@ -287,26 +322,37 @@ export function createGlobalClient(opts: { apiBase: string | null; timeoutMs: nu
   const offline: Failure = { ok: false, kind: "offline", message: "This needs the A.C.R.E service, which is not connected in this build." };
   const post = (body: unknown) => ({ method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
   const coords = (p: LatLon) => `lat=${encodeURIComponent(p.latitude)}&lon=${encodeURIComponent(p.longitude)}`;
+  const inFlight = new Map<string, Promise<Result<unknown>>>();
 
   async function call<B, T>(
     path: string,
     schema: ZodType<B, ZodTypeDef, unknown>,
     make: (b: B) => T,
     init?: { method?: string; headers?: Record<string, string>; body?: string },
+    timeoutMs = /^\/v1\/plans\/(generate|recommend|future)$/.test(path) ? Math.max(base.timeoutMs, PLANNING_TIMEOUT_MS) : base.timeoutMs,
   ): Promise<Result<T>> {
     const url = api(path);
     if (!url) return offline;
-    const r = await getJson(url, schema, { ...base, init });
-    if (!r.ok) return r;
-    try {
-      return { ok: true, data: make(r.data), origin: "live" };
-    } catch (err) {
-      const issue = (err as { issues?: Array<{ path: Array<string | number>; message: string }> }).issues?.[0];
-      return { ok: false, kind: "schema", message: "The data does not match the agreed format.", detail: issue ? `${issue.path.join(".")}: ${issue.message}` : String(err) };
-    }
+    const key = JSON.stringify([url, init, timeoutMs]);
+    const pending = inFlight.get(key);
+    if (pending) return pending as Promise<Result<T>>;
+    const request = (async (): Promise<Result<T>> => {
+      const r = await getJson(url, schema, { ...base, timeoutMs, init });
+      if (!r.ok) return r;
+      try {
+        return { ok: true, data: make(r.data), origin: "live" };
+      } catch (err) {
+        const issue = (err as { issues?: Array<{ path: Array<string | number>; message: string }> }).issues?.[0];
+        return { ok: false, kind: "schema", message: "The data does not match the agreed format.", detail: issue ? `${issue.path.join(".")}: ${issue.message}` : String(err) };
+      }
+    })();
+    inFlight.set(key, request);
+    try { return await request; }
+    finally { inFlight.delete(key); }
   }
 
   return {
+    inputs: createInputsApi(opts.apiBase ?? "", opts.apiBase ? fetchImpl : async () => { throw new Error(offline.message); }),
     hasLiveApi: Boolean(opts.apiBase),
     geoSearch: (q: string, limit = 5): Promise<Result<GeoSearch>> =>
       call(`/v1/geo/search?q=${encodeURIComponent(q)}&limit=${limit}`, BackendGeoSearch, adaptGeoSearch),
@@ -320,6 +366,39 @@ export function createGlobalClient(opts: { apiBase: string | null; timeoutMs: nu
       call(`/v1/regions/${encodeURIComponent(regionKey)}/profile`, BackendProfile, adaptProfile),
     startResearch: (regionKey: string): Promise<Result<ResearchJob>> => call("/v1/regions/research", BackendResearch, adaptResearch, post({ region_key: regionKey })),
     research: (jobId: string): Promise<Result<ResearchJob>> => call(`/v1/regions/research/${encodeURIComponent(jobId)}`, BackendResearch, adaptResearch),
+    /** §8: candidate rotations for one field. */
+    generate: (place: PlanPlace, goals: Goals | null, field?: PlanningField): Promise<Result<Generation>> =>
+      call("/v1/plans/generate", BackendGeneration, adaptGeneration, post({ ...toBackendPlace(place), ...(field ? { field: toBackendPlanningField(field) } : {}), ...(goals ? { goals: toBackendGoals(goals) } : {}) })),
+    /** §9: the Pareto shortlist for one field (candidates from the generator unless given). */
+    recommend: (place: PlanPlace, goals: Goals | null, field?: PlanningField, candidates?: Array<Record<string, unknown>>): Promise<Result<Recommendation>> =>
+      call(
+        "/v1/plans/recommend",
+        BackendRecommendation,
+        adaptRecommendation,
+        post({ ...toBackendPlace(place), ...(field ? { field: toBackendPlanningField(field) } : {}), ...(goals ? { goals: toBackendGoals(goals) } : {}), ...(candidates ? { candidates } : {}) }),
+      ),
+    /** §10: the multi-season future plan for a candidate (raw, from generate) or one plan. */
+    future: (place: PlanPlace, what: { candidate: Record<string, unknown> } | { plan: Record<string, unknown> }, startSeason: string, seasons = 2, edits?: Array<{ field: string; value: unknown }>): Promise<Result<FuturePlan>> =>
+      call("/v1/plans/future", BackendFuture, adaptFuture, post({ ...toBackendPlace(place), ...what, start_season: startSeason, seasons, ...(edits?.length ? { edits } : {}) })),
+
+    // ---- Scenario Simulator (§11–§16)
+    /** §11: simulate the baseline and up to 5 alternatives over the next 10 years, from the field's real past seasons in new orders (an evidence-based outlook). */
+    simulate: (q: SimulateRequest): Promise<Result<Simulation>> => call("/v1/scenarios/simulate", BackendSimulation, adaptSimulation, post(toBackendSimulate(q)), Math.max(base.timeoutMs, SIMULATE_TIMEOUT_MS)),
+    /** §12: sourced prices, yields and costs for these crops at this place (the farmer's overrides win). */
+    economics: (q: Parameters<typeof toBackendEconomics>[0]): Promise<Result<Economics>> => call("/v1/economics/estimate", BackendEconomics, adaptEconomics, post(toBackendEconomics(q))),
+    /** §13: the shared crop library. */
+    searchCrops: (q: string, regionKey: string | null): Promise<Result<CropSearch>> =>
+      call(`/v1/crops/search?q=${encodeURIComponent(q)}${regionKey ? `&region_key=${encodeURIComponent(regionKey)}` : ""}`, BackendCropSearch, adaptCropSearch),
+    /** §13: research an unknown crop (only the name and region are sent). */
+    researchCrop: (name: string, regionKey: string | null): Promise<Result<CropJob>> => call("/v1/crops/research", BackendCropJob, adaptCropJob, post({ name, region_key: regionKey })),
+    cropJob: (jobId: string): Promise<Result<CropJob>> => call(`/v1/crops/research/${encodeURIComponent(jobId)}`, BackendCropJob, adaptCropJob),
+    /** §14, §16: vocabularies with plain labels. */
+    vocab: (which: "equipment" | "readings" | "priorities"): Promise<Result<VocabItem[]>> => call(`/v1/vocab/${which}`, BackendVocab, adaptVocab),
+    /** §15: a complete demo farm (example values). */
+    demoFarm: (scenario: "union" | "pergamino"): Promise<Result<DemoFarm>> => call(`/v1/demo/farm?scenario=${scenario}`, BackendDemo, (r) => adaptDemo(r)),
+    /** §15: typical dates for the chosen crops at this place, each with its origin. */
+    autofill: (point: LatLon, crops: Array<{ role: "previous" | "cover" | "next"; cropId: string }>): Promise<Result<Autofill>> =>
+      call("/v1/plans/autofill", BackendAutofill, adaptAutofill, post(toBackendAutofill(point, crops))),
   };
 }
 export type GlobalClient = ReturnType<typeof createGlobalClient>;

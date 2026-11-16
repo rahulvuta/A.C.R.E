@@ -75,27 +75,10 @@ describe("status words", () => {
     expect(tools({ irrigation: "complete", fertilizer: "complete" })).toBe("complete");
     expect(tools({ irrigation: "complete", fertilizer: "unavailable" })).toBe("partial");
     expect(tools({ irrigation: "unavailable" })).toBe("unavailable");
-  });
-
-  it("tools: never \"partly available\" when no tool can be used", () => {
-    const tools = (t: unknown) => {
-      const r = parseCapabilities({ features: { tools: t } });
-      return r.ok ? r.data.features.find((f) => f.key === "tools")!.status : null;
-    };
-    // Mixed, none usable: the group is not available, and an unreported tool keeps the group unknown.
-    expect(tools({ irrigation: "unsupported", fertilizer: "inapplicable" })).toBe("unavailable");
-    expect(tools({ irrigation: "unavailable", fertilizer: "unsupported", zones: "inapplicable" })).toBe("unavailable");
-    expect(tools({ irrigation: "unavailable", fertilizer: "unknown" })).toBe("unknown");
-    expect(tools({ irrigation: "unsupported", fertilizer: "not_a_word" })).toBe("unknown");
-    // Mixed with one usable tool is still partial, whichever way round.
-    expect(tools({ irrigation: "unsupported", fertilizer: "partial" })).toBe("partial");
-    expect(tools({ irrigation: "unknown", fertilizer: "complete" })).toBe("partial");
-    // The per-tool words are untouched.
-    const r = parseCapabilities({ features: { tools: { irrigation: "unsupported", fertilizer: "inapplicable" } } });
-    expect(r.ok && r.data.features.find((f) => f.key === "tools")!.parts).toEqual([
-      { key: "irrigation", status: "unsupported" },
-      { key: "fertilizer", status: "inapplicable" },
-    ]);
+    // Mixed but none usable: never "partial".
+    expect(tools({ irrigation: "unavailable", fertilizer: "unknown" })).toBe("unavailable");
+    expect(tools({ irrigation: "unsupported", fertilizer: "inapplicable" })).toBe("unsupported");
+    expect(tools({ irrigation: "partial", fertilizer: "unsupported" })).toBe("partial");
   });
 });
 

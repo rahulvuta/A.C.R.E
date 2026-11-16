@@ -1,7 +1,7 @@
 /*
   Focus rings are for the keyboard. A click or a tap never draws one.
   The page remembers how the last interaction happened (`data-input` on <html>);
-  `fieldback.css` hides the outline while it is "pointer". Tab and the arrow keys
+  `acre.css` hides the outline while it is "pointer". Tab and the arrow keys
   bring the ring back, so keyboard users always see where they are.
 */
 const KEYS = new Set(["Tab", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "PageUp", "PageDown"]);

@@ -1,13 +1,13 @@
 from datetime import date
 
-from fieldshift.contracts import GrowerInputs
-from fieldshift.planner.backup import (
+from acre.contracts import GrowerInputs
+from acre.planner.backup import (
     CHECK_LEAD_DAYS,
     build_backup_plan,
     compare_fixed_plans,
     suggest_fallback,
 )
-from fieldshift.planner.calendar import add_scenarios, build_action_calendar, diff_calendars
+from acre.planner.calendar import add_scenarios, build_action_calendar, diff_calendars
 
 from .conftest import YEAR, edited
 
@@ -47,7 +47,7 @@ def test_grower_concern_flags_the_check(ctx, rye):
 
 
 def test_n_reference_row_is_an_action_with_the_sourced_reference_not_a_target(ctx):
-    from fieldshift.contracts import Plan, WinterManagement
+    from acre.contracts import Plan, WinterManagement
 
     p = Plan(plan_id="sc", previous_crop_id="soybean", prev_harvest="10-20",
              winter=WinterManagement(kind="none"), next_crop_id="field_corn", next_plant="04-25",
@@ -269,7 +269,7 @@ def test_calendar_summaries_use_the_requested_year_not_2025(ctx, rye):
 
 
 def test_pest_gated_rule_gets_a_pest_switch_condition_not_a_dry_one(ctx, rye):
-    from fieldshift.contracts import GrowerInputs
+    from acre.contracts import GrowerInputs
 
     worried = edited(rye, terminate="04-23").model_copy(  # a 19-day gap: outside 21-28
         update={"grower": GrowerInputs(observations=["pest_spillover_concern"]), "plan_id": "pest"}
@@ -290,8 +290,8 @@ def test_dry_gate_trigger_text_is_specific_to_the_moisture_rule(ctx, rye):
 
 
 def test_suggested_fallback_never_returns_a_plan_that_breaks_in_a_historical_year(ctx, rye):
-    from fieldshift.compare.engine import YEARS
-    from fieldshift.planner.calendar import plan_year_issues
+    from acre.compare.engine import YEARS
+    from acre.planner.calendar import plan_year_issues
 
     # a fallback gap of 14 days before Mar 14 lands on Feb 29 in 2028 only
     tricky = edited(rye, seed="02-28", terminate="03-01").model_copy(

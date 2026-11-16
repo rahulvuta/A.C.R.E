@@ -1,7 +1,7 @@
 """Phase 5 tests. Indicators are synthetic FIXTURES; the real-snapshot test is labelled."""
 
 
-from fieldshift.compare.eras import (
+from acre.compare.eras import (
     INSUFFICIENT,
     LESS,
     MIN_EVALUABLE_PER_ERA,
@@ -15,7 +15,7 @@ from fieldshift.compare.eras import (
     shared_years,
     winter_heavy_rain_indicator,
 )
-from fieldshift.contracts import Status, Threshold, ThresholdSet
+from acre.contracts import Status, Threshold, ThresholdSet
 
 YEARS = range(1981, 2026)
 
@@ -130,13 +130,13 @@ def test_cross_plan_comparison_uses_only_years_both_plans_share_and_is_labelled(
 
 
 def test_real_snapshot_spring_and_winter_indicators_flow_into_era_comparison():
-    from fieldshift.contracts import Plan, WinterManagement
-    from fieldshift.metrics.spring import SPRING_DRY_PREFIX, compute_spring, spring_reference
-    from fieldshift.metrics.thresholds import HEAVY_RAIN_NAME, build_threshold_set
-    from fieldshift.metrics.winter import compute_winter
-    from fieldshift.seasons.align import build_calendar
-    from fieldshift.weather.series import DailySeries
-    from fieldshift.weather.snapshot import load_snapshot
+    from acre.contracts import Plan, WinterManagement
+    from acre.metrics.spring import SPRING_DRY_PREFIX, compute_spring, spring_reference
+    from acre.metrics.thresholds import HEAVY_RAIN_NAME, build_threshold_set
+    from acre.metrics.winter import compute_winter
+    from acre.seasons.align import build_calendar
+    from acre.weather.series import DailySeries
+    from acre.weather.snapshot import load_snapshot
 
     snap = load_snapshot()
     series = DailySeries(snap.daily)

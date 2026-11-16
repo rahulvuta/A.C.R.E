@@ -3,13 +3,13 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from fieldshift.contracts import Plan, WinterManagement
-from fieldshift.field import live as live_mod
-from fieldshift.field import routes as field_routes
-from fieldshift.field.live import LiveCache
-from fieldshift.field.routes import router as field_router
-from fieldshift.planner.routes import router as planner_router
-from fieldshift.tools.routes import router as tools_router
+from acre.contracts import Plan, WinterManagement
+from acre.field import live as live_mod
+from acre.field import routes as field_routes
+from acre.field.live import LiveCache
+from acre.field.routes import router as field_router
+from acre.planner.routes import router as planner_router
+from acre.tools.routes import router as tools_router
 
 META = {"plan_version", "catalog_version", "snapshot_hash", "request_id"}
 
@@ -168,7 +168,7 @@ def test_live_route_when_nws_is_down_history_is_unchanged(client, monkeypatch):
 
 def test_live_route_validation_and_unsupported(client):
     assert client.get("/v1/live", params={"lat": "abc", "lon": 1}).status_code == 400
-    out = client.get("/v1/live", params={"lat": 40.7, "lon": -74.0}).json()
+    out = client.get("/v1/live", params={"lat": 0.0, "lon": -30.0}).json()  # B4: only water
     assert out["status"] == "unsupported" and out["code"] == "unsupported_location"
 
 

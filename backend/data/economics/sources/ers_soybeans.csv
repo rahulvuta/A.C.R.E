@@ -1,0 +1,27 @@
+Commodity,Category,Item,Units,Size,Region,Country,Year,Value,Survey base year
+Soybean,Gross value of production,"Primary product, soybeans",dollars per planted acre,No specific size,U.S. total,United States,2024,543.06,Base survey of 2023
+Soybean,Gross value of production,"Total, gross value of production",dollars per planted acre,No specific size,U.S. total,United States,2024,543.06,Base survey of 2023
+Soybean,Operating costs,Seed,dollars per planted acre,No specific size,U.S. total,United States,2024,62.03,Base survey of 2023
+Soybean,Operating costs,Fertilizer  ,dollars per planted acre,No specific size,U.S. total,United States,2024,52.49,Base survey of 2023
+Soybean,Operating costs,Chemicals,dollars per planted acre,No specific size,U.S. total,United States,2024,48.71,Base survey of 2023
+Soybean,Operating costs,Custom services,dollars per planted acre,No specific size,U.S. total,United States,2024,13.14,Base survey of 2023
+Soybean,Operating costs,"Fuel, lube, and electricity",dollars per planted acre,No specific size,U.S. total,United States,2024,17.74,Base survey of 2023
+Soybean,Operating costs,Repairs,dollars per planted acre,No specific size,U.S. total,United States,2024,43.55,Base survey of 2023
+Soybean,Operating costs,Purchased irrigation water,dollars per planted acre,No specific size,U.S. total,United States,2024,0.18,Base survey of 2023
+Soybean,Operating costs,Interest on operating capital,dollars per planted acre,No specific size,U.S. total,United States,2024,5.72,Base survey of 2023
+Soybean,Operating costs,"Total, operating costs",dollars per planted acre,No specific size,U.S. total,United States,2024,243.56,Base survey of 2023
+Soybean,Allocated overhead,Hired labor,dollars per planted acre,No specific size,U.S. total,United States,2024,9.27,Base survey of 2023
+Soybean,Allocated overhead,Opportunity cost of unpaid labor,dollars per planted acre,No specific size,U.S. total,United States,2024,16.19,Base survey of 2023
+Soybean,Allocated overhead,Capital recovery of machinery and equipment,dollars per planted acre,No specific size,U.S. total,United States,2024,167.19,Base survey of 2023
+Soybean,Allocated overhead,Opportunity cost of land,dollars per planted acre,No specific size,U.S. total,United States,2024,183.68,Base survey of 2023
+Soybean,Allocated overhead,Taxes and insurance,dollars per planted acre,No specific size,U.S. total,United States,2024,12.28,Base survey of 2023
+Soybean,Allocated overhead,General farm overhead,dollars per planted acre,No specific size,U.S. total,United States,2024,18.66,Base survey of 2023
+Soybean,Allocated overhead,"Total, allocated overhead",dollars per planted acre,No specific size,U.S. total,United States,2024,407.27,Base survey of 2023
+Soybean,Costs listed,"Total, costs listed",dollars per planted acre,No specific size,U.S. total,United States,2024,650.83,Base survey of 2023
+Soybean,Net value,Value of production less total costs listed,dollars per planted acre,No specific size,U.S. total,United States,2024,-107.77,Base survey of 2023
+Soybean,Net value,Value of production less operating costs,dollars per planted acre,No specific size,U.S. total,United States,2024,299.5,Base survey of 2023
+Soybean,Supporting information,Yield,bushels per planted acre,No specific size,U.S. total,United States,2024,55,Base survey of 2023
+Soybean,Supporting information,Price,dollars per bushel at harvest,No specific size,U.S. total,United States,2024,9.92,Base survey of 2023
+Soybean,Supporting information,Enterprise size,planted acres,No specific size,U.S. total,United States,2024,374,Base survey of 2023
+Soybean,Production practices,Dryland,percent of acres,No specific size,U.S. total,United States,2024,89,Base survey of 2023
+Soybean,Production practices,Irrigated,percent of acres,No specific size,U.S. total,United States,2024,11,Base survey of 2023

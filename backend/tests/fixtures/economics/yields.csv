@@ -1,0 +1,5 @@
+region_key,crop_id,value,unit,year,source_title,source_url,locator,retrieved,origin
+US-NC,soybean,44,bu/acre,2024,SYNTHETIC fixture yields,https://fixture.invalid/yields,NC,2026-11-01,dataset_estimate
+US-NC,soybean,40,bu/acre,2020,SYNTHETIC older yields,https://fixture.invalid/yields-old,NC,2026-11-01,dataset_estimate
+AR,soybean,2.9,t/ha,2023,SYNTHETIC fixture FAOSTAT-like,https://fixture.invalid/fao,AR soy,2026-11-01,dataset_estimate
+AR,maize,7.5,t/ha,2023,SYNTHETIC fixture FAOSTAT-like,https://fixture.invalid/fao,AR maize,2026-11-01,dataset_estimate

@@ -11,8 +11,8 @@
     {
       "field_id": "fld_1",
       "name": "North 40",
-      "area_ha": 102.61,
-      "area_ac": 253.55,
+      "area_ha": 102.87,
+      "area_ac": 254.21,
       "centroid": {
         "latitude": -33.89,
         "longitude": -60.58
@@ -861,8 +861,8 @@
     {
       "field_id": "fld_2",
       "name": "South L",
-      "area_ha": 138.49,
-      "area_ac": 342.22,
+      "area_ha": 138.85,
+      "area_ac": 343.09,
       "centroid": {
         "latitude": -33.91,
         "longitude": -60.6
@@ -1715,7 +1715,7 @@
     }
   ],
   "totals": {
-    "area_ha": 241.1,
-    "area_ac": 595.77
+    "area_ha": 241.72,
+    "area_ac": 597.3
   }
 }

@@ -1,0 +1,29 @@
+Commodity,Category,Item,Units,Size,Region,Country,Year,Value,Survey base year
+Peanut,Gross value of production,"Primary product, peanuts  ",dollars per planted acre,No specific size,U.S. total,United States,2024,1069.55,Base survey of 2023
+Peanut,Gross value of production,"Secondary product, hay",dollars per planted acre,No specific size,U.S. total,United States,2024,20.5,Base survey of 2023
+Peanut,Gross value of production,"Total, gross value of production",dollars per planted acre,No specific size,U.S. total,United States,2024,1090.05,Base survey of 2023
+Peanut,Operating costs,Seed,dollars per planted acre,No specific size,U.S. total,United States,2024,128.92,Base survey of 2023
+Peanut,Operating costs,Fertilizer  ,dollars per planted acre,No specific size,U.S. total,United States,2024,97.58,Base survey of 2023
+Peanut,Operating costs,Chemicals,dollars per planted acre,No specific size,U.S. total,United States,2024,128.74,Base survey of 2023
+Peanut,Operating costs,Custom services,dollars per planted acre,No specific size,U.S. total,United States,2024,17,Base survey of 2023
+Peanut,Operating costs,"Fuel, lube, and electricity",dollars per planted acre,No specific size,U.S. total,United States,2024,74.45,Base survey of 2023
+Peanut,Operating costs,Repairs,dollars per planted acre,No specific size,U.S. total,United States,2024,94.93,Base survey of 2023
+Peanut,Operating costs,Commercial drying,dollars per planted acre,No specific size,U.S. total,United States,2024,72.08,Base survey of 2023
+Peanut,Operating costs,Other variable expenses  ,dollars per planted acre,No specific size,U.S. total,United States,2024,0.57,Base survey of 2023
+Peanut,Operating costs,Interest on operating inputs,dollars per planted acre,No specific size,U.S. total,United States,2024,14.77,Base survey of 2023
+Peanut,Operating costs,"Total, operating costs",dollars per planted acre,No specific size,U.S. total,United States,2024,629.04,Base survey of 2023
+Peanut,Allocated overhead,Hired labor,dollars per planted acre,No specific size,U.S. total,United States,2024,17.08,Base survey of 2023
+Peanut,Allocated overhead,Opportunity cost of unpaid labor,dollars per planted acre,No specific size,U.S. total,United States,2024,60.16,Base survey of 2023
+Peanut,Allocated overhead,Capital recovery of machinery and equipment,dollars per planted acre,No specific size,U.S. total,United States,2024,262.68,Base survey of 2023
+Peanut,Allocated overhead,Opportunity cost of land,dollars per planted acre,No specific size,U.S. total,United States,2024,139.78,Base survey of 2023
+Peanut,Allocated overhead,Taxes and insurance,dollars per planted acre,No specific size,U.S. total,United States,2024,23.35,Base survey of 2023
+Peanut,Allocated overhead,General farm overhead,dollars per planted acre,No specific size,U.S. total,United States,2024,24.31,Base survey of 2023
+Peanut,Allocated overhead,"Total, allocated overhead",dollars per planted acre,No specific size,U.S. total,United States,2024,527.36,Base survey of 2023
+Peanut,Costs listed,"Total, costs listed",dollars per planted acre,No specific size,U.S. total,United States,2024,1156.41,Base survey of 2023
+Peanut,Net value,Value of production less total costs listed,dollars per planted acre,No specific size,U.S. total,United States,2024,-66.36,Base survey of 2023
+Peanut,Net value,Value of production less operating costs,dollars per planted acre,No specific size,U.S. total,United States,2024,461.01,Base survey of 2023
+Peanut,Supporting information,Yield,pounds per planted acre,No specific size,U.S. total,United States,2024,4101,Base survey of 2023
+Peanut,Supporting information,Price,dollars per pound,No specific size,U.S. total,United States,2024,0.26,Base survey of 2023
+Peanut,Supporting information,Enterprise size,planted acres,No specific size,U.S. total,United States,2024,355,Base survey of 2023
+Peanut,Production practices,Dryland,percent of acres,No specific size,U.S. total,United States,2024,47,Base survey of 2023
+Peanut,Production practices,Irrigated,percent of acres,No specific size,U.S. total,United States,2024,53,Base survey of 2023

@@ -1,0 +1,1826 @@
+{
+ "_fixture": "EXAMPLE VALUES, not real output: synthetic response in the contract \u00a711 shape (Agent C, U4). Money is illustrative, in the range of NC Extension budgets.",
+ "meta": {
+  "request_id": "fx_sim_union"
+ },
+ "status": "complete",
+ "method": {
+  "weather": "historical_resampling",
+  "runs": 200,
+  "seed": 7,
+  "source_years": "1981-2025",
+  "note": "An evidence-based outlook: this field's real past seasons (1981-2025) replayed in new orders over the next 10 seasons. Rain is adjusted for the trend observed in this record. It shows what to plan for under conditions seen here; it cannot say what any single year will bring."
+ },
+ "scenarios": [
+  {
+   "scenario_id": "current",
+   "label": "What I do now",
+   "status": "complete",
+   "timeline": [
+    {
+     "year": 2027,
+     "season": "2027",
+     "crop_sequence": [
+      "field_corn",
+      "soybean"
+     ],
+     "plan_id": "cs_none"
+    },
+    {
+     "year": 2028,
+     "season": "2028",
+     "crop_sequence": [
+      "soybean",
+      "field_corn"
+     ],
+     "plan_id": "sc_none"
+    },
+    {
+     "year": 2029,
+     "season": "2029",
+     "crop_sequence": [
+      "field_corn",
+      "soybean"
+     ],
+     "plan_id": "cs_none"
+    },
+    {
+     "year": 2030,
+     "season": "2030",
+     "crop_sequence": [
+      "soybean",
+      "field_corn"
+     ],
+     "plan_id": "sc_none"
+    },
+    {
+     "year": 2031,
+     "season": "2031",
+     "crop_sequence": [
+      "field_corn",
+      "soybean"
+     ],
+     "plan_id": "cs_none"
+    },
+    {
+     "year": 2032,
+     "season": "2032",
+     "crop_sequence": [
+      "soybean",
+      "field_corn"
+     ],
+     "plan_id": "sc_none"
+    },
+    {
+     "year": 2033,
+     "season": "2033",
+     "crop_sequence": [
+      "field_corn",
+      "soybean"
+     ],
+     "plan_id": "cs_none"
+    },
+    {
+     "year": 2034,
+     "season": "2034",
+     "crop_sequence": [
+      "soybean",
+      "field_corn"
+     ],
+     "plan_id": "sc_none"
+    },
+    {
+     "year": 2035,
+     "season": "2035",
+     "crop_sequence": [
+      "field_corn",
+      "soybean"
+     ],
+     "plan_id": "cs_none"
+    },
+    {
+     "year": 2036,
+     "season": "2036",
+     "crop_sequence": [
+      "soybean",
+      "field_corn"
+     ],
+     "plan_id": "sc_none"
+    }
+   ],
+   "yearly": [
+    {
+     "year": 2027,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 65.1,
+       "median": 139.5,
+       "p90": 223.2,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 139,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.25,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.08,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 18600.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 13200.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 2000.0,
+       "median": 5400.0,
+       "p90": 8100.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2028,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 68.1,
+       "median": 146.0,
+       "p90": 233.6,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 165,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.1,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.17,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 27700.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 22400.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 1900.0,
+       "median": 5300.0,
+       "p90": 8000.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2029,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 69.1,
+       "median": 148.0,
+       "p90": 236.8,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 148,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.1,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.08,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 18100.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 13200.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 1700.0,
+       "median": 4900.0,
+       "p90": 7500.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2030,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 74.6,
+       "median": 159.8,
+       "p90": 255.7,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 181,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.11,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.11,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 27400.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 22400.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 1800.0,
+       "median": 5000.0,
+       "p90": 7600.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2031,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 76.3,
+       "median": 163.4,
+       "p90": 261.5,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 163,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.23,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.14,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 19000.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 13200.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 2300.0,
+       "median": 5800.0,
+       "p90": 8600.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2032,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 63.7,
+       "median": 136.4,
+       "p90": 218.2,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 154,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.3,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.12,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 28700.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 22400.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 2600.0,
+       "median": 6300.0,
+       "p90": 9300.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2033,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 64.6,
+       "median": 138.5,
+       "p90": 221.7,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 138,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.16,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.23,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 18300.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 13200.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 1800.0,
+       "median": 5100.0,
+       "p90": 7700.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2034,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 71.1,
+       "median": 152.4,
+       "p90": 243.9,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 172,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.25,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.14,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 26900.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 22400.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 1400.0,
+       "median": 4500.0,
+       "p90": 7000.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2035,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 63.9,
+       "median": 136.9,
+       "p90": 219.0,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 136,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.1,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.1,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 18900.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 13200.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 2200.0,
+       "median": 5700.0,
+       "p90": 8500.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2036,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 69.0,
+       "median": 147.8,
+       "p90": 236.5,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 167,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.16,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.18,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 28000.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 22400.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 2100.0,
+       "median": 5600.0,
+       "p90": 8400.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    }
+   ],
+   "totals": {
+    "margin_10y": {
+     "p10": 42000.0,
+     "median": 54000.0,
+     "p90": 64000.0,
+     "currency": "USD",
+     "origin": "calculation"
+    },
+    "living_cover_days_per_year": {
+     "median": 156
+    },
+    "rain_on_bare_soil_mm_per_year": {
+     "median": 146.9
+    },
+    "crop_families": 2,
+    "operations_per_year": 5.5
+   },
+   "events": [
+    {
+     "event": "dry_springs_ge_3_in_10y",
+     "probability": 0.34,
+     "text": "3 or more dry springs in 10 years in 34% of replays"
+    }
+   ],
+   "money_status": "complete",
+   "money_gaps": [],
+   "readings_context": []
+  },
+  {
+   "scenario_id": "s2",
+   "label": "Add cereal rye",
+   "status": "complete",
+   "timeline": [
+    {
+     "year": 2027,
+     "season": "2027",
+     "crop_sequence": [
+      "field_corn",
+      "cereal_rye",
+      "soybean"
+     ],
+     "plan_id": "cs_rye"
+    },
+    {
+     "year": 2028,
+     "season": "2028",
+     "crop_sequence": [
+      "soybean",
+      "crimson_clover",
+      "field_corn"
+     ],
+     "plan_id": "sc_clover"
+    },
+    {
+     "year": 2029,
+     "season": "2029",
+     "crop_sequence": [
+      "field_corn",
+      "cereal_rye",
+      "soybean"
+     ],
+     "plan_id": "cs_rye"
+    },
+    {
+     "year": 2030,
+     "season": "2030",
+     "crop_sequence": [
+      "soybean",
+      "crimson_clover",
+      "field_corn"
+     ],
+     "plan_id": "sc_clover"
+    },
+    {
+     "year": 2031,
+     "season": "2031",
+     "crop_sequence": [
+      "field_corn",
+      "cereal_rye",
+      "soybean"
+     ],
+     "plan_id": "cs_rye"
+    },
+    {
+     "year": 2032,
+     "season": "2032",
+     "crop_sequence": [
+      "soybean",
+      "crimson_clover",
+      "field_corn"
+     ],
+     "plan_id": "sc_clover"
+    },
+    {
+     "year": 2033,
+     "season": "2033",
+     "crop_sequence": [
+      "field_corn",
+      "cereal_rye",
+      "soybean"
+     ],
+     "plan_id": "cs_rye"
+    },
+    {
+     "year": 2034,
+     "season": "2034",
+     "crop_sequence": [
+      "soybean",
+      "crimson_clover",
+      "field_corn"
+     ],
+     "plan_id": "sc_clover"
+    },
+    {
+     "year": 2035,
+     "season": "2035",
+     "crop_sequence": [
+      "field_corn",
+      "cereal_rye",
+      "soybean"
+     ],
+     "plan_id": "cs_rye"
+    },
+    {
+     "year": 2036,
+     "season": "2036",
+     "crop_sequence": [
+      "soybean",
+      "crimson_clover",
+      "field_corn"
+     ],
+     "plan_id": "sc_clover"
+    }
+   ],
+   "yearly": [
+    {
+     "year": 2027,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 24.0,
+       "median": 46.1,
+       "p90": 91.2,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 316,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.29,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.21,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 18700.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 14700.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 1100.0,
+       "median": 4000.0,
+       "p90": 6300.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2028,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 25.4,
+       "median": 48.7,
+       "p90": 96.4,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 355,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.22,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.24,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 27000.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 24500.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 100.0,
+       "median": 2500.0,
+       "p90": 4400.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2029,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 23.9,
+       "median": 46.0,
+       "p90": 91.0,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 316,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.33,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.08,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 19200.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 14700.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 1400.0,
+       "median": 4500.0,
+       "p90": 7000.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2030,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 26.3,
+       "median": 50.5,
+       "p90": 99.9,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 367,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.12,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.16,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 27400.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 24500.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 400.0,
+       "median": 2900.0,
+       "p90": 4900.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2031,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 25.8,
+       "median": 49.6,
+       "p90": 98.2,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 341,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.28,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.18,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 18100.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 14700.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 700.0,
+       "median": 3400.0,
+       "p90": 5600.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2032,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 24.1,
+       "median": 46.2,
+       "p90": 91.5,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 336,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.26,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.18,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 28400.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 24500.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 1000.0,
+       "median": 3900.0,
+       "p90": 6200.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2033,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 24.8,
+       "median": 47.6,
+       "p90": 94.2,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 327,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.3,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.26,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 18900.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 14700.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 1200.0,
+       "median": 4200.0,
+       "p90": 6600.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2034,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 25.8,
+       "median": 49.6,
+       "p90": 98.1,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 361,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.1,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.21,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 27500.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 24500.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 400.0,
+       "median": 3000.0,
+       "p90": 5000.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2035,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 27.5,
+       "median": 52.7,
+       "p90": 104.4,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 362,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.29,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.12,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 19000.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 14700.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 1300.0,
+       "median": 4300.0,
+       "p90": 6700.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2036,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 25.8,
+       "median": 49.6,
+       "p90": 98.2,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 361,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.09,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.16,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 27300.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 24500.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 300.0,
+       "median": 2800.0,
+       "p90": 4800.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    }
+   ],
+   "totals": {
+    "margin_10y": {
+     "p10": 28000.0,
+     "median": 36000.0,
+     "p90": 43000.0,
+     "currency": "USD",
+     "origin": "calculation"
+    },
+    "living_cover_days_per_year": {
+     "median": 344
+    },
+    "rain_on_bare_soil_mm_per_year": {
+     "median": 48.7
+    },
+    "crop_families": 3,
+    "operations_per_year": 6.5
+   },
+   "events": [
+    {
+     "event": "dry_springs_ge_3_in_10y",
+     "probability": 0.31,
+     "text": "3 or more dry springs in 10 years in 31% of replays"
+    }
+   ],
+   "money_status": "complete",
+   "money_gaps": [],
+   "readings_context": []
+  },
+  {
+   "scenario_id": "s3",
+   "label": "Wheat, double-crop soybean",
+   "status": "complete",
+   "timeline": [
+    {
+     "year": 2027,
+     "season": "2027",
+     "crop_sequence": [
+      "field_corn",
+      "wheat",
+      "soybean"
+     ],
+     "plan_id": "cw_dc"
+    },
+    {
+     "year": 2028,
+     "season": "2028",
+     "crop_sequence": [
+      "soybean",
+      "field_corn"
+     ],
+     "plan_id": "sc_none2"
+    },
+    {
+     "year": 2029,
+     "season": "2029",
+     "crop_sequence": [
+      "field_corn",
+      "wheat",
+      "soybean"
+     ],
+     "plan_id": "cw_dc"
+    },
+    {
+     "year": 2030,
+     "season": "2030",
+     "crop_sequence": [
+      "soybean",
+      "field_corn"
+     ],
+     "plan_id": "sc_none2"
+    },
+    {
+     "year": 2031,
+     "season": "2031",
+     "crop_sequence": [
+      "field_corn",
+      "wheat",
+      "soybean"
+     ],
+     "plan_id": "cw_dc"
+    },
+    {
+     "year": 2032,
+     "season": "2032",
+     "crop_sequence": [
+      "soybean",
+      "field_corn"
+     ],
+     "plan_id": "sc_none2"
+    },
+    {
+     "year": 2033,
+     "season": "2033",
+     "crop_sequence": [
+      "field_corn",
+      "wheat",
+      "soybean"
+     ],
+     "plan_id": "cw_dc"
+    },
+    {
+     "year": 2034,
+     "season": "2034",
+     "crop_sequence": [
+      "soybean",
+      "field_corn"
+     ],
+     "plan_id": "sc_none2"
+    },
+    {
+     "year": 2035,
+     "season": "2035",
+     "crop_sequence": [
+      "field_corn",
+      "wheat",
+      "soybean"
+     ],
+     "plan_id": "cw_dc"
+    },
+    {
+     "year": 2036,
+     "season": "2036",
+     "crop_sequence": [
+      "soybean",
+      "field_corn"
+     ],
+     "plan_id": "sc_none2"
+    }
+   ],
+   "yearly": [
+    {
+     "year": 2027,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 27.7,
+       "median": 53.6,
+       "p90": 101.6,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 277,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.1,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.22,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 31000.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 24400.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 2800.0,
+       "median": 6600.0,
+       "p90": 9600.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2028,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 66.5,
+       "median": 142.4,
+       "p90": 227.9,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 161,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.18,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.24,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 26800.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 22400.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 1400.0,
+       "median": 4400.0,
+       "p90": 6800.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2029,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 29.7,
+       "median": 57.4,
+       "p90": 108.9,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 296,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.22,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.25,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 30800.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 24400.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 2700.0,
+       "median": 6400.0,
+       "p90": 9400.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2030,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 75.1,
+       "median": 160.9,
+       "p90": 257.5,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 182,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.15,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.15,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 28300.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 22400.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 2300.0,
+       "median": 5900.0,
+       "p90": 8800.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2031,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 32.3,
+       "median": 62.5,
+       "p90": 118.5,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 323,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.33,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.09,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 31500.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 24400.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 3100.0,
+       "median": 7100.0,
+       "p90": 10300.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2032,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 66.2,
+       "median": 142.0,
+       "p90": 227.1,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 160,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.14,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.16,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 26900.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 22400.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 1400.0,
+       "median": 4500.0,
+       "p90": 7000.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2033,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 28.6,
+       "median": 55.2,
+       "p90": 104.8,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 285,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.08,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.15,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 32100.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 24400.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 3500.0,
+       "median": 7700.0,
+       "p90": 11100.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2034,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 70.9,
+       "median": 152.0,
+       "p90": 243.2,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 172,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.33,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.21,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 27300.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 22400.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 1700.0,
+       "median": 4900.0,
+       "p90": 7500.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2035,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 30.7,
+       "median": 59.4,
+       "p90": 112.6,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 307,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.26,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.07,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 31900.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 24400.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 3400.0,
+       "median": 7500.0,
+       "p90": 10800.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    },
+    {
+     "year": 2036,
+     "indicators": {
+      "rain_on_bare_soil_mm": {
+       "p10": 73.9,
+       "median": 158.4,
+       "p90": 253.4,
+       "unit": "mm",
+       "origin": "calculation"
+      },
+      "living_cover_days": {
+       "median": 179,
+       "unit": "days",
+       "origin": "calculation"
+      },
+      "dry_pre_plant": {
+       "probability": 0.31,
+       "origin": "calculation"
+      },
+      "heavy_rain_at_planting": {
+       "probability": 0.23,
+       "origin": "calculation"
+      }
+     },
+     "money": {
+      "revenue": {
+       "p10": null,
+       "median": 28500.0,
+       "p90": null,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "costs": {
+       "median": 22400.0,
+       "currency": "USD",
+       "origin": "calculation"
+      },
+      "margin": {
+       "p10": 2500.0,
+       "median": 6100.0,
+       "p90": 9000.0,
+       "currency": "USD",
+       "origin": "calculation",
+       "includes_assumption": "dry_spring_pct"
+      }
+     }
+    }
+   ],
+   "totals": {
+    "margin_10y": {
+     "p10": 48000.0,
+     "median": 61000.0,
+     "p90": 73000.0,
+     "currency": "USD",
+     "origin": "calculation"
+    },
+    "living_cover_days_per_year": {
+     "median": 234
+    },
+    "rain_on_bare_soil_mm_per_year": {
+     "median": 104.4
+    },
+    "crop_families": 3,
+    "operations_per_year": 7.0
+   },
+   "events": [
+    {
+     "event": "dry_springs_ge_3_in_10y",
+     "probability": 0.36,
+     "text": "3 or more dry springs in 10 years in 36% of replays"
+    }
+   ],
+   "money_status": "complete",
+   "money_gaps": [],
+   "readings_context": []
+  }
+ ],
+ "comparison": {
+  "baseline": "current",
+  "badges": [],
+  "deltas": [],
+  "trade_offs": [],
+  "caveat": "The stronger of the plans you compared, given these numbers and the conditions seen at this field. An evidence-based outlook, not a guarantee."
+ }
+}

@@ -1,0 +1,246 @@
+{
+  "coverage_note": null,
+  "data_sources": {
+    "catalog": {
+      "freshness": "snapshot",
+      "source": "Perplexity catalogs v1 (verbatim)"
+    },
+    "soil": {
+      "freshness": "unavailable",
+      "source": "USDA NRCS Soil Data Access"
+    },
+    "weather": {
+      "first_date": null,
+      "freshness": "unavailable",
+      "last_date": null,
+      "retrieved_at": null,
+      "snapshot_hash": null,
+      "source": "NASA POWER daily (offline snapshot)"
+    }
+  },
+  "eras": {
+    "earlier": {
+      "end": 2000,
+      "start": 1981
+    },
+    "excluded_from_eras": [
+      2001,
+      2002,
+      2003,
+      2004,
+      2005
+    ],
+    "recent": {
+      "end": 2025,
+      "start": 2006
+    }
+  },
+  "input_hash": "5d420701862057118b7f90ba1c5175728006e5e89e15ac51f064f879bb417762",
+  "location": {
+    "bounds": {
+      "basis": "coarse_polygon",
+      "east": -75.46,
+      "in_nc": false,
+      "north": 36.59,
+      "south": 33.84,
+      "tolerance_note": "approximate NC outline (about 10 km tolerance at the border); not a legal boundary",
+      "west": -84.32
+    },
+    "cell_id": "cell_+40.500_-73.750",
+    "climate": {
+      "coastal_neighbour": false,
+      "koppen": "Cfa",
+      "label": "Humid subtropical",
+      "origin": "dataset_estimate",
+      "resolution_km": 11.1,
+      "source": "Beck et al. 2023, Koppen-Geiger 1991-2020"
+    },
+    "code": null,
+    "grid_cell": {
+      "basis": "derived from the MERRA-2 native grid; POWER does not return the cell",
+      "center_latitude": 40.5,
+      "center_longitude": -73.75,
+      "lat_step_deg": 0.5,
+      "lon_step_deg": 0.625
+    },
+    "guidance": {
+      "basis": "none",
+      "reason": "North Carolina guidance does not apply here; guidance for this place comes from its regional profile (GET /v1/regions/{region_key}/profile)",
+      "region": null,
+      "status": "unknown",
+      "supported": false
+    },
+    "hemisphere": "north",
+    "latitude": 40.7,
+    "longitude": -74.0,
+    "nc_region": null,
+    "notes": [
+      "weather history is not available for this grid cell yet"
+    ],
+    "on_land": true,
+    "place": {
+      "admin1": null,
+      "admin1_name": null,
+      "admin2_name": null,
+      "country": null,
+      "country_name": null,
+      "display": null
+    },
+    "reason": null,
+    "region_keys": [
+      "koppen:Cfa"
+    ],
+    "status": "partial",
+    "weather": {
+      "first_date": null,
+      "freshness": "unavailable",
+      "last_date": null,
+      "location_id": null,
+      "reason": "no committed weather snapshot covers this grid cell",
+      "snapshot_hash": null,
+      "source": "none",
+      "status": "unavailable",
+      "supported": false
+    }
+  },
+  "meta": {
+    "catalog_version": null,
+    "plan_version": "5d42070186205711",
+    "request_id": "req_example",
+    "snapshot_hash": null
+  },
+  "plans": [
+    {
+      "calendar": null,
+      "catalog": null,
+      "conflicts": [],
+      "coverage": null,
+      "dates_assumed": null,
+      "dates_assumed_for_region": null,
+      "dates_basis": null,
+      "double_crop": null,
+      "editable": [],
+      "eras": {},
+      "eras_shared_years": {},
+      "hemisphere": null,
+      "label": "Cereal rye before soybean",
+      "label_generated": false,
+      "leg": null,
+      "other_checks": [],
+      "path_notes": [],
+      "plan": {
+        "grower": {
+          "low_moisture_concern": null,
+          "observations": [],
+          "residue_report": null
+        },
+        "label": "Cereal rye before soybean",
+        "next_crop_id": "soybean",
+        "next_plant": "05-12",
+        "plan_id": "corn_soy__rye",
+        "prev_harvest": "09-20",
+        "previous_crop_id": "field_corn",
+        "production_system": null,
+        "region": "NC Piedmont",
+        "winter": {
+          "crop_id": "cereal_rye",
+          "harvest": null,
+          "kind": "cover",
+          "plant": null,
+          "seed": "10-01",
+          "terminate": "04-30"
+        }
+      },
+      "plan_id": "corn_soy__rye",
+      "reason": "offline_no_snapshot: no stored weather for grid cell cell_+40.500_-73.750; prepare it with POST /v1/weather/prepare",
+      "reason_text": "The server is in offline mode and has no stored weather for this place.",
+      "region_note": null,
+      "residue_context": [],
+      "rotation_id": "winter_cover",
+      "rotation_ids": [
+        "winter_cover"
+      ],
+      "seasons": [],
+      "spring": null,
+      "spring_checks": [],
+      "status": "unavailable",
+      "winter": null
+    }
+  ],
+  "request_echo": {
+    "latitude": 40.7,
+    "location_id": null,
+    "longitude": -74.0,
+    "plan_ids": [
+      "corn_soy__rye"
+    ],
+    "rotation_ids": []
+  },
+  "result_id": "7798e405a52f94e4",
+  "shared_eligible_years": {
+    "full_season": [],
+    "note": "offline_no_snapshot: no stored weather for grid cell cell_+40.500_-73.750; prepare it with POST /v1/weather/prepare",
+    "spring": [],
+    "winter": []
+  },
+  "soil": {
+    "awc": null,
+    "dominant_component": null,
+    "horizons": [],
+    "map_unit_name": null,
+    "mukey": null,
+    "notes": [],
+    "other_components": [],
+    "provenance": null,
+    "reason": "offline mode: SDA was not queried",
+    "stale_copy": null,
+    "status": "unavailable",
+    "surface_texture": null,
+    "survey_area": null,
+    "survey_area_name": null,
+    "survey_version": null
+  },
+  "thresholds": {
+    "baseline": null,
+    "dry_spring": {},
+    "heavy_rain": {
+      "location": null,
+      "method": "none",
+      "n_reference": 0,
+      "name": "heavy_rain_mm",
+      "note": "No weather is stored for this place, so no threshold was computed.",
+      "origin": null,
+      "parameters": {},
+      "reference_span": "none",
+      "source": null,
+      "status": "unavailable",
+      "unit": "mm/day",
+      "value": null
+    },
+    "location_id": null,
+    "location_name": null,
+    "threshold_set_id": "none"
+  },
+  "weather_location": {
+    "cell_id": "cell_+40.500_-73.750",
+    "code": "offline_no_snapshot",
+    "first_date": null,
+    "grid_cell": null,
+    "id": null,
+    "last_date": null,
+    "name": null,
+    "point": null,
+    "reason": "offline_no_snapshot: no stored weather for grid cell cell_+40.500_-73.750; prepare it with POST /v1/weather/prepare",
+    "reason_text": "The server is in offline mode and has no stored weather for this place.",
+    "region": null,
+    "region_basis": null,
+    "requested_point": {
+      "latitude": 40.7,
+      "longitude": -74.0
+    },
+    "shares_snapshot_with": null,
+    "snapshot_hash": null,
+    "status": "unavailable",
+    "thresholds_from": "No plan was evaluated for this place. The thresholds shown only keep the response shape; they are Union County's and apply to nothing here."
+  }
+}

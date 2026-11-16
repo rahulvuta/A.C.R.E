@@ -1,5 +1,5 @@
 import { areaHa, checkGeometry } from "./geometry";
-import type { Farm, FarmStore, Field, FieldGeometry, FieldPlan } from "./types";
+import type { Farm, FarmStore, Field, FieldGeometry, FieldPlan, FieldReading } from "./types";
 
 /*
   The farm store (plan C2). Farms live only in this browser: localStorage key
@@ -53,6 +53,8 @@ export function migrate(raw: unknown): { store: FarmStore; dropped: number } | n
         display_area_ha: areaHa(fl.geometry as FieldGeometry),
         plan: isObj(fl.plan) ? (fl.plan as unknown as FieldPlan) : null,
         ...(typeof fl.notes === "string" ? { notes: fl.notes } : {}),
+        ...(Array.isArray(fl.equipment) ? { equipment: fl.equipment.filter((x): x is string => typeof x === "string") } : {}),
+        ...(Array.isArray(fl.readings) ? { readings: fl.readings.filter(isObj) as unknown as FieldReading[] } : {}),
       });
     }
     const anchor = isObj(f.anchor) && typeof f.anchor.latitude === "number" && typeof f.anchor.longitude === "number" ? { latitude: f.anchor.latitude, longitude: f.anchor.longitude } : { latitude: 0, longitude: 0 };
@@ -63,6 +65,7 @@ export function migrate(raw: unknown): { store: FarmStore; dropped: number } | n
       name: typeof f.name === "string" ? f.name : "My farm",
       anchor,
       fields,
+      ...(typeof f.demo === "string" ? { demo: f.demo } : {}),
       created_at: typeof f.created_at === "string" ? f.created_at : now,
       updated_at: typeof f.updated_at === "string" ? f.updated_at : now,
     });
@@ -186,7 +189,7 @@ export const ops = {
     const field: Field = { field_id: newFieldId(), name: name?.trim() || nextFieldName(farm), geometry, display_area_ha: areaHa(geometry), plan: null };
     return { field, store: { ...mapFarm(s, farmId, (f) => ({ ...f, fields: [...f.fields, field] })), selected_farm_id: farmId, selected_field_id: field.field_id } };
   },
-  updateField(s: FarmStore, fieldId: string, patch: Partial<Pick<Field, "name" | "geometry" | "plan" | "notes">>): FarmStore {
+  updateField(s: FarmStore, fieldId: string, patch: Partial<Pick<Field, "name" | "geometry" | "plan" | "notes" | "equipment" | "readings">>): FarmStore {
     const farm = farmOfField(s, fieldId);
     if (!farm) return s;
     if (patch.geometry) {

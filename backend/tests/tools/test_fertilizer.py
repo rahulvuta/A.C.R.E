@@ -1,7 +1,7 @@
 import pytest
 
-from fieldshift.catalogs import V1_CATALOG_DIR, CatalogIndex, load_catalog
-from fieldshift.tools.fertilizer import Product, calculate, parse_grade
+from acre.catalogs import V1_CATALOG_DIR, CatalogIndex, load_catalog
+from acre.tools.fertilizer import Product, calculate, parse_grade
 
 
 @pytest.fixture(scope="module")

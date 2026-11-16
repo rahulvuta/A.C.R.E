@@ -1,0 +1,824 @@
+{
+  "context": {
+    "soil": null,
+    "soil_note": null
+  },
+  "dominated": [
+    {
+      "candidate_id": "no_cover",
+      "dominated_by": [
+        "rye_cover"
+      ],
+      "indicators": {
+        "bare_soil_days": {
+          "definition": "Off-season days with no planned living cover.",
+          "direction": "lower_better",
+          "in_priorities": true,
+          "origin": "calculation",
+          "per_leg": [
+            209
+          ],
+          "rationale": "The same principle as living cover days, seen from the other side.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "days per year",
+          "value": 209.0
+        },
+        "crop_family_diversity": {
+          "definition": "Distinct plant families among every crop in the candidate.",
+          "detail": {
+            "families": {
+              "maize": "Poaceae",
+              "soybean": "Fabaceae"
+            },
+            "family_source": {
+              "title": "Botanical family by genus (APG IV; USDA PLANTS Database)",
+              "url": "https://plants.usda.gov"
+            }
+          },
+          "direction": "higher_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [],
+          "rationale": "Species diversification through varied crop sequences.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "botanical families",
+          "value": 2
+        },
+        "dry_pre_plant_frequency": {
+          "definition": "Share of evaluable seasons whose 30 days before planting were dry (bottom 20% of this cell's own totals for that window).",
+          "direction": "lower_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [
+            {
+              "dry_seasons": 9,
+              "eligible_seasons": 45,
+              "value": 0.2
+            }
+          ],
+          "rationale": "How often this planting window started dry in this cell's history; it describes the window's weather, not the plan's effect on it.",
+          "reason": null,
+          "source": {
+            "title": "A.C.R.E dry pre-plant window: bottom 20% of this cell's own 1981-2025 30-day totals (calculation)",
+            "url": null
+          },
+          "status": "complete",
+          "unit": "share of seasons",
+          "value": 0.2
+        },
+        "heavy_rain_days_on_bare_soil": {
+          "definition": "Median per-season count of heavy-rain days with no planned living cover (NC: 76.2 mm; elsewhere the cell's ETCCDI R95p value).",
+          "direction": "lower_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [
+            2.0
+          ],
+          "rationale": "Intense rain on uncovered soil; a count of weather events, not damage.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "days per season",
+          "value": 2.0
+        },
+        "irrigation_dependence": {
+          "definition": "Not computed: there is no sourced crop water-need table yet.",
+          "direction": "lower_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [],
+          "rationale": "Listed so the gap is visible; never used for a shortlist.",
+          "reason": "no sourced crop water-need data",
+          "source": {
+            "title": "A.C.R.E indicator definitions (backend/docs/indicators.md)",
+            "url": null
+          },
+          "status": "unknown",
+          "unit": "none",
+          "value": null
+        },
+        "living_cover_days": {
+          "definition": "Planned living-cover days (cover crop seed to termination, or growing winter grain). Planned; establishment uncertain.",
+          "direction": "higher_better",
+          "in_priorities": true,
+          "origin": "calculation",
+          "per_leg": [
+            0
+          ],
+          "rationale": "Keep the soil covered and living roots in it as long as possible.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "days per year",
+          "value": 0.0
+        },
+        "management_operations": {
+          "definition": "Planned field operations per season: previous harvest and next planting, plus cover seed and termination or winter-grain planting and harvest.",
+          "direction": "lower_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [
+            2
+          ],
+          "rationale": "A plain count used only for the management-simplicity priority; not a cost or labour estimate.",
+          "reason": null,
+          "source": {
+            "title": "A.C.R.E indicator definitions (backend/docs/indicators.md)",
+            "url": null
+          },
+          "status": "complete",
+          "unit": "operations per season",
+          "value": 2.0
+        },
+        "modeled_root_zone_wetness_at_planting": {
+          "definition": "Median over seasons of mean modeled root-zone wetness (GWETROOT) in the 30 days before planting.",
+          "direction": "higher_better",
+          "in_priorities": false,
+          "origin": "nasa_modeled",
+          "per_leg": [
+            0.631
+          ],
+          "rationale": "Modeled soil water near planting. The same for any plan with the same planting date; not a water saving.",
+          "reason": null,
+          "source": {
+            "title": "NASA POWER parameter GWETROOT (MERRA-2 root-zone soil wetness)",
+            "url": "https://power.larc.nasa.gov/api/system/manager/parameters/GWETROOT"
+          },
+          "status": "complete",
+          "unit": "fraction (0-1)",
+          "value": 0.631
+        },
+        "rain_on_bare_soil_mm": {
+          "definition": "Median per-season rain on off-season days with no planned living cover.",
+          "direction": "lower_better",
+          "in_priorities": true,
+          "origin": "calculation",
+          "per_leg": [
+            394.9
+          ],
+          "rationale": "Rain on uncovered soil is what soil cover is meant to intercept. Rainfall depth only: not erosion, runoff or soil loss.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "mm per season",
+          "value": 394.9
+        },
+        "rule_flags": {
+          "definition": "Per leg, the distinct catalog rule checks that flagged in at least one past season plus the rule lines that need a manual check (the winter-wheat path's lines included); mean over legs. Unevaluable rules are listed, not counted. Each rule cites its own source.",
+          "direction": "lower_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [],
+          "rationale": "Published guidance that would have asked for a check or a change.",
+          "reason": "no_regional_catalog",
+          "source": {
+            "title": "A.C.R.E indicator definitions (backend/docs/indicators.md)",
+            "url": null
+          },
+          "status": "unknown",
+          "unit": "checks per season",
+          "value": null
+        }
+      },
+      "label": null,
+      "leg_status": [
+        "complete"
+      ],
+      "origin": "grower",
+      "plans": [
+        {
+          "grower": {
+            "low_moisture_concern": null,
+            "observations": [],
+            "residue_report": null
+          },
+          "label": null,
+          "next_crop_id": "soybean",
+          "next_plant": "11-15",
+          "plan_id": "perg_bare",
+          "prev_harvest": "04-20",
+          "previous_crop_id": "maize",
+          "production_system": null,
+          "region": null,
+          "winter": {
+            "crop_id": null,
+            "harvest": null,
+            "kind": "none",
+            "plant": null,
+            "seed": null,
+            "terminate": null
+          }
+        }
+      ]
+    }
+  ],
+  "gaps": [],
+  "generation_log": [],
+  "hemisphere": "south",
+  "meta": {
+    "catalog_version": "v3:AR-B:sage_-33.75_-60.75:3edf141b9da9",
+    "plan_version": "ff816ea40acb7818",
+    "request_id": "req_example",
+    "snapshot_hash": "7c57f2ea32036ecff67ee1c6e7dece00415f16358b0f4bdc4488fb663953abeb"
+  },
+  "method": {
+    "definitions": "backend/docs/indicators.md",
+    "excluded_indicators": {},
+    "indicators_used": [
+      "living_cover_days",
+      "bare_soil_days",
+      "rain_on_bare_soil_mm"
+    ],
+    "note": "Not universally optimal: depends on these priorities and this weather history.",
+    "ordering": "weighted_rank_positions",
+    "ordering_text": "For each indicator the shortlisted plans are ranked (1 = best, ties share a rank); they are listed by the sum of weight x rank position. Raw values of different indicators are never combined.",
+    "shortlist": "pareto_non_dominated",
+    "weights": {
+      "bare_soil_days": 3,
+      "living_cover_days": 3,
+      "rain_on_bare_soil_mm": 3
+    }
+  },
+  "not_comparable": [],
+  "result_id": "ff816ea40acb7818",
+  "shortlist": [
+    {
+      "candidate_id": "rye_cover",
+      "historical_vulnerabilities": [
+        {
+          "field": "rain_outside_cover_mm",
+          "indicator": "rain_on_bare_soil_mm",
+          "plan_id": "perg_soy",
+          "replay": {
+            "body": {
+              "location": {
+                "cell_id": "cell_-34.000_-60.625"
+              },
+              "plan": {
+                "grower": {
+                  "low_moisture_concern": null,
+                  "observations": [],
+                  "residue_report": null
+                },
+                "label": null,
+                "next_crop_id": "soybean",
+                "next_plant": "11-15",
+                "plan_id": "perg_soy",
+                "prev_harvest": "04-20",
+                "previous_crop_id": "maize",
+                "production_system": null,
+                "region": null,
+                "winter": {
+                  "crop_id": "cereal_rye",
+                  "harvest": null,
+                  "kind": "cover",
+                  "plant": null,
+                  "seed": "05-01",
+                  "terminate": "10-20"
+                }
+              }
+            },
+            "method": "POST",
+            "path": "/v1/seasons/2000/replay"
+          },
+          "text": "2000: rain outside cover mm 376.87 for perg_soy.",
+          "value": 376.87,
+          "year": "2000"
+        },
+        {
+          "field": "rain_outside_cover_mm",
+          "indicator": "rain_on_bare_soil_mm",
+          "plan_id": "perg_soy",
+          "replay": {
+            "body": {
+              "location": {
+                "cell_id": "cell_-34.000_-60.625"
+              },
+              "plan": {
+                "grower": {
+                  "low_moisture_concern": null,
+                  "observations": [],
+                  "residue_report": null
+                },
+                "label": null,
+                "next_crop_id": "soybean",
+                "next_plant": "11-15",
+                "plan_id": "perg_soy",
+                "prev_harvest": "04-20",
+                "previous_crop_id": "maize",
+                "production_system": null,
+                "region": null,
+                "winter": {
+                  "crop_id": "cereal_rye",
+                  "harvest": null,
+                  "kind": "cover",
+                  "plant": null,
+                  "seed": "05-01",
+                  "terminate": "10-20"
+                }
+              }
+            },
+            "method": "POST",
+            "path": "/v1/seasons/2018/replay"
+          },
+          "text": "2018: rain outside cover mm 311.15 for perg_soy.",
+          "value": 311.15,
+          "year": "2018"
+        },
+        {
+          "field": "rain_outside_cover_mm",
+          "indicator": "rain_on_bare_soil_mm",
+          "plan_id": "perg_soy",
+          "replay": {
+            "body": {
+              "location": {
+                "cell_id": "cell_-34.000_-60.625"
+              },
+              "plan": {
+                "grower": {
+                  "low_moisture_concern": null,
+                  "observations": [],
+                  "residue_report": null
+                },
+                "label": null,
+                "next_crop_id": "soybean",
+                "next_plant": "11-15",
+                "plan_id": "perg_soy",
+                "prev_harvest": "04-20",
+                "previous_crop_id": "maize",
+                "production_system": null,
+                "region": null,
+                "winter": {
+                  "crop_id": "cereal_rye",
+                  "harvest": null,
+                  "kind": "cover",
+                  "plant": null,
+                  "seed": "05-01",
+                  "terminate": "10-20"
+                }
+              }
+            },
+            "method": "POST",
+            "path": "/v1/seasons/1985/replay"
+          },
+          "text": "1985: rain outside cover mm 299.98 for perg_soy.",
+          "value": 299.98,
+          "year": "1985"
+        }
+      ],
+      "indicators": {
+        "bare_soil_days": {
+          "definition": "Off-season days with no planned living cover.",
+          "direction": "lower_better",
+          "in_priorities": true,
+          "origin": "calculation",
+          "per_leg": [
+            37
+          ],
+          "rationale": "The same principle as living cover days, seen from the other side.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "days per year",
+          "value": 37.0
+        },
+        "crop_family_diversity": {
+          "definition": "Distinct plant families among every crop in the candidate.",
+          "detail": {
+            "families": {
+              "cereal_rye": "Poaceae",
+              "maize": "Poaceae",
+              "soybean": "Fabaceae"
+            },
+            "family_source": {
+              "title": "Botanical family by genus (APG IV; USDA PLANTS Database)",
+              "url": "https://plants.usda.gov"
+            }
+          },
+          "direction": "higher_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [],
+          "rationale": "Species diversification through varied crop sequences.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "botanical families",
+          "value": 2
+        },
+        "dry_pre_plant_frequency": {
+          "definition": "Share of evaluable seasons whose 30 days before planting were dry (bottom 20% of this cell's own totals for that window).",
+          "direction": "lower_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [
+            {
+              "dry_seasons": 9,
+              "eligible_seasons": 45,
+              "value": 0.2
+            }
+          ],
+          "rationale": "How often this planting window started dry in this cell's history; it describes the window's weather, not the plan's effect on it.",
+          "reason": null,
+          "source": {
+            "title": "A.C.R.E dry pre-plant window: bottom 20% of this cell's own 1981-2025 30-day totals (calculation)",
+            "url": null
+          },
+          "status": "complete",
+          "unit": "share of seasons",
+          "value": 0.2
+        },
+        "heavy_rain_days_on_bare_soil": {
+          "definition": "Median per-season count of heavy-rain days with no planned living cover (NC: 76.2 mm; elsewhere the cell's ETCCDI R95p value).",
+          "direction": "lower_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [
+            1.0
+          ],
+          "rationale": "Intense rain on uncovered soil; a count of weather events, not damage.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "days per season",
+          "value": 1.0
+        },
+        "irrigation_dependence": {
+          "definition": "Not computed: there is no sourced crop water-need table yet.",
+          "direction": "lower_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [],
+          "rationale": "Listed so the gap is visible; never used for a shortlist.",
+          "reason": "no sourced crop water-need data",
+          "source": {
+            "title": "A.C.R.E indicator definitions (backend/docs/indicators.md)",
+            "url": null
+          },
+          "status": "unknown",
+          "unit": "none",
+          "value": null
+        },
+        "living_cover_days": {
+          "definition": "Planned living-cover days (cover crop seed to termination, or growing winter grain). Planned; establishment uncertain.",
+          "direction": "higher_better",
+          "in_priorities": true,
+          "origin": "calculation",
+          "per_leg": [
+            172
+          ],
+          "rationale": "Keep the soil covered and living roots in it as long as possible.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "days per year",
+          "value": 172.0
+        },
+        "management_operations": {
+          "definition": "Planned field operations per season: previous harvest and next planting, plus cover seed and termination or winter-grain planting and harvest.",
+          "direction": "lower_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [
+            4
+          ],
+          "rationale": "A plain count used only for the management-simplicity priority; not a cost or labour estimate.",
+          "reason": null,
+          "source": {
+            "title": "A.C.R.E indicator definitions (backend/docs/indicators.md)",
+            "url": null
+          },
+          "status": "complete",
+          "unit": "operations per season",
+          "value": 4.0
+        },
+        "modeled_root_zone_wetness_at_planting": {
+          "definition": "Median over seasons of mean modeled root-zone wetness (GWETROOT) in the 30 days before planting.",
+          "direction": "higher_better",
+          "in_priorities": false,
+          "origin": "nasa_modeled",
+          "per_leg": [
+            0.631
+          ],
+          "rationale": "Modeled soil water near planting. The same for any plan with the same planting date; not a water saving.",
+          "reason": null,
+          "source": {
+            "title": "NASA POWER parameter GWETROOT (MERRA-2 root-zone soil wetness)",
+            "url": "https://power.larc.nasa.gov/api/system/manager/parameters/GWETROOT"
+          },
+          "status": "complete",
+          "unit": "fraction (0-1)",
+          "value": 0.631
+        },
+        "rain_on_bare_soil_mm": {
+          "definition": "Median per-season rain on off-season days with no planned living cover.",
+          "direction": "lower_better",
+          "in_priorities": true,
+          "origin": "calculation",
+          "per_leg": [
+            133.16
+          ],
+          "rationale": "Rain on uncovered soil is what soil cover is meant to intercept. Rainfall depth only: not erosion, runoff or soil loss.",
+          "reason": null,
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "status": "complete",
+          "unit": "mm per season",
+          "value": 133.2
+        },
+        "rule_flags": {
+          "definition": "Per leg, the distinct catalog rule checks that flagged in at least one past season plus the rule lines that need a manual check (the winter-wheat path's lines included); mean over legs. Unevaluable rules are listed, not counted. Each rule cites its own source.",
+          "direction": "lower_better",
+          "in_priorities": false,
+          "origin": "calculation",
+          "per_leg": [],
+          "rationale": "Published guidance that would have asked for a check or a change.",
+          "reason": "no_regional_catalog",
+          "source": {
+            "title": "A.C.R.E indicator definitions (backend/docs/indicators.md)",
+            "url": null
+          },
+          "status": "unknown",
+          "unit": "checks per season",
+          "value": null
+        }
+      },
+      "label": null,
+      "leg_status": [
+        "complete"
+      ],
+      "loses": [],
+      "origin": "grower",
+      "plans": [
+        {
+          "grower": {
+            "low_moisture_concern": null,
+            "observations": [],
+            "residue_report": null
+          },
+          "label": null,
+          "next_crop_id": "soybean",
+          "next_plant": "11-15",
+          "plan_id": "perg_soy",
+          "prev_harvest": "04-20",
+          "previous_crop_id": "maize",
+          "production_system": null,
+          "region": null,
+          "winter": {
+            "crop_id": "cereal_rye",
+            "harvest": null,
+            "kind": "cover",
+            "plant": null,
+            "seed": "05-01",
+            "terminate": "10-20"
+          }
+        }
+      ],
+      "rank_positions": {
+        "bare_soil_days": 1,
+        "living_cover_days": 1,
+        "rain_on_bare_soil_mm": 1
+      },
+      "trade_offs": [
+        {
+          "text": "Compared with no_cover, it is worse on: management operations 4.0 operations per season vs 2.0 operations per season (not in your priorities).",
+          "versus": "no_cover",
+          "worse_on": [
+            {
+              "in_priorities": false,
+              "indicator": "management_operations",
+              "value": 4.0,
+              "versus_value": 2.0
+            }
+          ]
+        }
+      ],
+      "uncertainties": [
+        {
+          "origin": "nasa_modeled",
+          "text": "Weather is NASA POWER daily reanalysis for one ~0.5 x 0.625 degree grid cell, not a field measurement; every field in the cell shares this series."
+        },
+        {
+          "origin": "nasa_modeled",
+          "text": "Root-zone wetness is modeled (MERRA-2 GWETROOT), not observed."
+        },
+        {
+          "origin": "assumed",
+          "text": "Living cover is planned; establishment is uncertain."
+        },
+        {
+          "origin": null,
+          "text": "No regional guidance is loaded for this place, so no rule was checked."
+        },
+        {
+          "origin": "dataset_estimate",
+          "text": "The regional guidance comes from a gridded dataset estimate (for example SAGE crop calendars), not local guidance."
+        }
+      ],
+      "why": [
+        {
+          "audit_id": "73be0bb854f2",
+          "indicator": "living_cover_days",
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "text": "Highest living cover days of the compared plans: 172.0 days per year (others: 0.00 days per year). Keep the soil covered and living roots in it as long as possible.",
+          "value": 172.0
+        },
+        {
+          "audit_id": "136a32896ad8",
+          "indicator": "bare_soil_days",
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "text": "Lowest bare soil days of the compared plans: 37.0 days per year (others: 209.0 days per year). The same principle as living cover days, seen from the other side.",
+          "value": 37.0
+        },
+        {
+          "audit_id": "2c3390368b4a",
+          "indicator": "rain_on_bare_soil_mm",
+          "source": {
+            "title": "FAO, Conservation Agriculture (principles)",
+            "url": "https://www.fao.org/conservation-agriculture/en/"
+          },
+          "text": "Lowest rain on bare soil mm of the compared plans: 133.2 mm per season (others: 394.9 mm per season). Rain on uncovered soil is what soil cover is meant to intercept. Rainfall depth only: not erosion, runoff or soil loss.",
+          "value": 133.2
+        }
+      ],
+      "wins": [
+        "living_cover_days",
+        "bare_soil_days",
+        "rain_on_bare_soil_mm"
+      ]
+    }
+  ],
+  "status": "complete",
+  "thresholds": {
+    "baseline": "1981-01-01..2026-11-11 daily record of this location's snapshot",
+    "dry_spring": {
+      "11-15": {
+        "location": "cell_-34.000_-60.625",
+        "method": "bottom_20pct_order_statistic",
+        "n_reference": 45,
+        "name": "spring_dry_mm@11-15",
+        "note": null,
+        "origin": "calculation",
+        "parameters": {
+          "eligible_years": [
+            1981,
+            1982,
+            1983,
+            1984,
+            1985,
+            1986,
+            1987,
+            1988,
+            1989,
+            1990,
+            1991,
+            1992,
+            1993,
+            1994,
+            1995,
+            1996,
+            1997,
+            1998,
+            1999,
+            2000,
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "excluded_years": [],
+          "fraction": 0.2,
+          "k": 9,
+          "plant_md": "11-15",
+          "tie_rule": "total <= cutoff counts as dry",
+          "window_days": 30
+        },
+        "reference_span": "1981..2025",
+        "source": null,
+        "status": "complete",
+        "unit": "mm",
+        "value": 71.27
+      }
+    },
+    "heavy_rain": {
+      "location": "cell_-34.000_-60.625",
+      "method": "etccdi_r95p",
+      "n_reference": 2928,
+      "name": "heavy_rain_mm",
+      "note": "This cell's own 95th percentile of wet-day (>= 1 mm) daily precipitation over the 1981-2010 base period (the ETCCDI R95p threshold definition), computed once from NASA POWER daily values and frozen. It is a local heavy-rain marker, not a published agronomic threshold. Solar-day (LST) daily values; rainfall depth only, not erosion or soil loss. Zero-count seasons are valid results.",
+      "origin": "calculation",
+      "parameters": {
+        "assumed": false,
+        "base_expected_days": 10957,
+        "base_period": [
+          1981,
+          2010
+        ],
+        "base_valid_days": 10957,
+        "comparison": "daily precip_mm >= value",
+        "daily_value_basis": "NASA POWER PRECTOTCORR, time_standard=LST (solar day)",
+        "inclusive": true,
+        "percentile": 95.0,
+        "quantile_method": "numpy linear interpolation over wet days",
+        "scope": "rainfall depth only; not erosion or soil loss",
+        "wet_day_min_mm": 1.0
+      },
+      "reference_span": "1981-01-01..2010-12-31",
+      "source": null,
+      "status": "complete",
+      "unit": "mm/day",
+      "value": 36.76
+    },
+    "location_id": "cell_-34.000_-60.625",
+    "location_name": "POWER grid cell cell_-34.000_-60.625",
+    "threshold_set_id": "1fdd4ba79dd89026"
+  },
+  "weather_location": {
+    "cell_id": "cell_-34.000_-60.625",
+    "code": null,
+    "first_date": "1981-01-01",
+    "grid_cell": {
+      "center_latitude": -34.0,
+      "center_longitude": -60.625
+    },
+    "id": "cell_-34.000_-60.625",
+    "last_date": "2026-11-11",
+    "name": "POWER grid cell cell_-34.000_-60.625",
+    "point": {
+      "latitude": -34.0,
+      "longitude": -60.625
+    },
+    "reason": null,
+    "reason_text": null,
+    "region": "outside_nc",
+    "region_basis": "grid cell outside the county table: approximate NC region from the point, or outside_nc",
+    "requested_point": {
+      "latitude": -33.89,
+      "longitude": -60.57
+    },
+    "shares_snapshot_with": null,
+    "snapshot_hash": "7c57f2ea32036ecff67ee1c6e7dece00415f16358b0f4bdc4488fb663953abeb",
+    "status": "complete",
+    "thresholds_from": "Dry-spring cutoffs come from POWER grid cell cell_-34.000_-60.625's own 1981-2026 weather baseline (snapshot 7c57f2ea3203); heavy rain is this cell's own 95th percentile of wet days over 1981-2010 (ETCCDI R95p). Thresholds are never shared across locations."
+  }
+}

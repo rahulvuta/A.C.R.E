@@ -1,0 +1,60 @@
+{
+  "body": {
+    "farm": {
+      "farm_id": "example_farm",
+      "fields": [
+        {
+          "field_id": "fld_ia",
+          "geometry": {
+            "coordinates": [
+              [
+                [
+                  -93.61,
+                  41.9
+                ],
+                [
+                  -93.6,
+                  41.9
+                ],
+                [
+                  -93.6,
+                  41.89
+                ],
+                [
+                  -93.61,
+                  41.89
+                ],
+                [
+                  -93.61,
+                  41.9
+                ]
+              ]
+            ],
+            "type": "Polygon"
+          },
+          "name": "Unprepared cell (synthetic)",
+          "plan": {
+            "next_crop_id": "soybean",
+            "next_plant": "05-12",
+            "plan_id": "fld_ia_plan",
+            "prev_harvest": "10-15",
+            "previous_crop_id": "field_corn",
+            "winter": {
+              "crop_id": "cereal_rye",
+              "kind": "cover",
+              "seed": "10-25",
+              "terminate": "04-20"
+            }
+          }
+        }
+      ],
+      "name": "Example farm (synthetic)"
+    },
+    "options": {
+      "include_capabilities": false
+    }
+  },
+  "method": "POST",
+  "status": 200,
+  "url": "/v1/farms/analyze"
+}

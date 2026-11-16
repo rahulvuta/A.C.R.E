@@ -2,8 +2,8 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from fieldshift.report.audit import verify
-from fieldshift.report.routes import router
+from acre.report.audit import verify
+from acre.report.routes import router
 
 from .conftest import YEAR
 
@@ -31,7 +31,7 @@ def test_get_note_for_a_sample_plan_with_an_alternative(client):
 
 
 def test_post_note_with_an_edited_plan_drops_the_assumed_label(client):
-    from fieldshift.api.samples import load_samples
+    from acre.api.samples import load_samples
 
     p = load_samples().plans["corn_soy__rye"].plan.model_dump(mode="json")
     same = client.post("/v1/plans/note", json={"plan": p, "year": YEAR}).json()
@@ -67,7 +67,7 @@ def test_malformed_bodies_and_chronology_errors(client):
             "/v1/plans/note", content=content, headers={"content-type": "application/json"}
         )
         assert r.status_code == 400
-    from fieldshift.api.samples import load_samples
+    from acre.api.samples import load_samples
 
     p = load_samples().plans["corn_soy__rye"].plan.model_dump(mode="json")
     p["winter"]["seed"] = "09-01"
@@ -81,7 +81,7 @@ def test_get_note_bad_query_values(client):
 
 
 def test_calendar_route_with_diff(client):
-    from fieldshift.api.samples import load_samples
+    from acre.api.samples import load_samples
 
     base = load_samples().plans["corn_soy__rye"].plan.model_dump(mode="json")
     new = {**base, "winter": {**base["winter"], "terminate": "04-14"}}
@@ -114,7 +114,7 @@ def test_backup_route_suggests_a_fallback_and_compares_fixed_plans(client):
 
 
 def test_unsupported_plan_is_a_200_with_a_status(client):
-    from fieldshift.api.samples import load_samples
+    from acre.api.samples import load_samples
 
     p = load_samples().plans["corn_soy__rye"].plan.model_dump(mode="json")
     p["next_crop_id"] = "quinoa"
@@ -127,7 +127,7 @@ def test_unsupported_plan_is_a_200_with_a_status(client):
 def test_a_plan_valid_in_the_requested_year_but_not_in_every_replay_year_is_a_typed_400(client):
     # Feb 28 seed and Feb 29 termination: fine in leap 2028, but the terminate day collapses onto
     # the seed day in non-leap years, which the historical replay would hit.
-    from fieldshift.api.samples import load_samples
+    from acre.api.samples import load_samples
 
     p = load_samples().plans["corn_soy__rye"].plan.model_dump(mode="json")
     p["winter"].update(seed="02-28", terminate="02-29")
@@ -142,7 +142,7 @@ def test_a_plan_valid_in_the_requested_year_but_not_in_every_replay_year_is_a_ty
 
 
 def test_backup_route_with_a_suggestion_that_would_break_in_some_year_is_not_a_500(client):
-    from fieldshift.api.samples import load_samples
+    from acre.api.samples import load_samples
 
     p = load_samples().plans["corn_soy__rye"].plan.model_dump(mode="json")
     p["winter"].update(seed="02-28", terminate="03-01")

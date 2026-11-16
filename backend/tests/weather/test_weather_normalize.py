@@ -5,7 +5,7 @@ import json
 import numpy as np
 import pandas as pd
 
-from fieldshift.weather.normalize import (
+from acre.weather.normalize import (
     REASON_ABSENT,
     REASON_FILL,
     REASON_NAN,

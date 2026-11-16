@@ -1,0 +1,312 @@
+{
+  "window": "2020-2024",
+  "missing_price_for_imported_national_yield": {
+    "AR": [
+      "barley_all",
+      "broad_bean",
+      "canary_seed",
+      "cassava",
+      "chickpea",
+      "dry_beans",
+      "dry_pea",
+      "groundnut",
+      "lentil",
+      "maize",
+      "millet",
+      "oats_all",
+      "potato",
+      "rapeseed_all",
+      "rice",
+      "rye_all",
+      "seed_cotton",
+      "sorghum",
+      "soybean",
+      "sugarcane",
+      "sunflower",
+      "sweet_potato",
+      "wheat_all"
+    ],
+    "AU": [
+      "broad_bean",
+      "canary_seed",
+      "dry_beans",
+      "dry_pea",
+      "groundnut",
+      "millet",
+      "rye_all",
+      "seed_cotton",
+      "soybean",
+      "sugarbeet",
+      "sunflower"
+    ],
+    "BR": [
+      "rapeseed_all",
+      "yam"
+    ],
+    "CN": [
+      "barley_all",
+      "broad_bean",
+      "cassava",
+      "chickpea",
+      "cowpea",
+      "dry_pea",
+      "lentil",
+      "millet",
+      "oats_all",
+      "rye_all",
+      "sorghum",
+      "sugarbeet"
+    ],
+    "FR": [
+      "broad_bean",
+      "dry_pea",
+      "rye_all"
+    ],
+    "IN": [
+      "barley_all",
+      "cassava",
+      "chickpea",
+      "dry_beans",
+      "dry_pea",
+      "groundnut",
+      "lentil",
+      "maize",
+      "millet",
+      "pigeon_pea",
+      "potato",
+      "rapeseed_all",
+      "rice",
+      "seed_cotton",
+      "sorghum",
+      "soybean",
+      "sugarcane",
+      "sunflower",
+      "sweet_potato",
+      "wheat_all",
+      "yam"
+    ],
+    "KE": [
+      "lentil",
+      "oats_all",
+      "rapeseed_all"
+    ],
+    "MX": [
+      "sugarbeet"
+    ],
+    "NG": [
+      "cassava",
+      "cowpea",
+      "groundnut",
+      "potato",
+      "seed_cotton",
+      "soybean",
+      "sugarcane",
+      "sweet_potato",
+      "wheat_all",
+      "yam"
+    ],
+    "US": [
+      "canola_all",
+      "cotton_all",
+      "cowpea",
+      "seed_cotton",
+      "spring_wheat",
+      "winter_wheat"
+    ]
+  },
+  "incomplete_price_windows": [
+    {
+      "region_key": "AU",
+      "crop_id": "chickpea",
+      "years": "2020,2021,2023,2024"
+    },
+    {
+      "region_key": "AU",
+      "crop_id": "cotton_lint",
+      "years": "2020,2021,2022"
+    },
+    {
+      "region_key": "AU",
+      "crop_id": "lentil",
+      "years": "2021,2023,2024"
+    },
+    {
+      "region_key": "AU",
+      "crop_id": "maize",
+      "years": "2020,2021,2023,2024"
+    },
+    {
+      "region_key": "AU",
+      "crop_id": "rice",
+      "years": "2020,2021,2022,2024"
+    },
+    {
+      "region_key": "AU",
+      "crop_id": "sweet_potato",
+      "years": "2023,2024"
+    },
+    {
+      "region_key": "BR",
+      "crop_id": "potato",
+      "years": "2020,2022,2023,2024"
+    },
+    {
+      "region_key": "CN",
+      "crop_id": "dry_beans",
+      "years": "2020"
+    },
+    {
+      "region_key": "CN",
+      "crop_id": "cotton_lint",
+      "years": "2020,2024"
+    },
+    {
+      "region_key": "CN",
+      "crop_id": "groundnut",
+      "years": "2020,2021,2022,2023"
+    },
+    {
+      "region_key": "CN",
+      "crop_id": "seed_cotton",
+      "years": "2020"
+    },
+    {
+      "region_key": "CN",
+      "crop_id": "sugarcane",
+      "years": "2020,2021"
+    },
+    {
+      "region_key": "CN",
+      "crop_id": "sunflower",
+      "years": "2020,2021"
+    },
+    {
+      "region_key": "CN",
+      "crop_id": "sweet_potato",
+      "years": "2020"
+    },
+    {
+      "region_key": "FR",
+      "crop_id": "rapeseed_all",
+      "years": "2020,2021,2022,2023"
+    },
+    {
+      "region_key": "FR",
+      "crop_id": "rice",
+      "years": "2020"
+    },
+    {
+      "region_key": "FR",
+      "crop_id": "soybean",
+      "years": "2020,2021,2022,2023"
+    },
+    {
+      "region_key": "FR",
+      "crop_id": "sunflower",
+      "years": "2020,2021,2022,2023"
+    },
+    {
+      "region_key": "KE",
+      "crop_id": "chickpea",
+      "years": "2023,2024"
+    },
+    {
+      "region_key": "KE",
+      "crop_id": "cotton_lint",
+      "years": "2022,2023,2024"
+    },
+    {
+      "region_key": "KE",
+      "crop_id": "sorghum",
+      "years": "2021,2022,2023,2024"
+    },
+    {
+      "region_key": "KE",
+      "crop_id": "soybean",
+      "years": "2022,2023,2024"
+    },
+    {
+      "region_key": "KE",
+      "crop_id": "sunflower",
+      "years": "2022,2023"
+    },
+    {
+      "region_key": "KE",
+      "crop_id": "yam",
+      "years": "2022,2023,2024"
+    },
+    {
+      "region_key": "MX",
+      "crop_id": "millet",
+      "years": "2021,2022,2023"
+    },
+    {
+      "region_key": "NG",
+      "crop_id": "maize",
+      "years": "2020"
+    },
+    {
+      "region_key": "NG",
+      "crop_id": "millet",
+      "years": "2020"
+    },
+    {
+      "region_key": "NG",
+      "crop_id": "rice",
+      "years": "2020"
+    },
+    {
+      "region_key": "NG",
+      "crop_id": "sorghum",
+      "years": "2020"
+    },
+    {
+      "region_key": "US",
+      "crop_id": "sugarbeet",
+      "years": "2020,2021,2022,2023"
+    },
+    {
+      "region_key": "US",
+      "crop_id": "sugarcane",
+      "years": "2020,2021,2022,2023"
+    }
+  ],
+  "absent_categories": [
+    "non-US costs",
+    "non-Iowa custom rates",
+    "county yields",
+    "unmapped FAOSTAT commodities"
+  ],
+  "source_access_failures": [
+    {
+      "url": "https://fenixservices.fao.org/faostat/api/v1/en/data/PP?area_code=9&element_code=5532&year=2022&item_code=56",
+      "http_status": 403,
+      "retrieved": "2026-11-15",
+      "fallback": "official FAOSTAT bulk ZIP"
+    },
+    {
+      "url": "https://www.nass.usda.gov/Publications/Todays_Reports/reports/cropan25.pdf",
+      "http_status": 404,
+      "retrieved": "2026-11-15",
+      "fallback": "https://esmis.nal.usda.gov/sites/default/release-files/k3569432s/nk324887m/qn59s0097/cropan25.pdf"
+    },
+    {
+      "url": "https://www.nass.usda.gov/Publications/Todays_Reports/reports/cpvl0225.pdf",
+      "http_status": 404,
+      "retrieved": "2026-11-15",
+      "fallback": "Agricultural Prices July 2025 annual calendar-year table"
+    },
+    {
+      "url": "https://www.nass.usda.gov/Statistics_by_State/Iowa/Publications/Annual_Statistical_Bulletin/2025-Iowa-Annual-Bulletin.pdf",
+      "http_status": 404,
+      "retrieved": "2026-11-15",
+      "fallback": "official NASS production/prices reports plus Iowa State survey"
+    },
+    {
+      "url": "https://data.nass.usda.gov/Statistics_by_State/North_Carolina/Publications/Annual_Statistical_Bulletin/AgStat/Section03.pdf",
+      "http_status": 404,
+      "retrieved": "2026-11-15",
+      "fallback": "national NASS prices; no state prices substituted"
+    }
+  ]
+}

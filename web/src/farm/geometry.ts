@@ -24,8 +24,18 @@ export function fromParcels(polys: number[][][][]): FieldGeometry {
   return { type: "MultiPolygon", coordinates: polys };
 }
 
+/*
+  Contract §5 and the backend (farms/geometry.py) use turf's ring formula with the WGS84
+  equatorial radius 6378137 m. turf 7 switched to the mean radius 6371008.8 m, which reads about
+  0.22% smaller, so the turf result is rescaled to the contract radius and the map agrees with
+  the backend's area.
+*/
+const CONTRACT_RADIUS_M = 6378137;
+const TURF_RADIUS_M = 6371008.8;
+const RADIUS_FIX = (CONTRACT_RADIUS_M / TURF_RADIUS_M) ** 2;
+
 export function areaM2(g: FieldGeometry): number {
-  return turfArea({ type: "Feature", properties: {}, geometry: g });
+  return turfArea({ type: "Feature", properties: {}, geometry: g }) * RADIUS_FIX;
 }
 
 export function areaHa(g: FieldGeometry): number {

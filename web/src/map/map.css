@@ -2,7 +2,7 @@
 .mp-screen {
   display: grid;
   grid-template-columns: minmax(320px, 380px) 1fr;
-  height: 100%;
+  align-items: stretch;
   min-height: 560px;
   background: var(--surface-2);
 }
@@ -11,7 +11,7 @@
   flex-direction: column;
   gap: var(--sp-4);
   padding: var(--sp-5);
-  overflow-y: auto;
+  overflow: visible;
   background: var(--surface);
   border-right: var(--border);
 }
@@ -202,11 +202,10 @@
   background: var(--surface-2);
 }
 .mp-field {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--sp-2);
+  display: grid;
+  gap: 4px;
   width: 100%;
-  padding: 8px 10px;
+  padding: 10px 10px 6px;
   border: 0;
   border-radius: var(--radius-md);
   background: transparent;
@@ -221,13 +220,114 @@
 }
 .mp-field[aria-pressed="true"] .mp-field-name {
   color: var(--action);
-  font-weight: 500;
+}
+.mp-field-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--sp-2);
+}
+.mp-field-name {
+  font-weight: 600;
 }
 .mp-field-area {
   color: var(--ink-muted);
-  font-size: 14px;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+}
+.mp-field-area strong {
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 650;
+  margin-right: 4px;
+}
+.mp-field-crops {
+  color: var(--ink);
+  font-size: 13px;
+}
+.mp-field-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-muted);
+  font-size: 13px;
+}
+.mp-field-status[data-state="no-plan"] .mp-dot {
+  border: 1px dashed var(--line-strong);
+}
+.mp-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+.mp-field-mini {
+  padding: 0 10px 10px;
+}
+.mp-fields li {
+  border: var(--border);
+}
+.mp-fields {
+  gap: var(--sp-2) !important;
+}
+.mp-total {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--accent-soft);
+}
+.mp-total-label {
+  color: var(--action);
+  font-weight: 600;
+  font-size: 14px;
+}
+.mp-total-ac {
+  font-size: 22px;
+  font-weight: 650;
+  color: var(--action);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.mp-total-sub {
+  grid-column: 1 / -1;
+  color: var(--ink-muted);
+  font-size: 13px;
+  text-align: right;
+}
+.mp-live strong {
+  color: var(--action);
+  font-size: 16px;
+}
+.mp-empty {
+  display: grid;
+  gap: var(--sp-2);
+  justify-items: start;
+}
+.mp-field-label {
+  display: grid;
+  justify-items: center;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.25;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+.mp-field-label strong {
+  font-size: 13px;
+}
+.mp-field-label span {
+  color: var(--action);
+  font-weight: 600;
+}
+.mp-labels-off .mp-field-label {
+  display: none;
 }
 .mp-field-edit {
   display: flex;
@@ -246,4 +346,54 @@
   margin: 0;
   color: var(--ink-muted);
   font-size: 13px;
+}
+
+/* C4: results layer key and weather cells */
+.mp-results-layer {
+  display: grid;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  border: var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+.mp-legend,
+.mp-cells {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mp-legend li {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--ink);
+}
+.mp-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1px solid var(--line-strong);
+}
+.mp-cells li + li {
+  padding-top: var(--sp-2);
+  border-top: var(--border);
+}
+.mp-cells p {
+  margin: 0;
+}
+.mp-cell-title {
+  color: var(--action);
+  font-weight: 600;
+}
+.mp-cell-label {
+  padding: 2px 8px;
+  margin: 4px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--action);
+  font-size: 13px;
+  pointer-events: none;
 }

@@ -1,0 +1,182 @@
+{
+ "meta": {
+  "request_id": "fixture",
+  "snapshot_hash": null
+ },
+ "_fixture": "Synthetic fixture built from docs/global/contract.md \u00a711\u2013\u00a716 (Agent D). Example values, not real backend output.",
+ "label": "Demo farm (example values)",
+ "farm": {
+  "farm_id": "farm_demo_union",
+  "name": "Union County demo farm",
+  "anchor": {
+   "latitude": 34.98,
+   "longitude": -80.55
+  },
+  "fields": [
+   {
+    "field_id": "fld_demo_north",
+    "name": "North 40",
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -80.556,
+        34.981
+       ],
+       [
+        -80.5516,
+        34.981
+       ],
+       [
+        -80.5516,
+        34.9846
+       ],
+       [
+        -80.556,
+        34.9846
+       ],
+       [
+        -80.556,
+        34.981
+       ]
+      ]
+     ]
+    },
+    "equipment": [
+     "planter",
+     "grain_drill",
+     "sprayer",
+     "combine"
+    ],
+    "readings": [
+     {
+      "date": "2026-04-02",
+      "kind": "soil_moisture_pct",
+      "value": 23.5,
+      "depth_cm": 10
+     },
+     {
+      "date": "2026-04-20",
+      "kind": "rainfall_mm",
+      "value": 18.0
+     }
+    ]
+   },
+   {
+    "field_id": "fld_demo_creek",
+    "name": "Creek bottom",
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -80.548,
+        34.975
+       ],
+       [
+        -80.544,
+        34.975
+       ],
+       [
+        -80.544,
+        34.978
+       ],
+       [
+        -80.548,
+        34.978
+       ],
+       [
+        -80.548,
+        34.975
+       ]
+      ]
+     ]
+    },
+    "equipment": [
+     "no_till_drill",
+     "sprayer",
+     "combine"
+    ],
+    "readings": [
+     {
+      "date": "2026-03-28",
+      "kind": "note",
+      "value": null,
+      "note": "Low corner stayed wet after the March rain."
+     }
+    ]
+   }
+  ]
+ },
+ "current_plans": {
+  "fld_demo_north": [
+   {
+    "plan_id": "cur_north_s1",
+    "label": "Corn, then soybean",
+    "previous_crop_id": "field_corn",
+    "prev_harvest": "09-20",
+    "winter": {
+     "kind": "none"
+    },
+    "next_crop_id": "soybean",
+    "next_plant": "05-10"
+   },
+   {
+    "plan_id": "cur_north_s2",
+    "label": "Soybean, then corn",
+    "previous_crop_id": "soybean",
+    "prev_harvest": "10-15",
+    "winter": {
+     "kind": "none"
+    },
+    "next_crop_id": "field_corn",
+    "next_plant": "04-15"
+   }
+  ],
+  "fld_demo_creek": [
+   {
+    "plan_id": "cur_creek_s1",
+    "label": "Wheat, then double-crop soybean",
+    "previous_crop_id": "soybean",
+    "prev_harvest": "10-20",
+    "winter": {
+     "kind": "winter_grain",
+     "crop_id": "wheat",
+     "plant": "11-01",
+     "harvest": "06-10"
+    },
+    "next_crop_id": "soybean",
+    "next_plant": "06-15"
+   }
+  ]
+ },
+ "economics_overrides": {
+  "soybean": {
+   "price": {
+    "value": 11.2,
+    "unit": "USD/bu"
+   },
+   "yield": {
+    "value": 48,
+    "unit": "bu/acre"
+   }
+  }
+ },
+ "goals": {
+  "priorities": {
+   "soil_cover": 2,
+   "water_conservation": 2,
+   "weather_resilience": 1,
+   "crop_diversity": 1,
+   "living_cover_duration": 1,
+   "management_simplicity": 1,
+   "profit": 3
+  }
+ },
+ "loss_assumptions": {
+  "dry_spring_pct": 15,
+  "wet_spring_pct": null,
+  "heavy_rain_pct": null
+ }
+}

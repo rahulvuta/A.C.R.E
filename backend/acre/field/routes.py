@@ -1,0 +1,256 @@
+"""Phase 8 HTTP routes: ``POST /v1/locations/resolve`` and ``GET /v1/soil``.
+
+Mounted by the API app (owner: Agent A) with ``app.include_router(router)``. Invalid input is a 400
+with typed issues; an SDA failure is a 200 whose ``soil.status`` is ``unavailable``.
+"""
+
+from __future__ import annotations
+
+import math
+from datetime import date
+from typing import Any
+
+from fastapi import APIRouter, Request
+from pydantic import TypeAdapter, ValidationError
+
+from acre.contracts import Status
+from acre.field.live import get_live
+from acre.field.location import resolve_location
+from acre.field.soil import get_soil, unavailable
+from acre.field.zones import (
+    ChangeReport,
+    PondingReport,
+    analyze_zones,
+    load_zones,
+    zones_as_dict,
+)
+from acre.report.http import invalid, issue, read_object
+from acre.report.meta import response_meta
+
+router = APIRouter(prefix="/v1", tags=["field"])
+
+
+def _coord(value: Any, name: str, lo: float, hi: float) -> tuple[float | None, dict | None]:
+    if isinstance(value, bool) or not isinstance(value, int | float):
+        return None, issue(name, "invalid_coordinate", f"{name} must be a number")
+    try:
+        x = float(value)
+    except OverflowError:
+        x = math.inf
+    if not math.isfinite(x) or not lo <= x <= hi:
+        return None, issue(name, "invalid_coordinate", f"{name} must be within [{lo:g}, {hi:g}]")
+    return x, None
+
+
+def _country(la: float, lo: float) -> tuple[str | None, bool]:
+    """``(ISO2 country, over_water)``. NC needs no geocoder; elsewhere the geocoder (cached, 1 req/s)
+    decides. An unknown country uses the worldwide providers (SoilGrids, Open-Meteo), never the
+    U.S. ones."""
+    from acre.geo.config import is_offline
+    from acre.geo.locate import describe
+
+    d = describe(la, lo, allow_network=not is_offline())
+    if d.status == "unsupported":
+        return None, True
+    return ("US" if d.in_nc else d.country), False
+
+
+def _water() -> dict[str, Any]:
+    return {"meta": response_meta(), "status": "unsupported", "code": "unsupported_location",
+            "reason": "the point is over water", "reason_text": "This point is over water."}  # fmt: skip
+
+
+@router.post("/locations/resolve")
+async def post_resolve(request: Request) -> Any:
+    """Body: ``{"lat": float, "lon": float, "region": str?}``.
+
+    ``location.weather`` says whether the point's grid cell has a committed weather snapshot:
+    ``{status: complete|unavailable, location_id, snapshot_hash, ...}`` from
+    ``data/snapshots/index.json``. Nothing is fetched from POWER. ``fetch_history`` is still
+    accepted (it must be a boolean) and ignored.
+    """
+    body, err = await read_object(request)
+    if err is not None:
+        return err
+    assert body is not None
+    problems: list[dict[str, str]] = []
+    lat, p1 = _coord(body.get("lat"), "lat", -90, 90)
+    lon, p2 = _coord(body.get("lon"), "lon", -180, 180)
+    problems += [p for p in (p1, p2) if p]
+    region = body.get("region")
+    if region is not None and not isinstance(region, str):
+        problems.append(issue("region", "invalid_type", "region must be a string"))
+    fetch = body.get("fetch_history", False)
+    if not isinstance(fetch, bool):
+        problems.append(
+            issue("fetch_history", "invalid_type", "fetch_history must be true or false")
+        )
+    if problems:
+        return invalid(problems)
+    res = resolve_location(lat, lon, region=region)
+    return {"meta": response_meta(), "location": res.model_dump(mode="json")}
+
+
+@router.get("/soil")
+def get_soil_route(lat: str | None = None, lon: str | None = None) -> Any:
+    """Soil map unit at a point. Query values are parsed here so bad ones are typed 400s."""
+    point, problems = _lat_lon(lat, lon)
+    if point is None:
+        return invalid(problems)
+    la, lo_ = point
+    country, water = _country(la, lo_)
+    if water:
+        return {**_water(), "soil": unavailable("over water").model_dump(mode="json")}
+    from acre.field.soilgrids import REASONS, get_soilgrids
+
+    sda = None
+    if country == "US":  # USDA SDA first; SoilGrids only when SDA has nothing
+        sda = get_soil(la, lo_)  # follows ACRE_OFFLINE; never raises
+        if sda.status != Status.UNAVAILABLE:
+            return {"meta": response_meta(), "status": "complete", "provider": "usda_sda",
+                    "soil": sda.model_dump(mode="json"), "soilgrids": None}  # fmt: skip
+    sg = get_soilgrids(la, lo_)  # never raises; an outage is "unavailable"
+    out = sg.model_dump(mode="json")
+    out["reason_text"] = REASONS.get(sg.reason) if sg.reason else None
+    return {
+        "meta": response_meta(), "status": "complete",
+        "provider": "soilgrids" if sg.status != Status.UNAVAILABLE else None,
+        "soil": (sda or unavailable("USDA Soil Data Access covers the U.S. only")).model_dump(
+            mode="json"),
+        "soilgrids": out,
+    }  # fmt: skip
+
+
+def _lat_lon(
+    lat: str | None, lon: str | None
+) -> tuple[tuple[float, float] | None, list[dict[str, str]]]:
+    problems: list[dict[str, str]] = []
+    parsed: list[float] = []
+    for name, raw, lo, hi in (("lat", lat, -90, 90), ("lon", lon, -180, 180)):
+        if raw is None or not raw.strip():
+            problems.append(issue(name, "required", f"{name} is required"))
+            continue
+        try:
+            value: Any = float(raw)
+        except ValueError:
+            value = None
+        x, p = _coord(value, name, lo, hi)
+        if p:
+            problems.append(p)
+        else:
+            parsed.append(x)  # type: ignore[arg-type]
+    return ((parsed[0], parsed[1]) if not problems else None), problems
+
+
+@router.get("/live")
+def get_live_route(lat: str | None = None, lon: str | None = None) -> Any:
+    """Live NWS forecast/alerts and U.S. Drought Monitor in their own block (never used in history).
+
+    A source that is down is ``unavailable`` inside the block; the response is still a 200.
+    """
+    point, problems = _lat_lon(lat, lon)
+    if point is None:
+        return invalid(problems)
+    country, water = _country(*point)
+    if water:
+        return _water()
+    if country != "US":  # NWS and the Drought Monitor are U.S. services: never called elsewhere
+        from acre.field.openmeteo import get_open_meteo
+
+        return {"meta": response_meta(), "status": "complete", "provider": "open_meteo",
+                "live": get_open_meteo(*point)}  # fmt: skip
+    return {
+        "provider": "nws",
+        "meta": response_meta(),
+        "status": "complete",
+        "live": get_live(*point).model_dump(mode="json"),
+    }
+
+
+@router.get("/zones")
+def get_zones() -> Any:
+    return {"meta": response_meta(), "zones": zones_as_dict(load_zones())}
+
+
+def _list_or_empty(body: dict[str, Any], key: str) -> Any:
+    v = body.get(key)
+    return [] if v is None else v
+
+
+@router.post("/zones/analyze")
+async def post_zones_analyze(request: Request) -> Any:
+    """Body: ``{ponding?: [{zone_id, reported_on}], heavy_rain_days?: [date], changes?: [{kind, reported_on, zone_id?}]}``."""
+    body, err = await read_object(request)
+    if err is not None:
+        return err
+    assert body is not None
+    try:
+        # Only an absent or null field defaults to []; anything else must be a valid list.
+        ponding = TypeAdapter(list[PondingReport]).validate_python(_list_or_empty(body, "ponding"))
+        changes = TypeAdapter(list[ChangeReport]).validate_python(_list_or_empty(body, "changes"))
+        heavy = TypeAdapter(list[date]).validate_python(_list_or_empty(body, "heavy_rain_days"))
+    except ValidationError as exc:
+        return invalid(
+            [
+                issue(".".join(str(x) for x in e["loc"]) or "body", e["type"], e["msg"])
+                for e in exc.errors()
+            ]
+        )
+    zs = load_zones()
+    unknown = [
+        issue(f"changes.{i}.zone_id", "unknown_zone", f"zone '{c.zone_id}' is not in this field")
+        for i, c in enumerate(changes)
+        if c.zone_id is not None and zs.zone(c.zone_id) is None
+    ]
+    if unknown:
+        return invalid(unknown)
+    result = analyze_zones(zs, ponding=ponding, heavy_rain_days=heavy, changes=changes)
+    return {"meta": response_meta(), "result": result.model_dump(mode="json")}
+
+
+# Card B1: geo search, reverse geocoding and capabilities ride on this (already mounted) router.
+from acre.geo.routes import router as _geo_router  # noqa: E402
+
+router.include_router(_geo_router)
+
+# Card B2: regional profiles.
+from acre.catalogs.routes import router as _regions_router  # noqa: E402
+
+router.include_router(_regions_router)
+
+# Card B3: AI regional research jobs.
+from acre.research.routes import router as _research_router  # noqa: E402
+
+router.include_router(_research_router)
+
+
+# --------------------------------------------------------------------------- S5 vocabularies
+
+
+@router.get("/vocab/equipment")
+def get_vocab_equipment() -> Any:
+    """Contract §14: the equipment vocabulary with labels (plus ``other:<text>``)."""
+    from acre.field.equipment import vocab_equipment
+
+    return {"meta": response_meta(weather=False), "equipment": vocab_equipment(),
+            "note": "An empty list means 'not given', never 'no equipment'."}  # fmt: skip
+
+
+@router.get("/vocab/readings")
+def get_vocab_readings() -> Any:
+    """Contract §14: reading kinds with labels, units and plausible bounds."""
+    from acre.field.equipment import vocab_readings
+
+    return {"meta": response_meta(weather=False), "readings": vocab_readings(),
+            "note": "Your readings take precedence for field conditions. Compatible dated "
+            "measurements override estimates in the field's simulation; the original dataset is retained."}  # fmt: skip
+
+# Card S3: economics estimate.
+from acre.economics.routes import router as _economics_router  # noqa: E402
+
+router.include_router(_economics_router)
+
+# Card S4: the crop library.
+from acre.croplib.routes import router as _croplib_router  # noqa: E402
+
+router.include_router(_croplib_router)

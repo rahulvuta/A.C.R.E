@@ -1,7 +1,7 @@
 import pytest
 
-from fieldshift.api.samples import load_samples
-from fieldshift.compare.context import get_context
+from acre.api.samples import load_samples
+from acre.compare.context import get_context
 
 YEAR = 2027  # explicit: results never depend on today's date
 

@@ -1,0 +1,252 @@
+{
+  "current_plans": {
+    "fld_demo_union_north": [
+      {
+        "label": "Synthetic example crop plan",
+        "next_crop_id": "soybean",
+        "next_plant": "05-12",
+        "plan_id": "fld_demo_union_north_0",
+        "prev_harvest": "10-15",
+        "previous_crop_id": "field_corn",
+        "winter": {
+          "kind": "none"
+        }
+      },
+      {
+        "label": "Synthetic example crop plan",
+        "next_crop_id": "field_corn",
+        "next_plant": "04-20",
+        "plan_id": "fld_demo_union_north_1",
+        "prev_harvest": "10-20",
+        "previous_crop_id": "soybean",
+        "winter": {
+          "kind": "none"
+        }
+      }
+    ],
+    "fld_demo_union_south": [
+      {
+        "label": "Synthetic example crop plan",
+        "next_crop_id": "field_corn",
+        "next_plant": "04-20",
+        "plan_id": "fld_demo_union_south_1",
+        "prev_harvest": "10-20",
+        "previous_crop_id": "soybean",
+        "winter": {
+          "kind": "none"
+        }
+      },
+      {
+        "label": "Synthetic example crop plan",
+        "next_crop_id": "soybean",
+        "next_plant": "05-12",
+        "plan_id": "fld_demo_union_south_0",
+        "prev_harvest": "10-15",
+        "previous_crop_id": "field_corn",
+        "winter": {
+          "kind": "none"
+        }
+      }
+    ]
+  },
+  "economics_note": "Synthetic example values, not sourced; edit to your own numbers.",
+  "economics_overrides": {
+    "cereal_rye": {
+      "costs": {
+        "unit": "USD/acre",
+        "value": 45
+      }
+    },
+    "field_corn": {
+      "costs": {
+        "unit": "USD/acre",
+        "value": 700
+      },
+      "price": {
+        "unit": "USD/bu",
+        "value": 4.5
+      },
+      "yield": {
+        "unit": "bu/acre",
+        "value": 170
+      }
+    },
+    "soybean": {
+      "costs": {
+        "unit": "USD/acre",
+        "value": 410
+      },
+      "price": {
+        "unit": "USD/bu",
+        "value": 11.2
+      },
+      "yield": {
+        "unit": "bu/acre",
+        "value": 48
+      }
+    }
+  },
+  "farm": {
+    "anchor": {
+      "latitude": 34.98,
+      "longitude": -80.55
+    },
+    "farm_id": "farm_demo_union",
+    "fields": [
+      {
+        "area_ha": 16.083,
+        "area_origin": "calculation",
+        "equipment": [
+          "planter",
+          "grain_drill",
+          "sprayer",
+          "combine"
+        ],
+        "field_id": "fld_demo_union_north",
+        "geometry": {
+          "coordinates": [
+            [
+              [
+                -80.55,
+                34.98
+              ],
+              [
+                -80.5456,
+                34.98
+              ],
+              [
+                -80.5456,
+                34.9836
+              ],
+              [
+                -80.55,
+                34.9836
+              ],
+              [
+                -80.55,
+                34.98
+              ]
+            ]
+          ],
+          "type": "Polygon"
+        },
+        "location": {
+          "latitude": 34.9818,
+          "longitude": -80.5478
+        },
+        "name": "North field (synthetic)",
+        "origin": "assumed",
+        "plan": {
+          "label": "Synthetic example crop plan",
+          "next_crop_id": "soybean",
+          "next_plant": "05-12",
+          "plan_id": "fld_demo_union_north_0",
+          "prev_harvest": "10-15",
+          "previous_crop_id": "field_corn",
+          "winter": {
+            "kind": "none"
+          }
+        },
+        "readings": [
+          {
+            "date": "2025-04-02",
+            "depth_cm": 10,
+            "kind": "soil_moisture_pct",
+            "note": "Synthetic demo reading",
+            "origin": "assumed",
+            "value": 23.5
+          }
+        ]
+      },
+      {
+        "area_ha": 16.082,
+        "area_origin": "calculation",
+        "equipment": [
+          "planter",
+          "grain_drill",
+          "sprayer",
+          "combine"
+        ],
+        "field_id": "fld_demo_union_south",
+        "geometry": {
+          "coordinates": [
+            [
+              [
+                -80.543,
+                34.986
+              ],
+              [
+                -80.5386,
+                34.986
+              ],
+              [
+                -80.5386,
+                34.9896
+              ],
+              [
+                -80.543,
+                34.9896
+              ],
+              [
+                -80.543,
+                34.986
+              ]
+            ]
+          ],
+          "type": "Polygon"
+        },
+        "location": {
+          "latitude": 34.9878,
+          "longitude": -80.5408
+        },
+        "name": "South field (synthetic)",
+        "origin": "assumed",
+        "plan": {
+          "label": "Synthetic example crop plan",
+          "next_crop_id": "field_corn",
+          "next_plant": "04-20",
+          "plan_id": "fld_demo_union_south_1",
+          "prev_harvest": "10-20",
+          "previous_crop_id": "soybean",
+          "winter": {
+            "kind": "none"
+          }
+        },
+        "readings": [
+          {
+            "date": "2025-04-02",
+            "depth_cm": 10,
+            "kind": "soil_moisture_pct",
+            "note": "Synthetic demo reading",
+            "origin": "assumed",
+            "value": 24.5
+          }
+        ]
+      }
+    ],
+    "name": "Union County demo farm (synthetic)"
+  },
+  "goals": {
+    "priorities": {
+      "profit": 3,
+      "soil_cover": 2,
+      "weather_resilience": 2
+    }
+  },
+  "label": "Demo farm (example values)",
+  "loss_assumptions": {
+    "dry_spring_pct": null,
+    "heavy_rain_pct": null
+  },
+  "meta": {
+    "catalog_version": "v2:8eeb5bf961eb",
+    "plan_version": null,
+    "request_id": "req_example",
+    "snapshot_hash": null
+  },
+  "note": "Synthetic boundaries, crop dates, equipment, readings and economics for a demo, not a real farm. Money values are example inputs, not sourced references. An evidence-based outlook from this field's real past seasons. It shows what to plan for under conditions seen here; it cannot say what any single year will bring.",
+  "origin": "assumed",
+  "resolution_note": "These fields share one NASA POWER weather cell (about 0.5 x 0.625 degrees) and the same historical weather series.",
+  "status": "complete",
+  "synthetic": true
+}

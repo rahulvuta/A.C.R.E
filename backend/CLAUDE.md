@@ -1,8 +1,8 @@
-# Field Shift backend: agent rules
+# A.C.R.E backend: agent rules
 
 > **Scope:** these rules govern **backend work only**, meaning everything under `backend/`. All paths below are relative to `backend/`; run commands (pytest, ruff, make, the Codex review) from `backend/`. The frontend lives in `web/` and follows its own `web/CLAUDE.md`. If you are working in `web/`, ignore this file. Deployment is Railway (`backend/railway.json`; Railway service root directory `backend`).
 
-Field Shift is a NASA Space Apps project. The build plan is in `docs/phase-cards.md` and is the source of truth for what each phase builds and how it is accepted. The reference catalogs in `data/catalogs/v1/` are Perplexity's verbatim files. **Never edit them.** Report problems in `docs/catalog-gaps.md` instead.
+A.C.R.E is a NASA Space Apps project. The build plan is in `docs/phase-cards.md` and is the source of truth for what each phase builds and how it is accepted. The reference catalogs in `data/catalogs/v1/` are Perplexity's verbatim files. **Never edit them.** Report problems in `docs/catalog-gaps.md` instead.
 
 Two Claude agents build this in parallel: **Agent A** and **Agent B**. Your launch prompt tells you which one you are. If it doesn't, ask before touching code.
 
@@ -32,7 +32,7 @@ The split follows the dependency graph. **A** owns the weather and time-series p
 - **Who passes the Phase 4 regression cases:** A, once 4a and 4b are both merged. The cases are in the Phase 4 card.
 
 **Sync points.** Where these depend on the other agent's work, pull or wait; do not reimplement it.
-1. B finishes the Phase 0 scaffold, then A creates `fieldshift/contracts.py`. A can write Phase 1 code under `fieldshift/weather/` before then.
+1. B finishes the Phase 0 scaffold, then A creates `acre/contracts.py`. A can write Phase 1 code under `acre/weather/` before then.
 2. A's Phase 2 `SeasonCalendar`/`SeasonFacts` must be real before A wires up Phase 6. B builds 4b against fixtures that follow the contract.
 3. B's Phase 9 starts only after A's Phase 6 endpoints exist. If B gets there first, B does Phase 11 first.
 
@@ -42,10 +42,10 @@ Only edit files you own. If you need a change in the other agent's files, write 
 
 | Path | Owner |
 |---|---|
-| `fieldshift/weather/`, `fieldshift/seasons/`, `fieldshift/metrics/winter.py`, `fieldshift/metrics/spring.py`, `fieldshift/compare/`, `fieldshift/api/` | A |
-| `fieldshift/contracts.py`: shared dataclasses `Plan`, `SeasonCalendar`, `SeasonFacts`, `ThresholdSet`, `MetricResult`, and the status enums | A (B proposes changes in `docs/handoff.md`) |
+| `acre/weather/`, `acre/seasons/`, `acre/metrics/winter.py`, `acre/metrics/spring.py`, `acre/compare/`, `acre/api/` | A |
+| `acre/contracts.py`: shared dataclasses `Plan`, `SeasonCalendar`, `SeasonFacts`, `ThresholdSet`, `MetricResult`, and the status enums | A (B proposes changes in `docs/handoff.md`) |
 | `data/snapshots/`, `data/samples/union_plans.json` | A |
-| `fieldshift/catalogs/`, `fieldshift/metrics/rules.py`, `fieldshift/planner/`, `fieldshift/field/`, `fieldshift/tools/`, `fieldshift/report/` | B |
+| `acre/catalogs/`, `acre/metrics/rules.py`, `acre/planner/`, `acre/field/`, `acre/tools/`, `acre/report/` | B |
 | `data/samples/zones.json`, `docs/catalog-gaps.md` | B |
 | `pyproject.toml`, `Makefile` | B creates them. Either agent may append a dependency or target with a small `Edit`, but must re-read the file immediately before editing |
 | `tests/<area>/`: tests follow the code owner | per area |
@@ -88,7 +88,7 @@ codex exec \
   --ephemeral \
   -C "$PWD" \
   -o docs/reviews/phase-<N>-<AGENT>.md \
-  "You are reviewing Phase <N> of the Field Shift backend (see docs/phase-cards.md, the 'Phase <N>' card, and CLAUDE.md). Files changed: <list files>. Briefly check: (1) every acceptance check on the card is actually implemented and tested, (2) correctness bugs, especially off-by-one date windows (inclusive/exclusive), leap days, blank-vs-zero handling, threshold freezing across plans/eras, and denominators, (3) rules or sources misapplied relative to data/catalogs/v1/crop_rules.csv applicability columns, (4) anything that breaks the file-ownership or status-vocabulary rules in CLAUDE.md. Do not edit files. Output: a verdict line 'PASS' or 'CHANGES NEEDED', then at most 10 findings as 'severity | file:line | issue | fix'. Keep it short."
+  "You are reviewing Phase <N> of the A.C.R.E backend (see docs/phase-cards.md, the 'Phase <N>' card, and CLAUDE.md). Files changed: <list files>. Briefly check: (1) every acceptance check on the card is actually implemented and tested, (2) correctness bugs, especially off-by-one date windows (inclusive/exclusive), leap days, blank-vs-zero handling, threshold freezing across plans/eras, and denominators, (3) rules or sources misapplied relative to data/catalogs/v1/crop_rules.csv applicability columns, (4) anything that breaks the file-ownership or status-vocabulary rules in CLAUDE.md. Do not edit files. Output: a verdict line 'PASS' or 'CHANGES NEEDED', then at most 10 findings as 'severity | file:line | issue | fix'. Keep it short."
 ```
 
 - **Effort level:** `high` stands in for the requested "medium-high", because Codex has no medium-high setting. Use `medium` only for doc-only or fixture-only changes.

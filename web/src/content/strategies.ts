@@ -80,7 +80,7 @@ export const CARDS: CardContent[] = [
     subtitle: "No planted winter cover · residue may remain",
     headings: {
       why: [c("The rotation the other two are compared against. Same harvest and planting dates; only the winters change.")],
-      evidence: [c("Every spring since 1981 replayed for the same planting date with NASA rainfall for this area.", "nasa-power")],
+      evidence: [c("Every spring since 1981 checked against the same planting date, with NASA rainfall for this area.", "nasa-power")],
       benefits: [c("No cover-crop seed, planting or termination work.", "ncs-soy-4")],
       gaps: [c("Residue cover, slope and storm intensity decide real erosion; this tool does not measure them.")],
       risks: [c("Without living cover, soil has less protection through fall and winter.", "ncs-cover")],
@@ -99,7 +99,7 @@ export const CARDS: CardContent[] = [
       ],
       evidence: [
         c("If low soil moisture is a concern, NC State suggests ending the cover at least two weeks before soybean planting.", "ncs-soy-4"),
-        c("Every spring since 1981 replayed with NASA rainfall for this area.", "nasa-power"),
+        c("Every spring since 1981 checked, with NASA rainfall for this area.", "nasa-power"),
       ],
       benefits: [
         c("Can suppress weeds and, with no-till, help conserve soil moisture later in the season.", "ncs-soy-4"),

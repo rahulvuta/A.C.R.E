@@ -1,4 +1,4 @@
-# Field Shift goes global: plan and phase cards
+# A.C.R.E goes global: plan and phase cards
 
 **Goal.** A farmer anywhere finds their farm on a map, draws their fields, gives each field its own rotation and dates, and gets an auditable historical stress test from decades of NASA weather and the published guidance for that place. It stays a historical stress test, never a forecast or yield tool, and keeps every existing NC feature, test and the offline demo.
 
@@ -22,7 +22,7 @@ Rules: `CLAUDE.md` (root). API shapes: `docs/global/contract.md`. Status and han
 
 ## Key decisions (made; change them only through Rahul)
 
-- **Weather:** NASA POWER daily (same parameters as Phase 1), fetched once per grid cell on demand, saved in the existing snapshot format with a manifest and hash in `FIELDSHIFT_CACHE_DIR` (a Railway volume). Committed NC snapshots always win. A cached cell is never refreshed silently. Offline mode reads committed and cached data only.
+- **Weather:** NASA POWER daily (same parameters as Phase 1), fetched once per grid cell on demand, saved in the existing snapshot format with a manifest and hash in `ACRE_CACHE_DIR` (a Railway volume). Committed NC snapshots always win. A cached cell is never refreshed silently. Offline mode reads committed and cached data only.
 - **Thresholds outside NC:** dry spring = bottom 20% of the cell's own 1981–2025 windows (same method as NC). Heavy rain in NC stays the published 76.2 mm. Outside NC it is the cell's own 95th percentile of wet days (≥ 1 mm) over the 1981–2010 base. That is the ETCCDI R95p definition, labelled `origin: calculation`, `method: etccdi_r95p`. Both are frozen per cell.
 - **Eras:** fixed 1981–2000 vs 2006–2025, each needing ≥ 15 of 20 evaluable seasons, else `insufficient_data`. Never shifted silently. Coverage is reported per cell.
 - **Seasons:** the existing "winter" window `[prev_harvest, plant)` is the **off-season** window and works in either hemisphere. API field names stay the same. New `season_label` and `hemisphere` fields carry the wording. The "spring" window is the 30-day pre-planting window everywhere.
@@ -36,7 +36,7 @@ Rules: `CLAUDE.md` (root). API shapes: `docs/global/contract.md`. Status and han
 
 ## Product focus (2026-11-14 follow-up; overrides earlier emphasis)
 
-Field Shift's central question is: *"Given my farm's location, soil, crops, historical weather and my own goals, which future crop-rotation plans suit it best, why should I consider them, and how do I carry them out?"* Historical stress testing **supports** that decision. It is not the product. Future planning, rotation generation, farmer priorities and explainable recommendations (cards **P1–P6** below) come before cosmetic work and before the rest of the geographic expansion.
+A.C.R.E's central question is: *"Given my farm's location, soil, crops, historical weather and my own goals, which future crop-rotation plans suit it best, why should I consider them, and how do I carry them out?"* Historical stress testing **supports** that decision. It is not the product. Future planning, rotation generation, farmer priorities and explainable recommendations (cards **P1–P6** below) come before cosmetic work and before the rest of the geographic expansion.
 
 What already exists for this:
 - The plan finder (`planner/finder.py`, Phase 7) searches only predefined options.
@@ -58,6 +58,12 @@ What's missing:
 - Expected benefits (soil health, water) are labelled as **indicators** drawn from sourced principles, never as measured outcomes.
 - No erosion, yield, soil-health improvement or water-saving figures, ever.
 - Where the regional evidence is too thin to generate options, return `insufficient_data` with the gaps, not a guess.
+
+## Fast path (2026-11-14, overrides the wave order below)
+
+- **Core, in order.** A: A1 ✓ → A2 → P2 → A3 → A4 (A4 reduced to a contract refresh and a smoke test). B: B1 ✓ → B2 → P1 → P3.
+- **Optional, only after the core is pushed:** B3 (AI research) and B4 (global soil, live weather, tools with area).
+- P2 builds against B's real `generate_candidates()` as soon as B announces it in `log-B.md`. Until then it stubs it with the NC presets.
 
 ## Waves (cards in the same wave run in parallel)
 
@@ -89,15 +95,15 @@ A.C.R.E is the remote, and the backend is merged into `main`. The branches are `
 ## A1 — Global weather on demand (A, wave 1, critical path)
 
 Build:
-- `fieldshift/weather/ondemand.py`, using this lookup order for a lat/lon:
+- `acre/weather/ondemand.py`, using this lookup order for a lat/lon:
   1. the committed snapshot index;
-  2. the cache `FIELDSHIFT_CACHE_DIR/weather/<cell_id>/`;
+  2. the cache `ACRE_CACHE_DIR/weather/<cell_id>/`;
   3. a POWER fetch: same parameters and community as Phase 1, from 1981-01-01 to the last complete day POWER serves.
   Write the result with the existing `write_snapshot` (manifest, raw, daily, hash) and record `retrieved_at` and the source URL.
 - One fetch per cell at a time (dedupe concurrent requests), a timeout, one retry. Failures give `status: unavailable` with `reason` and `reason_text`.
 - Coverage per cell: first and last date, complete springs and off-seasons, missing days per parameter, and `status` = `complete` (≥ 40 complete years), `partial`, or `insufficient_data` (< 15).
 - Endpoints `POST /v1/weather/prepare` and `GET /v1/weather/{cell_id}` (contract §2), with `job_status: pending|ready|failed`.
-- `FIELDSHIFT_OFFLINE=1`: never fetch. A cell that isn't stored gives `unavailable` / `offline_no_snapshot`.
+- `ACRE_OFFLINE=1`: never fetch. A cell that isn't stored gives `unavailable` / `offline_no_snapshot`.
 - `refresh: true` is the only way to re-fetch. A refresh writes a new hash and never rewrites the old one.
 
 Accept:
@@ -129,7 +135,7 @@ Accept:
 ## A3 — Farm and field batch API (A, wave 3)
 
 Build:
-- `fieldshift/farms/` and `POST /v1/farms/analyze` (contract §5). It takes a farm with fields (GeoJSON geometry, name, plan). It computes geodesic area and centroid server-side (and rejects self-intersecting geometry with `invalid_input`), and groups fields by weather cell.
+- `acre/farms/` and `POST /v1/farms/analyze` (contract §5). It takes a farm with fields (GeoJSON geometry, name, plan). It computes geodesic area and centroid server-side (and rejects self-intersecting geometry with `invalid_input`), and groups fields by weather cell.
 - Each field gets its own compare result, with capabilities from B1. If its weather is still being prepared, it gets `job_status: pending`.
 - `weather_cells[]` with `field_ids` and the fixed note that these fields share one weather series. Only area is totalled.
 - `location` is accepted by the existing sensitivity, years and replay endpoints, so the frontend can call them per field.
@@ -147,7 +153,7 @@ Accept:
 Build:
 - Regenerate `backend/docs/api/openapi.json` and examples for every new endpoint: NC demo, Pergamino, pending weather, unavailable, offline.
 - Bring `docs/global/contract.md` up to date with what shipped.
-- Runbook: the Railway volume for `FIELDSHIFT_CACHE_DIR`, env vars (`ANTHROPIC_API_KEY`, `FIELDSHIFT_CORS_ORIGINS`, `FIELDSHIFT_RESEARCH_MODEL`), and the cost and rate limits.
+- Runbook: the Railway volume for `ACRE_CACHE_DIR`, env vars (`ANTHROPIC_API_KEY`, `ACRE_CORS_ORIGINS`, `ACRE_RESEARCH_MODEL`), and the cost and rate limits.
 - `backend/scripts/smoke_global.py` against a running server: search, reverse, capabilities, prepare weather, wait, farm analyze, note, profile.
 
 Accept:
@@ -158,7 +164,7 @@ Accept:
 ## B1 — Geo and capabilities (B, wave 1)
 
 Build:
-- `fieldshift/geo/`:
+- `acre/geo/`:
   - `search(q)`: Nominatim, plus coordinate parsing for decimal and DMS input.
   - `reverse(lat, lon)`: country ISO2, admin1 (ISO 3166-2 where known), admin2, display name.
   - `koppen(lat, lon)`: bundled raster under `backend/data/geo/`, with its resolution and source.
@@ -200,8 +206,8 @@ Accept:
 ## B3 — AI regional research (B, wave 3)
 
 Build:
-- `fieldshift/research/`: a pipeline for a region key. It only ever gets the country, admin1, climate class and crop list, never coordinates or the farm.
-  - It calls the Claude API (`FIELDSHIFT_RESEARCH_MODEL`, default `claude-sonnet-5-5`) with web search and web fetch, under a source policy: government, FAO, universities, extension services, peer-reviewed work.
+- `acre/research/`: a pipeline for a region key. It only ever gets the country, admin1, climate class and crop list, never coordinates or the farm.
+  - It calls the Claude API (`ACRE_RESEARCH_MODEL`, default `claude-sonnet-5-5`) with web search and web fetch, under a source policy: government, FAO, universities, extension services, peer-reviewed work.
   - Structured output is catalog v3 rows plus profile entries, each with `source_url`, locator and an `evidence_quote` of at most 30 words.
 - Code check:
   - Fetch each `source_url` and look for the quote (normalised text). Found gives `source_checked`, otherwise `ai_suggested`. A dead URL drops the row and logs it.

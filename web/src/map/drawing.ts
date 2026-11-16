@@ -20,6 +20,11 @@ export interface Drawing {
   setMode(m: DrawMode): void;
   /** Called once with the finished ring when a polygon is completed in polygon mode. */
   onFinish(fn: ((ring: Ring) => void) | null): void;
+  /**
+   * Called as the shape being drawn or edited changes, with its current outline (the cursor
+   * counts as a corner while drawing), or null when there is none yet. For the live acres.
+   */
+  onChange(fn: ((g: FieldGeometry | null) => void) | null): void;
   /** Load a field's rings for editing. */
   loadForEdit(g: FieldGeometry): void;
   /** Rebuild the edited field from the rings in terra-draw. */
@@ -60,8 +65,22 @@ export function createDrawing(map: MlMap): Drawing {
   draw.setMode("static");
 
   let finishFn: ((ring: Ring) => void) | null = null;
+  let changeFn: ((g: FieldGeometry | null) => void) | null = null;
   // Which parcel and ring each loaded terra-draw feature came from.
   let editRings = new Map<string | number, { part: number; ring: number }>();
+
+  draw.on("change", () => {
+    if (!changeFn) return;
+    const mode = draw.getMode();
+    if (mode === "polygon") {
+      const f = draw.getSnapshot().find((x) => x.geometry.type === "Polygon");
+      const ring = f ? (f.geometry.coordinates[0] as number[][]) : null;
+      // A ring needs three distinct corners (plus the closing one) before it has an area.
+      changeFn(ring && ring.length >= 4 ? { type: "Polygon", coordinates: [ring] } : null);
+    } else if (mode === "select") {
+      changeFn(api.collectEdit());
+    }
+  });
 
   draw.on("finish", (id, ctx) => {
     if (draw.getMode() !== "polygon" || (ctx && ctx.action !== "draw")) return;
@@ -71,12 +90,15 @@ export function createDrawing(map: MlMap): Drawing {
     finishFn?.((f.geometry.coordinates[0] as Ring).map((p) => [p[0]!, p[1]!] as [number, number]));
   });
 
-  return {
+  const api: Drawing = {
     setMode(m) {
       draw.setMode(m);
     },
     onFinish(fn) {
       finishFn = fn;
+    },
+    onChange(fn) {
+      changeFn = fn;
     },
     loadForEdit(g) {
       draw.clear();
@@ -121,4 +143,5 @@ export function createDrawing(map: MlMap): Drawing {
       }
     },
   };
+  return api;
 }

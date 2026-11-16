@@ -4,9 +4,9 @@ from datetime import UTC, date, datetime, timedelta
 import httpx
 import pytest
 
-from fieldshift.contracts import Status
-from fieldshift.field.live import LiveCache, county_fips, get_live, parse_usdm_csv
-from fieldshift.field.zones import (
+from acre.contracts import Status
+from acre.field.live import LiveCache, county_fips, get_live, parse_usdm_csv
+from acre.field.zones import (
     ChangeReport,
     PondingReport,
     analyze_zones,
@@ -147,7 +147,7 @@ def make_client(calls, *, down=()):
     def handler(request: httpx.Request) -> httpx.Response:
         url = str(request.url)
         calls.append(url)
-        assert request.headers["user-agent"] == "fieldshift-backend"
+        assert request.headers["user-agent"] == "acre-backend"
         for tag in down:
             if tag in url:
                 raise httpx.ConnectError("down")
@@ -259,9 +259,9 @@ def test_county_fips_and_usdm_parser():
 
 
 def test_live_never_feeds_history_modules():
-    import fieldshift.metrics.rules as rules
+    import acre.metrics.rules as rules
 
-    assert "fieldshift.field.live" not in open(rules.__file__).read()
+    assert "acre.field.live" not in open(rules.__file__).read()
 
 
 def test_malformed_provider_bodies_are_unavailable_not_errors():
@@ -277,7 +277,7 @@ def test_malformed_provider_bodies_are_unavailable_not_errors():
 
 
 def test_json_zone_file_round_trips():
-    from fieldshift.field.zones import zones_as_dict
+    from acre.field.zones import zones_as_dict
 
     d = zones_as_dict(load_zones())
     assert d["zones"][0]["drainage"]["class"] and json.dumps(d)

@@ -1,6 +1,6 @@
 # A.C.R.E web
 
-The frontend for A.C.R.E (NASA Space Apps 2026, Field Shift, Charlotte): compare three winter crop plans for a North Carolina corn and soybean farm against past springs recorded by NASA.
+The frontend for A.C.R.E (NASA Space Apps 2026, A.C.R.E, Charlotte): compare three winter crop plans for a North Carolina corn and soybean farm against past springs recorded by NASA.
 
 ## Run it
 

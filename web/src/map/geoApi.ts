@@ -15,6 +15,8 @@ export interface GeoApi {
   search(q: string, signal?: AbortSignal): Promise<GeoResult<GeoSearch>>;
   reverse(lat: number, lon: number, signal?: AbortSignal): Promise<GeoResult<PlaceInfo>>;
   capabilities(lat: number, lon: number, signal?: AbortSignal): Promise<GeoResult<Capabilities>>;
+  /** Contract §15 `GET /v1/demo/farm` (raw body; farm/demo.ts checks it). Optional: the example file is used without it. */
+  demoFarm?(scenario: "union" | "pergamino", signal?: AbortSignal): Promise<GeoResult<unknown>>;
 }
 
 const TIMEOUT_MS = 15000;
@@ -102,19 +104,10 @@ export function parseReverse(body: unknown): GeoResult<PlaceInfo> {
   };
 }
 
-/**
- * One word for the group of field tools. The service reports each tool on its own; this only
- * picks the label for the row, and each tool's own word is still listed beside it.
- * - every tool agrees: that word;
- * - they differ and at least one can be used (complete or partial): "partial";
- * - they differ and none can be used: never "partial". "unknown" if any tool was not reported
- *   (an unreported tool is not a missing one), otherwise "unavailable".
- */
-export function toolsStatus(words: StatusWord[]): StatusWord {
-  if (words.length === 0) return "unknown";
-  if (words.every((w) => w === words[0])) return words[0]!;
-  if (words.some((w) => w === "complete" || w === "partial")) return "partial";
-  return words.includes("unknown") ? "unknown" : "unavailable";
+/** Order from "nothing can be done here" to "not known yet", used when mixed tools are all unusable. */
+const UNUSABLE_ORDER: StatusWord[] = ["unsupported", "inapplicable", "invalid_input", "unavailable", "insufficient_data", "manual_check", "unknown"];
+function worstUnusable(words: Set<StatusWord>): StatusWord {
+  return UNUSABLE_ORDER.find((w) => words.has(w)) ?? "unknown";
 }
 
 const KEYS: CapabilityKey[] = ["weather", "catalog", "soil", "live_weather", "drought", "tools"];
@@ -127,7 +120,12 @@ export function parseCapabilities(body: unknown): GeoResult<Capabilities> {
     const v = obj(f[key]);
     if (key === "tools") {
       const parts = v ? Object.entries(v).map(([k, s]) => ({ key: k, status: status(s) })) : [];
-      const overall = toolsStatus(parts.map((p) => p.status));
+      // One word for the group only when every tool agrees. Mixed answers are "partial" only when at
+      // least one tool is usable; otherwise the group takes the least hopeful of the unusable words.
+      const words = new Set(parts.map((p) => p.status));
+      const usable = parts.some((p) => p.status === "complete" || p.status === "partial");
+      const overall: StatusWord =
+        parts.length === 0 ? "unknown" : words.size === 1 ? parts[0]!.status : usable ? "partial" : worstUnusable(words);
       return { key, status: overall, jobStatus: null, origin: null, provider: null, resolutionM: null, reasonText: null, parts };
     }
     const job = v?.job_status;
@@ -159,6 +157,9 @@ export function createFetchGeoApi(base: string, fetchImpl: Fetch = (...a) => fet
     async capabilities(lat, lon, signal) {
       const r = await getJson(`${root}/v1/locations/capabilities?lat=${lat}&lon=${lon}`, fetchImpl, signal);
       return r.ok ? parseCapabilities(r.data) : r;
+    },
+    async demoFarm(scenario, signal) {
+      return getJson(`${root}/v1/demo/farm?scenario=${scenario}`, fetchImpl, signal);
     },
   };
 }

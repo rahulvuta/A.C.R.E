@@ -6,11 +6,11 @@ import pandas as pd
 import pytest
 from pydantic import ValidationError
 
-from fieldshift.contracts import InvalidPlanError, Plan, Status, WinterManagement
-from fieldshift.seasons.align import build_calendar, build_calendars
-from fieldshift.seasons.coverage import planting_years, season_coverage
-from fieldshift.weather.series import DailySeries
-from fieldshift.weather.snapshot import load_snapshot
+from acre.contracts import InvalidPlanError, Plan, Status, WinterManagement
+from acre.seasons.align import build_calendar, build_calendars
+from acre.seasons.coverage import planting_years, season_coverage
+from acre.weather.series import DailySeries
+from acre.weather.snapshot import load_snapshot
 
 
 def plan(winter=None, harvest="09-25", plant="05-12", **kw) -> Plan:
@@ -237,7 +237,7 @@ def test_blank_crop_ids_are_validation_errors_not_assertion_errors():
 
 
 def test_threshold_set_is_deeply_immutable():
-    from fieldshift.contracts import Threshold, ThresholdSet
+    from acre.contracts import Threshold, ThresholdSet
 
     t = Threshold(name="heavy_rain_mm", method="m", value=1.0, unit="mm/day", reference_span="x",
                   n_reference=1, parameters={"months": [1, 2], "nested": {"a": 1}})
@@ -254,7 +254,7 @@ def test_threshold_set_is_deeply_immutable():
 
 
 def test_omitted_threshold_parameters_default_is_immutable():
-    from fieldshift.contracts import Threshold
+    from acre.contracts import Threshold
 
     t = Threshold(name="n", method="m", value=1.0, unit="mm", reference_span="x", n_reference=1)
     with pytest.raises(TypeError):

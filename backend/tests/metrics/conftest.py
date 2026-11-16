@@ -1,6 +1,6 @@
 import pytest
 
-from fieldshift.catalogs import CatalogIndex, load_catalog
+from acre.catalogs import CatalogIndex, load_catalog
 
 
 @pytest.fixture(scope="session")

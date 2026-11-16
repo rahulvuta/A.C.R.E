@@ -1,0 +1,1 @@
+Synthetic fixtures for the B3 research tests. `ar_b_answer.json` imitates the shape of a Claude research answer, and `pages.json` imitates the cited web pages. Neither is a real research result or real guidance. The URLs use the reserved `.invalid` domain.

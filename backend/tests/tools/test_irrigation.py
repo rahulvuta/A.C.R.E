@@ -2,8 +2,8 @@ from datetime import date, timedelta
 
 import pytest
 
-from fieldshift.catalogs import CatalogIndex, load_catalog
-from fieldshift.tools.irrigation import check_irrigation, crop_demand, norm_stage, stage_checks
+from acre.catalogs import CatalogIndex, load_catalog
+from acre.tools.irrigation import check_irrigation, crop_demand, norm_stage, stage_checks
 
 
 @pytest.fixture(scope="module")

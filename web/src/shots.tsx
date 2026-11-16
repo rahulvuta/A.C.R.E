@@ -6,7 +6,7 @@ import "./styles/tokens.css";
 import "./styles/base.css";
 import "./styles/components.css";
 import "./styles/layout.css";
-import "./styles/fieldback.css";
+import "./styles/acre.css";
 import { seasonDay } from "./scene/growth";
 import type { ScenePalette } from "./scene/FarmWorld";
 import { WinterPicture } from "./screens/planner/WinterPicture";

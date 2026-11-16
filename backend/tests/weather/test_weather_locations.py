@@ -4,8 +4,8 @@ import json
 
 import pytest
 
-from fieldshift.field.location import cell_id as field_cell_id
-from fieldshift.weather.locations import (
+from acre.field.location import cell_id as field_cell_id
+from acre.weather.locations import (
     INDEX_PATH,
     PLACES,
     SNAPSHOT_ROOT,
@@ -18,8 +18,8 @@ from fieldshift.weather.locations import (
     read_index,
     verify_index,
 )
-from fieldshift.weather.snapshot import SnapshotError, verify_snapshot
-from fieldshift.weather.sources import SNAPSHOT_END, SNAPSHOT_START, derive_grid_cell
+from acre.weather.snapshot import SnapshotError, verify_snapshot
+from acre.weather.sources import SNAPSHOT_END, SNAPSHOT_START, derive_grid_cell
 
 IDS = ["union", "iredell", "rowan", "johnston", "wayne", "duplin", "pitt", "robeson"]
 UNION_HASH = "5ce131cfcd1f07d3738ecb9afaec6c3ef6a4764b6a3528bdd2b64debe7ba5f4e"
@@ -132,7 +132,7 @@ def test_verify_index_rejects_a_tampered_hash(tmp_path):
 
 
 def test_read_index_reports_a_missing_file(tmp_path):
-    from fieldshift.weather.locations import IndexError_
+    from acre.weather.locations import IndexError_
 
     with pytest.raises(IndexError_):
         read_index(tmp_path / "missing.json")
@@ -145,7 +145,7 @@ class _Fetch:
     """Serves the committed raw bytes as if POWER had returned them."""
 
     def __init__(self, same: bool = True):
-        from fieldshift.weather.power_client import RawFetch
+        from acre.weather.power_client import RawFetch
 
         self.calls: list[tuple[float, float]] = []
         raw = (SNAPSHOT_ROOT / "pitt" / "raw" / "power_daily.json").read_bytes()

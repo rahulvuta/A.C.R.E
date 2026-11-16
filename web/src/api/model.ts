@@ -1,5 +1,6 @@
 import type { z } from "zod";
 import type { Plan, SpringWindow, Status, Threshold as ThresholdSchema } from "./schema";
+export type { Status };
 import type { Origin } from "../farm/types";
 
 /*
@@ -161,6 +162,11 @@ export interface FieldAnalysis {
   centroid: LatLon | null;
   cellId: string | null;
   jobStatus: JobStatus;
+  /** The field's own status and reason (e.g. no weather yet), from the backend. */
+  status: Status;
+  reasonText: string | null;
+  /** `nc` (NC rules apply) or `global`. */
+  scope: string | null;
   poll: string | null;
   capabilities: Capability[] | null;
   result: FieldPlanResult | null;
@@ -170,6 +176,9 @@ export interface SharedCell {
   cellId: string;
   fieldIds: string[];
   note: string;
+  /** The cell's centre and size (degrees, [lat, lon]) as the backend gives them, for the map outline. */
+  center: LatLon | null;
+  sizeDeg: [number, number] | null;
 }
 
 export interface FarmAnalysis {
@@ -237,4 +246,154 @@ export interface ResearchJob {
   status: Status | null;
   reasonText: string | null;
   profileUrl: string | null;
+}
+
+// ------------------------------------------------------------------ goals, generation, recommendation, future (§8–§10)
+export const PRIORITY_NAMES = [
+  "soil_cover",
+  "water_conservation",
+  "weather_resilience",
+  "crop_diversity",
+  "living_cover_duration",
+  "management_simplicity",
+] as const;
+export type PriorityName = (typeof PRIORITY_NAMES)[number];
+
+/** Goals for one field (§8). `null` is "unknown", never false. */
+export interface Goals {
+  priorities: Partial<Record<PriorityName, number>>;
+  constraints?: {
+    allowedCrops?: string[] | null;
+    excludedCrops?: string[];
+    mustInclude?: string[];
+    irrigation?: "yes" | "no" | "unknown";
+    equipment?: string[];
+    latestPlanting?: string | null;
+    earliestHarvest?: string | null;
+    seasons?: number | null;
+  };
+  preferences?: { likedCrops?: string[]; dislikedCrops?: string[] };
+}
+
+/** Where a planning request applies: a point, a cell, or (NC demo) a place id. */
+export type PlanPlace = { point: LatLon } | { cellId: string } | { locationId: string };
+
+export interface PlanningField {
+  fieldId: string;
+  areaHa: number | null;
+  cropHistory: string[];
+  equipment?: string[];
+}
+
+/** One season's plan in the backend's plan shape (passed back unchanged to replay/future). */
+export type BackendPlanShape = Record<string, unknown> & { plan_id: string; label?: string | null };
+
+export interface LogLine {
+  kind: string;
+  name: string;
+  pruned: number | string | null;
+  reasonText: string;
+}
+
+export interface Candidate {
+  candidateId: string;
+  label: string;
+  crops: string[];
+  seasons: Array<{ season: number; year: number | null; plan: BackendPlanShape }>;
+  /** The origins that this candidate's dates and crops come from. */
+  origins: Origin[];
+  flaggedRuleIds: string[];
+  manualCheckRuleIds: string[];
+  /** The raw candidate, to send back to /v1/plans/future or /recommend unchanged. */
+  raw: Record<string, unknown>;
+}
+
+export interface Generation {
+  status: Status;
+  reasonText: string | null;
+  regionKey: string | null;
+  candidates: Candidate[];
+  log: LogLine[];
+  gaps: string[];
+}
+
+export interface Indicator {
+  name: string;
+  value: number | null;
+  unit: string | null;
+  direction: "lower_better" | "higher_better" | null;
+  origin: Origin;
+  status: Status;
+  definition: string | null;
+  rationale: string | null;
+  source: SourceRef | null;
+  perLeg: Array<number | null>;
+  inPriorities: boolean;
+}
+
+export interface ReplayRequest {
+  method: string;
+  path: string;
+  body: Record<string, unknown>;
+}
+
+export interface Option {
+  candidateId: string;
+  label: string;
+  origin: string;
+  plans: BackendPlanShape[];
+  legStatus: Status[];
+  indicators: Record<string, Indicator>;
+  rankPositions: Record<string, number | null>;
+  wins: string[];
+  loses: string[];
+  why: Array<{ indicator: string; text: string; source: SourceRef | null }>;
+  tradeOffs: Array<{ versus: string; text: string; worseOn: Array<{ indicator: string; value: number | null; versusValue: number | null; inPriorities: boolean }> }>;
+  uncertainties: Array<{ text: string; origin: Origin }>;
+  vulnerabilities: Array<{ year: string; indicator: string; planId: string; value: number | null; text: string; replay: ReplayRequest | null }>;
+  dominatedBy: string[];
+  missing: string[];
+}
+
+export interface Recommendation {
+  status: Status;
+  resultId: string | null;
+  hemisphere: Hemisphere | null;
+  method: { indicatorsUsed: string[]; weights: Record<string, number>; orderingText: string | null; note: string | null } | null;
+  shortlist: Option[];
+  notComparable: Option[];
+  dominated: Option[];
+  log: LogLine[];
+  gaps: string[];
+  reasonText: string | null;
+}
+
+export interface FutureWindow {
+  kind: string;
+  start: string;
+  end: string;
+  label: string;
+  origin: Origin;
+  source: SourceRef | null;
+  field: string | null;
+}
+export interface FutureSeason {
+  season: string;
+  status: Status;
+  plan: BackendPlanShape | null;
+  windows: FutureWindow[];
+  milestones: Array<{ date: string; endDate: string | null; label: string; kind: string; flagged: boolean; origin: Origin; ruleIds: string[] }>;
+  deadlines: Array<{ date: string; decision: string; switchCondition: string | null; nextCheckDate: string | null; ruleIds: string[] }>;
+  explanations: Array<{ ruleId: string; text: string; status: Status; origin: Origin; source: SourceRef | null }>;
+  warnings: string[];
+  backup: { status: Status; fallbackPlanId: string | null; what: string | null } | null;
+  notes: string[];
+}
+export interface FuturePlan {
+  status: Status;
+  startSeason: string | null;
+  seasons: FutureSeason[];
+  note: string | null;
+  datesBasis: string | null;
+  diff: Array<{ field: string; from: unknown; to: unknown; text: string | null }>;
 }

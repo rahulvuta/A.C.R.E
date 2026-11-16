@@ -6,7 +6,7 @@ import { geoHandlers, mockApi, mockTiles } from "./map-mocks";
 test("?view=app opens the map with the demo next to it", async ({ page }) => {
   await mockTiles(page);
   await mockApi(page, geoHandlers);
-  await page.goto("/?view=app");
+  await page.goto("/?view=fields");
   await expect(page.getByRole("heading", { name: "Find your farm", level: 1 })).toBeVisible();
   await expect(page.getByRole("banner").getByRole("link", { name: "Open the Union County demo" })).toHaveAttribute("href", "?view=demo");
 });
@@ -14,10 +14,10 @@ test("?view=app opens the map with the demo next to it", async ({ page }) => {
 test("a picked point shows the capabilities from the fixtures", async ({ page }) => {
   await mockTiles(page);
   const calls = await mockApi(page, geoHandlers);
-  await page.goto("/?view=app");
+  await page.goto("/?view=fields");
   await page.getByPlaceholder("Town, address or coordinates").fill("Pergamino");
   await page.getByRole("button", { name: "Search" }).click();
-  await page.getByRole("button", { name: "Pergamino, Buenos Aires, Argentina" }).click();
+  await page.getByRole("button", { name: "Pergamino, Buenos Aires, Argentina", exact: true }).click();
   const caps = page.getByRole("list", { name: "Capabilities" });
   await expect(caps).toBeVisible();
   await expect(caps.locator('[data-capability="catalog"]')).toHaveAttribute("data-status", "partial");

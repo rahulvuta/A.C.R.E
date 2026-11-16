@@ -162,7 +162,7 @@ export function ExtensionSummary({
   const asText = () => {
     const lines: string[] = [
       `${APP_NAME} summary for ${place} (prepared ${prepared})`,
-      "Past weather replayed for each plan. Not a forecast or a field measurement.",
+      "Past weather replayed for each plan. It cannot say what any single year will bring, and it is not a field measurement.",
       "",
     ];
     CARDS.forEach((content, i) => {
@@ -198,7 +198,7 @@ export function ExtensionSummary({
   const foot = (page: number) => (
     <footer className="xs-foot">
       <p>
-        <strong>Based on past weather near your farm. Not a forecast or a field measurement.</strong> Rainfall is a NASA POWER
+        <strong>Based on past weather near your farm. It cannot say what any single year will bring, and it is not a field measurement.</strong> Rainfall is a NASA POWER
         regional estimate; soil wetness is modeled. Talk this over with your Extension agent before changing your plan.
       </p>
       <p className="xs-trace">

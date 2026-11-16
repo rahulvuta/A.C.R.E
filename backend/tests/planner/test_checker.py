@@ -2,11 +2,11 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from fieldshift.contracts import GrowerInputs, Plan, WinterManagement
-from fieldshift.planner.checker import check_plan, plan_version
-from fieldshift.planner.crops import list_crops
-from fieldshift.planner.finder import find_plans
-from fieldshift.planner.routes import router
+from acre.contracts import GrowerInputs, Plan, WinterManagement
+from acre.planner.checker import check_plan, plan_version
+from acre.planner.crops import list_crops
+from acre.planner.finder import find_plans
+from acre.planner.routes import router
 
 YEAR = 2025  # explicit so results never depend on today's date
 
@@ -326,7 +326,7 @@ def test_http_bad_inputs_and_priorities_are_400(client):
 
 
 def test_http_plan_version_hashes_the_resolved_year(client, monkeypatch):
-    from fieldshift.planner import routes
+    from acre.planner import routes
 
     no_year = {"plan": body()["plan"]}
     monkeypatch.setattr(routes, "default_planting_year", lambda: 2031)

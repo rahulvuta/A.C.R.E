@@ -1,6 +1,6 @@
-# A.C.R.E / Field Shift: rules for all agents
+# A.C.R.E / A.C.R.E: rules for all agents
 
-Field Shift is a historical stress test for crop plans: it replays a farmer's plan against decades of NASA weather and the published agricultural guidance for that place. It is going global: any farm, drawn on a map, with fields that each have their own plan. The plan is in `docs/global/plan.md` and is the source of truth. The API contract is `docs/global/contract.md`.
+A.C.R.E is a historical stress test for crop plans: it replays a farmer's plan against decades of NASA weather and the published agricultural guidance for that place. It is going global: any farm, drawn on a map, with fields that each have their own plan. The plan is in `docs/global/plan.md` and is the source of truth. The API contract is `docs/global/contract.md`.
 
 Rahul owns the backend, with Claude Agents A and B. Abhi is back and owns the frontend (all former Agent C and D cards). Your launch prompt says which one you are. If it doesn't, ask before touching code.
 
@@ -28,8 +28,8 @@ Only edit what you own. Need a change elsewhere? Write it in your log (`docs/glo
 
 | Owner | Paths |
 |---|---|
-| A | `backend/fieldshift/{weather,seasons,compare,api,farms}/`, `backend/fieldshift/contracts.py`, `backend/fieldshift/metrics/{winter,spring,thresholds}.py`, `backend/data/snapshots/`, `backend/data/samples/union_plans.json`, `backend/scripts/`, `backend/railway.json`, `backend/docs/api/`, `backend/docs/backend-runbook.md`, `docs/global/contract.md` (after G0) |
-| B | `backend/fieldshift/{geo,catalogs,research,planner,field,tools,report}/`, `backend/fieldshift/metrics/{rules,rule_text}.py`, `backend/data/{catalogs/regions,catalogs/v3,geo}/`, `backend/data/samples/zones.json` |
+| A | `backend/acre/{weather,seasons,compare,api,farms}/`, `backend/acre/contracts.py`, `backend/acre/metrics/{winter,spring,thresholds}.py`, `backend/data/snapshots/`, `backend/data/samples/union_plans.json`, `backend/scripts/`, `backend/railway.json`, `backend/docs/api/`, `backend/docs/backend-runbook.md`, `docs/global/contract.md` (after G0) |
+| B | `backend/acre/{geo,catalogs,research,planner,field,tools,report}/`, `backend/acre/metrics/{rules,rule_text}.py`, `backend/data/{catalogs/regions,catalogs/v3,geo}/`, `backend/data/samples/zones.json` |
 | Abhi (was C) | `web/src/{map,farm,scene}/`, `web/tests/e2e/map*`, `web/tests/e2e/farm*` |
 | Abhi (was D) | `web/src/{api,state,screens,view,content,site,ui,styles,data}/`, `web/src/{App,main,config}.tsx?`, `web/public/data/`, `web/scripts/`, `web/tests/e2e/` (other than C's files) |
 | shared (small `Edit`, re-read right before) | `backend/pyproject.toml`, `backend/Makefile`, `web/package.json`, `web/package-lock.json` (only via `npm install <pkg>@<exact version>`), `web/vite.config.ts` |
@@ -40,7 +40,7 @@ Never edit `backend/data/catalogs/v1/` or `v2/` (Perplexity's verbatim files).
 
 ## 3. Science rules (both sides)
 
-- **Historical stress test only.** No forecasts, yields, profit or "safe to plant". Live weather is context, never input to the analysis.
+- **Historical simulation, never a forecast.** 10-year futures replay real past NASA seasons (historical resampling) and are labelled "not a forecast". Money results use the farmer's own numbers or sourced regional references (USDA NASS/ERS, university custom rates, FAOSTAT), never invented ones. Weather is converted into money only through a loss assumption the farmer enters, labelled `assumed`. No yield model, no "safe to plant". Live weather is context, never input. See `docs/global/simulator.md`.
 - **Blank is not zero.** Missing = `null` plus a status. A real 0 stays 0.
 - **Status vocabulary, exact strings:** `complete | partial | unavailable | unknown | inapplicable | unsupported | invalid_input | manual_check | insufficient_data`. Jobs additionally use `pending | ready | failed` in a separate `job_status` field, never in `status`.
 - **Provenance on everything** (`origin` field, exact strings): `nasa_measured`, `nasa_modeled`, `calculation`, `verified_source` (a published source a human or the catalog verified), `source_checked` (AI-found, the quote was found on the cited page by code), `ai_suggested` (AI-found, not confirmed), `grower`, `assumed`, `dataset_estimate` (gridded dataset such as SAGE or SoilGrids). AI output is never `verified_source`.
@@ -50,10 +50,12 @@ Never edit `backend/data/catalogs/v1/` or `v2/` (Perplexity's verbatim files).
 - **Privacy:** farm boundaries, coordinates and grower inputs are never logged, never committed (fixtures are synthetic and labelled), never sent to the AI research step (it gets only the region: country, admin1, climate class). The frontend stores farms in the browser only.
 - **Frontend computes no agronomy.** It may measure geometry for display (area, centroid) with turf; the backend recomputes area for any calculation.
 
-## 4. Review gate (every card)
+## 4. Review gate (one review per milestone, not per card)
 
-After each card, run the Codex review from `backend/CLAUDE.md` §4 (same command; frontend agents run it from `web/` with `-C "$PWD"` and save to `../docs/global/reviews/<card>.md`, backend agents save to `../docs/global/reviews/<card>.md` from `backend/`). Use `model_reasoning_effort="high"` for A1–A3 and B2–B3, `"medium"` for every other card. Run it in the background and **start the next card while it runs**; fix high and medium findings when it lands, one re-run at most (`<card>-r2.md`). If Codex fails, write `review skipped: <reason>` in your log and continue.
+- **No Codex review per card.** While building, run only the tests for the area you are changing; run the full suite plus ruff (or `npm test` and typecheck) once before each push.
+- **One Codex review per milestone**, covering all of that agent's cards in it, at `model_reasoning_effort="high"`. Milestones: **A:** after A2+P2, then after A3+A4. **B:** after B2+P1, then after P3. **Abhi:** his choice. Same command as `backend/CLAUDE.md` §4. Give the reviewer the card ids and `git diff <milestone-start>..HEAD --stat`, and save to `docs/global/reviews/<agent>-m<N>.md`.
+- Run it in the background and keep building. When it lands, fix every high and medium finding in one pass. **No second review run**; reply to anything you skip in one line at the bottom of the review file. If Codex fails or hangs for more than 15 minutes, kill it, write `review skipped: <reason>` in your log, and continue.
 
 ## 5. Done means
 
-The card's acceptance checks pass in tests (`pytest` + `ruff` for backend; `npm test`, `npm run typecheck`, and the card's Playwright spec for frontend), the review gate ran, and a status line is in your log: `YYYY-MM-DD <card>: done | what is left`. Then commit and push.
+The card's acceptance checks pass in tests (`pytest` + `ruff` for backend; `npm test`, `npm run typecheck`, and the card's Playwright spec for frontend), a status line is in your log: `YYYY-MM-DD <card>: done | what is left`. Then commit and push.

@@ -1,0 +1,6023 @@
+{
+  "comparison": {
+    "badges": [
+      {
+        "badge": "best_profit",
+        "origin": "calculation",
+        "scenario_id": "current",
+        "why": "Highest median 5-season crop margin: $118,192 vs $111,186 for Add cereal rye."
+      },
+      {
+        "badge": "most_sustainable",
+        "origin": "calculation",
+        "scenario_id": "rye",
+        "why": "Best on soil and water: living-cover days a year: 167.4 days; median rain on bare soil a year: 80 mm; crop families: 2 families."
+      },
+      {
+        "badge": "lowest_weather_risk",
+        "origin": "calculation",
+        "scenario_id": "rye",
+        "why": "Fewest weather stress events (dry pre-planting windows and years with heavy rain on bare soil): 0.8 on average vs 1.0 for What I do now."
+      },
+      {
+        "badge": "best_for_priorities",
+        "origin": "calculation",
+        "scenario_id": "current",
+        "why": "Ranks best on what you weighted most (median 5-season crop margin, living-cover days a year, median rain on bare soil a year), using rank positions only (no score)."
+      }
+    ],
+    "baseline": "current",
+    "caveat": "The stronger of the plans you compared, given these numbers and the conditions seen at this field. An evidence-based outlook, not a guarantee.",
+    "deltas": [
+      {
+        "changes": [
+          {
+            "currency": "USD",
+            "indicator": "margin_10y",
+            "median_delta": -7006,
+            "origin": "calculation",
+            "text": "-$7,006 over 5 years (median)"
+          },
+          {
+            "delta": 167.4,
+            "indicator": "living_cover_days_per_year",
+            "origin": "calculation",
+            "text": "+167.4 days (living-cover days a year)"
+          },
+          {
+            "delta": -520.4,
+            "indicator": "rain_on_bare_soil_mm_per_year",
+            "origin": "calculation",
+            "text": "-520.4 mm (median rain on bare soil a year)"
+          },
+          {
+            "delta": 0.0,
+            "indicator": "heavy_rain_days_on_bare_soil_per_year",
+            "origin": "calculation",
+            "text": "+0 days (heavy-rain days on bare soil a year)"
+          },
+          {
+            "delta": -0.2,
+            "indicator": "stress_events",
+            "origin": "calculation",
+            "text": "-0.2 events (mean weather stress events in the period)"
+          },
+          {
+            "delta": 0.0,
+            "indicator": "crop_families",
+            "origin": "calculation",
+            "text": "+0 families (crop families)"
+          },
+          {
+            "delta": 2.0,
+            "indicator": "operations_per_year",
+            "origin": "calculation",
+            "text": "+2 operations (field operations a year)"
+          }
+        ],
+        "scenario_id": "rye",
+        "versus": "current"
+      }
+    ],
+    "not_decided": [],
+    "trade_offs": [
+      {
+        "better": [
+          "living-cover days a year",
+          "median rain on bare soil a year",
+          "mean weather stress events in the period"
+        ],
+        "origin": "calculation",
+        "scenario_id": "rye",
+        "text": "Better on living-cover days a year, median rain on bare soil a year, mean weather stress events in the period, but worse on median 5-season crop margin, field operations a year.",
+        "worse": [
+          "median 5-season crop margin",
+          "field operations a year"
+        ]
+      }
+    ]
+  },
+  "condition_assessment": {
+    "impacts": [
+      {
+        "context": "",
+        "crop_id": "cereal_rye",
+        "effect": "No supported crop-specific range is available for this measurement.",
+        "key": "soil_moisture_pct",
+        "normal_max": null,
+        "normal_min": null,
+        "origin": null,
+        "rating": "unknown",
+        "source": null,
+        "unit": "%"
+      },
+      {
+        "context": "",
+        "crop_id": "field_corn",
+        "effect": "No supported crop-specific range is available for this measurement.",
+        "key": "soil_moisture_pct",
+        "normal_max": null,
+        "normal_min": null,
+        "origin": null,
+        "rating": "unknown",
+        "source": null,
+        "unit": "%"
+      },
+      {
+        "context": "",
+        "crop_id": "soybean",
+        "effect": "No supported crop-specific range is available for this measurement.",
+        "key": "soil_moisture_pct",
+        "normal_max": null,
+        "normal_min": null,
+        "origin": null,
+        "rating": "unknown",
+        "source": null,
+        "unit": "%"
+      },
+      {
+        "context": "",
+        "crop_id": "cereal_rye",
+        "effect": "No supported crop-specific range is available for this measurement.",
+        "key": "rainfall_mm",
+        "normal_max": null,
+        "normal_min": null,
+        "origin": null,
+        "rating": "unknown",
+        "source": null,
+        "unit": "mm"
+      },
+      {
+        "context": "",
+        "crop_id": "field_corn",
+        "effect": "No supported crop-specific range is available for this measurement.",
+        "key": "rainfall_mm",
+        "normal_max": null,
+        "normal_min": null,
+        "origin": null,
+        "rating": "unknown",
+        "source": null,
+        "unit": "mm"
+      },
+      {
+        "context": "",
+        "crop_id": "soybean",
+        "effect": "No supported crop-specific range is available for this measurement.",
+        "key": "rainfall_mm",
+        "normal_max": null,
+        "normal_min": null,
+        "origin": null,
+        "rating": "unknown",
+        "source": null,
+        "unit": "mm"
+      }
+    ],
+    "note": "Crop effects are qualitative; no yield or margin penalty is assumed. Published ranges are used only after their source quotes have been checked.",
+    "reason_text": "Crop impacts have not been assessed yet.",
+    "status": "unavailable"
+  },
+  "crop_money": {
+    "cereal_rye": {
+      "costs_per_area": {
+        "area_unit": "acre",
+        "origin": "assumed",
+        "value": 35.0
+      },
+      "crop_id": "cereal_rye",
+      "currency": "USD",
+      "price": {
+        "high": null,
+        "low": null,
+        "origin": "assumed",
+        "typical": 0.0
+      },
+      "status": "complete",
+      "yield_per_area": {
+        "area_unit": "acre",
+        "origin": "assumed",
+        "value": 0.0
+      }
+    },
+    "field_corn": {
+      "costs_per_area": {
+        "area_unit": "acre",
+        "origin": "assumed",
+        "value": 110.0
+      },
+      "crop_id": "field_corn",
+      "currency": "USD",
+      "price": {
+        "high": 0.24,
+        "low": 0.16000000000000003,
+        "origin": "assumed",
+        "typical": 0.2
+      },
+      "status": "complete",
+      "yield_per_area": {
+        "area_unit": "acre",
+        "origin": "assumed",
+        "value": 4200.0
+      }
+    },
+    "soybean": {
+      "costs_per_area": {
+        "area_unit": "acre",
+        "origin": "assumed",
+        "value": 65.0
+      },
+      "crop_id": "soybean",
+      "currency": "USD",
+      "price": {
+        "high": 0.54,
+        "low": 0.36000000000000004,
+        "origin": "assumed",
+        "typical": 0.45
+      },
+      "status": "complete",
+      "yield_per_area": {
+        "area_unit": "acre",
+        "origin": "assumed",
+        "value": 1250.0
+      }
+    }
+  },
+  "effective_field_conditions": {
+    "as_of": "2025-12-31",
+    "note": "Regional estimate used where no field measurement was entered.",
+    "values": [
+      {
+        "baseline": null,
+        "date": null,
+        "depth_cm": null,
+        "key": "soil_ph",
+        "kind": "soil_ph",
+        "label": "Soil pH / acidity",
+        "moisture_basis": null,
+        "note": "No local baseline available; enter a measurement.",
+        "origin": null,
+        "unit": "pH",
+        "value": null
+      },
+      {
+        "baseline": {
+          "label": "Surface wetness (% saturation)",
+          "moisture_basis": "saturation",
+          "note": "Historical median for this calendar day; not a current measurement.",
+          "origin": "nasa_modeled",
+          "source": {
+            "title": "NASA POWER",
+            "url": "https://power.larc.nasa.gov/"
+          },
+          "value": 78.0
+        },
+        "date": null,
+        "depth_cm": null,
+        "key": "soil_moisture_pct",
+        "kind": "soil_moisture_pct",
+        "label": "Soil moisture (% of saturation or sensor %)",
+        "moisture_basis": "saturation",
+        "note": "Historical median for this calendar day; not a current measurement.",
+        "origin": "nasa_modeled",
+        "unit": "%",
+        "value": 78.0
+      },
+      {
+        "baseline": null,
+        "date": null,
+        "depth_cm": null,
+        "key": "soil_moisture_vwc",
+        "kind": "soil_moisture_vwc",
+        "label": "Soil moisture (volumetric water content, m\u00b3/m\u00b3)",
+        "moisture_basis": null,
+        "note": "No local baseline available; enter a measurement.",
+        "origin": null,
+        "unit": "m3/m3",
+        "value": null
+      },
+      {
+        "baseline": {
+          "label": "Daily rainfall",
+          "moisture_basis": null,
+          "note": "Historical median for this calendar day; not a current measurement.",
+          "origin": "nasa_modeled",
+          "source": {
+            "title": "NASA POWER",
+            "url": "https://power.larc.nasa.gov/"
+          },
+          "value": 0.07
+        },
+        "date": null,
+        "depth_cm": null,
+        "key": "rainfall_mm",
+        "kind": "rainfall_mm",
+        "label": "Rainfall (mm, own gauge)",
+        "moisture_basis": null,
+        "note": "Historical median for this calendar day; not a current measurement.",
+        "origin": "nasa_modeled",
+        "unit": "mm",
+        "value": 0.07
+      },
+      {
+        "baseline": null,
+        "date": null,
+        "depth_cm": null,
+        "key": "soil_temp_c",
+        "kind": "soil_temp_c",
+        "label": "Soil temperature (\u00b0C)",
+        "moisture_basis": null,
+        "note": "No local baseline available; enter a measurement.",
+        "origin": null,
+        "unit": "degC",
+        "value": null
+      },
+      {
+        "baseline": null,
+        "date": null,
+        "depth_cm": null,
+        "key": "organic_matter_pct",
+        "kind": "organic_matter_pct",
+        "label": "Soil organic matter",
+        "moisture_basis": null,
+        "note": "No local baseline available; enter a measurement.",
+        "origin": null,
+        "unit": "%",
+        "value": null
+      },
+      {
+        "baseline": null,
+        "date": null,
+        "depth_cm": null,
+        "key": "salinity_ds_m",
+        "kind": "salinity_ds_m",
+        "label": "Soil salinity (ECe)",
+        "moisture_basis": null,
+        "note": "No local baseline available; enter a measurement.",
+        "origin": null,
+        "unit": "dS/m",
+        "value": null
+      }
+    ]
+  },
+  "field": {
+    "area_ha": 16.2,
+    "area_origin": "grower",
+    "field_id": null,
+    "unzoned_ha": null,
+    "zones": null
+  },
+  "field_conditions": {
+    "months": [
+      {
+        "air_temp_c": {
+          "median": 3.6,
+          "p10": 1.3,
+          "p90": 6.8
+        },
+        "month": 1,
+        "rain_mm": {
+          "median": 104.4,
+          "p10": 42.5,
+          "p90": 142.4
+        },
+        "soil_wetness_root": {
+          "median": 0.77,
+          "p10": 0.65,
+          "p90": 0.91
+        },
+        "soil_wetness_top": {
+          "median": 0.81,
+          "p10": 0.68,
+          "p90": 0.89
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 6.2,
+          "p10": 4.0,
+          "p90": 8.6
+        },
+        "month": 2,
+        "rain_mm": {
+          "median": 85.0,
+          "p10": 41.5,
+          "p90": 147.4
+        },
+        "soil_wetness_root": {
+          "median": 0.81,
+          "p10": 0.68,
+          "p90": 0.95
+        },
+        "soil_wetness_top": {
+          "median": 0.83,
+          "p10": 0.72,
+          "p90": 0.91
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 10.5,
+          "p10": 8.1,
+          "p90": 12.5
+        },
+        "month": 3,
+        "rain_mm": {
+          "median": 91.0,
+          "p10": 50.0,
+          "p90": 150.0
+        },
+        "soil_wetness_root": {
+          "median": 0.81,
+          "p10": 0.67,
+          "p90": 0.95
+        },
+        "soil_wetness_top": {
+          "median": 0.83,
+          "p10": 0.71,
+          "p90": 0.91
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 15.3,
+          "p10": 13.3,
+          "p90": 17.4
+        },
+        "month": 4,
+        "rain_mm": {
+          "median": 79.7,
+          "p10": 29.5,
+          "p90": 141.6
+        },
+        "soil_wetness_root": {
+          "median": 0.75,
+          "p10": 0.61,
+          "p90": 0.92
+        },
+        "soil_wetness_top": {
+          "median": 0.78,
+          "p10": 0.62,
+          "p90": 0.89
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 20.4,
+          "p10": 18.6,
+          "p90": 21.9
+        },
+        "month": 5,
+        "rain_mm": {
+          "median": 83.2,
+          "p10": 44.2,
+          "p90": 158.0
+        },
+        "soil_wetness_root": {
+          "median": 0.64,
+          "p10": 0.56,
+          "p90": 0.8
+        },
+        "soil_wetness_top": {
+          "median": 0.67,
+          "p10": 0.54,
+          "p90": 0.82
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 25.0,
+          "p10": 23.2,
+          "p90": 27.0
+        },
+        "month": 6,
+        "rain_mm": {
+          "median": 95.0,
+          "p10": 45.1,
+          "p90": 159.9
+        },
+        "soil_wetness_root": {
+          "median": 0.6,
+          "p10": 0.52,
+          "p90": 0.69
+        },
+        "soil_wetness_top": {
+          "median": 0.61,
+          "p10": 0.51,
+          "p90": 0.73
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 27.2,
+          "p10": 25.5,
+          "p90": 28.4
+        },
+        "month": 7,
+        "rain_mm": {
+          "median": 103.8,
+          "p10": 63.8,
+          "p90": 178.5
+        },
+        "soil_wetness_root": {
+          "median": 0.56,
+          "p10": 0.52,
+          "p90": 0.63
+        },
+        "soil_wetness_top": {
+          "median": 0.56,
+          "p10": 0.51,
+          "p90": 0.66
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 26.2,
+          "p10": 24.4,
+          "p90": 27.5
+        },
+        "month": 8,
+        "rain_mm": {
+          "median": 110.1,
+          "p10": 66.3,
+          "p90": 182.6
+        },
+        "soil_wetness_root": {
+          "median": 0.58,
+          "p10": 0.52,
+          "p90": 0.65
+        },
+        "soil_wetness_top": {
+          "median": 0.58,
+          "p10": 0.5,
+          "p90": 0.69
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 22.1,
+          "p10": 20.9,
+          "p90": 24.4
+        },
+        "month": 9,
+        "rain_mm": {
+          "median": 93.0,
+          "p10": 36.0,
+          "p90": 189.0
+        },
+        "soil_wetness_root": {
+          "median": 0.59,
+          "p10": 0.52,
+          "p90": 0.64
+        },
+        "soil_wetness_top": {
+          "median": 0.59,
+          "p10": 0.5,
+          "p90": 0.68
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 16.3,
+          "p10": 14.5,
+          "p90": 18.0
+        },
+        "month": 10,
+        "rain_mm": {
+          "median": 72.0,
+          "p10": 24.8,
+          "p90": 143.1
+        },
+        "soil_wetness_root": {
+          "median": 0.58,
+          "p10": 0.53,
+          "p90": 0.7
+        },
+        "soil_wetness_top": {
+          "median": 0.58,
+          "p10": 0.51,
+          "p90": 0.74
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 10.1,
+          "p10": 8.0,
+          "p90": 12.6
+        },
+        "month": 11,
+        "rain_mm": {
+          "median": 81.1,
+          "p10": 28.5,
+          "p90": 141.9
+        },
+        "soil_wetness_root": {
+          "median": 0.61,
+          "p10": 0.53,
+          "p90": 0.77
+        },
+        "soil_wetness_top": {
+          "median": 0.62,
+          "p10": 0.52,
+          "p90": 0.81
+        }
+      },
+      {
+        "air_temp_c": {
+          "median": 6.0,
+          "p10": 2.8,
+          "p90": 8.5
+        },
+        "month": 12,
+        "rain_mm": {
+          "median": 90.1,
+          "p10": 45.8,
+          "p90": 177.4
+        },
+        "soil_wetness_root": {
+          "median": 0.69,
+          "p10": 0.58,
+          "p90": 0.84
+        },
+        "soil_wetness_top": {
+          "median": 0.74,
+          "p10": 0.58,
+          "p90": 0.85
+        }
+      }
+    ],
+    "origin": "nasa_modeled",
+    "text": "Typical conditions per calendar month from this field's NASA POWER cell (~50 km): modeled soil wetness (0 = dry, 1 = saturated), rain and air temperature. Median and the 1-in-10 low and high across the record.",
+    "years": "1981-2025"
+  },
+  "meta": {
+    "catalog_version": "v2:8eeb5bf961eb",
+    "plan_version": "sim_298ab76e590f5f0b",
+    "request_id": "req_example",
+    "snapshot_hash": "5ce131cfcd1f07d3738ecb9afaec6c3ef6a4764b6a3528bdd2b64debe7ba5f4e"
+  },
+  "method": {
+    "climate_adjustment": {
+      "alpha": 0.1,
+      "applied": false,
+      "factor_range": null,
+      "mode": "trend",
+      "note": "The trend observed in this field's own record, carried forward to the middle of the outlook. Rain in every replayed season is rescaled by it when the trend is statistically clear; temperature is reported as context only.",
+      "origin": "calculation",
+      "precip_trend": {
+        "origin": "calculation",
+        "p_value": 0.6932,
+        "pct_per_decade": -1.11,
+        "significant": false,
+        "slope_per_decade": -12.937,
+        "unit": "mm/yr per decade",
+        "years": 44
+      },
+      "reason": "no_significant_precip_trend",
+      "target_year": 2029,
+      "temperature_trend": {
+        "origin": "calculation",
+        "p_value": 0.0,
+        "pct_per_decade": null,
+        "significant": true,
+        "slope_per_decade": 0.453,
+        "unit": "C per decade",
+        "years": 44
+      },
+      "text": "No statistically clear trend in yearly rain at this field since 1981 (about -1.1% per decade, within normal year-to-year variation), so rain is used as recorded. Temperature has risen about 0.45 C per decade; it is shown as context and does not change the results."
+    },
+    "confidence": {
+      "basis": "Share of historical candidate seasons evaluable for every compared plan. This measures historical data coverage, not forecast skill.",
+      "level": "High",
+      "note": "Data support only; not a calibrated probability of accuracy or success.",
+      "percent": 98
+    },
+    "draws": "Every scenario replays the same sequence of past seasons in each run, so differences come from the plans, not from the draw.",
+    "measurement_note": "Your compatible measurements replace estimates on their recorded dates. Other dates use the regional record. Soil temperature and VWC are kept in their own units.",
+    "measurement_overrides": [],
+    "money_source": "economics_library",
+    "note": "An evidence-based outlook: this field's real past seasons (1981-2025) replayed in new orders over the next 5 seasons. It shows what to plan for under conditions seen here; it cannot say what any single year will bring.",
+    "origin": "calculation",
+    "pool_years": 44,
+    "resolution": "One NASA POWER cell (~0.5 x 0.625 degrees): fields in one cell share one weather series.",
+    "runs": 50,
+    "seed": 7,
+    "source_years": "1981-2025",
+    "start_season": "2027",
+    "threshold_set_id": "bf641e601f19f8dd",
+    "weather": "historical_resampling",
+    "years": 5
+  },
+  "scenarios": [
+    {
+      "confidence": {
+        "basis": "Share of historical candidate seasons evaluable for every compared plan. This measures historical data coverage, not forecast skill.",
+        "level": "High",
+        "note": "Data support only; not a calibrated probability of accuracy or success.",
+        "percent": 98
+      },
+      "estimate_confidence": {
+        "basis": "Share of crop price, yield and cost inputs supplied by the grower or traceable sources; mock inputs score zero.",
+        "level": "Low",
+        "note": "Data support only; not a calibrated probability of accuracy or success.",
+        "percent": 0
+      },
+      "events": [
+        {
+          "event": "dry_springs_ge_3_in_5y",
+          "origin": "calculation",
+          "probability": 0.02,
+          "text": "3 or more dry pre-planting windows in 5 years in 2% of replays"
+        },
+        {
+          "event": "heavy_rain_on_bare_soil_years_ge_3_in_5y",
+          "origin": "calculation",
+          "probability": 0.0,
+          "text": "3 or more years with heavy rain on bare soil in 5 years in 0% of replays"
+        },
+        {
+          "event": "back_to_back_dry_springs",
+          "origin": "calculation",
+          "probability": 0.08,
+          "text": "Two dry pre-planting windows in a row in 8% of replays"
+        }
+      ],
+      "is_baseline": true,
+      "label": "What I do now",
+      "money_gaps": [],
+      "money_status": "complete",
+      "monthly": {
+        "break_even_month": "2027-10",
+        "currency": "USD",
+        "funding_gap": {
+          "currency": "USD",
+          "deepest_month": "2027-05",
+          "median": 2602,
+          "origin": "calculation",
+          "p10": 2602,
+          "p90": 2602,
+          "text": "The most money this plan is out of pocket at any point: the lowest the running net goes below zero before sales bring it back. Follows the assumed timing of costs and sales."
+        },
+        "includes_assumption": null,
+        "months": [
+          {
+            "costs": {
+              "median": 2602,
+              "p10": 2602,
+              "p90": 2602
+            },
+            "cumulative_costs": {
+              "median": 2602,
+              "p10": 2602,
+              "p90": 2602
+            },
+            "cumulative_net": {
+              "median": -2602,
+              "p10": -2602,
+              "p90": -2602
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "month": "2027-05",
+            "net": {
+              "median": -2602,
+              "p10": -2602,
+              "p90": -2602
+            },
+            "operations": [
+              {
+                "crop_id": "soybean",
+                "kind": "plant"
+              }
+            ],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 2602,
+              "p10": 2602,
+              "p90": 2602
+            },
+            "cumulative_net": {
+              "median": -2602,
+              "p10": -2602,
+              "p90": -2602
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "month": "2027-06",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 2602,
+              "p10": 2602,
+              "p90": 2602
+            },
+            "cumulative_net": {
+              "median": -2602,
+              "p10": -2602,
+              "p90": -2602
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "month": "2027-07",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 2602,
+              "p10": 2602,
+              "p90": 2602
+            },
+            "cumulative_net": {
+              "median": -2602,
+              "p10": -2602,
+              "p90": -2602
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "month": "2027-08",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 2602,
+              "p10": 2602,
+              "p90": 2602
+            },
+            "cumulative_net": {
+              "median": -2602,
+              "p10": -2602,
+              "p90": -2602
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "month": "2027-09",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 2602,
+              "p10": 2602,
+              "p90": 2602
+            },
+            "cumulative_net": {
+              "median": 19915,
+              "p10": 19915,
+              "p90": 19915
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2027-10",
+            "net": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "operations": [
+              {
+                "crop_id": "soybean",
+                "kind": "harvest"
+              }
+            ],
+            "revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "risks": [
+              {
+                "kind": "heavy_rain_on_bare_soil",
+                "probability": 0.04,
+                "text": "Heavy rain on bare soil (Oct 2027-Apr 2028) in 4% of replays"
+              }
+            ]
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 2602,
+              "p10": 2602,
+              "p90": 2602
+            },
+            "cumulative_net": {
+              "median": 19915,
+              "p10": 19915,
+              "p90": 19915
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2027-11",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 2602,
+              "p10": 2602,
+              "p90": 2602
+            },
+            "cumulative_net": {
+              "median": 19915,
+              "p10": 19915,
+              "p90": 19915
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2027-12",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 2602,
+              "p10": 2602,
+              "p90": 2602
+            },
+            "cumulative_net": {
+              "median": 19915,
+              "p10": 19915,
+              "p90": 19915
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2028-01",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 2602,
+              "p10": 2602,
+              "p90": 2602
+            },
+            "cumulative_net": {
+              "median": 19915,
+              "p10": 19915,
+              "p90": 19915
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2028-02",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 2602,
+              "p10": 2602,
+              "p90": 2602
+            },
+            "cumulative_net": {
+              "median": 19915,
+              "p10": 19915,
+              "p90": 19915
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2028-03",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 4403,
+              "p10": 4403,
+              "p90": 4403
+            },
+            "cumulative_costs": {
+              "median": 7005,
+              "p10": 7005,
+              "p90": 7005
+            },
+            "cumulative_net": {
+              "median": 15512,
+              "p10": 15512,
+              "p90": 15512
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2028-04",
+            "net": {
+              "median": -4403,
+              "p10": -4403,
+              "p90": -4403
+            },
+            "operations": [
+              {
+                "crop_id": "field_corn",
+                "kind": "plant"
+              }
+            ],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": [
+              {
+                "kind": "dry_pre_plant",
+                "probability": 0.2,
+                "text": "Dry 30 days before planting field corn in 20% of replays"
+              }
+            ]
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 7005,
+              "p10": 7005,
+              "p90": 7005
+            },
+            "cumulative_net": {
+              "median": 15512,
+              "p10": 15512,
+              "p90": 15512
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2028-05",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 7005,
+              "p10": 7005,
+              "p90": 7005
+            },
+            "cumulative_net": {
+              "median": 15512,
+              "p10": 15512,
+              "p90": 15512
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2028-06",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 7005,
+              "p10": 7005,
+              "p90": 7005
+            },
+            "cumulative_net": {
+              "median": 15512,
+              "p10": 15512,
+              "p90": 15512
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2028-07",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 7005,
+              "p10": 7005,
+              "p90": 7005
+            },
+            "cumulative_net": {
+              "median": 15512,
+              "p10": 15512,
+              "p90": 15512
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2028-08",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 7005,
+              "p10": 7005,
+              "p90": 7005
+            },
+            "cumulative_net": {
+              "median": 15512,
+              "p10": 15512,
+              "p90": 15512
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2028-09",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 7005,
+              "p10": 7005,
+              "p90": 7005
+            },
+            "cumulative_net": {
+              "median": 49138,
+              "p10": 49138,
+              "p90": 49138
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2028-10",
+            "net": {
+              "median": 33626,
+              "p10": 33626,
+              "p90": 33626
+            },
+            "operations": [
+              {
+                "crop_id": "field_corn",
+                "kind": "harvest"
+              }
+            ],
+            "revenue": {
+              "median": 33626,
+              "p10": 33626,
+              "p90": 33626
+            },
+            "risks": [
+              {
+                "kind": "heavy_rain_on_bare_soil",
+                "probability": 0.02,
+                "text": "Heavy rain on bare soil (Oct 2028-May 2029) in 2% of replays"
+              }
+            ]
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 7005,
+              "p10": 7005,
+              "p90": 7005
+            },
+            "cumulative_net": {
+              "median": 49138,
+              "p10": 49138,
+              "p90": 49138
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2028-11",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 7005,
+              "p10": 7005,
+              "p90": 7005
+            },
+            "cumulative_net": {
+              "median": 49138,
+              "p10": 49138,
+              "p90": 49138
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2028-12",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 7005,
+              "p10": 7005,
+              "p90": 7005
+            },
+            "cumulative_net": {
+              "median": 49138,
+              "p10": 49138,
+              "p90": 49138
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2029-01",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 7005,
+              "p10": 7005,
+              "p90": 7005
+            },
+            "cumulative_net": {
+              "median": 49138,
+              "p10": 49138,
+              "p90": 49138
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2029-02",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 7005,
+              "p10": 7005,
+              "p90": 7005
+            },
+            "cumulative_net": {
+              "median": 49138,
+              "p10": 49138,
+              "p90": 49138
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2029-03",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 7005,
+              "p10": 7005,
+              "p90": 7005
+            },
+            "cumulative_net": {
+              "median": 49138,
+              "p10": 49138,
+              "p90": 49138
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2029-04",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": [
+              {
+                "kind": "dry_pre_plant",
+                "probability": 0.14,
+                "text": "Dry 30 days before planting soybean in 14% of replays"
+              }
+            ]
+          },
+          {
+            "costs": {
+              "median": 2602,
+              "p10": 2602,
+              "p90": 2602
+            },
+            "cumulative_costs": {
+              "median": 9607,
+              "p10": 9607,
+              "p90": 9607
+            },
+            "cumulative_net": {
+              "median": 46536,
+              "p10": 46536,
+              "p90": 46536
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2029-05",
+            "net": {
+              "median": -2602,
+              "p10": -2602,
+              "p90": -2602
+            },
+            "operations": [
+              {
+                "crop_id": "soybean",
+                "kind": "plant"
+              }
+            ],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 9607,
+              "p10": 9607,
+              "p90": 9607
+            },
+            "cumulative_net": {
+              "median": 46536,
+              "p10": 46536,
+              "p90": 46536
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2029-06",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 9607,
+              "p10": 9607,
+              "p90": 9607
+            },
+            "cumulative_net": {
+              "median": 46536,
+              "p10": 46536,
+              "p90": 46536
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2029-07",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 9607,
+              "p10": 9607,
+              "p90": 9607
+            },
+            "cumulative_net": {
+              "median": 46536,
+              "p10": 46536,
+              "p90": 46536
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2029-08",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 9607,
+              "p10": 9607,
+              "p90": 9607
+            },
+            "cumulative_net": {
+              "median": 46536,
+              "p10": 46536,
+              "p90": 46536
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2029-09",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 9607,
+              "p10": 9607,
+              "p90": 9607
+            },
+            "cumulative_net": {
+              "median": 69054,
+              "p10": 69054,
+              "p90": 69054
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2029-10",
+            "net": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "operations": [
+              {
+                "crop_id": "soybean",
+                "kind": "harvest"
+              }
+            ],
+            "revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "risks": [
+              {
+                "kind": "heavy_rain_on_bare_soil",
+                "probability": 0.04,
+                "text": "Heavy rain on bare soil (Oct 2029-Apr 2030) in 4% of replays"
+              }
+            ]
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 9607,
+              "p10": 9607,
+              "p90": 9607
+            },
+            "cumulative_net": {
+              "median": 69054,
+              "p10": 69054,
+              "p90": 69054
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2029-11",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 9607,
+              "p10": 9607,
+              "p90": 9607
+            },
+            "cumulative_net": {
+              "median": 69054,
+              "p10": 69054,
+              "p90": 69054
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2029-12",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 9607,
+              "p10": 9607,
+              "p90": 9607
+            },
+            "cumulative_net": {
+              "median": 69054,
+              "p10": 69054,
+              "p90": 69054
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2030-01",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 9607,
+              "p10": 9607,
+              "p90": 9607
+            },
+            "cumulative_net": {
+              "median": 69054,
+              "p10": 69054,
+              "p90": 69054
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2030-02",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 9607,
+              "p10": 9607,
+              "p90": 9607
+            },
+            "cumulative_net": {
+              "median": 69054,
+              "p10": 69054,
+              "p90": 69054
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2030-03",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 4403,
+              "p10": 4403,
+              "p90": 4403
+            },
+            "cumulative_costs": {
+              "median": 14011,
+              "p10": 14011,
+              "p90": 14011
+            },
+            "cumulative_net": {
+              "median": 64650,
+              "p10": 64650,
+              "p90": 64650
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2030-04",
+            "net": {
+              "median": -4403,
+              "p10": -4403,
+              "p90": -4403
+            },
+            "operations": [
+              {
+                "crop_id": "field_corn",
+                "kind": "plant"
+              }
+            ],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": [
+              {
+                "kind": "dry_pre_plant",
+                "probability": 0.18,
+                "text": "Dry 30 days before planting field corn in 18% of replays"
+              }
+            ]
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 14011,
+              "p10": 14011,
+              "p90": 14011
+            },
+            "cumulative_net": {
+              "median": 64650,
+              "p10": 64650,
+              "p90": 64650
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2030-05",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 14011,
+              "p10": 14011,
+              "p90": 14011
+            },
+            "cumulative_net": {
+              "median": 64650,
+              "p10": 64650,
+              "p90": 64650
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2030-06",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 14011,
+              "p10": 14011,
+              "p90": 14011
+            },
+            "cumulative_net": {
+              "median": 64650,
+              "p10": 64650,
+              "p90": 64650
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2030-07",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 14011,
+              "p10": 14011,
+              "p90": 14011
+            },
+            "cumulative_net": {
+              "median": 64650,
+              "p10": 64650,
+              "p90": 64650
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2030-08",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 14011,
+              "p10": 14011,
+              "p90": 14011
+            },
+            "cumulative_net": {
+              "median": 64650,
+              "p10": 64650,
+              "p90": 64650
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2030-09",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 14011,
+              "p10": 14011,
+              "p90": 14011
+            },
+            "cumulative_net": {
+              "median": 98276,
+              "p10": 98276,
+              "p90": 98276
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2030-10",
+            "net": {
+              "median": 33626,
+              "p10": 33626,
+              "p90": 33626
+            },
+            "operations": [
+              {
+                "crop_id": "field_corn",
+                "kind": "harvest"
+              }
+            ],
+            "revenue": {
+              "median": 33626,
+              "p10": 33626,
+              "p90": 33626
+            },
+            "risks": [
+              {
+                "kind": "heavy_rain_on_bare_soil",
+                "probability": 0.06,
+                "text": "Heavy rain on bare soil (Oct 2030-May 2031) in 6% of replays"
+              }
+            ]
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 14011,
+              "p10": 14011,
+              "p90": 14011
+            },
+            "cumulative_net": {
+              "median": 98276,
+              "p10": 98276,
+              "p90": 98276
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2030-11",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 14011,
+              "p10": 14011,
+              "p90": 14011
+            },
+            "cumulative_net": {
+              "median": 98276,
+              "p10": 98276,
+              "p90": 98276
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2030-12",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 14011,
+              "p10": 14011,
+              "p90": 14011
+            },
+            "cumulative_net": {
+              "median": 98276,
+              "p10": 98276,
+              "p90": 98276
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2031-01",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 14011,
+              "p10": 14011,
+              "p90": 14011
+            },
+            "cumulative_net": {
+              "median": 98276,
+              "p10": 98276,
+              "p90": 98276
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2031-02",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 14011,
+              "p10": 14011,
+              "p90": 14011
+            },
+            "cumulative_net": {
+              "median": 98276,
+              "p10": 98276,
+              "p90": 98276
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2031-03",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 14011,
+              "p10": 14011,
+              "p90": 14011
+            },
+            "cumulative_net": {
+              "median": 98276,
+              "p10": 98276,
+              "p90": 98276
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2031-04",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": [
+              {
+                "kind": "dry_pre_plant",
+                "probability": 0.12,
+                "text": "Dry 30 days before planting soybean in 12% of replays"
+              }
+            ]
+          },
+          {
+            "costs": {
+              "median": 2602,
+              "p10": 2602,
+              "p90": 2602
+            },
+            "cumulative_costs": {
+              "median": 16613,
+              "p10": 16613,
+              "p90": 16613
+            },
+            "cumulative_net": {
+              "median": 95674,
+              "p10": 95674,
+              "p90": 95674
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2031-05",
+            "net": {
+              "median": -2602,
+              "p10": -2602,
+              "p90": -2602
+            },
+            "operations": [
+              {
+                "crop_id": "soybean",
+                "kind": "plant"
+              }
+            ],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 16613,
+              "p10": 16613,
+              "p90": 16613
+            },
+            "cumulative_net": {
+              "median": 95674,
+              "p10": 95674,
+              "p90": 95674
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2031-06",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 16613,
+              "p10": 16613,
+              "p90": 16613
+            },
+            "cumulative_net": {
+              "median": 95674,
+              "p10": 95674,
+              "p90": 95674
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2031-07",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 16613,
+              "p10": 16613,
+              "p90": 16613
+            },
+            "cumulative_net": {
+              "median": 95674,
+              "p10": 95674,
+              "p90": 95674
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2031-08",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 16613,
+              "p10": 16613,
+              "p90": 16613
+            },
+            "cumulative_net": {
+              "median": 95674,
+              "p10": 95674,
+              "p90": 95674
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2031-09",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 16613,
+              "p10": 16613,
+              "p90": 16613
+            },
+            "cumulative_net": {
+              "median": 118192,
+              "p10": 118192,
+              "p90": 118192
+            },
+            "cumulative_revenue": {
+              "median": 134805,
+              "p10": 134805,
+              "p90": 134805
+            },
+            "month": "2031-10",
+            "net": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "operations": [
+              {
+                "crop_id": "soybean",
+                "kind": "harvest"
+              }
+            ],
+            "revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "risks": []
+          }
+        ],
+        "origin": "calculation",
+        "timing_origin": "assumed",
+        "timing_text": "Costs are counted in the month each crop is planted or seeded, and sales in its harvest month. Your real timing of input purchases and grain sales may differ."
+      },
+      "readings_context": [],
+      "replayed_seasons_sample": [
+        2023,
+        2009,
+        2012,
+        2021,
+        2007
+      ],
+      "scenario_id": "current",
+      "status": "complete",
+      "timeline": [
+        {
+          "crop_sequence": [
+            "field_corn",
+            "soybean"
+          ],
+          "next_plant": "05-12",
+          "plan_id": "nc_bare",
+          "prev_harvest": "10-15",
+          "season": "2027",
+          "winter_kind": "none",
+          "year": 2027
+        },
+        {
+          "crop_sequence": [
+            "soybean",
+            "field_corn"
+          ],
+          "next_plant": "04-20",
+          "plan_id": "nc_soy_corn_bare",
+          "prev_harvest": "10-20",
+          "season": "2028",
+          "winter_kind": "none",
+          "year": 2028
+        },
+        {
+          "crop_sequence": [
+            "field_corn",
+            "soybean"
+          ],
+          "next_plant": "05-12",
+          "plan_id": "nc_bare",
+          "prev_harvest": "10-15",
+          "season": "2029",
+          "winter_kind": "none",
+          "year": 2029
+        },
+        {
+          "crop_sequence": [
+            "soybean",
+            "field_corn"
+          ],
+          "next_plant": "04-20",
+          "plan_id": "nc_soy_corn_bare",
+          "prev_harvest": "10-20",
+          "season": "2030",
+          "winter_kind": "none",
+          "year": 2030
+        },
+        {
+          "crop_sequence": [
+            "field_corn",
+            "soybean"
+          ],
+          "next_plant": "05-12",
+          "plan_id": "nc_bare",
+          "prev_harvest": "10-15",
+          "season": "2031",
+          "winter_kind": "none",
+          "year": 2031
+        }
+      ],
+      "totals": {
+        "costs_total": {
+          "currency": "USD",
+          "median": 16613,
+          "origin": "calculation",
+          "p10": 16613,
+          "p90": 16613
+        },
+        "crop_families": 2,
+        "crop_families_detail": {
+          "field_corn": "Poaceae",
+          "soybean": "Fabaceae"
+        },
+        "dry_springs": {
+          "mean": 0.82,
+          "median": 1,
+          "origin": "calculation",
+          "p10": 0,
+          "p90": 2,
+          "unit": "in 5 years"
+        },
+        "heavy_rain_days_on_bare_soil_per_year": {
+          "median": 0.0,
+          "origin": "calculation",
+          "p10": 0.0,
+          "p90": 0.2,
+          "unit": "days"
+        },
+        "living_cover_days_per_year": {
+          "median": 0.0,
+          "origin": "calculation",
+          "unit": "days"
+        },
+        "margin_10y": {
+          "currency": "USD",
+          "includes_assumption": null,
+          "median": 118192,
+          "origin": "calculation",
+          "p10": 118192,
+          "p90": 118192
+        },
+        "margin_10y_price_cases": {
+          "currency": "USD",
+          "high": 145153,
+          "low": 91231,
+          "origin": "calculation",
+          "text": "Median 10-year margin at the low, typical and high price of each source's range.",
+          "typical": 118192
+        },
+        "margin_per_area_per_year": {
+          "area_unit": "acre",
+          "currency": "USD",
+          "median": 590,
+          "origin": "calculation",
+          "p10": 590,
+          "p90": 590
+        },
+        "operations_per_year": 2.0,
+        "origins": {
+          "crop_families": "calculation",
+          "operations_per_year": "calculation"
+        },
+        "rain_on_bare_soil_mm_per_year": {
+          "median": 600.4,
+          "origin": "calculation",
+          "p10": 497.9,
+          "p90": 732.5,
+          "unit": "mm"
+        },
+        "revenue_total": {
+          "currency": "USD",
+          "includes_assumption": null,
+          "median": 134805,
+          "origin": "calculation",
+          "p10": 134805,
+          "p90": 134805
+        },
+        "stress_events": {
+          "definition": "dry pre-planting windows plus years with heavy rain on bare soil",
+          "mean": 1.02,
+          "median": 1,
+          "origin": "calculation",
+          "p10": 0,
+          "p90": 2,
+          "unit": "in 5 years"
+        },
+        "weather_link": "none: money does not change with weather unless you enter a loss assumption (e.g. % of yield lost in a dry spring)"
+      },
+      "yearly": [
+        {
+          "indicators": {
+            "dry_pre_plant": {
+              "origin": "calculation",
+              "probability": 0.18
+            },
+            "heavy_rain_days_on_bare_soil": {
+              "median": 0,
+              "origin": "calculation",
+              "p10": 0,
+              "p90": 0,
+              "unit": "days"
+            },
+            "living_cover_days": {
+              "median": 0,
+              "origin": "calculation",
+              "planned": true,
+              "unit": "days"
+            },
+            "operations": {
+              "origin": "calculation",
+              "unit": "operations",
+              "value": 2
+            },
+            "rain_on_bare_soil_mm": {
+              "median": 631.2,
+              "origin": "calculation",
+              "p10": 446.5,
+              "p90": 893.4,
+              "unit": "mm"
+            }
+          },
+          "money": {
+            "costs": {
+              "currency": "USD",
+              "median": 2602,
+              "origin": "calculation",
+              "p10": 2602,
+              "p90": 2602
+            },
+            "margin": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 19915,
+              "origin": "calculation",
+              "p10": 19915,
+              "p90": 19915
+            },
+            "revenue": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 22517,
+              "origin": "calculation",
+              "p10": 22517,
+              "p90": 22517
+            }
+          },
+          "year": 2027
+        },
+        {
+          "indicators": {
+            "dry_pre_plant": {
+              "origin": "calculation",
+              "probability": 0.2
+            },
+            "heavy_rain_days_on_bare_soil": {
+              "median": 0,
+              "origin": "calculation",
+              "p10": 0,
+              "p90": 0,
+              "unit": "days"
+            },
+            "living_cover_days": {
+              "median": 0,
+              "origin": "calculation",
+              "planned": true,
+              "unit": "days"
+            },
+            "operations": {
+              "origin": "calculation",
+              "unit": "operations",
+              "value": 2
+            },
+            "rain_on_bare_soil_mm": {
+              "median": 530.2,
+              "origin": "calculation",
+              "p10": 398.8,
+              "p90": 767.5,
+              "unit": "mm"
+            }
+          },
+          "money": {
+            "costs": {
+              "currency": "USD",
+              "median": 4403,
+              "origin": "calculation",
+              "p10": 4403,
+              "p90": 4403
+            },
+            "margin": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 29223,
+              "origin": "calculation",
+              "p10": 29223,
+              "p90": 29223
+            },
+            "revenue": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 33626,
+              "origin": "calculation",
+              "p10": 33626,
+              "p90": 33626
+            }
+          },
+          "year": 2028
+        },
+        {
+          "indicators": {
+            "dry_pre_plant": {
+              "origin": "calculation",
+              "probability": 0.14
+            },
+            "heavy_rain_days_on_bare_soil": {
+              "median": 0,
+              "origin": "calculation",
+              "p10": 0,
+              "p90": 0,
+              "unit": "days"
+            },
+            "living_cover_days": {
+              "median": 0,
+              "origin": "calculation",
+              "planned": true,
+              "unit": "days"
+            },
+            "operations": {
+              "origin": "calculation",
+              "unit": "operations",
+              "value": 2
+            },
+            "rain_on_bare_soil_mm": {
+              "median": 654.1,
+              "origin": "calculation",
+              "p10": 438.5,
+              "p90": 945.0,
+              "unit": "mm"
+            }
+          },
+          "money": {
+            "costs": {
+              "currency": "USD",
+              "median": 2602,
+              "origin": "calculation",
+              "p10": 2602,
+              "p90": 2602
+            },
+            "margin": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 19915,
+              "origin": "calculation",
+              "p10": 19915,
+              "p90": 19915
+            },
+            "revenue": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 22517,
+              "origin": "calculation",
+              "p10": 22517,
+              "p90": 22517
+            }
+          },
+          "year": 2029
+        },
+        {
+          "indicators": {
+            "dry_pre_plant": {
+              "origin": "calculation",
+              "probability": 0.18
+            },
+            "heavy_rain_days_on_bare_soil": {
+              "median": 0,
+              "origin": "calculation",
+              "p10": 0,
+              "p90": 0,
+              "unit": "days"
+            },
+            "living_cover_days": {
+              "median": 0,
+              "origin": "calculation",
+              "planned": true,
+              "unit": "days"
+            },
+            "operations": {
+              "origin": "calculation",
+              "unit": "operations",
+              "value": 2
+            },
+            "rain_on_bare_soil_mm": {
+              "median": 540.3,
+              "origin": "calculation",
+              "p10": 383.5,
+              "p90": 767.5,
+              "unit": "mm"
+            }
+          },
+          "money": {
+            "costs": {
+              "currency": "USD",
+              "median": 4403,
+              "origin": "calculation",
+              "p10": 4403,
+              "p90": 4403
+            },
+            "margin": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 29223,
+              "origin": "calculation",
+              "p10": 29223,
+              "p90": 29223
+            },
+            "revenue": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 33626,
+              "origin": "calculation",
+              "p10": 33626,
+              "p90": 33626
+            }
+          },
+          "year": 2030
+        },
+        {
+          "indicators": {
+            "dry_pre_plant": {
+              "origin": "calculation",
+              "probability": 0.12
+            },
+            "heavy_rain_days_on_bare_soil": {
+              "median": 0,
+              "origin": "calculation",
+              "p10": 0,
+              "p90": 0,
+              "unit": "days"
+            },
+            "living_cover_days": {
+              "median": 0,
+              "origin": "calculation",
+              "planned": true,
+              "unit": "days"
+            },
+            "operations": {
+              "origin": "calculation",
+              "unit": "operations",
+              "value": 2
+            },
+            "rain_on_bare_soil_mm": {
+              "median": 629.6,
+              "origin": "calculation",
+              "p10": 442.5,
+              "p90": 884.8,
+              "unit": "mm"
+            }
+          },
+          "money": {
+            "costs": {
+              "currency": "USD",
+              "median": 2602,
+              "origin": "calculation",
+              "p10": 2602,
+              "p90": 2602
+            },
+            "margin": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 19915,
+              "origin": "calculation",
+              "p10": 19915,
+              "p90": 19915
+            },
+            "revenue": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 22517,
+              "origin": "calculation",
+              "p10": 22517,
+              "p90": 22517
+            }
+          },
+          "year": 2031
+        }
+      ],
+      "zones": null
+    },
+    {
+      "confidence": {
+        "basis": "Share of historical candidate seasons evaluable for every compared plan. This measures historical data coverage, not forecast skill.",
+        "level": "High",
+        "note": "Data support only; not a calibrated probability of accuracy or success.",
+        "percent": 98
+      },
+      "estimate_confidence": {
+        "basis": "Share of crop price, yield and cost inputs supplied by the grower or traceable sources; mock inputs score zero.",
+        "level": "Low",
+        "note": "Data support only; not a calibrated probability of accuracy or success.",
+        "percent": 0
+      },
+      "events": [
+        {
+          "event": "dry_springs_ge_3_in_5y",
+          "origin": "calculation",
+          "probability": 0.02,
+          "text": "3 or more dry pre-planting windows in 5 years in 2% of replays"
+        },
+        {
+          "event": "heavy_rain_on_bare_soil_years_ge_3_in_5y",
+          "origin": "calculation",
+          "probability": 0.0,
+          "text": "3 or more years with heavy rain on bare soil in 5 years in 0% of replays"
+        },
+        {
+          "event": "back_to_back_dry_springs",
+          "origin": "calculation",
+          "probability": 0.08,
+          "text": "Two dry pre-planting windows in a row in 8% of replays"
+        }
+      ],
+      "is_baseline": false,
+      "label": "Add cereal rye",
+      "money_gaps": [],
+      "money_status": "complete",
+      "monthly": {
+        "break_even_month": "2027-10",
+        "currency": "USD",
+        "funding_gap": {
+          "currency": "USD",
+          "deepest_month": "2027-05",
+          "median": 4003,
+          "origin": "calculation",
+          "p10": 4003,
+          "p90": 4003,
+          "text": "The most money this plan is out of pocket at any point: the lowest the running net goes below zero before sales bring it back. Follows the assumed timing of costs and sales."
+        },
+        "includes_assumption": null,
+        "months": [
+          {
+            "costs": {
+              "median": 1401,
+              "p10": 1401,
+              "p90": 1401
+            },
+            "cumulative_costs": {
+              "median": 1401,
+              "p10": 1401,
+              "p90": 1401
+            },
+            "cumulative_net": {
+              "median": -1401,
+              "p10": -1401,
+              "p90": -1401
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "month": "2026-10",
+            "net": {
+              "median": -1401,
+              "p10": -1401,
+              "p90": -1401
+            },
+            "operations": [
+              {
+                "crop_id": "cereal_rye",
+                "kind": "seed_cover"
+              }
+            ],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 1401,
+              "p10": 1401,
+              "p90": 1401
+            },
+            "cumulative_net": {
+              "median": -1401,
+              "p10": -1401,
+              "p90": -1401
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "month": "2026-11",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 1401,
+              "p10": 1401,
+              "p90": 1401
+            },
+            "cumulative_net": {
+              "median": -1401,
+              "p10": -1401,
+              "p90": -1401
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "month": "2026-12",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 1401,
+              "p10": 1401,
+              "p90": 1401
+            },
+            "cumulative_net": {
+              "median": -1401,
+              "p10": -1401,
+              "p90": -1401
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "month": "2027-01",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 1401,
+              "p10": 1401,
+              "p90": 1401
+            },
+            "cumulative_net": {
+              "median": -1401,
+              "p10": -1401,
+              "p90": -1401
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "month": "2027-02",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 1401,
+              "p10": 1401,
+              "p90": 1401
+            },
+            "cumulative_net": {
+              "median": -1401,
+              "p10": -1401,
+              "p90": -1401
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "month": "2027-03",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 1401,
+              "p10": 1401,
+              "p90": 1401
+            },
+            "cumulative_net": {
+              "median": -1401,
+              "p10": -1401,
+              "p90": -1401
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "month": "2027-04",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [
+              {
+                "crop_id": "cereal_rye",
+                "kind": "end_cover"
+              }
+            ],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": [
+              {
+                "kind": "dry_pre_plant",
+                "probability": 0.18,
+                "text": "Dry 30 days before planting soybean in 18% of replays"
+              }
+            ]
+          },
+          {
+            "costs": {
+              "median": 2602,
+              "p10": 2602,
+              "p90": 2602
+            },
+            "cumulative_costs": {
+              "median": 4003,
+              "p10": 4003,
+              "p90": 4003
+            },
+            "cumulative_net": {
+              "median": -4003,
+              "p10": -4003,
+              "p90": -4003
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "month": "2027-05",
+            "net": {
+              "median": -2602,
+              "p10": -2602,
+              "p90": -2602
+            },
+            "operations": [
+              {
+                "crop_id": "soybean",
+                "kind": "plant"
+              }
+            ],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 4003,
+              "p10": 4003,
+              "p90": 4003
+            },
+            "cumulative_net": {
+              "median": -4003,
+              "p10": -4003,
+              "p90": -4003
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "month": "2027-06",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 4003,
+              "p10": 4003,
+              "p90": 4003
+            },
+            "cumulative_net": {
+              "median": -4003,
+              "p10": -4003,
+              "p90": -4003
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "month": "2027-07",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 4003,
+              "p10": 4003,
+              "p90": 4003
+            },
+            "cumulative_net": {
+              "median": -4003,
+              "p10": -4003,
+              "p90": -4003
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "month": "2027-08",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 4003,
+              "p10": 4003,
+              "p90": 4003
+            },
+            "cumulative_net": {
+              "median": -4003,
+              "p10": -4003,
+              "p90": -4003
+            },
+            "cumulative_revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "month": "2027-09",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 1401,
+              "p10": 1401,
+              "p90": 1401
+            },
+            "cumulative_costs": {
+              "median": 5404,
+              "p10": 5404,
+              "p90": 5404
+            },
+            "cumulative_net": {
+              "median": 17113,
+              "p10": 17113,
+              "p90": 17113
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2027-10",
+            "net": {
+              "median": 21116,
+              "p10": 21116,
+              "p90": 21116
+            },
+            "operations": [
+              {
+                "crop_id": "soybean",
+                "kind": "harvest"
+              },
+              {
+                "crop_id": "cereal_rye",
+                "kind": "seed_cover"
+              }
+            ],
+            "revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 5404,
+              "p10": 5404,
+              "p90": 5404
+            },
+            "cumulative_net": {
+              "median": 17113,
+              "p10": 17113,
+              "p90": 17113
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2027-11",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 5404,
+              "p10": 5404,
+              "p90": 5404
+            },
+            "cumulative_net": {
+              "median": 17113,
+              "p10": 17113,
+              "p90": 17113
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2027-12",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 5404,
+              "p10": 5404,
+              "p90": 5404
+            },
+            "cumulative_net": {
+              "median": 17113,
+              "p10": 17113,
+              "p90": 17113
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2028-01",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 5404,
+              "p10": 5404,
+              "p90": 5404
+            },
+            "cumulative_net": {
+              "median": 17113,
+              "p10": 17113,
+              "p90": 17113
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2028-02",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 5404,
+              "p10": 5404,
+              "p90": 5404
+            },
+            "cumulative_net": {
+              "median": 17113,
+              "p10": 17113,
+              "p90": 17113
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2028-03",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 4403,
+              "p10": 4403,
+              "p90": 4403
+            },
+            "cumulative_costs": {
+              "median": 9808,
+              "p10": 9808,
+              "p90": 9808
+            },
+            "cumulative_net": {
+              "median": 12710,
+              "p10": 12710,
+              "p90": 12710
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2028-04",
+            "net": {
+              "median": -4403,
+              "p10": -4403,
+              "p90": -4403
+            },
+            "operations": [
+              {
+                "crop_id": "field_corn",
+                "kind": "plant"
+              },
+              {
+                "crop_id": "cereal_rye",
+                "kind": "end_cover"
+              }
+            ],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": [
+              {
+                "kind": "dry_pre_plant",
+                "probability": 0.2,
+                "text": "Dry 30 days before planting field corn in 20% of replays"
+              }
+            ]
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 9808,
+              "p10": 9808,
+              "p90": 9808
+            },
+            "cumulative_net": {
+              "median": 12710,
+              "p10": 12710,
+              "p90": 12710
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2028-05",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 9808,
+              "p10": 9808,
+              "p90": 9808
+            },
+            "cumulative_net": {
+              "median": 12710,
+              "p10": 12710,
+              "p90": 12710
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2028-06",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 9808,
+              "p10": 9808,
+              "p90": 9808
+            },
+            "cumulative_net": {
+              "median": 12710,
+              "p10": 12710,
+              "p90": 12710
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2028-07",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 9808,
+              "p10": 9808,
+              "p90": 9808
+            },
+            "cumulative_net": {
+              "median": 12710,
+              "p10": 12710,
+              "p90": 12710
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2028-08",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 9808,
+              "p10": 9808,
+              "p90": 9808
+            },
+            "cumulative_net": {
+              "median": 12710,
+              "p10": 12710,
+              "p90": 12710
+            },
+            "cumulative_revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "month": "2028-09",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 1401,
+              "p10": 1401,
+              "p90": 1401
+            },
+            "cumulative_costs": {
+              "median": 11209,
+              "p10": 11209,
+              "p90": 11209
+            },
+            "cumulative_net": {
+              "median": 44935,
+              "p10": 44935,
+              "p90": 44935
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2028-10",
+            "net": {
+              "median": 32225,
+              "p10": 32225,
+              "p90": 32225
+            },
+            "operations": [
+              {
+                "crop_id": "field_corn",
+                "kind": "harvest"
+              },
+              {
+                "crop_id": "cereal_rye",
+                "kind": "seed_cover"
+              }
+            ],
+            "revenue": {
+              "median": 33626,
+              "p10": 33626,
+              "p90": 33626
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 11209,
+              "p10": 11209,
+              "p90": 11209
+            },
+            "cumulative_net": {
+              "median": 44935,
+              "p10": 44935,
+              "p90": 44935
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2028-11",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 11209,
+              "p10": 11209,
+              "p90": 11209
+            },
+            "cumulative_net": {
+              "median": 44935,
+              "p10": 44935,
+              "p90": 44935
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2028-12",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 11209,
+              "p10": 11209,
+              "p90": 11209
+            },
+            "cumulative_net": {
+              "median": 44935,
+              "p10": 44935,
+              "p90": 44935
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2029-01",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 11209,
+              "p10": 11209,
+              "p90": 11209
+            },
+            "cumulative_net": {
+              "median": 44935,
+              "p10": 44935,
+              "p90": 44935
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2029-02",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 11209,
+              "p10": 11209,
+              "p90": 11209
+            },
+            "cumulative_net": {
+              "median": 44935,
+              "p10": 44935,
+              "p90": 44935
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2029-03",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 11209,
+              "p10": 11209,
+              "p90": 11209
+            },
+            "cumulative_net": {
+              "median": 44935,
+              "p10": 44935,
+              "p90": 44935
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2029-04",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [
+              {
+                "crop_id": "cereal_rye",
+                "kind": "end_cover"
+              }
+            ],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": [
+              {
+                "kind": "dry_pre_plant",
+                "probability": 0.14,
+                "text": "Dry 30 days before planting soybean in 14% of replays"
+              }
+            ]
+          },
+          {
+            "costs": {
+              "median": 2602,
+              "p10": 2602,
+              "p90": 2602
+            },
+            "cumulative_costs": {
+              "median": 13811,
+              "p10": 13811,
+              "p90": 13811
+            },
+            "cumulative_net": {
+              "median": 42333,
+              "p10": 42333,
+              "p90": 42333
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2029-05",
+            "net": {
+              "median": -2602,
+              "p10": -2602,
+              "p90": -2602
+            },
+            "operations": [
+              {
+                "crop_id": "soybean",
+                "kind": "plant"
+              }
+            ],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 13811,
+              "p10": 13811,
+              "p90": 13811
+            },
+            "cumulative_net": {
+              "median": 42333,
+              "p10": 42333,
+              "p90": 42333
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2029-06",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 13811,
+              "p10": 13811,
+              "p90": 13811
+            },
+            "cumulative_net": {
+              "median": 42333,
+              "p10": 42333,
+              "p90": 42333
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2029-07",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 13811,
+              "p10": 13811,
+              "p90": 13811
+            },
+            "cumulative_net": {
+              "median": 42333,
+              "p10": 42333,
+              "p90": 42333
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2029-08",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 13811,
+              "p10": 13811,
+              "p90": 13811
+            },
+            "cumulative_net": {
+              "median": 42333,
+              "p10": 42333,
+              "p90": 42333
+            },
+            "cumulative_revenue": {
+              "median": 56144,
+              "p10": 56144,
+              "p90": 56144
+            },
+            "month": "2029-09",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 1401,
+              "p10": 1401,
+              "p90": 1401
+            },
+            "cumulative_costs": {
+              "median": 15212,
+              "p10": 15212,
+              "p90": 15212
+            },
+            "cumulative_net": {
+              "median": 63449,
+              "p10": 63449,
+              "p90": 63449
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2029-10",
+            "net": {
+              "median": 21116,
+              "p10": 21116,
+              "p90": 21116
+            },
+            "operations": [
+              {
+                "crop_id": "soybean",
+                "kind": "harvest"
+              },
+              {
+                "crop_id": "cereal_rye",
+                "kind": "seed_cover"
+              }
+            ],
+            "revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 15212,
+              "p10": 15212,
+              "p90": 15212
+            },
+            "cumulative_net": {
+              "median": 63449,
+              "p10": 63449,
+              "p90": 63449
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2029-11",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 15212,
+              "p10": 15212,
+              "p90": 15212
+            },
+            "cumulative_net": {
+              "median": 63449,
+              "p10": 63449,
+              "p90": 63449
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2029-12",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 15212,
+              "p10": 15212,
+              "p90": 15212
+            },
+            "cumulative_net": {
+              "median": 63449,
+              "p10": 63449,
+              "p90": 63449
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2030-01",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 15212,
+              "p10": 15212,
+              "p90": 15212
+            },
+            "cumulative_net": {
+              "median": 63449,
+              "p10": 63449,
+              "p90": 63449
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2030-02",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 15212,
+              "p10": 15212,
+              "p90": 15212
+            },
+            "cumulative_net": {
+              "median": 63449,
+              "p10": 63449,
+              "p90": 63449
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2030-03",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 4403,
+              "p10": 4403,
+              "p90": 4403
+            },
+            "cumulative_costs": {
+              "median": 19615,
+              "p10": 19615,
+              "p90": 19615
+            },
+            "cumulative_net": {
+              "median": 59046,
+              "p10": 59046,
+              "p90": 59046
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2030-04",
+            "net": {
+              "median": -4403,
+              "p10": -4403,
+              "p90": -4403
+            },
+            "operations": [
+              {
+                "crop_id": "field_corn",
+                "kind": "plant"
+              },
+              {
+                "crop_id": "cereal_rye",
+                "kind": "end_cover"
+              }
+            ],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": [
+              {
+                "kind": "dry_pre_plant",
+                "probability": 0.18,
+                "text": "Dry 30 days before planting field corn in 18% of replays"
+              }
+            ]
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 19615,
+              "p10": 19615,
+              "p90": 19615
+            },
+            "cumulative_net": {
+              "median": 59046,
+              "p10": 59046,
+              "p90": 59046
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2030-05",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 19615,
+              "p10": 19615,
+              "p90": 19615
+            },
+            "cumulative_net": {
+              "median": 59046,
+              "p10": 59046,
+              "p90": 59046
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2030-06",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 19615,
+              "p10": 19615,
+              "p90": 19615
+            },
+            "cumulative_net": {
+              "median": 59046,
+              "p10": 59046,
+              "p90": 59046
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2030-07",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 19615,
+              "p10": 19615,
+              "p90": 19615
+            },
+            "cumulative_net": {
+              "median": 59046,
+              "p10": 59046,
+              "p90": 59046
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2030-08",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 19615,
+              "p10": 19615,
+              "p90": 19615
+            },
+            "cumulative_net": {
+              "median": 59046,
+              "p10": 59046,
+              "p90": 59046
+            },
+            "cumulative_revenue": {
+              "median": 78661,
+              "p10": 78661,
+              "p90": 78661
+            },
+            "month": "2030-09",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 1401,
+              "p10": 1401,
+              "p90": 1401
+            },
+            "cumulative_costs": {
+              "median": 21016,
+              "p10": 21016,
+              "p90": 21016
+            },
+            "cumulative_net": {
+              "median": 91271,
+              "p10": 91271,
+              "p90": 91271
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2030-10",
+            "net": {
+              "median": 32225,
+              "p10": 32225,
+              "p90": 32225
+            },
+            "operations": [
+              {
+                "crop_id": "field_corn",
+                "kind": "harvest"
+              },
+              {
+                "crop_id": "cereal_rye",
+                "kind": "seed_cover"
+              }
+            ],
+            "revenue": {
+              "median": 33626,
+              "p10": 33626,
+              "p90": 33626
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 21016,
+              "p10": 21016,
+              "p90": 21016
+            },
+            "cumulative_net": {
+              "median": 91271,
+              "p10": 91271,
+              "p90": 91271
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2030-11",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 21016,
+              "p10": 21016,
+              "p90": 21016
+            },
+            "cumulative_net": {
+              "median": 91271,
+              "p10": 91271,
+              "p90": 91271
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2030-12",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 21016,
+              "p10": 21016,
+              "p90": 21016
+            },
+            "cumulative_net": {
+              "median": 91271,
+              "p10": 91271,
+              "p90": 91271
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2031-01",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 21016,
+              "p10": 21016,
+              "p90": 21016
+            },
+            "cumulative_net": {
+              "median": 91271,
+              "p10": 91271,
+              "p90": 91271
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2031-02",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 21016,
+              "p10": 21016,
+              "p90": 21016
+            },
+            "cumulative_net": {
+              "median": 91271,
+              "p10": 91271,
+              "p90": 91271
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2031-03",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 21016,
+              "p10": 21016,
+              "p90": 21016
+            },
+            "cumulative_net": {
+              "median": 91271,
+              "p10": 91271,
+              "p90": 91271
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2031-04",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [
+              {
+                "crop_id": "cereal_rye",
+                "kind": "end_cover"
+              }
+            ],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": [
+              {
+                "kind": "dry_pre_plant",
+                "probability": 0.12,
+                "text": "Dry 30 days before planting soybean in 12% of replays"
+              }
+            ]
+          },
+          {
+            "costs": {
+              "median": 2602,
+              "p10": 2602,
+              "p90": 2602
+            },
+            "cumulative_costs": {
+              "median": 23618,
+              "p10": 23618,
+              "p90": 23618
+            },
+            "cumulative_net": {
+              "median": 88669,
+              "p10": 88669,
+              "p90": 88669
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2031-05",
+            "net": {
+              "median": -2602,
+              "p10": -2602,
+              "p90": -2602
+            },
+            "operations": [
+              {
+                "crop_id": "soybean",
+                "kind": "plant"
+              }
+            ],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 23618,
+              "p10": 23618,
+              "p90": 23618
+            },
+            "cumulative_net": {
+              "median": 88669,
+              "p10": 88669,
+              "p90": 88669
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2031-06",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 23618,
+              "p10": 23618,
+              "p90": 23618
+            },
+            "cumulative_net": {
+              "median": 88669,
+              "p10": 88669,
+              "p90": 88669
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2031-07",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 23618,
+              "p10": 23618,
+              "p90": 23618
+            },
+            "cumulative_net": {
+              "median": 88669,
+              "p10": 88669,
+              "p90": 88669
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2031-08",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 23618,
+              "p10": 23618,
+              "p90": 23618
+            },
+            "cumulative_net": {
+              "median": 88669,
+              "p10": 88669,
+              "p90": 88669
+            },
+            "cumulative_revenue": {
+              "median": 112287,
+              "p10": 112287,
+              "p90": 112287
+            },
+            "month": "2031-09",
+            "net": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "operations": [],
+            "revenue": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "risks": []
+          },
+          {
+            "costs": {
+              "median": 0,
+              "p10": 0,
+              "p90": 0
+            },
+            "cumulative_costs": {
+              "median": 23618,
+              "p10": 23618,
+              "p90": 23618
+            },
+            "cumulative_net": {
+              "median": 111186,
+              "p10": 111186,
+              "p90": 111186
+            },
+            "cumulative_revenue": {
+              "median": 134805,
+              "p10": 134805,
+              "p90": 134805
+            },
+            "month": "2031-10",
+            "net": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "operations": [
+              {
+                "crop_id": "soybean",
+                "kind": "harvest"
+              }
+            ],
+            "revenue": {
+              "median": 22517,
+              "p10": 22517,
+              "p90": 22517
+            },
+            "risks": []
+          }
+        ],
+        "origin": "calculation",
+        "timing_origin": "assumed",
+        "timing_text": "Costs are counted in the month each crop is planted or seeded, and sales in its harvest month. Your real timing of input purchases and grain sales may differ."
+      },
+      "readings_context": [],
+      "replayed_seasons_sample": [
+        2023,
+        2009,
+        2012,
+        2021,
+        2007
+      ],
+      "scenario_id": "rye",
+      "status": "complete",
+      "timeline": [
+        {
+          "crop_sequence": [
+            "field_corn",
+            "cereal_rye",
+            "soybean"
+          ],
+          "next_plant": "05-12",
+          "plan_id": "nc_rye",
+          "prev_harvest": "10-15",
+          "season": "2027",
+          "winter_kind": "cover",
+          "year": 2027
+        },
+        {
+          "crop_sequence": [
+            "soybean",
+            "cereal_rye",
+            "field_corn"
+          ],
+          "next_plant": "04-20",
+          "plan_id": "nc_soy_corn_rye",
+          "prev_harvest": "10-20",
+          "season": "2028",
+          "winter_kind": "cover",
+          "year": 2028
+        },
+        {
+          "crop_sequence": [
+            "field_corn",
+            "cereal_rye",
+            "soybean"
+          ],
+          "next_plant": "05-12",
+          "plan_id": "nc_rye",
+          "prev_harvest": "10-15",
+          "season": "2029",
+          "winter_kind": "cover",
+          "year": 2029
+        },
+        {
+          "crop_sequence": [
+            "soybean",
+            "cereal_rye",
+            "field_corn"
+          ],
+          "next_plant": "04-20",
+          "plan_id": "nc_soy_corn_rye",
+          "prev_harvest": "10-20",
+          "season": "2030",
+          "winter_kind": "cover",
+          "year": 2030
+        },
+        {
+          "crop_sequence": [
+            "field_corn",
+            "cereal_rye",
+            "soybean"
+          ],
+          "next_plant": "05-12",
+          "plan_id": "nc_rye",
+          "prev_harvest": "10-15",
+          "season": "2031",
+          "winter_kind": "cover",
+          "year": 2031
+        }
+      ],
+      "totals": {
+        "costs_total": {
+          "currency": "USD",
+          "median": 23618,
+          "origin": "calculation",
+          "p10": 23618,
+          "p90": 23618
+        },
+        "crop_families": 2,
+        "crop_families_detail": {
+          "cereal_rye": "Poaceae",
+          "field_corn": "Poaceae",
+          "soybean": "Fabaceae"
+        },
+        "dry_springs": {
+          "mean": 0.82,
+          "median": 1,
+          "origin": "calculation",
+          "p10": 0,
+          "p90": 2,
+          "unit": "in 5 years"
+        },
+        "heavy_rain_days_on_bare_soil_per_year": {
+          "median": 0.0,
+          "origin": "calculation",
+          "p10": 0.0,
+          "p90": 0.0,
+          "unit": "days"
+        },
+        "living_cover_days_per_year": {
+          "median": 167.4,
+          "origin": "calculation",
+          "unit": "days"
+        },
+        "margin_10y": {
+          "currency": "USD",
+          "includes_assumption": null,
+          "median": 111186,
+          "origin": "calculation",
+          "p10": 111186,
+          "p90": 111186
+        },
+        "margin_10y_price_cases": {
+          "currency": "USD",
+          "high": 138147,
+          "low": 84225,
+          "origin": "calculation",
+          "text": "Median 10-year margin at the low, typical and high price of each source's range.",
+          "typical": 111186
+        },
+        "margin_per_area_per_year": {
+          "area_unit": "acre",
+          "currency": "USD",
+          "median": 556,
+          "origin": "calculation",
+          "p10": 556,
+          "p90": 556
+        },
+        "operations_per_year": 4.0,
+        "origins": {
+          "crop_families": "calculation",
+          "operations_per_year": "calculation"
+        },
+        "rain_on_bare_soil_mm_per_year": {
+          "median": 80.0,
+          "origin": "calculation",
+          "p10": 57.5,
+          "p90": 109.6,
+          "unit": "mm"
+        },
+        "revenue_total": {
+          "currency": "USD",
+          "includes_assumption": null,
+          "median": 134805,
+          "origin": "calculation",
+          "p10": 134805,
+          "p90": 134805
+        },
+        "stress_events": {
+          "definition": "dry pre-planting windows plus years with heavy rain on bare soil",
+          "mean": 0.82,
+          "median": 1,
+          "origin": "calculation",
+          "p10": 0,
+          "p90": 2,
+          "unit": "in 5 years"
+        },
+        "weather_link": "none: money does not change with weather unless you enter a loss assumption (e.g. % of yield lost in a dry spring)"
+      },
+      "yearly": [
+        {
+          "indicators": {
+            "dry_pre_plant": {
+              "origin": "calculation",
+              "probability": 0.18
+            },
+            "heavy_rain_days_on_bare_soil": {
+              "median": 0,
+              "origin": "calculation",
+              "p10": 0,
+              "p90": 0,
+              "unit": "days"
+            },
+            "living_cover_days": {
+              "median": 177,
+              "origin": "calculation",
+              "planned": true,
+              "unit": "days"
+            },
+            "operations": {
+              "origin": "calculation",
+              "unit": "operations",
+              "value": 4
+            },
+            "rain_on_bare_soil_mm": {
+              "median": 70.1,
+              "origin": "calculation",
+              "p10": 24.4,
+              "p90": 131.5,
+              "unit": "mm"
+            }
+          },
+          "money": {
+            "costs": {
+              "currency": "USD",
+              "median": 4003,
+              "origin": "calculation",
+              "p10": 4003,
+              "p90": 4003
+            },
+            "margin": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 18514,
+              "origin": "calculation",
+              "p10": 18514,
+              "p90": 18514
+            },
+            "revenue": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 22517,
+              "origin": "calculation",
+              "p10": 22517,
+              "p90": 22517
+            }
+          },
+          "year": 2027
+        },
+        {
+          "indicators": {
+            "dry_pre_plant": {
+              "origin": "calculation",
+              "probability": 0.2
+            },
+            "heavy_rain_days_on_bare_soil": {
+              "median": 0,
+              "origin": "calculation",
+              "p10": 0,
+              "p90": 0,
+              "unit": "days"
+            },
+            "living_cover_days": {
+              "median": 153,
+              "origin": "calculation",
+              "planned": true,
+              "unit": "days"
+            },
+            "operations": {
+              "origin": "calculation",
+              "unit": "operations",
+              "value": 4
+            },
+            "rain_on_bare_soil_mm": {
+              "median": 76.1,
+              "origin": "calculation",
+              "p10": 32.6,
+              "p90": 131.9,
+              "unit": "mm"
+            }
+          },
+          "money": {
+            "costs": {
+              "currency": "USD",
+              "median": 5805,
+              "origin": "calculation",
+              "p10": 5805,
+              "p90": 5805
+            },
+            "margin": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 27822,
+              "origin": "calculation",
+              "p10": 27822,
+              "p90": 27822
+            },
+            "revenue": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 33626,
+              "origin": "calculation",
+              "p10": 33626,
+              "p90": 33626
+            }
+          },
+          "year": 2028
+        },
+        {
+          "indicators": {
+            "dry_pre_plant": {
+              "origin": "calculation",
+              "probability": 0.14
+            },
+            "heavy_rain_days_on_bare_soil": {
+              "median": 0,
+              "origin": "calculation",
+              "p10": 0,
+              "p90": 0,
+              "unit": "days"
+            },
+            "living_cover_days": {
+              "median": 177,
+              "origin": "calculation",
+              "planned": true,
+              "unit": "days"
+            },
+            "operations": {
+              "origin": "calculation",
+              "unit": "operations",
+              "value": 4
+            },
+            "rain_on_bare_soil_mm": {
+              "median": 84.7,
+              "origin": "calculation",
+              "p10": 23.9,
+              "p90": 144.3,
+              "unit": "mm"
+            }
+          },
+          "money": {
+            "costs": {
+              "currency": "USD",
+              "median": 4003,
+              "origin": "calculation",
+              "p10": 4003,
+              "p90": 4003
+            },
+            "margin": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 18514,
+              "origin": "calculation",
+              "p10": 18514,
+              "p90": 18514
+            },
+            "revenue": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 22517,
+              "origin": "calculation",
+              "p10": 22517,
+              "p90": 22517
+            }
+          },
+          "year": 2029
+        },
+        {
+          "indicators": {
+            "dry_pre_plant": {
+              "origin": "calculation",
+              "probability": 0.18
+            },
+            "heavy_rain_days_on_bare_soil": {
+              "median": 0,
+              "origin": "calculation",
+              "p10": 0,
+              "p90": 0,
+              "unit": "days"
+            },
+            "living_cover_days": {
+              "median": 153,
+              "origin": "calculation",
+              "planned": true,
+              "unit": "days"
+            },
+            "operations": {
+              "origin": "calculation",
+              "unit": "operations",
+              "value": 4
+            },
+            "rain_on_bare_soil_mm": {
+              "median": 66.4,
+              "origin": "calculation",
+              "p10": 16.3,
+              "p90": 134.6,
+              "unit": "mm"
+            }
+          },
+          "money": {
+            "costs": {
+              "currency": "USD",
+              "median": 5805,
+              "origin": "calculation",
+              "p10": 5805,
+              "p90": 5805
+            },
+            "margin": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 27822,
+              "origin": "calculation",
+              "p10": 27822,
+              "p90": 27822
+            },
+            "revenue": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 33626,
+              "origin": "calculation",
+              "p10": 33626,
+              "p90": 33626
+            }
+          },
+          "year": 2030
+        },
+        {
+          "indicators": {
+            "dry_pre_plant": {
+              "origin": "calculation",
+              "probability": 0.12
+            },
+            "heavy_rain_days_on_bare_soil": {
+              "median": 0,
+              "origin": "calculation",
+              "p10": 0,
+              "p90": 0,
+              "unit": "days"
+            },
+            "living_cover_days": {
+              "median": 177,
+              "origin": "calculation",
+              "planned": true,
+              "unit": "days"
+            },
+            "operations": {
+              "origin": "calculation",
+              "unit": "operations",
+              "value": 4
+            },
+            "rain_on_bare_soil_mm": {
+              "median": 81.8,
+              "origin": "calculation",
+              "p10": 31.9,
+              "p90": 143.6,
+              "unit": "mm"
+            }
+          },
+          "money": {
+            "costs": {
+              "currency": "USD",
+              "median": 4003,
+              "origin": "calculation",
+              "p10": 4003,
+              "p90": 4003
+            },
+            "margin": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 18514,
+              "origin": "calculation",
+              "p10": 18514,
+              "p90": 18514
+            },
+            "revenue": {
+              "currency": "USD",
+              "includes_assumption": null,
+              "median": 22517,
+              "origin": "calculation",
+              "p10": 22517,
+              "p90": 22517
+            }
+          },
+          "year": 2031
+        }
+      ],
+      "zones": null
+    }
+  ],
+  "status": "complete",
+  "weather_location": {
+    "cell_id": "cell_+35.000_-80.625",
+    "code": null,
+    "first_date": "1981-01-01",
+    "grid_cell": {
+      "center_latitude": 35.0,
+      "center_longitude": -80.625
+    },
+    "id": "union",
+    "last_date": "2025-06-30",
+    "name": "Union County",
+    "point": {
+      "latitude": 34.98,
+      "longitude": -80.55
+    },
+    "reason": null,
+    "reason_text": null,
+    "region": "piedmont",
+    "region_basis": "county table: the place's region as listed in the snapshot index",
+    "requested_point": {
+      "latitude": 34.98,
+      "longitude": -80.55
+    },
+    "shares_snapshot_with": null,
+    "snapshot_hash": "5ce131cfcd1f07d3738ecb9afaec6c3ef6a4764b6a3528bdd2b64debe7ba5f4e",
+    "status": "complete",
+    "thresholds_from": "Dry-spring cutoffs come from Union County's own 1981-2025 weather baseline (snapshot 5ce131cfcd1f); heavy rain is the fixed 76.2 mm daily value. Thresholds are never shared across locations."
+  }
+}

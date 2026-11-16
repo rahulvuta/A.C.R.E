@@ -1,5 +1,5 @@
 {
-  "what": "Responses from the Field Shift backend, saved exactly as returned, one folder per place.",
+  "what": "Responses from the A.C.R.E backend, saved exactly as returned, one folder per place.",
   "saved_at": "2026-11-14T16:38:22.699Z",
   "api": "http://localhost:8000",
   "catalog_version": "v2:8eeb5bf961eb",

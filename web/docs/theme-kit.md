@@ -7,7 +7,7 @@ The look is modeled on tabs.com, studied from Abhi's screen recording (frame by 
 | File | What it holds |
 | --- | --- |
 | `src/styles/tokens.css` | Colors, type sizes, spacing, radius, motion. Light only. Contrast-tested in `tokens.test.ts`. |
-| `src/styles/fieldback.css` | Kit components (buttons, segmented control, pills, accordion, rolling numbers) and the page layout. Loaded last. |
+| `src/styles/acre.css` | Kit components (buttons, segmented control, pills, accordion, rolling numbers) and the page layout. Loaded last. |
 | `src/ui/Roll.tsx` | Rolling number: digits roll to the new value. |
 | `src/ui/Accordion.tsx` | One-open list with the accent line across the open item. |
 | `src/styles/layout.css`, `components.css` | Older rules still used by the drawers, rye timing, day-by-day chart, summary and reading pages. They pick up the new tokens; prune as those parts are redesigned. |

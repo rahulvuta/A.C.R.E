@@ -13,7 +13,7 @@ const fixtures = join(dirname(fileURLToPath(import.meta.url)), "../../src/api/fi
 export const fixture = (name: string): unknown => JSON.parse(readFileSync(join(fixtures, `${name}.json`), "utf8"));
 
 // 1×1 transparent PNG.
-export const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=", "base64");
+const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=", "base64");
 
 export async function mockTiles(page: Page) {
   const tile = (r: Route) => r.fulfill({ status: 200, contentType: "image/png", body: PNG });
@@ -58,22 +58,6 @@ export const geoHandlers: Handler[] = [
     return { body: fixture(lat < 0 ? "capabilities-pergamino" : "capabilities-union") };
   },
 ];
-
-/**
- * Hold every map tile until `release()` is called, so MapLibre cannot finish loading. Lets a
- * spec act while the map is still loading.
- */
-export async function holdTiles(page: Page): Promise<() => void> {
-  let release!: () => void;
-  const gate = new Promise<void>((r) => (release = r));
-  const tile = async (r: Route) => {
-    await gate;
-    await r.fulfill({ status: 200, contentType: "image/png", body: PNG });
-  };
-  await page.route("https://server.arcgisonline.com/**", tile);
-  await page.route("https://tile.openstreetmap.org/**", tile);
-  return release;
-}
 
 /** Open the map harness against the mocked API and wait for the map to load. */
 export async function openMap(page: Page, harness = "harness.html", extra = "") {

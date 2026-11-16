@@ -3,7 +3,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from fieldshift.metrics.rules import (
+from acre.metrics.rules import (
     combine_checks,
     evaluate_season,
     evaluate_seasons,
@@ -339,7 +339,7 @@ def test_combined_count_counts_each_season_once(index):
 
 
 def test_accepts_the_real_season_facts_contract(index):
-    from fieldshift.contracts import SeasonFacts
+    from acre.contracts import SeasonFacts
 
     d = season_facts(gap_days=12, is_dry=True, observations=["pest_spillover_concern"])
     d["dates"] = {k: v for k, v in d["dates"].items() if k != "spring_window"} | {

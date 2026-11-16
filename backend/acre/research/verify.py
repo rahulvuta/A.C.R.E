@@ -1,0 +1,383 @@
+"""The code check of an AI research answer (card B3). Nothing the model says is taken on trust.
+
+* Each cited page is fetched. A quote found on it (after normalising case, spacing, quotes and
+  dashes) makes the item ``source_checked``; not found, ``ai_suggested``. A dead page drops the item.
+* Every number in a rule must appear in its quote, or the rule is downgraded to ``manual_check``:
+  its condition and window are removed, so the rule engine can only ask a person to check it.
+* Rows that disagree (same crop, type, stage and neighbours, different numbers or verdict) are both
+  kept, each naming the other in ``conflicts_with``. Nothing is merged.
+
+Pages are fetched with a generic browser User-Agent (no app name, no contact details); no farm or
+location data is in any request. PDFs are read with ``pypdf`` (bounded bytes, pages and time); a
+PDF that cannot be parsed stays "reachable, quote not checkable".
+"""
+
+from __future__ import annotations
+
+import html
+import io
+import logging
+import re
+import time
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from typing import Any
+
+import httpx
+
+from acre.catalogs import crop_ids
+
+log = logging.getLogger("acre.research")
+
+# A mainstream browser string: many official sites refuse unknown clients. Nothing identifies us.
+USER_AGENT = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like "
+              "Gecko) Chrome/124.0.0.0 Safari/537.36")
+FETCH_TIMEOUT_S = 20.0
+MAX_PAGE_BYTES = 5_000_000
+MAX_PDF_BYTES = 15_000_000
+MAX_PDF_PAGES = 60
+PDF_BUDGET_S = FETCH_TIMEOUT_S  # the parse stops at the same budget as one fetch
+_TAGS = re.compile(r"<(script|style)[^>]*>.*?</\1>|<[^>]+>", re.S | re.I)
+_SPACE = re.compile(r"\s+")
+_TRANS = str.maketrans({"’": "'", "‘": "'", "“": '"', "”": '"', "–": "-", "—": "-", " ": " ",
+                        "−": "-", "°": " "})  # fmt: skip
+_NUM = re.compile(r"-?\d+(?:[.,]\d+)?")
+_MONTHS = ["january", "february", "march", "april", "may", "june", "july", "august", "september",
+           "october", "november", "december"]  # fmt: skip
+
+
+def normalise(text: str) -> str:
+    t = html.unescape(_TAGS.sub(" ", text or "")).translate(_TRANS).lower()
+    t = re.sub(r"[^\w\s'\"%.,;:/()-]", " ", t)
+    return _SPACE.sub(" ", t).strip()
+
+
+@dataclass
+class Page:
+    ok: bool
+    text: str = ""
+    reason: str | None = None
+
+
+def pdf_text(data: bytes, budget_s: float = PDF_BUDGET_S) -> str | None:
+    """Normalised text of the first :data:`MAX_PDF_PAGES` pages, or ``None`` if it cannot be read.
+
+    Line breaks and hyphenation are tolerated by :func:`quote_in`, which also tries the text with
+    "hyphen + space" removed."""
+    if len(data) > MAX_PDF_BYTES:
+        return None
+    try:
+        from pypdf import PdfReader
+
+        reader = PdfReader(io.BytesIO(data))
+        if reader.is_encrypted:
+            return None
+        end = time.monotonic() + budget_s
+        parts: list[str] = []
+        for i, page in enumerate(reader.pages):
+            if i >= MAX_PDF_PAGES or time.monotonic() > end:
+                break
+            parts.append(page.extract_text() or "")
+    except Exception as exc:  # noqa: BLE001 - any parse problem: fall back to "not checkable"
+        log.info("pdf not parsed: %s", type(exc).__name__)
+        return None
+    text = normalise(" ".join(parts))
+    return text or None
+
+
+def quote_in(quote: str, text: str) -> bool:
+    """The normalised quote is on the page text; a PDF's hyphenated line breaks are tolerated."""
+    q = normalise(quote)
+    if not q or not text:
+        return False
+    if q in text:
+        return True
+    return q.replace("- ", "").replace("-", "") in text.replace("- ", "").replace("-", "")
+
+
+ARCHIVE_PREFIX = "https://web.archive.org/web/2id_/"  # the archived copy of a page, unmodified
+
+
+def _get(c: httpx.Client, url: str) -> httpx.Response | None:
+    r: httpx.Response | None = None
+    for _attempt in (1, 2):  # one retry on a network error or a 5xx
+        try:
+            r = c.get(url)
+        except httpx.HTTPError:
+            r = None
+            continue
+        if r.status_code < 500:
+            break
+    return r
+
+
+def _page(r: httpx.Response, url: str, archived: bool) -> Page:
+    tag = "archived_" if archived else ""
+    ctype = r.headers.get("content-type", "")
+    if "pdf" in ctype or url.lower().split("?")[0].endswith(".pdf"):
+        text = pdf_text(r.content)
+        if text is None:  # reachable, quote not checkable
+            return Page(True, text="", reason=f"{tag}pdf_not_checked")
+        return Page(True, text=text, reason=f"{tag}pdf")
+    return Page(True, text=normalise(r.text[:MAX_PAGE_BYTES]), reason="archived" if archived else None)
+
+
+def fetch_page(url: str, client: httpx.Client | None = None) -> Page:
+    """The cited page. When the live address is gone, moved or refuses this server (official
+    reports are often moved, and some university sites block data-centre addresses), the same
+    address is read from the Internet Archive instead; ``reason`` then starts with "archived"."""
+    if not url.startswith(("https://", "http://")):
+        return Page(False, reason="not_a_web_url")
+    own = client is None
+    c = client or httpx.Client(timeout=FETCH_TIMEOUT_S, follow_redirects=True,
+                               headers={"User-Agent": USER_AGENT})  # fmt: skip
+    try:
+        r = _get(c, url)
+        if r is not None and r.status_code < 400:
+            return _page(r, url, False)
+        live = "unreachable" if r is None else f"http_{r.status_code}"
+        if not url.startswith(ARCHIVE_PREFIX):
+            a = _get(c, ARCHIVE_PREFIX + url)
+            if a is not None and a.status_code < 400:
+                return _page(a, url, True)
+        return Page(False, reason=live)
+    finally:
+        if own:
+            c.close()
+
+
+def _num_forms(x: float) -> set[str]:
+    out = {f"{x:g}"}
+    if float(x).is_integer():
+        out.add(str(int(x)))
+    out.add(f"{x:g}".replace(".", ","))
+    return out
+
+
+def numbers_in(text: str) -> set[str]:
+    """Numbers as written, signs kept (a decimal comma becomes a point; 1,000 stays a thousands
+    separator)."""
+    out = set()
+    for m in _NUM.findall(text or ""):
+        if "," in m:
+            m = m.replace(",", "") if len(m.split(",")[1]) == 3 else m.replace(",", ".")
+        out.add(f"{float(m):g}")
+    return out
+
+
+def _date_forms(mmdd: str) -> list[str]:
+    m, d = int(mmdd[:2]), int(mmdd[3:])
+    name = _MONTHS[m - 1]
+    return [f"{name} {d}", f"{d} {name}", f"{name[:3]} {d}", f"{d} {name[:3]}", f"{d}/{m}",
+            f"{m}/{d}", mmdd]  # fmt: skip
+
+
+def _date_in(quote: str, mmdd: str) -> bool:
+    """The whole date is in the quote ("october 15" never supports "october 1")."""
+    return any(re.search(rf"(?<![\w/]){re.escape(f)}(?![\w/])", quote) for f in _date_forms(mmdd))
+
+
+def unsupported_numbers(row: dict[str, Any], numbers: tuple[str, ...] = ("value_min", "value_max"),
+                        dates: tuple[str, ...] = ("window_start_mm_dd", "window_end_mm_dd"),
+                        ) -> list[str]:  # fmt: skip
+    """Numbers (and dates) of an item that its quote does not contain; dotted keys reach into
+    nested windows (``plant.start``)."""
+    quote = normalise(row.get("evidence_quote") or "")
+    nums = numbers_in(quote)
+
+    def get(k: str) -> Any:
+        cur: Any = row
+        for part in k.split("."):
+            cur = cur.get(part) if isinstance(cur, dict) else None
+        return cur
+
+    missing: list[str] = []
+    for k in numbers:
+        v = get(k)
+        if isinstance(v, int | float) and not isinstance(v, bool) and f"{float(v):g}" not in nums:
+            missing.append(f"{k}={v:g}")
+    for k in dates:
+        v = get(k)
+        if isinstance(v, str) and len(v) == 5 and not _date_in(quote, v):
+            missing.append(f"{k}={v}")
+    return missing
+
+
+_CONFLICT_KEY = ("crop_id", "rule_type", "growth_stage", "management_action", "previous_crop_id",
+                 "next_crop_id", "condition_key", "production_system")  # fmt: skip
+_CONFLICT_VALUE = ("value_min", "value_max", "operator", "suitability", "window_start_mm_dd",
+                   "window_end_mm_dd")  # fmt: skip
+
+
+def mark_conflicts(rows: list[dict[str, Any]]) -> None:
+    for i, a in enumerate(rows):
+        for b in rows[i + 1:]:
+            if all(a.get(k) == b.get(k) for k in _CONFLICT_KEY) and any(
+                    a.get(k) != b.get(k) for k in _CONFLICT_VALUE):  # fmt: skip
+                a.setdefault("_conflicts", []).append(b["rule_id"])
+                b.setdefault("_conflicts", []).append(a["rule_id"])
+
+
+@dataclass
+class CheckLog:
+    dropped: list[dict[str, str]] = field(default_factory=list)
+    downgraded: list[dict[str, Any]] = field(default_factory=list)
+    checked: int = 0
+    found: int = 0
+    guardrails: dict[str, Any] | None = None
+
+    def as_dict(self) -> dict[str, Any]:
+        out = {"items_checked": self.checked, "quotes_found": self.found,
+               "dropped": self.dropped, "downgraded": self.downgraded}  # fmt: skip
+        if self.guardrails is not None:
+            out["guardrails"] = self.guardrails
+        return out
+
+
+def _evidence_origin(item: dict[str, Any], pages: dict[str, Page], log: CheckLog,
+                     what: str) -> str | None:  # fmt: skip
+    """``source_checked`` / ``ai_suggested``, or ``None`` (dropped) for a dead or missing page."""
+    url = str(item.get("source_url") or "")
+    quote = str(item.get("evidence_quote") or "")
+    if not url or not quote:
+        log.dropped.append({"item": what, "reason": "no source_url or evidence_quote"})
+        return None
+    if len(quote.split()) > 30:
+        log.dropped.append({"item": what, "reason": "evidence_quote longer than 30 words"})
+        return None
+    page = pages[url]
+    log.checked += 1
+    if not page.ok:
+        log.dropped.append({"item": what, "reason": f"source page {page.reason}"})
+        return None
+    if quote_in(quote, page.text):
+        log.found += 1
+        if item.get("_domain_ok") is False:  # guardrails: off-allowlist domains stay suggestions
+            return "ai_suggested"
+        return "source_checked"
+    return "ai_suggested"
+
+
+def check_answer(answer: dict[str, Any], region: dict[str, Any],
+                 fetch: Callable[[str], Page] = fetch_page) -> tuple[dict[str, Any], CheckLog]:  # fmt: skip
+    """Verified rows and profile entries, each with its ``origin``; and what was done to them."""
+    log = CheckLog()
+    items = [*(answer.get("rows") or []), *(answer.get("crops") or []),
+             *(answer.get("cover_crops") or []), *(answer.get("rotations") or []),
+             *(answer.get("double_crops") or [])]  # fmt: skip
+    urls = sorted({str(i.get("source_url")) for i in items if isinstance(i, dict)
+                   and i.get("source_url")})  # fmt: skip
+    pages = {u: fetch(u) for u in urls}
+    for i in items:
+        if isinstance(i, dict) and i.get("source_url") and str(i["source_url"]) not in pages:
+            pages[str(i["source_url"])] = fetch(str(i["source_url"]))
+    key = region["region_key"]
+
+    rows: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for r in answer.get("rows") or []:
+        if not isinstance(r, dict):
+            continue
+        rid = str(r.get("rule_id") or "")
+        cid = crop_ids.canonical(r.get("crop_id"))
+        if not rid or rid in seen or cid is None:
+            log.dropped.append({"item": rid or "row", "reason": "missing, duplicate or unknown "
+                                "rule or crop id"})  # fmt: skip
+            continue
+        origin = _evidence_origin(r, pages, log, rid)
+        if origin is None:
+            continue
+        seen.add(rid)
+        row = {**{k: v for k, v in r.items() if not k.startswith("_")}, "crop_id": cid, "origin": origin, "region_key": key,
+               "country": region.get("country"), "admin1": region.get("admin1"),
+               "koppen": region.get("koppen")}  # fmt: skip
+        unresolved = [f for f in ("previous_crop_id", "next_crop_id")
+                      if row.get(f) and crop_ids.canonical(row[f]) is None]  # fmt: skip
+        if unresolved:  # a dropped neighbour would silently widen where the rule applies
+            log.dropped.append({"item": rid, "reason": f"unknown crop id in {unresolved[0]}"})
+            seen.discard(rid)
+            continue
+        for f in ("previous_crop_id", "next_crop_id"):
+            if row.get(f):
+                row[f] = crop_ids.canonical(row[f])
+        missing = unsupported_numbers(row)
+        if missing:
+            log.downgraded.append({"rule_id": rid, "numbers_not_in_quote": missing})
+            note = f"numbers not in the quote ({', '.join(missing)}); check with an adviser"
+            row["limitations"] = "; ".join(x for x in (row.get("limitations"), note) if x)
+            for f in ("condition_key", "operator", "window_start_mm_dd", "window_end_mm_dd",
+                      "suitability"):  # fmt: skip
+                row[f] = None
+            row["review"] = "manual_check"  # the rule engine answers manual_check for this row
+        rows.append(row)
+    mark_conflicts(rows)
+    for row in rows:
+        row["conflicts_with"] = ";".join(sorted(row.pop("_conflicts", [])))
+
+    def entries(section: str, id_field: str | None) -> list[dict[str, Any]]:
+        out = []
+        for e in answer.get(section) or []:
+            if not isinstance(e, dict):
+                continue
+            label = str(e.get(id_field) if id_field else e.get("label"))
+            if id_field and crop_ids.canonical(e.get(id_field)) is None:
+                log.dropped.append({"item": label, "reason": f"unknown crop id in {section}"})
+                continue
+            origin = _evidence_origin(e, pages, log, f"{section}:{label}")
+            if origin is None:
+                continue
+            src = {"title": e.get("source_title"), "url": e.get("source_url"),
+                   "locator": e.get("source_locator"), "evidence_quote": e.get("evidence_quote")}  # fmt: skip
+            out.append({**{k: v for k, v in e.items()
+                           if k not in _EVIDENCE_KEYS and not k.startswith("_")},
+                        "origin": origin, "sources": [src]})  # fmt: skip
+        return out
+
+    def strip_unsupported(section: str, item: dict[str, Any], numbers: tuple[str, ...],
+                          dates: tuple[str, ...], quote: str) -> dict[str, Any]:  # fmt: skip
+        """Remove every number or date of a profile entry that its quote does not contain."""
+        miss = unsupported_numbers({**item, "evidence_quote": quote}, numbers, dates)
+        if not miss:
+            return item
+        log.downgraded.append({"item": f"{section}:{item.get('crop_id') or item.get('label')}",
+                               "numbers_not_in_quote": miss})  # fmt: skip
+        out = {k: (dict(v) if isinstance(v, dict) else v) for k, v in item.items()}
+        for m in miss:
+            path = m.split("=")[0].split(".")
+            if len(path) == 2 and isinstance(out.get(path[0]), dict):
+                out[path[0]] = None  # a window with an unsupported end is no window
+            else:
+                out[path[0]] = None
+        return out
+
+    crops, flagged = [], []
+    for c in entries("crops", "crop_id"):
+        cid = crop_ids.canonical(c["crop_id"])
+        c = strip_unsupported("crops", c, (), ("plant.start", "plant.end", "harvest.start",
+                                                "harvest.end"), c["sources"][0]["evidence_quote"])  # fmt: skip
+        if not (isinstance(c.get("plant"), dict) and c["plant"].get("start")):
+            continue
+        if c.get("review") == "manual_check":  # guardrails: disagrees with SAGE; SAGE is served
+            flagged.append({"crop_id": cid, "plant": c.get("plant"), "harvest": c.get("harvest"),
+                            "origin": c["origin"], "review": "manual_check",
+                            "limitations": c.get("limitations"), "source": c["sources"][0]})  # fmt: skip
+            continue
+        crops.append({"crop_id": cid, "name": crop_ids.info(cid).name,  # type: ignore[union-attr]
+                      "roles": [crop_ids.info(cid).role.replace("_crop", "")],  # type: ignore[union-attr]
+                      "calendar": {"plant": c["plant"], "harvest": c.get("harvest"),
+                                   "origin": c["origin"], "source": c["sources"][0]}})  # fmt: skip
+    profile = {
+        "crops": crops,
+        "flagged_crops": flagged,
+        "cover_crops": [strip_unsupported("cover_crops", {**c, "crop_id": crop_ids.canonical(
+            c["crop_id"])}, ("gap_days",), ("seed.start", "seed.end"),
+            c["sources"][0]["evidence_quote"]) for c in entries("cover_crops", "crop_id")],
+        "rotations": [{**r, "sequence": [crop_ids.canonical(x) or x for x in r.get("sequence")
+                                         or []]} for r in entries("rotations", None)],
+        "double_crops": entries("double_crops", "winter_crop"),
+        "gaps": [g for g in answer.get("gaps") or [] if isinstance(g, str)][:50],
+    }  # fmt: skip
+    return {"rows": rows, "profile": profile}, log
+
+
+_EVIDENCE_KEYS = {"source_title", "source_url", "source_locator", "evidence_quote"}

@@ -14,7 +14,16 @@ export type TermId =
   | "rank"
   | "regional-estimate"
   | "replay"
-  | "extension";
+  | "extension"
+  | "farm-field"
+  | "current-plan"
+  | "resampling"
+  | "scenario"
+  | "comparison-badge"
+  | "ten-year-plan"
+  | "band"
+  | "margin"
+  | "loss-assumption";
 
 export const GLOSSARY: Record<TermId, { term: string; definition: string }> = {
   "cover-crop": {
@@ -56,10 +65,46 @@ export const GLOSSARY: Record<TermId, { term: string; definition: string }> = {
   },
   replay: {
     term: "Historical replay",
-    definition: "Running this year's planned dates against the weather of a past year. It shows how a plan would have fared; it does not forecast next spring.",
+    definition: "Running this year's planned dates against the weather of a past year. It shows how a plan would have fared in that year; it cannot say what next spring will bring.",
   },
   extension: {
     term: "Extension agent",
     definition: "A local adviser from NC State Extension (the county Cooperative Extension office) who helps growers with crop decisions.",
+  },
+  "farm-field": {
+    term: "Fields and acres",
+    definition: "Each field you draw keeps its own plan. Acres are measured from the outline you draw; the service measures them again for any money result. Your outlines stay in this browser.",
+  },
+  "current-plan": {
+    term: "Your current plan",
+    definition: "The crops and dates you use now, as a rotation of one to ten seasons that repeats. It is the baseline every other plan is compared with.",
+  },
+  resampling: {
+    term: "How the outlook is built",
+    definition: "Your plan is carried through the next 10 years about 200 times. Each time, the field's real past seasons (1981 to 2025, from NASA weather data) are put in a different order, and rain is adjusted when the field's own record shows a clear trend. It shows what to plan for under the conditions seen here. It cannot say what any single year will bring.",
+  },
+  scenario: {
+    term: "Scenario",
+    definition: "Another plan for the same field, such as adding a cover crop or a winter grain. Each one is run through the same simulated years as your current plan, so they can be compared fairly.",
+  },
+  "comparison-badge": {
+    term: "Badges",
+    definition: "Highest estimated margin of these plans, most sustainable, lowest weather risk and best for your priorities. Each is the best of the plans you compared (not of every possible plan), given these numbers and the conditions seen at this field; a badge is left out when it cannot be decided fairly.",
+  },
+  "ten-year-plan": {
+    term: "Your 10-year plan",
+    definition: "The plan you chose, laid out year by year with its crops, key dates, decision deadlines and a backup. Dates come from your entries or published guidance, each with its source.",
+  },
+  band: {
+    term: "Typical range",
+    definition: "The middle result across all the simulated years, with the bad-year end and the good-year end. Eight in ten simulated years fall inside the range.",
+  },
+  margin: {
+    term: "Margin",
+    definition: "Revenue minus costs, from your own prices, yields and costs or from sourced regional figures (USDA, university surveys, FAOSTAT), including AI-found figures whose quote was checked on the cited page (labelled \"AI-found, quote checked\"). A crop with none has no money result.",
+  },
+  "loss-assumption": {
+    term: "Your loss estimate",
+    definition: "Your own guess of how much yield you lose in a dry spring or a very wet one. It is the only way weather turns into money here, and results that use it are labelled as your estimate.",
   },
 };

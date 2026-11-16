@@ -4,9 +4,9 @@ from datetime import date
 
 import pytest
 
-from fieldshift.catalogs import V1_CATALOG_DIR, V2_CATALOG_DIR, CatalogIndex, load_catalog
-from fieldshift.metrics.rule_text import explain, has_placeholder, should_print
-from fieldshift.metrics.rules import evaluate_season
+from acre.catalogs import V1_CATALOG_DIR, V2_CATALOG_DIR, CatalogIndex, load_catalog
+from acre.metrics.rule_text import explain, has_placeholder, should_print
+from acre.metrics.rules import evaluate_season
 from tests.fixtures.season_facts import season_facts
 
 NUM = re.compile(r"\d+(?:\.\d+)?")
@@ -266,8 +266,8 @@ def test_conflict_text_is_one_sentence_and_printed_conflicts_reach_the_calendar(
         assert chk.conflict and chk.print and chk.status == "complete"
         assert chk.text.endswith(".") and chk.text.count(".") == 1 and f"(see {other})" in chk.text
         assert "neither is chosen" in chk.text
-    from fieldshift.contracts import Plan, WinterManagement
-    from fieldshift.planner.calendar import build_action_calendar
+    from acre.contracts import Plan, WinterManagement
+    from acre.planner.calendar import build_action_calendar
 
     plan = Plan(plan_id="p", previous_crop_id="soybean", prev_harvest="10-20", winter=WinterManagement(kind="none"),
                 next_crop_id="field_corn", next_plant="05-05", region="NC Piedmont", production_system="no-till")  # fmt: skip

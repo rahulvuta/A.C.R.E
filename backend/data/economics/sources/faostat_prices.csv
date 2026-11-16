@@ -1,0 +1,543 @@
+Area Code,Area Code (M49),Area,Item Code,Item Code (CPC),Item,Element Code,Element,Year Code,Year,Months Code,Months,Unit,Value,Flag
+10,'036,Australia,44,'0115,Barley,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,204.300000,A
+10,'036,Australia,44,'0115,Barley,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,191.200000,A
+10,'036,Australia,44,'0115,Barley,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,210.200000,A
+10,'036,Australia,44,'0115,Barley,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,184.500000,A
+10,'036,Australia,44,'0115,Barley,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,190.700000,A
+10,'036,Australia,191,'01703,"Chick peas, dry",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,523.600000,A
+10,'036,Australia,191,'01703,"Chick peas, dry",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,445.400000,A
+10,'036,Australia,191,'01703,"Chick peas, dry",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,337.000000,A
+10,'036,Australia,191,'01703,"Chick peas, dry",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,484.000000,A
+10,'036,Australia,767,'01921.02,"Cotton lint, ginned",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,1512.500000,A
+10,'036,Australia,767,'01921.02,"Cotton lint, ginned",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,1944.700000,A
+10,'036,Australia,767,'01921.02,"Cotton lint, ginned",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,2284.100000,A
+10,'036,Australia,201,'01704,"Lentils, dry",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,531.500000,A
+10,'036,Australia,201,'01704,"Lentils, dry",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,490.400000,A
+10,'036,Australia,201,'01704,"Lentils, dry",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,557.800000,A
+10,'036,Australia,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,329.800000,A
+10,'036,Australia,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,278.900000,A
+10,'036,Australia,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,276.500000,A
+10,'036,Australia,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,249.000000,A
+10,'036,Australia,75,'0117,Oats,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,255.800000,A
+10,'036,Australia,75,'0117,Oats,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,214.300000,A
+10,'036,Australia,75,'0117,Oats,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,207.500000,A
+10,'036,Australia,75,'0117,Oats,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,174.000000,A
+10,'036,Australia,75,'0117,Oats,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,239.700000,A
+10,'036,Australia,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,416.600000,A
+10,'036,Australia,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,464.800000,A
+10,'036,Australia,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,437.400000,A
+10,'036,Australia,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,469.300000,A
+10,'036,Australia,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,476.100000,A
+10,'036,Australia,270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,410.500000,A
+10,'036,Australia,270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,462.700000,A
+10,'036,Australia,270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,610.400000,A
+10,'036,Australia,270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,491.600000,A
+10,'036,Australia,270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,394.200000,A
+10,'036,Australia,27,'0113,Rice,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,529.400000,A
+10,'036,Australia,27,'0113,Rice,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,309.700000,A
+10,'036,Australia,27,'0113,Rice,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,275.900000,A
+10,'036,Australia,27,'0113,Rice,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,257.800000,A
+10,'036,Australia,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,265.000000,A
+10,'036,Australia,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,247.400000,A
+10,'036,Australia,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,265.900000,A
+10,'036,Australia,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,244.100000,A
+10,'036,Australia,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,206.700000,A
+10,'036,Australia,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,28.500000,A
+10,'036,Australia,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,31.000000,A
+10,'036,Australia,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,33.300000,A
+10,'036,Australia,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,30.800000,A
+10,'036,Australia,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,48.700000,A
+10,'036,Australia,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,502.700000,A
+10,'036,Australia,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,514.900000,A
+10,'036,Australia,15,'0111,Wheat,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,235.200000,A
+10,'036,Australia,15,'0111,Wheat,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,231.800000,A
+10,'036,Australia,15,'0111,Wheat,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,251.600000,A
+10,'036,Australia,15,'0111,Wheat,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,218.200000,A
+10,'036,Australia,15,'0111,Wheat,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,207.900000,A
+21,'076,Brazil,44,'0115,Barley,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,230.900000,A
+21,'076,Brazil,44,'0115,Barley,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,295.700000,A
+21,'076,Brazil,44,'0115,Barley,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,339.900000,A
+21,'076,Brazil,44,'0115,Barley,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,252.800000,A
+21,'076,Brazil,44,'0115,Barley,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,255.600000,A
+21,'076,Brazil,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,688.800000,A
+21,'076,Brazil,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,770.200000,A
+21,'076,Brazil,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,834.300000,A
+21,'076,Brazil,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,808.900000,A
+21,'076,Brazil,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,748.300000,A
+21,'076,Brazil,181,'01702,"Broad beans and horse beans, dry",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,1134.700000,A
+21,'076,Brazil,181,'01702,"Broad beans and horse beans, dry",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,1196.000000,A
+21,'076,Brazil,181,'01702,"Broad beans and horse beans, dry",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,1450.300000,A
+21,'076,Brazil,181,'01702,"Broad beans and horse beans, dry",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,1603.500000,A
+21,'076,Brazil,181,'01702,"Broad beans and horse beans, dry",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,1904.300000,A
+21,'076,Brazil,125,'01520.01,"Cassava, fresh",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,116.200000,A
+21,'076,Brazil,125,'01520.01,"Cassava, fresh",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,129.800000,A
+21,'076,Brazil,125,'01520.01,"Cassava, fresh",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,169.700000,A
+21,'076,Brazil,125,'01520.01,"Cassava, fresh",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,207.000000,A
+21,'076,Brazil,125,'01520.01,"Cassava, fresh",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,176.400000,A
+21,'076,Brazil,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,478.600000,A
+21,'076,Brazil,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,617.100000,A
+21,'076,Brazil,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,589.600000,A
+21,'076,Brazil,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,738.600000,A
+21,'076,Brazil,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,767.600000,A
+21,'076,Brazil,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,135.100000,A
+21,'076,Brazil,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,243.900000,A
+21,'076,Brazil,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,243.800000,A
+21,'076,Brazil,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,154.500000,A
+21,'076,Brazil,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,142.200000,A
+21,'076,Brazil,75,'0117,Oats,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,132.200000,A
+21,'076,Brazil,75,'0117,Oats,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,177.200000,A
+21,'076,Brazil,75,'0117,Oats,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,221.000000,A
+21,'076,Brazil,75,'0117,Oats,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,152.600000,A
+21,'076,Brazil,75,'0117,Oats,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,187.500000,A
+21,'076,Brazil,187,'01705,"Peas, dry",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,876.100000,A
+21,'076,Brazil,187,'01705,"Peas, dry",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,903.200000,A
+21,'076,Brazil,187,'01705,"Peas, dry",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,896.500000,A
+21,'076,Brazil,187,'01705,"Peas, dry",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,963.300000,A
+21,'076,Brazil,187,'01705,"Peas, dry",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,1149.400000,A
+21,'076,Brazil,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,282.300000,A
+21,'076,Brazil,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,336.100000,A
+21,'076,Brazil,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,390.500000,A
+21,'076,Brazil,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,534.500000,A
+21,'076,Brazil,27,'0113,Rice,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,203.400000,A
+21,'076,Brazil,27,'0113,Rice,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,304.300000,A
+21,'076,Brazil,27,'0113,Rice,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,279.100000,A
+21,'076,Brazil,27,'0113,Rice,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,345.700000,A
+21,'076,Brazil,27,'0113,Rice,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,388.100000,A
+21,'076,Brazil,71,'0116,Rye,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,146.200000,A
+21,'076,Brazil,71,'0116,Rye,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,192.100000,A
+21,'076,Brazil,71,'0116,Rye,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,304.700000,A
+21,'076,Brazil,71,'0116,Rye,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,215.200000,A
+21,'076,Brazil,71,'0116,Rye,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,226.700000,A
+21,'076,Brazil,328,'01921.01,"Seed cotton, unginned",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,524.800000,A
+21,'076,Brazil,328,'01921.01,"Seed cotton, unginned",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,859.200000,A
+21,'076,Brazil,328,'01921.01,"Seed cotton, unginned",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,997.000000,A
+21,'076,Brazil,328,'01921.01,"Seed cotton, unginned",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,802.500000,A
+21,'076,Brazil,328,'01921.01,"Seed cotton, unginned",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,682.100000,A
+21,'076,Brazil,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,99.500000,A
+21,'076,Brazil,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,198.900000,A
+21,'076,Brazil,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,194.900000,A
+21,'076,Brazil,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,120.600000,A
+21,'076,Brazil,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,122.800000,A
+21,'076,Brazil,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,269.300000,A
+21,'076,Brazil,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,468.700000,A
+21,'076,Brazil,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,554.400000,A
+21,'076,Brazil,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,458.900000,A
+21,'076,Brazil,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,334.200000,A
+21,'076,Brazil,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,15.500000,A
+21,'076,Brazil,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,19.500000,A
+21,'076,Brazil,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,25.100000,A
+21,'076,Brazil,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,26.100000,A
+21,'076,Brazil,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,25.600000,A
+21,'076,Brazil,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,230.700000,A
+21,'076,Brazil,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,399.500000,A
+21,'076,Brazil,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,489.600000,A
+21,'076,Brazil,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,373.800000,A
+21,'076,Brazil,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,353.200000,A
+21,'076,Brazil,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,231.700000,A
+21,'076,Brazil,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,273.600000,A
+21,'076,Brazil,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,322.400000,A
+21,'076,Brazil,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,381.400000,A
+21,'076,Brazil,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,368.500000,A
+21,'076,Brazil,15,'0111,Wheat,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,207.100000,A
+21,'076,Brazil,15,'0111,Wheat,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,258.900000,A
+21,'076,Brazil,15,'0111,Wheat,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,293.900000,A
+21,'076,Brazil,15,'0111,Wheat,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,198.500000,A
+21,'076,Brazil,15,'0111,Wheat,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,216.800000,A
+41,'156,"China, mainland",176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,702.800000,A
+41,'156,"China, mainland",767,'01921.02,"Cotton lint, ginned",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,2280.900000,A
+41,'156,"China, mainland",767,'01921.02,"Cotton lint, ginned",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,2221.500000,A
+41,'156,"China, mainland",242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,1272.200000,A
+41,'156,"China, mainland",242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,1842.200000,A
+41,'156,"China, mainland",242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,2047.000000,A
+41,'156,"China, mainland",242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,1898.900000,A
+41,'156,"China, mainland",56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,419.400000,A
+41,'156,"China, mainland",56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,431.500000,A
+41,'156,"China, mainland",56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,378.100000,A
+41,'156,"China, mainland",56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,379.500000,A
+41,'156,"China, mainland",56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,351.000000,A
+41,'156,"China, mainland",116,'01510,Potatoes,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,347.900000,A
+41,'156,"China, mainland",116,'01510,Potatoes,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,199.900000,A
+41,'156,"China, mainland",116,'01510,Potatoes,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,388.900000,A
+41,'156,"China, mainland",116,'01510,Potatoes,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,431.800000,A
+41,'156,"China, mainland",116,'01510,Potatoes,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,330.400000,A
+41,'156,"China, mainland",270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,796.900000,A
+41,'156,"China, mainland",270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,1842.200000,A
+41,'156,"China, mainland",270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,932.100000,A
+41,'156,"China, mainland",270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,923.200000,A
+41,'156,"China, mainland",270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,875.500000,A
+41,'156,"China, mainland",27,'0113,Rice,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,413.600000,A
+41,'156,"China, mainland",27,'0113,Rice,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,422.000000,A
+41,'156,"China, mainland",27,'0113,Rice,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,413.100000,A
+41,'156,"China, mainland",27,'0113,Rice,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,401.800000,A
+41,'156,"China, mainland",27,'0113,Rice,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,413.300000,A
+41,'156,"China, mainland",328,'01921.01,"Seed cotton, unginned",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,884.000000,A
+41,'156,"China, mainland",236,'0141,Soya beans,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,769.200000,A
+41,'156,"China, mainland",236,'0141,Soya beans,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,1333.000000,A
+41,'156,"China, mainland",236,'0141,Soya beans,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,917.700000,A
+41,'156,"China, mainland",236,'0141,Soya beans,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,766.300000,A
+41,'156,"China, mainland",236,'0141,Soya beans,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,1035.100000,A
+41,'156,"China, mainland",156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,755.800000,A
+41,'156,"China, mainland",156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,341.700000,A
+41,'156,"China, mainland",267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,992.600000,A
+41,'156,"China, mainland",267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,1333.000000,A
+41,'156,"China, mainland",122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,999.900000,A
+41,'156,"China, mainland",15,'0111,Wheat,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,365.500000,A
+41,'156,"China, mainland",15,'0111,Wheat,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,402.100000,A
+41,'156,"China, mainland",15,'0111,Wheat,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,419.500000,A
+41,'156,"China, mainland",15,'0111,Wheat,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,406.500000,A
+41,'156,"China, mainland",15,'0111,Wheat,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,406.900000,A
+68,'250,France,44,'0115,Barley,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,169.600000,A
+68,'250,France,44,'0115,Barley,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,241.200000,A
+68,'250,France,44,'0115,Barley,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,355.200000,A
+68,'250,France,44,'0115,Barley,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,271.000000,A
+68,'250,France,44,'0115,Barley,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,239.300000,A
+68,'250,France,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,187.600000,A
+68,'250,France,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,262.200000,A
+68,'250,France,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,329.200000,A
+68,'250,France,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,248.700000,A
+68,'250,France,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,209.200000,A
+68,'250,France,75,'0117,Oats,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,177.400000,A
+68,'250,France,75,'0117,Oats,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,216.300000,A
+68,'250,France,75,'0117,Oats,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,277.500000,A
+68,'250,France,75,'0117,Oats,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,262.000000,A
+68,'250,France,75,'0117,Oats,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,288.700000,A
+68,'250,France,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,348.800000,A
+68,'250,France,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,304.200000,A
+68,'250,France,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,668.700000,A
+68,'250,France,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,854.900000,A
+68,'250,France,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,936.000000,A
+68,'250,France,270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,412.000000,A
+68,'250,France,270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,622.600000,A
+68,'250,France,270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,713.500000,A
+68,'250,France,270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,467.500000,A
+68,'250,France,27,'0113,Rice,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,414.400000,A
+68,'250,France,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,190.300000,A
+68,'250,France,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,260.100000,A
+68,'250,France,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,335.500000,A
+68,'250,France,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,262.400000,A
+68,'250,France,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,215.100000,A
+68,'250,France,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,397.300000,A
+68,'250,France,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,574.600000,A
+68,'250,France,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,660.300000,A
+68,'250,France,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,562.400000,A
+68,'250,France,157,'01801,Sugar beet,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,26.900000,A
+68,'250,France,157,'01801,Sugar beet,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,30.900000,A
+68,'250,France,157,'01801,Sugar beet,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,34.400000,A
+68,'250,France,157,'01801,Sugar beet,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,48.700000,A
+68,'250,France,157,'01801,Sugar beet,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,53.100000,A
+68,'250,France,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,479.300000,A
+68,'250,France,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,719.500000,A
+68,'250,France,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,807.100000,A
+68,'250,France,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,561.700000,A
+68,'250,France,15,'0111,Wheat,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,200.400000,A
+68,'250,France,15,'0111,Wheat,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,259.500000,A
+68,'250,France,15,'0111,Wheat,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,356.600000,A
+68,'250,France,15,'0111,Wheat,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,259.900000,A
+68,'250,France,15,'0111,Wheat,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,231.300000,A
+114,'404,Kenya,44,'0115,Barley,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,404.700000,A
+114,'404,Kenya,44,'0115,Barley,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,331.300000,A
+114,'404,Kenya,44,'0115,Barley,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,363.400000,A
+114,'404,Kenya,44,'0115,Barley,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,282.800000,A
+114,'404,Kenya,44,'0115,Barley,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,368.200000,A
+114,'404,Kenya,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,629.400000,A
+114,'404,Kenya,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,384.500000,A
+114,'404,Kenya,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,857.300000,A
+114,'404,Kenya,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,731.700000,A
+114,'404,Kenya,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,698.200000,A
+114,'404,Kenya,125,'01520.01,"Cassava, fresh",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,507.300000,A
+114,'404,Kenya,125,'01520.01,"Cassava, fresh",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,490.300000,A
+114,'404,Kenya,125,'01520.01,"Cassava, fresh",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,290.300000,A
+114,'404,Kenya,125,'01520.01,"Cassava, fresh",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,232.900000,A
+114,'404,Kenya,125,'01520.01,"Cassava, fresh",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,204.200000,A
+114,'404,Kenya,191,'01703,"Chick peas, dry",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,840.300000,A
+114,'404,Kenya,191,'01703,"Chick peas, dry",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,401.900000,A
+114,'404,Kenya,767,'01921.02,"Cotton lint, ginned",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,1951.400000,A
+114,'404,Kenya,767,'01921.02,"Cotton lint, ginned",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,2345.400000,A
+114,'404,Kenya,767,'01921.02,"Cotton lint, ginned",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,1873.500000,A
+114,'404,Kenya,195,'01706,"Cow peas, dry",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,549.900000,A
+114,'404,Kenya,195,'01706,"Cow peas, dry",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,290.800000,A
+114,'404,Kenya,195,'01706,"Cow peas, dry",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,337.600000,A
+114,'404,Kenya,195,'01706,"Cow peas, dry",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,387.100000,A
+114,'404,Kenya,195,'01706,"Cow peas, dry",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,409.600000,A
+114,'404,Kenya,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,997.600000,A
+114,'404,Kenya,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,1090.900000,A
+114,'404,Kenya,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,1056.400000,A
+114,'404,Kenya,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,958.300000,A
+114,'404,Kenya,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,1347.400000,A
+114,'404,Kenya,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,291.200000,A
+114,'404,Kenya,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,273.900000,A
+114,'404,Kenya,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,449.700000,A
+114,'404,Kenya,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,437.400000,A
+114,'404,Kenya,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,465.900000,A
+114,'404,Kenya,79,'0118,Millet,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,412.400000,A
+114,'404,Kenya,79,'0118,Millet,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,601.400000,A
+114,'404,Kenya,79,'0118,Millet,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,670.600000,A
+114,'404,Kenya,79,'0118,Millet,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,469.800000,A
+114,'404,Kenya,79,'0118,Millet,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,721.700000,A
+114,'404,Kenya,197,'01707,"Pigeon peas, dry",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,539.800000,A
+114,'404,Kenya,197,'01707,"Pigeon peas, dry",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,526.800000,A
+114,'404,Kenya,197,'01707,"Pigeon peas, dry",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,663.100000,A
+114,'404,Kenya,197,'01707,"Pigeon peas, dry",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,455.600000,A
+114,'404,Kenya,197,'01707,"Pigeon peas, dry",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,270.700000,A
+114,'404,Kenya,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,291.200000,A
+114,'404,Kenya,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,207.500000,A
+114,'404,Kenya,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,302.900000,A
+114,'404,Kenya,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,204.000000,A
+114,'404,Kenya,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,238.200000,A
+114,'404,Kenya,27,'0113,Rice,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,366.400000,A
+114,'404,Kenya,27,'0113,Rice,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,545.800000,A
+114,'404,Kenya,27,'0113,Rice,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,542.200000,A
+114,'404,Kenya,27,'0113,Rice,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,542.600000,A
+114,'404,Kenya,27,'0113,Rice,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,460.000000,A
+114,'404,Kenya,328,'01921.01,"Seed cotton, unginned",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,554.600000,A
+114,'404,Kenya,328,'01921.01,"Seed cotton, unginned",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,458.200000,A
+114,'404,Kenya,328,'01921.01,"Seed cotton, unginned",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,477.700000,A
+114,'404,Kenya,328,'01921.01,"Seed cotton, unginned",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,428.600000,A
+114,'404,Kenya,328,'01921.01,"Seed cotton, unginned",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,553.100000,A
+114,'404,Kenya,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,288.900000,A
+114,'404,Kenya,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,422.700000,A
+114,'404,Kenya,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,345.100000,A
+114,'404,Kenya,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,591.500000,A
+114,'404,Kenya,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,634.000000,A
+114,'404,Kenya,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,515.500000,A
+114,'404,Kenya,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,491.900000,A
+114,'404,Kenya,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,34.800000,A
+114,'404,Kenya,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,35.700000,A
+114,'404,Kenya,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,38.300000,A
+114,'404,Kenya,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,38.100000,A
+114,'404,Kenya,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,39.200000,A
+114,'404,Kenya,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,335.500000,A
+114,'404,Kenya,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,337.400000,A
+114,'404,Kenya,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,357.000000,A
+114,'404,Kenya,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,328.600000,A
+114,'404,Kenya,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,299.900000,A
+114,'404,Kenya,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,225.900000,A
+114,'404,Kenya,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,235.000000,A
+114,'404,Kenya,15,'0111,Wheat,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,344.000000,A
+114,'404,Kenya,15,'0111,Wheat,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,392.000000,A
+114,'404,Kenya,15,'0111,Wheat,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,506.600000,A
+114,'404,Kenya,15,'0111,Wheat,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,360.700000,A
+114,'404,Kenya,15,'0111,Wheat,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,424.500000,A
+114,'404,Kenya,137,'01540,Yams,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,668.100000,A
+114,'404,Kenya,137,'01540,Yams,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,574.200000,A
+114,'404,Kenya,137,'01540,Yams,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,615.600000,A
+138,'484,Mexico,44,'0115,Barley,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,209.900000,A
+138,'484,Mexico,44,'0115,Barley,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,234.600000,A
+138,'484,Mexico,44,'0115,Barley,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,309.600000,A
+138,'484,Mexico,44,'0115,Barley,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,337.900000,A
+138,'484,Mexico,44,'0115,Barley,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,332.000000,A
+138,'484,Mexico,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,745.100000,A
+138,'484,Mexico,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,785.200000,A
+138,'484,Mexico,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,874.100000,A
+138,'484,Mexico,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,1087.000000,A
+138,'484,Mexico,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,1065.400000,A
+138,'484,Mexico,181,'01702,"Broad beans and horse beans, dry",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,578.900000,A
+138,'484,Mexico,181,'01702,"Broad beans and horse beans, dry",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,614.100000,A
+138,'484,Mexico,181,'01702,"Broad beans and horse beans, dry",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,612.100000,A
+138,'484,Mexico,181,'01702,"Broad beans and horse beans, dry",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,688.300000,A
+138,'484,Mexico,181,'01702,"Broad beans and horse beans, dry",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,652.900000,A
+138,'484,Mexico,101,'01195,Canary seed,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,305.900000,A
+138,'484,Mexico,101,'01195,Canary seed,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,355.100000,A
+138,'484,Mexico,101,'01195,Canary seed,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,383.900000,A
+138,'484,Mexico,101,'01195,Canary seed,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,456.800000,A
+138,'484,Mexico,101,'01195,Canary seed,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,636.700000,A
+138,'484,Mexico,125,'01520.01,"Cassava, fresh",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,176.500000,A
+138,'484,Mexico,125,'01520.01,"Cassava, fresh",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,188.400000,A
+138,'484,Mexico,125,'01520.01,"Cassava, fresh",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,194.000000,A
+138,'484,Mexico,125,'01520.01,"Cassava, fresh",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,225.700000,A
+138,'484,Mexico,125,'01520.01,"Cassava, fresh",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,218.900000,A
+138,'484,Mexico,191,'01703,"Chick peas, dry",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,696.100000,A
+138,'484,Mexico,191,'01703,"Chick peas, dry",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,741.700000,A
+138,'484,Mexico,191,'01703,"Chick peas, dry",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,879.500000,A
+138,'484,Mexico,191,'01703,"Chick peas, dry",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,1076.200000,A
+138,'484,Mexico,191,'01703,"Chick peas, dry",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,916.400000,A
+138,'484,Mexico,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,579.800000,A
+138,'484,Mexico,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,614.700000,A
+138,'484,Mexico,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,752.000000,A
+138,'484,Mexico,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,904.200000,A
+138,'484,Mexico,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,821.500000,A
+138,'484,Mexico,201,'01704,"Lentils, dry",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,480.000000,A
+138,'484,Mexico,201,'01704,"Lentils, dry",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,490.700000,A
+138,'484,Mexico,201,'01704,"Lentils, dry",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,387.900000,A
+138,'484,Mexico,201,'01704,"Lentils, dry",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,549.500000,A
+138,'484,Mexico,201,'01704,"Lentils, dry",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,625.200000,A
+138,'484,Mexico,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,195.000000,A
+138,'484,Mexico,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,266.500000,A
+138,'484,Mexico,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,322.000000,A
+138,'484,Mexico,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,352.300000,A
+138,'484,Mexico,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,310.600000,A
+138,'484,Mexico,79,'0118,Millet,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,27.600000,A
+138,'484,Mexico,79,'0118,Millet,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,32.000000,A
+138,'484,Mexico,79,'0118,Millet,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,39.800000,A
+138,'484,Mexico,75,'0117,Oats,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,216.300000,A
+138,'484,Mexico,75,'0117,Oats,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,282.700000,A
+138,'484,Mexico,75,'0117,Oats,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,310.800000,A
+138,'484,Mexico,75,'0117,Oats,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,363.800000,A
+138,'484,Mexico,75,'0117,Oats,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,329.000000,A
+138,'484,Mexico,187,'01705,"Peas, dry",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,388.700000,A
+138,'484,Mexico,187,'01705,"Peas, dry",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,419.100000,A
+138,'484,Mexico,187,'01705,"Peas, dry",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,446.400000,A
+138,'484,Mexico,187,'01705,"Peas, dry",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,522.400000,A
+138,'484,Mexico,187,'01705,"Peas, dry",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,459.700000,A
+138,'484,Mexico,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,362.100000,A
+138,'484,Mexico,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,414.800000,A
+138,'484,Mexico,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,427.600000,A
+138,'484,Mexico,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,494.100000,A
+138,'484,Mexico,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,521.100000,A
+138,'484,Mexico,270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,333.500000,A
+138,'484,Mexico,270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,360.100000,A
+138,'484,Mexico,270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,580.100000,A
+138,'484,Mexico,270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,676.100000,A
+138,'484,Mexico,270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,370.700000,A
+138,'484,Mexico,27,'0113,Rice,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,232.100000,A
+138,'484,Mexico,27,'0113,Rice,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,257.400000,A
+138,'484,Mexico,27,'0113,Rice,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,297.800000,A
+138,'484,Mexico,27,'0113,Rice,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,330.200000,A
+138,'484,Mexico,27,'0113,Rice,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,323.900000,A
+138,'484,Mexico,71,'0116,Rye,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,168.200000,A
+138,'484,Mexico,71,'0116,Rye,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,181.100000,A
+138,'484,Mexico,71,'0116,Rye,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,193.800000,A
+138,'484,Mexico,71,'0116,Rye,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,241.600000,A
+138,'484,Mexico,71,'0116,Rye,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,176.000000,A
+138,'484,Mexico,328,'01921.01,"Seed cotton, unginned",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,621.100000,A
+138,'484,Mexico,328,'01921.01,"Seed cotton, unginned",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,902.000000,A
+138,'484,Mexico,328,'01921.01,"Seed cotton, unginned",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,795.500000,A
+138,'484,Mexico,328,'01921.01,"Seed cotton, unginned",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,899.400000,A
+138,'484,Mexico,328,'01921.01,"Seed cotton, unginned",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,736.200000,A
+138,'484,Mexico,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,174.400000,A
+138,'484,Mexico,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,250.500000,A
+138,'484,Mexico,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,305.700000,A
+138,'484,Mexico,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,304.500000,A
+138,'484,Mexico,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,232.200000,A
+138,'484,Mexico,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,367.900000,A
+138,'484,Mexico,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,467.000000,A
+138,'484,Mexico,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,469.400000,A
+138,'484,Mexico,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,521.900000,A
+138,'484,Mexico,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,440.800000,A
+138,'484,Mexico,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,36.700000,A
+138,'484,Mexico,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,41.900000,A
+138,'484,Mexico,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,46.600000,A
+138,'484,Mexico,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,53.600000,A
+138,'484,Mexico,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,52.100000,A
+138,'484,Mexico,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,298.900000,A
+138,'484,Mexico,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,323.800000,A
+138,'484,Mexico,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,415.700000,A
+138,'484,Mexico,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,479.300000,A
+138,'484,Mexico,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,443.200000,A
+138,'484,Mexico,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,224.900000,A
+138,'484,Mexico,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,244.500000,A
+138,'484,Mexico,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,351.600000,A
+138,'484,Mexico,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,424.200000,A
+138,'484,Mexico,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,416.500000,A
+138,'484,Mexico,15,'0111,Wheat,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,223.600000,A
+138,'484,Mexico,15,'0111,Wheat,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,266.400000,A
+138,'484,Mexico,15,'0111,Wheat,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,403.600000,A
+138,'484,Mexico,15,'0111,Wheat,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,451.100000,A
+138,'484,Mexico,15,'0111,Wheat,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,348.500000,A
+159,'566,Nigeria,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,245.800000,A
+159,'566,Nigeria,79,'0118,Millet,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,342.200000,A
+159,'566,Nigeria,27,'0113,Rice,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,485.700000,A
+159,'566,Nigeria,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,330.700000,A
+231,'840,United States of America,44,'0115,Barley,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,216.000000,A
+231,'840,United States of America,44,'0115,Barley,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,236.500000,A
+231,'840,United States of America,44,'0115,Barley,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,335.300000,A
+231,'840,United States of America,44,'0115,Barley,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,339.400000,A
+231,'840,United States of America,44,'0115,Barley,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,303.100000,A
+231,'840,United States of America,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,659.000000,A
+231,'840,United States of America,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,864.200000,A
+231,'840,United States of America,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,903.900000,A
+231,'840,United States of America,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,921.500000,A
+231,'840,United States of America,176,'01701,"Beans, dry",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,837.800000,A
+231,'840,United States of America,191,'01703,"Chick peas, dry",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,430.000000,A
+231,'840,United States of America,191,'01703,"Chick peas, dry",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,795.900000,A
+231,'840,United States of America,191,'01703,"Chick peas, dry",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,740.800000,A
+231,'840,United States of America,191,'01703,"Chick peas, dry",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,806.900000,A
+231,'840,United States of America,191,'01703,"Chick peas, dry",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,707.700000,A
+231,'840,United States of America,767,'01921.02,"Cotton lint, ginned",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,1437.400000,A
+231,'840,United States of America,767,'01921.02,"Cotton lint, ginned",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,1944.500000,A
+231,'840,United States of America,767,'01921.02,"Cotton lint, ginned",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,2017.200000,A
+231,'840,United States of America,767,'01921.02,"Cotton lint, ginned",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,1677.700000,A
+231,'840,United States of America,767,'01921.02,"Cotton lint, ginned",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,1393.300000,A
+231,'840,United States of America,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,456.000000,A
+231,'840,United States of America,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,513.700000,A
+231,'840,United States of America,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,577.600000,A
+231,'840,United States of America,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,593.000000,A
+231,'840,United States of America,242,'0142,"Groundnuts, excluding shelled",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,568.800000,A
+231,'840,United States of America,201,'01704,"Lentils, dry",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,384.000000,A
+231,'840,United States of America,201,'01704,"Lentils, dry",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,716.500000,A
+231,'840,United States of America,201,'01704,"Lentils, dry",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,740.800000,A
+231,'840,United States of America,201,'01704,"Lentils, dry",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,890.700000,A
+231,'840,United States of America,201,'01704,"Lentils, dry",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,784.800000,A
+231,'840,United States of America,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,169.000000,A
+231,'840,United States of America,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,214.600000,A
+231,'840,United States of America,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,263.800000,A
+231,'840,United States of America,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,179.100000,A
+231,'840,United States of America,56,'0112,Maize (corn),5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,171.300000,A
+231,'840,United States of America,79,'0118,Millet,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,436.000000,A
+231,'840,United States of America,79,'0118,Millet,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,393.300000,A
+231,'840,United States of America,79,'0118,Millet,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,440.900000,A
+231,'840,United States of America,79,'0118,Millet,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,177.700000,A
+231,'840,United States of America,79,'0118,Millet,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,159.200000,A
+231,'840,United States of America,75,'0117,Oats,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,175.000000,A
+231,'840,United States of America,75,'0117,Oats,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,259.400000,A
+231,'840,United States of America,75,'0117,Oats,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,314.500000,A
+231,'840,United States of America,75,'0117,Oats,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,254.200000,A
+231,'840,United States of America,75,'0117,Oats,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,220.500000,A
+231,'840,United States of America,187,'01705,"Peas, dry",5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,199.000000,A
+231,'840,United States of America,187,'01705,"Peas, dry",5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,385.800000,A
+231,'840,United States of America,187,'01705,"Peas, dry",5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,359.400000,A
+231,'840,United States of America,187,'01705,"Peas, dry",5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,335.100000,A
+231,'840,United States of America,187,'01705,"Peas, dry",5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,299.800000,A
+231,'840,United States of America,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,208.000000,A
+231,'840,United States of America,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,218.700000,A
+231,'840,United States of America,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,284.400000,A
+231,'840,United States of America,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,271.200000,A
+231,'840,United States of America,116,'01510,Potatoes,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,266.800000,A
+231,'840,United States of America,270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,498.000000,A
+231,'840,United States of America,270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,410.100000,A
+231,'840,United States of America,270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,471.800000,A
+231,'840,United States of America,270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,440.900000,A
+231,'840,United States of America,270,'01443,Rape or colza seed,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,723.100000,A
+231,'840,United States of America,27,'0113,Rice,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,295.000000,A
+231,'840,United States of America,27,'0113,Rice,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,346.100000,A
+231,'840,United States of America,27,'0113,Rice,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,427.700000,A
+231,'840,United States of America,27,'0113,Rice,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,381.400000,A
+231,'840,United States of America,27,'0113,Rice,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,339.500000,A
+231,'840,United States of America,71,'0116,Rye,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,205.000000,A
+231,'840,United States of America,71,'0116,Rye,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,261.800000,A
+231,'840,United States of America,71,'0116,Rye,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,295.300000,A
+231,'840,United States of America,71,'0116,Rye,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,260.200000,A
+231,'840,United States of America,71,'0116,Rye,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,228.300000,A
+231,'840,United States of America,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,190.000000,A
+231,'840,United States of America,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,214.900000,A
+231,'840,United States of America,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,271.200000,A
+231,'840,United States of America,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,194.200000,A
+231,'840,United States of America,83,'0114,Sorghum,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,167.600000,A
+231,'840,United States of America,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,410.000000,A
+231,'840,United States of America,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,477.600000,A
+231,'840,United States of America,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,525.400000,A
+231,'840,United States of America,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,455.600000,A
+231,'840,United States of America,236,'0141,Soya beans,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,371.100000,A
+231,'840,United States of America,157,'01801,Sugar beet,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,55.700000,A
+231,'840,United States of America,157,'01801,Sugar beet,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,58.100000,A
+231,'840,United States of America,157,'01801,Sugar beet,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,71.900000,A
+231,'840,United States of America,157,'01801,Sugar beet,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,70.300000,A
+231,'840,United States of America,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,45.100000,A
+231,'840,United States of America,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,51.700000,A
+231,'840,United States of America,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,57.400000,A
+231,'840,United States of America,156,'01802,Sugar cane,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,84.000000,A
+231,'840,United States of America,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,434.000000,A
+231,'840,United States of America,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,698.900000,A
+231,'840,United States of America,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,621.700000,A
+231,'840,United States of America,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,467.400000,A
+231,'840,United States of America,267,'01445,Sunflower seed,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,438.700000,A
+231,'840,United States of America,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,525.000000,A
+231,'840,United States of America,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,520.300000,A
+231,'840,United States of America,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,511.500000,A
+231,'840,United States of America,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,573.200000,A
+231,'840,United States of America,122,'01530,Sweet potatoes,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,551.200000,A
+231,'840,United States of America,15,'0111,Wheat,5532,Producer Price (USD/tonne),2020,2020,7021,Annual value,USD,184.000000,A
+231,'840,United States of America,15,'0111,Wheat,5532,Producer Price (USD/tonne),2021,2021,7021,Annual value,USD,268.200000,A
+231,'840,United States of America,15,'0111,Wheat,5532,Producer Price (USD/tonne),2022,2022,7021,Annual value,USD,330.700000,A
+231,'840,United States of America,15,'0111,Wheat,5532,Producer Price (USD/tonne),2023,2023,7021,Annual value,USD,255.700000,A
+231,'840,United States of America,15,'0111,Wheat,5532,Producer Price (USD/tonne),2024,2024,7021,Annual value,USD,203.900000,A

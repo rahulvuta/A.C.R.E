@@ -1,10 +1,13 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useLayoutEffect, useMemo, useRef, type ReactNode } from "react";
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import type { CardKey } from "../content/strategies";
 import type { StripVM } from "../view/build";
 import { fieldStateAt, type FieldState } from "./growth";
+import type { FieldGeometry } from "../farm/types";
+import { insideStage, slabGeometry, stageShape, type FarmLayout, type PlacedShape, type StageShape } from "./polygonShape";
 
 /*
   The 3D farm. Three fields side by side in card order. Everything shown is driven by plan
@@ -51,6 +54,13 @@ const FIELD_D = 7.4;
 const GAP = 1.1;
 const SOIL_H = 1.6;
 const X = [-(FIELD_W + GAP), 0, FIELD_W + GAP];
+/*
+  A real field is hundreds of metres across and a crop is a metre or two tall, so true scale
+  would make the plants invisible. Plants are drawn small (about a tenth of the field's width
+  at most, for full-grown corn) and in denser rows so the field reads as a crop, not as trees.
+  Zoom in to see the individual plants.
+*/
+const PLANT_SCALE = 0.32;
 
 function seeded(seed: number) {
   return () => {
@@ -226,8 +236,8 @@ function Crop({
       const wind = time ? Math.sin(time * 1.5 + x * 0.9 + z * 0.6 + r * 6) * sway : 0;
       tmp.position.set(x, 0, z);
       tmp.rotation.set(t * (r - 0.5) + wind, r * Math.PI * 2, t * (0.5 - r) + wind * 0.6);
-      const girth = 0.55 + 0.45 * Math.min(1, h0 * 1.4);
-      tmp.scale.set(girth, size * h, girth);
+      const girth = (0.55 + 0.45 * Math.min(1, h0 * 1.4)) * PLANT_SCALE;
+      tmp.scale.set(girth, size * PLANT_SCALE * h, girth);
       tmp.updateMatrix();
       mesh.setMatrixAt(i, tmp.matrix);
     });
@@ -263,9 +273,9 @@ function Crop({
   );
 }
 
-function Residue({ amount, color, seed }: { amount: number; color: string; seed: number }) {
+function Residue({ amount, color, seed, shape }: { amount: number; color: string; seed: number; shape?: StageShape | null }) {
   const ref = useRef<THREE.InstancedMesh>(null);
-  const count = 320;
+  const count = 640;
   const geo = useMemo(() => {
     const g = new THREE.CylinderGeometry(0.022, 0.03, 0.46, 6);
     g.rotateZ(Math.PI / 2);
@@ -279,12 +289,13 @@ function Residue({ amount, color, seed }: { amount: number; color: string; seed:
     for (let i = 0; i < count; i++) {
       tmp.position.set((r() - 0.5) * (FIELD_W - 0.5), 0.03, (r() - 0.5) * (FIELD_D - 0.5));
       tmp.rotation.set(0, r() * Math.PI, (r() - 0.5) * 0.25);
-      tmp.scale.setScalar(0.75 + r() * 0.6);
+      // Straw that would fall outside a drawn outline (or in a hole) is not drawn.
+      tmp.scale.setScalar(shape && !insideStage(shape, tmp.position.x, -tmp.position.z) ? 0 : (0.75 + r() * 0.6) * 0.5);
       tmp.updateMatrix();
       mesh.setMatrixAt(i, tmp.matrix);
     }
     mesh.instanceMatrix.needsUpdate = true;
-  }, [seed, geo]);
+  }, [seed, geo, shape]);
   // Straw thins out or fills in over a moment instead of jumping.
   const shown = useRef(amount);
   const { frameloop, invalidate } = useThree();
@@ -407,6 +418,26 @@ function SelectionFrame({ color }: { color: string }) {
   );
 }
 
+/** The selection frame for a drawn outline: an accent line along each outer ring, just above the soil. */
+function OutlineFrame({ shape, color }: { shape: StageShape; color: string }) {
+  const lines = useMemo(
+    () =>
+      shape.rings.map(([outerRing]) => {
+        const g = new THREE.BufferGeometry().setFromPoints(outerRing!.map(([x, y]) => new THREE.Vector3(x, 0.04, -y)));
+        return new THREE.LineLoop(g, new THREE.LineBasicMaterial({ color }));
+      }),
+    [shape, color],
+  );
+  useEffect(() => () => lines.forEach((l) => (l.geometry.dispose(), (l.material as THREE.Material).dispose())), [lines]);
+  return (
+    <group>
+      {lines.map((l, i) => (
+        <primitive key={i} object={l} />
+      ))}
+    </group>
+  );
+}
+
 function Field({
   strip,
   state,
@@ -417,8 +448,14 @@ function Field({
   hidden,
   flat,
   onSelect,
+  outline,
+  placed,
 }: {
   strip: StripVM;
+  /** Farm layout: this field's outline at the farm's shared scale and its place on the stage. */
+  placed?: PlacedShape | null;
+  /** The drawn outline (card C3). Without one the field is the classic square slab. */
+  outline?: FieldGeometry | null;
   state: FieldState | null;
   x: number;
   index: number;
@@ -430,16 +467,29 @@ function Field({
   flat: boolean;
   onSelect: (k: CardKey) => void;
 }) {
-  const geos = useMemo(() => ({ corn: makeCorn(), tuft: makeTuft(7, 0.05, 0.42), wheat: makeWheat(), soy: makeSoy() }), []);
-  const pts = useMemo(
-    () => ({
-      corn: grid(8, 12, 11 + index, 0.06),
-      tuft: grid(22, 22, 21 + index, 0.2),
-      wheat: grid(20, 22, 31 + index, 0.14),
-      soy: grid(9, 20, 41 + index, 0.05),
-    }),
-    [index],
+  const shape = useMemo(() => placed?.shape ?? stageShape(outline, FIELD_W, FIELD_D), [outline, placed]);
+  // Soil layers as slabs cut to the outline: topsoil, subsoil, deep layer, and the pale "not evaluated" slab.
+  const slabs = useMemo(
+    () => (shape ? { top: slabGeometry(shape, 0.35), sub: slabGeometry(shape, 0.55), deep: slabGeometry(shape, 0.7), ghost: slabGeometry(shape, 0.5) } : null),
+    [shape],
   );
+  useEffect(
+    () => () => {
+      if (slabs) for (const g of Object.values(slabs)) g.dispose();
+    },
+    [slabs],
+  );
+  const geos = useMemo(() => ({ corn: makeCorn(), tuft: makeTuft(7, 0.05, 0.42), wheat: makeWheat(), soy: makeSoy() }), []);
+  const pts = useMemo(() => {
+    // Plants only grow inside the drawn outline (stage z points south, so north is -z).
+    const keep = (g: Array<[number, number, number]>) => (shape ? g.filter(([x, z]) => insideStage(shape, x, -z)) : g);
+    return {
+      corn: keep(grid(16, 26, 11 + index, 0.04)),
+      tuft: keep(grid(34, 34, 21 + index, 0.12)),
+      wheat: keep(grid(32, 36, 31 + index, 0.08)),
+      soy: keep(grid(18, 40, 41 + index, 0.03)),
+    };
+  }, [index, shape]);
 
   const w = strip.weather;
   const wet = w.wetness;
@@ -533,17 +583,41 @@ function Field({
   };
 
   return (
-    <group ref={outer} position={[x, 0, 0]}>
+    <group ref={outer} position={[placed?.x ?? x, 0, placed?.z ?? 0]}>
       <mesh position={[0, -SOIL_H - 0.45, 0.4]} rotation={[-Math.PI / 2, 0, 0]} visible={!flat}>
         <planeGeometry args={[FIELD_W * 1.7, FIELD_D * 1.7]} />
         <meshBasicMaterial map={shadow} transparent depthWrite={false} />
       </mesh>
       <group ref={body}>
-        {ghost ? (
+        {ghost && slabs ? (
+          <mesh position={[0, -0.5, 0]} geometry={slabs.ghost} onClick={pick}>
+            <meshPhysicalMaterial color="#BFEFF4" transparent opacity={0.5} roughness={0.15} clearcoat={1} />
+          </mesh>
+        ) : ghost ? (
           <mesh position={[0, -0.25, 0]} onClick={pick}>
             <boxGeometry args={[FIELD_W, 0.5, FIELD_D]} />
             <meshPhysicalMaterial color="#BFEFF4" transparent opacity={0.5} roughness={0.15} clearcoat={1} />
           </mesh>
+        ) : slabs ? (
+          <>
+            {/* The drawn outline as three soil layers. The square's cut-face water line and roots are left out. */}
+            <mesh
+              position={[0, -0.35, 0]}
+              geometry={slabs.top}
+              receiveShadow
+              onClick={pick}
+              onPointerOver={() => (document.body.style.cursor = "pointer")}
+              onPointerOut={() => (document.body.style.cursor = "")}
+            >
+              <meshStandardMaterial ref={topMat} map={grain} roughness={1} />
+            </mesh>
+            <mesh position={[0, -0.9, 0]} geometry={slabs.sub}>
+              <meshStandardMaterial color={SUBSOIL} map={grain} roughness={1} />
+            </mesh>
+            <mesh position={[0, -1.6, 0]} geometry={slabs.deep}>
+              <meshStandardMaterial color={DEEP} map={grain} roughness={1} />
+            </mesh>
+          </>
         ) : (
           <>
             {/* Soil block: grainy topsoil tinted by modeled wetness, then subsoil and a deeper layer on the cut face. */}
@@ -581,11 +655,11 @@ function Field({
           </>
         )}
 
-        {strip.selected ? <SelectionFrame color={palette.accent} /> : null}
+        {strip.selected ? placed && shape ? <OutlineFrame shape={shape} color={palette.accent} /> : <SelectionFrame color={palette.accent} /> : null}
 
         {state ? (
           <>
-            <Residue amount={state.residue} color={palette.residue} seed={51 + index} />
+            <Residue amount={state.residue} color={palette.residue} seed={51 + index} shape={shape} />
             <Crop geometry={geos.corn} points={pts.corn} show={state.corn.show} height={state.corn.h} size={2.3} color={state.corn.mature ? palette.corn : palette.cornGreen} sway={0.03} />
             <Crop
               geometry={geos.tuft}
@@ -628,30 +702,77 @@ function fit(look: [number, number, number], hw: number, hd: number, hh: number,
   };
 }
 
-function presetFor(preset: CameraPreset, x: number, aspect: number, sway = 0) {
+/** Where the camera looks: the selected field's centre, and the half extents of the whole stage. */
+interface Focus {
+  x: number;
+  z: number;
+  halfW: number;
+  halfD: number;
+  /** Half the height the overview must fit on screen (a deep farm seen from above is taller). */
+  halfH: number;
+}
+const STRIP_FOCUS = (x: number): Focus => ({ x, z: 0, halfW: SCENE_HALF_W + 0.3, halfD: FIELD_D / 2 + 0.6, halfH: 3.6 });
+
+function presetFor(preset: CameraPreset, f: Focus, aspect: number, sway = 0) {
   // One field: close and a little lower, so the plants' shapes and height are the subject.
-  if (preset === "field") return fit([x, 0.1, 0.4], FIELD_W / 2 + 0.2, FIELD_D / 2 + 0.2, 2.7, 24, -34 + sway, aspect);
+  if (preset === "field") return fit([f.x, 0.1, f.z + 0.4], FIELD_W / 2 + 0.2, FIELD_D / 2 + 0.2, 1.8, 26, -34 + sway, aspect);
   // Soil: straight at the cut face, almost level, so the layers, roots and water line fill the view.
-  if (preset === "cutaway") return fit([x, -0.55, FIELD_D / 2], FIELD_W / 2 + 0.2, 0, 1.45, 3, 0, aspect);
-  return fit([0, -0.9, 0], SCENE_HALF_W + 0.3, FIELD_D / 2 + 0.6, 3.6, 33, -20 + sway, aspect);
+  if (preset === "cutaway") return fit([f.x, -0.55, f.z + FIELD_D / 2], FIELD_W / 2 + 0.2, 0, 1.45, 3, 0, aspect);
+  return fit([0, -0.9, 0], f.halfW, f.halfD, f.halfH, 33, -20 + sway, aspect);
 }
 
-function CameraRig({ preset, focusX, animate }: { preset: CameraPreset; focusX: number; animate: boolean }) {
-  const { camera, invalidate, size } = useThree();
+/**
+ * Moves the camera to the chosen view, then hands it to the reader: drag to rotate, scroll or
+ * pinch to zoom, right-drag (or two fingers) to pan. Choosing a view, or resetKey changing,
+ * flies back to that view's framing.
+ */
+function CameraRig({ preset, focus, animate, resetKey = 0 }: { preset: CameraPreset; focus: Focus; animate: boolean; resetKey?: number }) {
+  const { camera, gl, invalidate, size } = useThree();
   const aspect = size.width / Math.max(1, size.height);
-  // With animation off the canvas renders on demand, so a new view must ask for a frame.
-  useEffect(() => invalidate(), [preset, focusX, aspect, invalidate]);
-  const look = useRef(new THREE.Vector3(...presetFor(preset, focusX, aspect).look));
+  const fx = focus.x, fz = focus.z, fw = focus.halfW, fd = focus.halfD, fh = focus.halfH;
+  const controls = useMemo(() => {
+    const c = new OrbitControls(camera, gl.domElement);
+    c.enableDamping = animate;
+    c.dampingFactor = 0.12;
+    c.screenSpacePanning = true;
+    c.minDistance = 1.5;
+    c.maxDistance = 90;
+    // Never under the ground.
+    c.maxPolarAngle = Math.PI / 2 - 0.02;
+    return c;
+  }, [camera, gl, animate]);
+  const flying = useRef(true);
   const first = useRef(true);
-  useFrame((state, dt) => {
-    // A slow few-degree drift keeps the scene alive without moving anything the reader is reading.
-    const sway = animate && preset !== "cutaway" ? Math.sin(state.clock.elapsedTime * 0.28) * 2.2 : 0;
-    const target = presetFor(preset, focusX, aspect, sway);
-    const k = animate && !first.current ? 1 - Math.pow(0.0015, dt) : 1;
-    first.current = false;
-    camera.position.lerp(new THREE.Vector3(...target.pos), k);
-    look.current.lerp(new THREE.Vector3(...target.look), k);
-    camera.lookAt(look.current);
+  useEffect(() => {
+    const stop = () => (flying.current = false);
+    const change = () => invalidate();
+    controls.addEventListener("start", stop);
+    controls.addEventListener("change", change);
+    return () => {
+      controls.removeEventListener("start", stop);
+      controls.removeEventListener("change", change);
+      controls.dispose();
+    };
+  }, [controls, invalidate]);
+  useEffect(() => {
+    flying.current = true;
+    invalidate();
+  }, [preset, fx, fz, fw, fd, fh, aspect, resetKey, invalidate]);
+  const goal = useRef(new THREE.Vector3());
+  const goalLook = useRef(new THREE.Vector3());
+  useFrame((_, dt) => {
+    if (flying.current) {
+      const target = presetFor(preset, focus, aspect);
+      goal.current.set(...target.pos);
+      goalLook.current.set(...target.look);
+      const k = animate && !first.current ? 1 - Math.pow(0.0015, dt) : 1;
+      first.current = false;
+      camera.position.lerp(goal.current, k);
+      controls.target.lerp(goalLook.current, k);
+      if (camera.position.distanceTo(goal.current) < 0.005 && controls.target.distanceTo(goalLook.current) < 0.005) flying.current = false;
+      else if (!animate) invalidate();
+    }
+    controls.update();
   });
   return null;
 }
@@ -664,8 +785,27 @@ export default function FarmWorld({
   palette,
   onSelect,
   children,
+  outlines,
+  layout,
+  resetKey,
+  states: givenStates,
 }: {
+  /** Changing this flies the camera back to the chosen view after the reader moved it. */
+  resetKey?: number;
+  /** Field states worked out by the caller (multi-year strategy simulations) instead of from `day`. */
+  states?: Array<FieldState | null>;
   strips: StripVM[];
+  /**
+   * Farm layout (field workspace): each strip is a field drawn at its real shape, size and
+   * place on the farm, from farmLayout in ./polygonShape, in the same order as strips.
+   */
+  layout?: FarmLayout | null;
+  /**
+   * Card C3: the drawn outline for each strip, in the same order. A strip with no outline
+   * (and the NC demo, which passes none) keeps the square field. Label the view with
+   * SCENE_SHAPE_LABEL from ./polygonShape when outlines are shown.
+   */
+  outlines?: Array<FieldGeometry | null | undefined>;
   day: number;
   preset: CameraPreset;
   animate: boolean;
@@ -673,14 +813,14 @@ export default function FarmWorld({
   onSelect: (k: CardKey) => void;
   children?: ReactNode;
 }) {
-  const states = strips.map((s) => (s.plan ? fieldStateAt(s.plan, day) : null));
+  const states = givenStates ?? strips.map((s) => (s.plan ? fieldStateAt(s.plan, day) : null));
   const selectedIndex = Math.max(0, strips.findIndex((s) => s.selected));
   const solo = preset !== "overview";
   return (
     <Canvas
       className="world-canvas"
       shadows
-      dpr={[1, 2]}
+      dpr={[1, 1.5]}
       camera={{ position: [0, 9, 14], fov: FOV, near: 0.1, far: 200 }}
       gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
       frameloop={animate ? "always" : "demand"}
@@ -691,7 +831,7 @@ export default function FarmWorld({
         position={[-9, 16, 9]}
         intensity={1.9}
         castShadow
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={[1024, 1024]}
         shadow-bias={-0.0006}
         shadow-camera-left={-18}
         shadow-camera-right={18}
@@ -705,16 +845,27 @@ export default function FarmWorld({
           key={s.key}
           strip={s}
           state={states[i]!}
-          x={X[i]!}
+          x={X[i] ?? 0}
           index={i}
           palette={palette}
           animate={animate}
           hidden={solo && i !== selectedIndex}
           flat={preset === "cutaway"}
           onSelect={onSelect}
+          outline={outlines?.[i]}
+          placed={layout?.fields[i]}
         />
       ))}
-      <CameraRig preset={preset} focusX={X[selectedIndex]!} animate={animate} />
+      <CameraRig
+        preset={preset}
+        focus={
+          layout
+            ? { x: layout.fields[selectedIndex]?.x ?? 0, z: layout.fields[selectedIndex]?.z ?? 0, halfW: Math.max(layout.halfW, FIELD_W / 2) + 0.9, halfD: Math.max(layout.halfD, FIELD_D / 2) + 0.9, halfH: Math.max(3.6, (layout.halfD + 0.9) * Math.sin((33 * Math.PI) / 180) + 2.2) }
+            : STRIP_FOCUS(X[selectedIndex]!)
+        }
+        animate={animate}
+        resetKey={resetKey}
+      />
       {children}
     </Canvas>
   );

@@ -510,7 +510,7 @@ export function Planner({
             <a href={SOURCES["ncs-soy-4"].url} target="_blank" rel="noreferrer">
               NC State Extension
             </a>
-            . A replay to talk over with your <G id="extension">Extension agent</G>, not a forecast.
+            . A replay of past springs to talk over with your <G id="extension">Extension agent</G>. It cannot say what any single year will bring.
           </p>
         </main>
       </div>

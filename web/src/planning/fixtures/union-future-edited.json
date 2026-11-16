@@ -1,0 +1,1544 @@
+{
+  "meta": {
+    "plan_version": null,
+    "catalog_version": "v2:8eeb5bf961eb",
+    "snapshot_hash": "5ce131cfcd1f07d3738ecb9afaec6c3ef6a4764b6a3528bdd2b64debe7ba5f4e",
+    "request_id": "318702e4ec4f4312a735026a720d182e"
+  },
+  "status": "complete",
+  "start_season": "2027",
+  "seasons": [
+    {
+      "season": "2027",
+      "index": 1,
+      "status": "complete",
+      "plan": {
+        "plan_id": "c_d306ccf54e_s1",
+        "label": "Season 1: Field corn, Cereal rye cover, then Soybean",
+        "previous_crop_id": "field_corn",
+        "prev_harvest": "09-20",
+        "winter": {
+          "kind": "cover",
+          "crop_id": "cereal_rye",
+          "seed": "10-01",
+          "terminate": "04-27",
+          "plant": null,
+          "harvest": null
+        },
+        "next_crop_id": "soybean",
+        "next_plant": "05-12",
+        "region": "NC Piedmont",
+        "production_system": null,
+        "grower": {
+          "low_moisture_concern": null,
+          "residue_report": null,
+          "observations": []
+        }
+      },
+      "windows": [
+        {
+          "kind": "harvest",
+          "start": "2026-09-20",
+          "end": "2026-09-20",
+          "label": "Harvest field_corn",
+          "origin": "assumed",
+          "source": {
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+            "url": null
+          },
+          "field": "prev_harvest"
+        },
+        {
+          "kind": "cover_seed",
+          "start": "2026-10-01",
+          "end": "2026-10-01",
+          "label": "Seed cereal_rye",
+          "origin": "assumed",
+          "source": {
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+            "url": null
+          },
+          "field": "winter.seed"
+        },
+        {
+          "kind": "cover_terminate",
+          "start": "2027-04-27",
+          "end": "2027-04-27",
+          "label": "Terminate cereal_rye",
+          "origin": "grower",
+          "source": {
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+            "url": null
+          },
+          "field": "winter.terminate"
+        },
+        {
+          "kind": "plant",
+          "start": "2027-05-12",
+          "end": "2027-05-12",
+          "label": "Plant soybean",
+          "origin": "assumed",
+          "source": {
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+            "url": null
+          },
+          "field": "next_plant"
+        },
+        {
+          "kind": "pre_plant_check",
+          "start": "2027-04-12",
+          "end": "2027-05-11",
+          "label": "The 30 days before planting (dryness check window)",
+          "origin": "calculation",
+          "source": {
+            "title": "30 days before the planting date",
+            "url": null
+          },
+          "field": null
+        },
+        {
+          "kind": "growing_season",
+          "start": "2027-05-12",
+          "end": "2027-10-15",
+          "label": "soybean in the field (planting to harvest)",
+          "origin": "assumed",
+          "source": null,
+          "field": null
+        },
+        {
+          "kind": "typical_planting_window",
+          "start": "2027-05-10",
+          "end": "2027-07-11",
+          "label": "Typical soybean planting window for this area",
+          "origin": "dataset_estimate",
+          "source": {
+            "title": "Sacks et al. 2010 crop calendar (SAGE, 0.5\u00b0)",
+            "citation": "Sacks, Deryng, Foley & Ramankutty 2010, Crop planting dates: an analysis of global patterns, Global Ecology and Biogeography 19, 607-620",
+            "url": "https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/",
+            "doi": "10.1111/j.1466-8238.2010.00551.x"
+          },
+          "field": null
+        }
+      ],
+      "cover_schedule": {
+        "crop_id": "cereal_rye",
+        "seed": "2026-10-01",
+        "terminate": "2027-04-27",
+        "living_cover_days": 208,
+        "termination_gap_days": 15,
+        "establishment": "uncertain",
+        "origin": {
+          "seed": "assumed",
+          "terminate": "grower"
+        }
+      },
+      "milestones": [
+        {
+          "date": "2026-09-20",
+          "end_date": null,
+          "label": "Harvest field_corn",
+          "kind": "harvest",
+          "action_id": "harvest",
+          "status": "complete",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": null,
+          "rule_ids": []
+        },
+        {
+          "date": "2026-10-01",
+          "end_date": null,
+          "label": "Seed cereal_rye",
+          "kind": "seed",
+          "action_id": "seed",
+          "status": "complete",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": null,
+          "rule_ids": []
+        },
+        {
+          "date": "2026-10-01",
+          "end_date": null,
+          "label": "Prefers light loams or sands; tolerant of poor drainage.",
+          "kind": "check",
+          "action_id": "check:cr_soil_01",
+          "status": "manual_check",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "cr_soil_01"
+          ]
+        },
+        {
+          "date": "2027-04-12",
+          "end_date": "2027-05-11",
+          "label": "Spring dryness window (the 30 days before planting)",
+          "kind": "window",
+          "action_id": "spring_window",
+          "status": "complete",
+          "flagged": false,
+          "origin": "calculation",
+          "rule_origin": null,
+          "rule_ids": []
+        },
+        {
+          "date": "2027-04-27",
+          "end_date": null,
+          "label": "Terminate cereal_rye",
+          "kind": "terminate",
+          "action_id": "terminate",
+          "status": "complete",
+          "flagged": false,
+          "origin": "grower",
+          "rule_origin": null,
+          "rule_ids": []
+        },
+        {
+          "date": "2027-05-12",
+          "end_date": null,
+          "label": "The published routine soybean fertilizer nitrogen recommendation is zero. Crop nitrogen uptake and nutrient guidance for a combined wheat\u2013soybean system are...",
+          "kind": "check",
+          "action_id": "check:sb_nut_01",
+          "status": "manual_check",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "sb_nut_01"
+          ]
+        },
+        {
+          "date": "2027-05-12",
+          "end_date": null,
+          "label": "Yield penalty and shorter plants when planted before mid-April regardless of maturity group.",
+          "kind": "check",
+          "action_id": "check:sb_pw_02",
+          "status": "manual_check",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "sb_pw_02"
+          ]
+        },
+        {
+          "date": "2027-05-12",
+          "end_date": null,
+          "label": "Yields consistently decline when planting is delayed past the third week of May.",
+          "kind": "check",
+          "action_id": "check:sb_pw_03",
+          "status": "manual_check",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "sb_pw_03"
+          ]
+        },
+        {
+          "date": "2027-05-12",
+          "end_date": null,
+          "label": "Hold off planting until the optimal window and until soil moisture improves.",
+          "kind": "check",
+          "action_id": "check:sb_pw_05",
+          "status": "manual_check",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "sb_pw_05"
+          ]
+        },
+        {
+          "date": "2027-05-12",
+          "end_date": null,
+          "label": "Runoff on Piedmont hills limits plant-available water. Manual field check.",
+          "kind": "check",
+          "action_id": "check:sb_soil_01",
+          "status": "manual_check",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "sb_soil_01"
+          ]
+        },
+        {
+          "date": "2027-05-12",
+          "end_date": null,
+          "label": "Too-early planting risks frost damage, seedling disease and end-of-season quality problems. Manual check.",
+          "kind": "check",
+          "action_id": "check:sb_wt_01",
+          "status": "manual_check",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "sb_wt_01"
+          ]
+        },
+        {
+          "date": "2027-05-12",
+          "end_date": null,
+          "label": "Plant soybean",
+          "kind": "plant",
+          "action_id": "plant",
+          "status": "complete",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": null,
+          "rule_ids": []
+        }
+      ],
+      "decision_deadlines": [
+        {
+          "date": "2027-04-20",
+          "decision": "Keep this season's plan or switch to c_d306ccf54e_s1__fallback_gap21",
+          "switch_condition": "No catalog rule decides this switch; it is the grower's call by 2027-04-20.",
+          "switch_kind": "grower_decision",
+          "rule_ids": [],
+          "inputs_needed": [],
+          "next_check_date": "2027-04-13",
+          "timing": "upcoming",
+          "fallback_plan_id": "c_d306ccf54e_s1__fallback_gap21",
+          "origin": "calculation",
+          "assumptions": [
+            "next_check_date is 7 days before the decision deadline (assumed, not from the catalog)"
+          ]
+        }
+      ],
+      "explanations": [
+        {
+          "rule_id": "sb_pw_02",
+          "text": "Ask your adviser about the planting dates: yield penalty and shorter plants when planted before mid-April regardless of maturity group.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "Data-Driven Recommendations for NC Soybean Planting Date (NC State Soybeans)",
+            "url": "https://soybeans.ces.ncsu.edu/news/data-driven-recommendations-for-nc-soybean-planting-date/",
+            "locator": "Planting before mid-April; Figure 2",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "sb_pw_03",
+          "text": "Ask your adviser about the planting dates: yields consistently decline when planting is delayed past the third week of May.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "Data-Driven Recommendations for NC Soybean Planting Date (NC State Soybeans)",
+            "url": "https://soybeans.ces.ncsu.edu/news/data-driven-recommendations-for-nc-soybean-planting-date/",
+            "locator": "Planting past mid-May; Figure 1",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "sb_pw_05",
+          "text": "Ask your adviser about soil moisture before planting: hold off planting until the optimal window and until soil moisture improves.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "Planting Soybeans in a Drought (NC State Soybeans 2026)",
+            "url": "https://soybeans.ces.ncsu.edu/news/soybean-planting-decisions-under-drought-conditions-2026/",
+            "locator": "Opening paragraphs",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "sb_wt_01",
+          "text": "Ask your adviser about the weather before planting: too-early planting risks frost damage, seedling disease and end-of-season quality problems.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "2025 Hertford Corn & Soybean Planting Guidance (NC State Extension)",
+            "url": "https://hertford.ces.ncsu.edu/news/2025-hertford-corn-soybean-planting-guidance/",
+            "locator": "Soybean paragraph",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "sb_wt_02",
+          "text": "Check air temperature: the guide warns about more than 85 \u00b0F for several days.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "How Do High Temperatures Impact My Soybeans? (NC State Soybeans)",
+            "url": "https://soybeans.ces.ncsu.edu/news/how-do-high-temperatures-impact-my-soybeans/",
+            "locator": "Paragraphs 2-3",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "sb_wd_01",
+          "text": "For reference: seasonal crop water use can exceed 25 in.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "10. Water Management in Soybeans (AG-835)",
+            "url": "https://content.ces.ncsu.edu/north-carolina-soybean-production-guide/10-water-management-in-soybeans",
+            "locator": "Opening paragraph",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "sb_soil_01",
+          "text": "Ask your adviser about slope position: runoff on Piedmont hills limits plant-available water.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "10. Water Management in Soybeans (AG-835)",
+            "url": "https://content.ces.ncsu.edu/north-carolina-soybean-production-guide/10-water-management-in-soybeans",
+            "locator": "Soils and Topography",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "sb_soil_02",
+          "text": "Ask your adviser about the soil's plant-available water: sands are drought-prone; silts and clays are wet-stress-prone.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "10. Water Management in Soybeans (AG-835)",
+            "url": "https://content.ces.ncsu.edu/north-carolina-soybean-production-guide/10-water-management-in-soybeans",
+            "locator": "Soils and Topography",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "sb_soil_03",
+          "text": "Check soil pH: the guide's target is 6.0 (mineral soil class), before planting.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "Soil Acidity and Liming for Agricultural Soils (NC State Extension)",
+            "url": "https://content.ces.ncsu.edu/soil-acidity-and-liming-for-agricultural-soils",
+            "locator": "Table 2 Field crops",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "sb_nut_01",
+          "text": "For reference, the published nitrogen rate is 0 lb N/acre; your soil test sets your own target.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "Crop Fertilization Based on North Carolina Soil Tests; Circular No. 1; February 2014",
+            "url": "https://www.ncagr.gov/orange-book-soil-fertility/open",
+            "locator": "Table 2.3 p. 15: Soybean row and nitrogen-units footnote",
+            "verified_date": "2026-11-13",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "cr_wt_01",
+          "text": "Check temperature at germination: the guide says at least 34 \u00b0F, before seeding.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "Cereal Rye (SARE Managing Cover Crops Profitably 3rd ed.)",
+            "url": "https://www.sare.org/publications/managing-cover-crops-profitably/nonlegume-cover-crops/cereal-rye/",
+            "locator": "Establishment and Fieldwork",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "cr_soil_01",
+          "text": "Ask your adviser about drainage: prefers light loams or sands; tolerant of poor drainage.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "Cereal Rye (SARE Managing Cover Crops Profitably 3rd ed.)",
+            "url": "https://www.sare.org/publications/managing-cover-crops-profitably/nonlegume-cover-crops/cereal-rye/",
+            "locator": "Establishment and Fieldwork",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "cr_tt_05",
+          "text": "Ask your adviser about when to end the cover: terminating at soybean planting may not be needed to maximize biomass.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "Termination Timing Effect on Cereal Rye Biomass (NC State Extension)",
+            "url": "https://content.ces.ncsu.edu/termination-timing-effect-on-cereal-rye-biomass",
+            "locator": "Results summary",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "cr_trait_01",
+          "text": "For reference, the guide gives 25 to 50 lb N/acre for the nitrogen the cover scavenges.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "Cereal Rye (SARE Managing Cover Crops Profitably 3rd ed.)",
+            "url": "https://www.sare.org/publications/managing-cover-crops-profitably/nonlegume-cover-crops/cereal-rye/",
+            "locator": "Nutrient catch crop",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "cr_trait_02",
+          "text": "For reference: rapid growth gives erosion control; allelopathic residue aids weed control.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "Winter Annual Cover Crops (NC State Extension AG-439-58)",
+            "url": "https://content.ces.ncsu.edu/winter-annual-cover-crops",
+            "locator": "Erosion paragraph; weed control paragraph",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        }
+      ],
+      "warnings": [],
+      "historical_vulnerabilities": [],
+      "backup": {
+        "status": "complete",
+        "year": 2027,
+        "default_plan_id": "c_d306ccf54e_s1",
+        "fallback_plan_id": "c_d306ccf54e_s1__fallback_gap21",
+        "fallback_source": "suggested",
+        "divergence": {
+          "action_id": "terminate",
+          "default_date": "2027-04-27",
+          "fallback_date": "2027-04-21",
+          "first_date": "2027-04-21",
+          "what": "terminate: default 2027-04-27 (Terminate cereal_rye) vs fallback 2027-04-21 (Terminate cereal_rye)"
+        },
+        "switch_condition": {
+          "kind": "grower_decision",
+          "text": "No catalog rule decides this switch; it is the grower's call by 2027-04-20.",
+          "rule_ids": [],
+          "inputs_needed": []
+        },
+        "decision_deadline": "2027-04-20",
+        "next_check_date": "2027-04-13",
+        "timing": "upcoming",
+        "as_of": "2026-11-14",
+        "backtest": {
+          "status": "unavailable",
+          "reason": "the first release compares the two plans as fixed plans; an optional backtest using only data available at the decision date is not built"
+        },
+        "assumptions": [
+          "next_check_date is 7 days before the decision deadline (assumed, not from the catalog)"
+        ],
+        "notes": [],
+        "issues": []
+      },
+      "notes": []
+    },
+    {
+      "season": "2028",
+      "index": 2,
+      "status": "complete",
+      "plan": {
+        "plan_id": "c_d306ccf54e_s2",
+        "label": "Season 2: Soybean, Cereal rye cover, then Field corn",
+        "previous_crop_id": "soybean",
+        "prev_harvest": "10-15",
+        "winter": {
+          "kind": "cover",
+          "crop_id": "cereal_rye",
+          "seed": "10-20",
+          "terminate": "04-05",
+          "plant": null,
+          "harvest": null
+        },
+        "next_crop_id": "field_corn",
+        "next_plant": "04-15",
+        "region": "NC Piedmont",
+        "production_system": null,
+        "grower": {
+          "low_moisture_concern": null,
+          "residue_report": null,
+          "observations": []
+        }
+      },
+      "windows": [
+        {
+          "kind": "harvest",
+          "start": "2027-10-15",
+          "end": "2027-10-15",
+          "label": "Harvest soybean",
+          "origin": "assumed",
+          "source": {
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+            "url": null
+          },
+          "field": "prev_harvest"
+        },
+        {
+          "kind": "cover_seed",
+          "start": "2027-10-20",
+          "end": "2027-10-20",
+          "label": "Seed cereal_rye",
+          "origin": "assumed",
+          "source": {
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+            "url": null
+          },
+          "field": "winter.seed"
+        },
+        {
+          "kind": "cover_terminate",
+          "start": "2028-04-05",
+          "end": "2028-04-05",
+          "label": "Terminate cereal_rye",
+          "origin": "assumed",
+          "source": {
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+            "url": null
+          },
+          "field": "winter.terminate"
+        },
+        {
+          "kind": "plant",
+          "start": "2028-04-15",
+          "end": "2028-04-15",
+          "label": "Plant field_corn",
+          "origin": "assumed",
+          "source": {
+            "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+            "url": null
+          },
+          "field": "next_plant"
+        },
+        {
+          "kind": "pre_plant_check",
+          "start": "2028-03-16",
+          "end": "2028-04-14",
+          "label": "The 30 days before planting (dryness check window)",
+          "origin": "calculation",
+          "source": {
+            "title": "30 days before the planting date",
+            "url": null
+          },
+          "field": null
+        },
+        {
+          "kind": "growing_season",
+          "start": "2028-04-15",
+          "end": "2028-09-20",
+          "label": "field_corn in the field (planting to harvest)",
+          "origin": "grower",
+          "source": null,
+          "field": null
+        },
+        {
+          "kind": "typical_planting_window",
+          "start": "2028-03-10",
+          "end": "2028-05-15",
+          "label": "Typical field_corn planting window for this area",
+          "origin": "dataset_estimate",
+          "source": {
+            "title": "Sacks et al. 2010 crop calendar (SAGE, 0.5\u00b0)",
+            "citation": "Sacks, Deryng, Foley & Ramankutty 2010, Crop planting dates: an analysis of global patterns, Global Ecology and Biogeography 19, 607-620",
+            "url": "https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/",
+            "doi": "10.1111/j.1466-8238.2010.00551.x"
+          },
+          "field": null
+        }
+      ],
+      "cover_schedule": {
+        "crop_id": "cereal_rye",
+        "seed": "2027-10-20",
+        "terminate": "2028-04-05",
+        "living_cover_days": 168,
+        "termination_gap_days": 10,
+        "establishment": "uncertain",
+        "origin": {
+          "seed": "assumed",
+          "terminate": "assumed"
+        }
+      },
+      "milestones": [
+        {
+          "date": "2027-10-15",
+          "end_date": null,
+          "label": "Harvest soybean",
+          "kind": "harvest",
+          "action_id": "harvest",
+          "status": "complete",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": null,
+          "rule_ids": []
+        },
+        {
+          "date": "2027-10-20",
+          "end_date": null,
+          "label": "Seed cereal_rye",
+          "kind": "seed",
+          "action_id": "seed",
+          "status": "complete",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": null,
+          "rule_ids": []
+        },
+        {
+          "date": "2027-10-20",
+          "end_date": null,
+          "label": "Rye reduced corn yields unless enough N fertilizer was applied (N immobilization).",
+          "kind": "check",
+          "action_id": "check:cr_nut_01",
+          "status": "manual_check",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "cr_nut_01"
+          ]
+        },
+        {
+          "date": "2027-10-20",
+          "end_date": null,
+          "label": "Preferred rye seeding dates.",
+          "kind": "check",
+          "action_id": "check:cr_pw_01",
+          "status": "manual_check",
+          "flagged": true,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "cr_pw_01"
+          ]
+        },
+        {
+          "date": "2027-10-20",
+          "end_date": null,
+          "label": "Prefers light loams or sands; tolerant of poor drainage.",
+          "kind": "check",
+          "action_id": "check:cr_soil_01",
+          "status": "manual_check",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "cr_soil_01"
+          ]
+        },
+        {
+          "date": "2028-03-16",
+          "end_date": "2028-04-14",
+          "label": "Spring dryness window (the 30 days before planting)",
+          "kind": "window",
+          "action_id": "spring_window",
+          "status": "complete",
+          "flagged": false,
+          "origin": "calculation",
+          "rule_origin": null,
+          "rule_ids": []
+        },
+        {
+          "date": "2028-04-05",
+          "end_date": null,
+          "label": "Kill 7-14 days before corn planting to reduce soil water depletion.",
+          "kind": "check",
+          "action_id": "check:cr_tt_01",
+          "status": "unknown",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "cr_tt_01"
+          ]
+        },
+        {
+          "date": "2028-04-05",
+          "end_date": null,
+          "label": "Terminate cereal_rye",
+          "kind": "terminate",
+          "action_id": "terminate",
+          "status": "complete",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": null,
+          "rule_ids": []
+        },
+        {
+          "date": "2028-04-15",
+          "end_date": null,
+          "label": "General published grain-corn nitrogen range for reference. Use the grower\u2019s soil-test recommendation and account for relevant nutrient credits and management.",
+          "kind": "check",
+          "action_id": "check:fc_nut_01",
+          "status": "manual_check",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "fc_nut_01"
+          ]
+        },
+        {
+          "date": "2028-04-15",
+          "end_date": null,
+          "label": "Starter fertilizer speeds early growth. Plan N source, placement and timing carefully after a small grain cover.",
+          "kind": "check",
+          "action_id": "check:fc_nut_02",
+          "status": "unknown",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "fc_nut_02"
+          ]
+        },
+        {
+          "date": "2028-04-15",
+          "end_date": null,
+          "label": "Corn can be planted once soil reaches 55 F; optimum dates late March through the first week of May. Conflicts with fc_pw_02 (50 F).",
+          "kind": "check",
+          "action_id": "check:fc_pw_01",
+          "status": "unknown",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "fc_pw_01"
+          ]
+        },
+        {
+          "date": "2028-04-15",
+          "end_date": null,
+          "label": "NC State gives 50\u00b0F as the minimum soil temperature for corn seed germination. Flag below 50\u00b0F as a germination concern. The separate 55\u00b0F row is planting gu...",
+          "kind": "check",
+          "action_id": "check:fc_pw_02",
+          "status": "unknown",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "fc_pw_02"
+          ]
+        },
+        {
+          "date": "2028-04-15",
+          "end_date": null,
+          "label": "Plant organic corn in the Piedmont between April 20 and May 20.",
+          "kind": "check",
+          "action_id": "check:fc_pw_03",
+          "status": "unknown",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "fc_pw_03"
+          ]
+        },
+        {
+          "date": "2028-04-15",
+          "end_date": null,
+          "label": "Plant after at least two days averaging above 65 F; time planting so soils are moderately dry to limit seedling disease.",
+          "kind": "check",
+          "action_id": "check:fc_pw_04",
+          "status": "unknown",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "fc_pw_04"
+          ]
+        },
+        {
+          "date": "2028-04-15",
+          "end_date": null,
+          "label": "Aim for 40-50 GDUs in the 4 days after planting for uniform stands.",
+          "kind": "check",
+          "action_id": "check:fc_pw_05",
+          "status": "unknown",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "fc_pw_05"
+          ]
+        },
+        {
+          "date": "2028-04-15",
+          "end_date": null,
+          "label": "Plant 1.5-2.5 in deep; deeper than 2.5 in can reduce stands.",
+          "kind": "check",
+          "action_id": "check:fc_pw_06",
+          "status": "manual_check",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "fc_pw_06"
+          ]
+        },
+        {
+          "date": "2028-04-15",
+          "end_date": null,
+          "label": "Plant from June 10 to June 25 so silking avoids the July 1-20 dry period; yields vary by year.",
+          "kind": "check",
+          "action_id": "check:fc_pw_07",
+          "status": "unknown",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "fc_pw_07"
+          ]
+        },
+        {
+          "date": "2028-04-15",
+          "end_date": null,
+          "label": "More than 2 inches of rain in the first week after planting may hurt germination and stand establishment.",
+          "kind": "check",
+          "action_id": "check:fc_wt_01",
+          "status": "unknown",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "fc_wt_01"
+          ]
+        },
+        {
+          "date": "2028-04-15",
+          "end_date": null,
+          "label": "Too wet raises disease risk and reduces stands; too dry causes spotty emergence. Manual field check.",
+          "kind": "check",
+          "action_id": "check:fc_wt_02",
+          "status": "manual_check",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": "verified_source",
+          "rule_ids": [
+            "fc_wt_02"
+          ]
+        },
+        {
+          "date": "2028-04-15",
+          "end_date": null,
+          "label": "Plant field_corn",
+          "kind": "plant",
+          "action_id": "plant",
+          "status": "complete",
+          "flagged": false,
+          "origin": "assumed",
+          "rule_origin": null,
+          "rule_ids": []
+        }
+      ],
+      "decision_deadlines": [
+        {
+          "date": "2028-03-31",
+          "decision": "Keep this season's plan or switch to c_d306ccf54e_s2__fallback_gap14",
+          "switch_condition": "No catalog rule says this switch addresses a dry spring: the fallback still triggers the same moisture check. It is the grower's call by 2028-03-31: terminate: default 2028-04-05 (Terminate cereal_rye) vs fallback 2028-04-01 (Terminate cereal_rye).",
+          "switch_kind": "grower_decision",
+          "rule_ids": [
+            "cr_tt_01"
+          ],
+          "inputs_needed": [],
+          "next_check_date": "2028-03-24",
+          "timing": "upcoming",
+          "fallback_plan_id": "c_d306ccf54e_s2__fallback_gap14",
+          "origin": "calculation",
+          "assumptions": [
+            "next_check_date is 7 days before the decision deadline (assumed, not from the catalog)"
+          ]
+        }
+      ],
+      "explanations": [
+        {
+          "rule_id": "fc_wt_02",
+          "text": "Ask your adviser about seedbed moisture before planting: too wet raises disease risk and reduces stands; too dry causes spotty emergence.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "What Are the Optimal Planting Conditions for Corn? (NC State Corn)",
+            "url": "https://corn.ces.ncsu.edu/news/what-are-the-optimal-planting-conditions-for-corn/",
+            "locator": "Item 2 Soil Moisture",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "fc_pw_06",
+          "text": "Check seeding depth: the guide says 1.5 to 2.5 in, before planting.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "What Are the Optimal Planting Conditions for Corn? (NC State Corn)",
+            "url": "https://corn.ces.ncsu.edu/news/what-are-the-optimal-planting-conditions-for-corn/",
+            "locator": "Item 3 Planting Depth",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "fc_soil_01",
+          "text": "Check soil pH: the guide's target is 6.0 (mineral soil class), before planting.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "Soil Acidity and Liming for Agricultural Soils (NC State Extension)",
+            "url": "https://content.ces.ncsu.edu/soil-acidity-and-liming-for-agricultural-soils",
+            "locator": "Table 2 Field crops",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "fc_nut_01",
+          "text": "For reference, the published nitrogen rate is 120 to 160 lb N/acre; your soil test sets your own target.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "Crop Fertilization Based on North Carolina Soil Tests; Circular No. 1; February 2014",
+            "url": "https://www.ncagr.gov/orange-book-soil-fertility/open",
+            "locator": "Table 2.3 p. 14: Corn, grain; p. 15 nitrogen-units footnote",
+            "verified_date": "2026-11-13",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "cr_pw_01",
+          "text": "Heads-up: your seeding date is outside the preferred window (Sep 15 to Oct 15).",
+          "status": "complete",
+          "verdict": "caution",
+          "origin": "verified_source",
+          "source": {
+            "title": "Winter Annual Cover Crops (NC State Extension AG-439-58)",
+            "url": "https://content.ces.ncsu.edu/winter-annual-cover-crops",
+            "locator": "Table 4",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "cr_wt_01",
+          "text": "Check temperature at germination: the guide says at least 34 \u00b0F, before seeding.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "Cereal Rye (SARE Managing Cover Crops Profitably 3rd ed.)",
+            "url": "https://www.sare.org/publications/managing-cover-crops-profitably/nonlegume-cover-crops/cereal-rye/",
+            "locator": "Establishment and Fieldwork",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "cr_soil_01",
+          "text": "Ask your adviser about drainage: prefers light loams or sands; tolerant of poor drainage.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "Cereal Rye (SARE Managing Cover Crops Profitably 3rd ed.)",
+            "url": "https://www.sare.org/publications/managing-cover-crops-profitably/nonlegume-cover-crops/cereal-rye/",
+            "locator": "Establishment and Fieldwork",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "cr_nut_01",
+          "text": "Ask your adviser about fertilizer when you set the nitrogen plan: rye reduced corn yields unless enough N fertilizer was applied (N immobilization).",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "Winter Annual Cover Crops (NC State Extension AG-439-58)",
+            "url": "https://content.ces.ncsu.edu/winter-annual-cover-crops",
+            "locator": "Figure 2; Table 6",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "cr_trait_01",
+          "text": "For reference, the guide gives 25 to 50 lb N/acre for the nitrogen the cover scavenges.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "Cereal Rye (SARE Managing Cover Crops Profitably 3rd ed.)",
+            "url": "https://www.sare.org/publications/managing-cover-crops-profitably/nonlegume-cover-crops/cereal-rye/",
+            "locator": "Nutrient catch crop",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        },
+        {
+          "rule_id": "cr_trait_02",
+          "text": "For reference: rapid growth gives erosion control; allelopathic residue aids weed control.",
+          "status": "manual_check",
+          "verdict": "manual_check",
+          "origin": "verified_source",
+          "source": {
+            "title": "Winter Annual Cover Crops (NC State Extension AG-439-58)",
+            "url": "https://content.ces.ncsu.edu/winter-annual-cover-crops",
+            "locator": "Erosion paragraph; weed control paragraph",
+            "verified_date": "2026-11-12",
+            "evidence_quote": null,
+            "limitations": null
+          }
+        }
+      ],
+      "warnings": [
+        {
+          "rule_id": "cr_pw_01",
+          "text": "Heads-up: your seeding date is outside the preferred window (Sep 15 to Oct 15).",
+          "verdict": "caution",
+          "origin": "verified_source"
+        }
+      ],
+      "historical_vulnerabilities": [],
+      "backup": {
+        "status": "complete",
+        "year": 2028,
+        "default_plan_id": "c_d306ccf54e_s2",
+        "fallback_plan_id": "c_d306ccf54e_s2__fallback_gap14",
+        "fallback_source": "suggested",
+        "divergence": {
+          "action_id": "terminate",
+          "default_date": "2028-04-05",
+          "fallback_date": "2028-04-01",
+          "first_date": "2028-04-01",
+          "what": "terminate: default 2028-04-05 (Terminate cereal_rye) vs fallback 2028-04-01 (Terminate cereal_rye)"
+        },
+        "switch_condition": {
+          "kind": "grower_decision",
+          "text": "No catalog rule says this switch addresses a dry spring: the fallback still triggers the same moisture check. It is the grower's call by 2028-03-31: terminate: default 2028-04-05 (Terminate cereal_rye) vs fallback 2028-04-01 (Terminate cereal_rye).",
+          "rule_ids": [
+            "cr_tt_01"
+          ],
+          "inputs_needed": []
+        },
+        "decision_deadline": "2028-03-31",
+        "next_check_date": "2028-03-24",
+        "timing": "upcoming",
+        "as_of": "2026-11-14",
+        "backtest": {
+          "status": "unavailable",
+          "reason": "the first release compares the two plans as fixed plans; an optional backtest using only data available at the decision date is not built"
+        },
+        "assumptions": [
+          "next_check_date is 7 days before the decision deadline (assumed, not from the catalog)"
+        ],
+        "notes": [],
+        "issues": []
+      },
+      "notes": []
+    }
+  ],
+  "note": "Planned dates on future calendars, from the plan and its sources. They cannot say what the weather in these seasons will bring.",
+  "diff": {
+    "changes": [
+      {
+        "season": "2027",
+        "status": "complete",
+        "plan_edits": [
+          {
+            "field": "winter.terminate",
+            "before": "04-30",
+            "after": "04-27"
+          }
+        ],
+        "changes": [
+          {
+            "action_id": "terminate",
+            "change": "changed",
+            "date_before": "2027-04-30",
+            "date_after": "2027-04-27",
+            "days_moved": -3,
+            "status_before": "complete",
+            "status_after": "complete",
+            "flagged_before": false,
+            "flagged_after": false,
+            "label_after": "Terminate cereal_rye",
+            "why": [
+              "winter.terminate: 04-30 -> 04-27"
+            ]
+          },
+          {
+            "action_id": "check:cr_tt_03",
+            "change": "removed",
+            "date": "2027-04-30",
+            "label": "Consider ending rye at least 14 days before soybean planting when low soil moisture is a concern.",
+            "why": [
+              "winter.terminate: 04-30 -> 04-27"
+            ]
+          }
+        ],
+        "termination_gap_days": {
+          "before": 12,
+          "after": 15
+        },
+        "unchanged": false,
+        "decision_deadline": {
+          "before": "2027-04-27",
+          "after": "2027-04-20",
+          "next_check_before": "2027-04-20",
+          "next_check_after": "2027-04-13"
+        },
+        "window_changes": [
+          {
+            "kind": "cover_terminate",
+            "before": [
+              "2027-04-30",
+              "2027-04-30"
+            ],
+            "after": [
+              "2027-04-27",
+              "2027-04-27"
+            ]
+          }
+        ]
+      }
+    ],
+    "unchanged": false
+  },
+  "recommendation_refresh": {
+    "status": "insufficient_data",
+    "result_id": "3ab7ce4e93c606c6",
+    "method": {
+      "shortlist": "pareto_non_dominated",
+      "ordering": "weighted_rank_positions",
+      "indicators_used": [
+        "rain_on_bare_soil_mm",
+        "heavy_rain_days_on_bare_soil",
+        "dry_pre_plant_frequency",
+        "modeled_root_zone_wetness_at_planting",
+        "living_cover_days",
+        "bare_soil_days",
+        "crop_family_diversity",
+        "rule_flags",
+        "management_operations"
+      ],
+      "weights": {
+        "rain_on_bare_soil_mm": 1,
+        "heavy_rain_days_on_bare_soil": 1,
+        "dry_pre_plant_frequency": 1,
+        "modeled_root_zone_wetness_at_planting": 1,
+        "living_cover_days": 1,
+        "bare_soil_days": 1,
+        "crop_family_diversity": 1,
+        "rule_flags": 1,
+        "management_operations": 1
+      },
+      "ordering_text": "For each indicator the shortlisted plans are ranked (1 = best, ties share a rank); they are listed by the sum of weight x rank position. Raw values of different indicators are never combined.",
+      "note": "Not universally optimal: depends on these priorities and this weather history.",
+      "definitions": "backend/docs/indicators.md"
+    },
+    "indicators": {
+      "rain_on_bare_soil_mm": {
+        "value": 59.2,
+        "unit": "mm per season",
+        "direction": "lower_better",
+        "origin": "calculation",
+        "status": "complete",
+        "reason": null,
+        "definition": "Median per-season rain on off-season days with no planned living cover.",
+        "rationale": "Rain on uncovered soil is what soil cover is meant to intercept. Rainfall depth only: not erosion, runoff or soil loss.",
+        "source": {
+          "title": "FAO, Conservation Agriculture (principles)",
+          "url": "https://www.fao.org/conservation-agriculture/en/"
+        },
+        "per_leg": [
+          83.375,
+          35.015
+        ],
+        "in_priorities": true
+      },
+      "heavy_rain_days_on_bare_soil": {
+        "value": 0.0,
+        "unit": "days per season",
+        "direction": "lower_better",
+        "origin": "calculation",
+        "status": "complete",
+        "reason": null,
+        "definition": "Median per-season count of heavy-rain days with no planned living cover (NC: 76.2 mm; elsewhere the cell's ETCCDI R95p value).",
+        "rationale": "Intense rain on uncovered soil; a count of weather events, not damage.",
+        "source": {
+          "title": "FAO, Conservation Agriculture (principles)",
+          "url": "https://www.fao.org/conservation-agriculture/en/"
+        },
+        "per_leg": [
+          0.0,
+          0.0
+        ],
+        "in_priorities": true
+      },
+      "modeled_root_zone_wetness_at_planting": {
+        "value": 0.75,
+        "unit": "fraction (0-1)",
+        "direction": "higher_better",
+        "origin": "nasa_modeled",
+        "status": "complete",
+        "reason": null,
+        "definition": "Median over seasons of mean modeled root-zone wetness (GWETROOT) in the 30 days before planting.",
+        "rationale": "Modeled soil water near planting. The same for any plan with the same planting date; not a water saving.",
+        "source": {
+          "title": "NASA POWER parameter GWETROOT (MERRA-2 root-zone soil wetness)",
+          "url": "https://power.larc.nasa.gov/api/system/manager/parameters/GWETROOT"
+        },
+        "per_leg": [
+          0.7117,
+          0.7883
+        ],
+        "in_priorities": true
+      },
+      "living_cover_days": {
+        "value": 187.5,
+        "unit": "days per year",
+        "direction": "higher_better",
+        "origin": "calculation",
+        "status": "complete",
+        "reason": null,
+        "definition": "Planned living-cover days (cover crop seed to termination, or growing winter grain). Planned; establishment uncertain.",
+        "rationale": "Keep the soil covered and living roots in it as long as possible.",
+        "source": {
+          "title": "FAO, Conservation Agriculture (principles)",
+          "url": "https://www.fao.org/conservation-agriculture/en/"
+        },
+        "per_leg": [
+          208,
+          167
+        ],
+        "in_priorities": true
+      },
+      "bare_soil_days": {
+        "value": 20.5,
+        "unit": "days per year",
+        "direction": "lower_better",
+        "origin": "calculation",
+        "status": "complete",
+        "reason": null,
+        "definition": "Off-season days with no planned living cover.",
+        "rationale": "The same principle as living cover days, seen from the other side.",
+        "source": {
+          "title": "FAO, Conservation Agriculture (principles)",
+          "url": "https://www.fao.org/conservation-agriculture/en/"
+        },
+        "per_leg": [
+          26,
+          15
+        ],
+        "in_priorities": true
+      },
+      "management_operations": {
+        "value": 4.0,
+        "unit": "operations per season",
+        "direction": "lower_better",
+        "origin": "calculation",
+        "status": "complete",
+        "reason": null,
+        "definition": "Planned field operations per season: previous harvest and next planting, plus cover seed and termination or winter-grain planting and harvest.",
+        "rationale": "A plain count used only for the management-simplicity priority; not a cost or labour estimate.",
+        "source": {
+          "title": "A.C.R.E indicator definitions (backend/docs/indicators.md)",
+          "url": null
+        },
+        "per_leg": [
+          4,
+          4
+        ],
+        "in_priorities": true
+      },
+      "dry_pre_plant_frequency": {
+        "value": 0.2,
+        "unit": "share of seasons",
+        "direction": "lower_better",
+        "origin": "calculation",
+        "status": "complete",
+        "reason": null,
+        "definition": "Share of evaluable seasons whose 30 days before planting were dry (bottom 20% of this cell's own totals for that window).",
+        "rationale": "How often this planting window started dry in this cell's history; it describes the window's weather, not the plan's effect on it.",
+        "source": {
+          "title": "A.C.R.E dry pre-plant window: bottom 20% of this cell's own 1981-2025 30-day totals (calculation)",
+          "url": null
+        },
+        "per_leg": [
+          {
+            "value": 0.2,
+            "dry_seasons": 9,
+            "eligible_seasons": 45
+          },
+          {
+            "value": 0.2,
+            "dry_seasons": 9,
+            "eligible_seasons": 45
+          }
+        ],
+        "in_priorities": true
+      },
+      "rule_flags": {
+        "value": 12.5,
+        "unit": "checks per season",
+        "direction": "lower_better",
+        "origin": "calculation",
+        "status": "partial",
+        "reason": "some rules could not be evaluated (unknown)",
+        "definition": "Per leg, the distinct catalog rule checks that flagged in at least one past season plus the rule lines that need a manual check (the winter-wheat path's lines included); mean over legs. Unevaluable rules are listed, not counted. Each rule cites its own source.",
+        "rationale": "Published guidance that would have asked for a check or a change.",
+        "source": {
+          "title": "A.C.R.E indicator definitions (backend/docs/indicators.md)",
+          "url": null
+        },
+        "per_leg": [
+          15,
+          10
+        ],
+        "in_priorities": true,
+        "detail": {
+          "rule_ids": [
+            "cr_nut_01",
+            "cr_pw_01",
+            "cr_soil_01",
+            "cr_trait_01",
+            "cr_trait_02",
+            "cr_tt_05",
+            "cr_wt_01",
+            "fc_nut_01",
+            "fc_pw_06",
+            "fc_soil_01",
+            "fc_wt_02",
+            "sb_nut_01",
+            "sb_pw_02",
+            "sb_pw_03",
+            "sb_pw_05",
+            "sb_soil_01",
+            "sb_soil_02",
+            "sb_soil_03",
+            "sb_wd_01",
+            "sb_wt_01",
+            "sb_wt_02"
+          ],
+          "unknown_rule_ids": [
+            "fc_nut_02",
+            "fc_pw_01",
+            "fc_pw_02",
+            "fc_pw_03",
+            "fc_pw_04",
+            "fc_pw_05",
+            "fc_pw_07",
+            "fc_wt_01",
+            "sb_wd_07"
+          ]
+        }
+      },
+      "crop_family_diversity": {
+        "value": 2,
+        "unit": "botanical families",
+        "direction": "higher_better",
+        "origin": "calculation",
+        "status": "complete",
+        "reason": null,
+        "definition": "Distinct plant families among every crop in the candidate.",
+        "rationale": "Species diversification through varied crop sequences.",
+        "source": {
+          "title": "FAO, Conservation Agriculture (principles)",
+          "url": "https://www.fao.org/conservation-agriculture/en/"
+        },
+        "per_leg": [],
+        "in_priorities": true,
+        "detail": {
+          "families": {
+            "field_corn": "Poaceae",
+            "cereal_rye": "Poaceae",
+            "soybean": "Fabaceae"
+          },
+          "family_source": {
+            "title": "Botanical family by genus (APG IV; USDA PLANTS Database)",
+            "url": "https://plants.usda.gov"
+          }
+        }
+      },
+      "irrigation_dependence": {
+        "value": null,
+        "unit": "none",
+        "direction": "lower_better",
+        "origin": "calculation",
+        "status": "unknown",
+        "reason": "no sourced crop water-need data",
+        "definition": "Not computed: there is no sourced crop water-need table yet.",
+        "rationale": "Listed so the gap is visible; never used for a shortlist.",
+        "source": {
+          "title": "A.C.R.E indicator definitions (backend/docs/indicators.md)",
+          "url": null
+        },
+        "per_leg": [],
+        "in_priorities": false
+      }
+    },
+    "changed_plan_ids": [
+      "c_d306ccf54e_s1"
+    ],
+    "priority_edits": {}
+  },
+  "catalog": {
+    "status": "complete",
+    "origin": "verified_source",
+    "region_key": "US-NC",
+    "reason": null,
+    "reason_text": null,
+    "catalog_version": "v2"
+  },
+  "dates_basis": "grower"
+}

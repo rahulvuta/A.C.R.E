@@ -1,0 +1,14 @@
+{
+  "catalog_version": "v2:8eeb5bf961eb",
+  "issues": [
+    {
+      "code": "self_intersection",
+      "field": "farm.fields[0].geometry",
+      "message": "Field 'Bowtie' crosses itself; redraw its boundary."
+    }
+  ],
+  "plan_version": null,
+  "request_id": "req_example",
+  "snapshot_hash": null,
+  "status": "invalid_input"
+}

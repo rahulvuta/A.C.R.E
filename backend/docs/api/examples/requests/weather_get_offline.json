@@ -1,0 +1,6 @@
+{
+  "body": null,
+  "method": "GET",
+  "status": 200,
+  "url": "/v1/weather/cell_+42.000_-93.750"
+}

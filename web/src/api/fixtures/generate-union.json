@@ -1,0 +1,641 @@
+{
+ "_fixture": "Synthetic fixture: a real local-backend response for the Union County demo point (NC demo presets, no grower data), trimmed by Agent D.",
+ "meta": {
+  "plan_version": "c78dfdb26ee5f6ec",
+  "catalog_version": "v2:8eeb5bf961eb",
+  "snapshot_hash": "5ce131cfcd1f07d3738ecb9afaec6c3ef6a4764b6a3528bdd2b64debe7ba5f4e",
+  "request_id": "0de03d9fbafd4921aae38a1dc20c55ae"
+ },
+ "status": "complete",
+ "reason": null,
+ "reason_text": null,
+ "region_key": "US-NC",
+ "catalog": {
+  "status": "complete",
+  "origin": "verified_source",
+  "region_key": "US-NC",
+  "reason": null,
+  "reason_text": null,
+  "catalog_version": "v2"
+ },
+ "start_year": 2027,
+ "generation_log": [
+  {
+   "kind": "cap",
+   "name": "max_candidates",
+   "pruned": 9,
+   "reason_text": "Only the first 50 candidates (in the order above) are returned.",
+   "examples": []
+  },
+  {
+   "kind": "note",
+   "name": "nc_dates",
+   "pruned": 0,
+   "reason_text": "North Carolina dates are the demo presets' typical Piedmont dates (assumed); edit them to this field's dates.",
+   "examples": []
+  },
+  {
+   "kind": "rule",
+   "name": "chronology",
+   "pruned": 25,
+   "reason_text": "Dates out of order (e.g. seeding before harvest) dropped the sequence.",
+   "examples": [
+    "maize > soybean > crimson_clover > maize",
+    "maize > cereal_rye > soybean > crimson_clover > maize",
+    "maize > crimson_clover > soybean > crimson_clover > maize"
+   ]
+  }
+ ],
+ "gaps": [],
+ "total_generated": 84,
+ "candidates": [
+  {
+   "plan_id": "c_d306ccf54e_s1",
+   "label": "Field corn \u2192 Cereal rye \u2192 Soybean \u2192 Cereal rye \u2192 Field corn",
+   "previous_crop_id": "field_corn",
+   "prev_harvest": "09-20",
+   "winter": {
+    "kind": "cover",
+    "crop_id": "cereal_rye",
+    "seed": "10-01",
+    "terminate": "04-30",
+    "plant": null,
+    "harvest": null
+   },
+   "next_crop_id": "soybean",
+   "next_plant": "05-12",
+   "region": "NC Piedmont",
+   "production_system": null,
+   "grower": {
+    "low_moisture_concern": null,
+    "residue_report": null,
+    "observations": []
+   },
+   "candidate_id": "c_d306ccf54e",
+   "crops": [
+    "maize",
+    "cereal_rye",
+    "soybean",
+    "cereal_rye",
+    "maize"
+   ],
+   "seasons": [
+    {
+     "season": 1,
+     "year": 2027,
+     "plan": {
+      "plan_id": "c_d306ccf54e_s1",
+      "label": "Season 1: Field corn, Cereal rye cover, then Soybean",
+      "previous_crop_id": "field_corn",
+      "prev_harvest": "09-20",
+      "winter": {
+       "kind": "cover",
+       "crop_id": "cereal_rye",
+       "seed": "10-01",
+       "terminate": "04-30",
+       "plant": null,
+       "harvest": null
+      },
+      "next_crop_id": "soybean",
+      "next_plant": "05-12",
+      "region": "NC Piedmont",
+      "production_system": null,
+      "grower": {
+       "low_moisture_concern": null,
+       "residue_report": null,
+       "observations": []
+      }
+     },
+     "origins": {
+      "prev_harvest": "assumed",
+      "next_plant": "assumed",
+      "winter.seed": "assumed",
+      "winter.terminate": "assumed"
+     },
+     "sources": {
+      "prev_harvest": {
+       "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+       "url": null
+      },
+      "next_plant": {
+       "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+       "url": null
+      },
+      "winter.seed": {
+       "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+       "url": null
+      },
+      "winter.terminate": {
+       "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+       "url": null
+      }
+     },
+     "flagged": [],
+     "manual_check": [
+      "sb_pw_02",
+      "sb_pw_03",
+      "sb_pw_05",
+      "sb_wt_01",
+      "sb_wt_02",
+      "sb_wd_01",
+      "sb_soil_01",
+      "sb_soil_02",
+      "sb_soil_03",
+      "sb_nut_01",
+      "cr_wt_01",
+      "cr_soil_01",
+      "cr_tt_05",
+      "cr_trait_01",
+      "cr_trait_02"
+     ],
+     "unknown": [
+      "sb_wd_07",
+      "cr_tt_03"
+     ]
+    },
+    {
+     "season": 2,
+     "year": 2028,
+     "plan": {
+      "plan_id": "c_d306ccf54e_s2",
+      "label": "Season 2: Soybean, Cereal rye cover, then Field corn",
+      "previous_crop_id": "soybean",
+      "prev_harvest": "10-15",
+      "winter": {
+       "kind": "cover",
+       "crop_id": "cereal_rye",
+       "seed": "10-20",
+       "terminate": "04-05",
+       "plant": null,
+       "harvest": null
+      },
+      "next_crop_id": "field_corn",
+      "next_plant": "04-15",
+      "region": "NC Piedmont",
+      "production_system": null,
+      "grower": {
+       "low_moisture_concern": null,
+       "residue_report": null,
+       "observations": []
+      }
+     },
+     "origins": {
+      "prev_harvest": "assumed",
+      "next_plant": "assumed",
+      "winter.seed": "assumed",
+      "winter.terminate": "assumed"
+     },
+     "sources": {
+      "prev_harvest": {
+       "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+       "url": null
+      },
+      "next_plant": {
+       "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+       "url": null
+      },
+      "winter.seed": {
+       "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+       "url": null
+      },
+      "winter.terminate": {
+       "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+       "url": null
+      }
+     },
+     "flagged": [
+      "cr_pw_01"
+     ],
+     "manual_check": [
+      "fc_wt_02",
+      "fc_pw_06",
+      "fc_soil_01",
+      "fc_nut_01",
+      "cr_wt_01",
+      "cr_soil_01",
+      "cr_nut_01",
+      "cr_trait_01",
+      "cr_trait_02"
+     ],
+     "unknown": [
+      "fc_pw_01",
+      "fc_pw_02",
+      "fc_pw_03",
+      "fc_pw_04",
+      "fc_pw_05",
+      "fc_wt_01",
+      "fc_pw_07",
+      "fc_nut_02",
+      "cr_tt_01"
+     ]
+    }
+   ],
+   "origins": [
+    "assumed",
+    "verified_source"
+   ],
+   "checks_summary": {
+    "flagged": [
+     "cr_pw_01"
+    ],
+    "manual_check": [
+     "cr_nut_01",
+     "cr_soil_01",
+     "cr_trait_01",
+     "cr_trait_02",
+     "cr_tt_05",
+     "cr_wt_01",
+     "fc_nut_01",
+     "fc_pw_06",
+     "fc_soil_01",
+     "fc_wt_02",
+     "sb_nut_01",
+     "sb_pw_02",
+     "sb_pw_03",
+     "sb_pw_05",
+     "sb_soil_01",
+     "sb_soil_02",
+     "sb_soil_03",
+     "sb_wd_01",
+     "sb_wt_01",
+     "sb_wt_02"
+    ],
+    "unknown": 11,
+    "rules_checked": 196
+   },
+   "matches_rotation": "winter_cover"
+  },
+  {
+   "plan_id": "c_73110fbcbf_s1",
+   "label": "Field corn \u2192 Soybean \u2192 Field corn",
+   "previous_crop_id": "field_corn",
+   "prev_harvest": "09-20",
+   "winter": {
+    "kind": "none",
+    "crop_id": null,
+    "seed": null,
+    "terminate": null,
+    "plant": null,
+    "harvest": null
+   },
+   "next_crop_id": "soybean",
+   "next_plant": "05-12",
+   "region": "NC Piedmont",
+   "production_system": null,
+   "grower": {
+    "low_moisture_concern": null,
+    "residue_report": null,
+    "observations": []
+   },
+   "candidate_id": "c_73110fbcbf",
+   "crops": [
+    "maize",
+    "soybean",
+    "maize"
+   ],
+   "seasons": [
+    {
+     "season": 1,
+     "year": 2027,
+     "plan": {
+      "plan_id": "c_73110fbcbf_s1",
+      "label": "Season 1: Field corn, no planted cover, then Soybean",
+      "previous_crop_id": "field_corn",
+      "prev_harvest": "09-20",
+      "winter": {
+       "kind": "none",
+       "crop_id": null,
+       "seed": null,
+       "terminate": null,
+       "plant": null,
+       "harvest": null
+      },
+      "next_crop_id": "soybean",
+      "next_plant": "05-12",
+      "region": "NC Piedmont",
+      "production_system": null,
+      "grower": {
+       "low_moisture_concern": null,
+       "residue_report": null,
+       "observations": []
+      }
+     },
+     "origins": {
+      "prev_harvest": "assumed",
+      "next_plant": "assumed"
+     },
+     "sources": {
+      "prev_harvest": {
+       "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+       "url": null
+      },
+      "next_plant": {
+       "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+       "url": null
+      }
+     },
+     "flagged": [],
+     "manual_check": [
+      "sb_pw_02",
+      "sb_pw_03",
+      "sb_pw_05",
+      "sb_wt_01",
+      "sb_wt_02",
+      "sb_wd_01",
+      "sb_soil_01",
+      "sb_soil_02",
+      "sb_soil_03",
+      "sb_nut_01"
+     ],
+     "unknown": [
+      "sb_wd_07"
+     ]
+    },
+    {
+     "season": 2,
+     "year": 2028,
+     "plan": {
+      "plan_id": "c_73110fbcbf_s2",
+      "label": "Season 2: Soybean, no planted cover, then Field corn",
+      "previous_crop_id": "soybean",
+      "prev_harvest": "10-15",
+      "winter": {
+       "kind": "none",
+       "crop_id": null,
+       "seed": null,
+       "terminate": null,
+       "plant": null,
+       "harvest": null
+      },
+      "next_crop_id": "field_corn",
+      "next_plant": "04-15",
+      "region": "NC Piedmont",
+      "production_system": null,
+      "grower": {
+       "low_moisture_concern": null,
+       "residue_report": null,
+       "observations": []
+      }
+     },
+     "origins": {
+      "prev_harvest": "assumed",
+      "next_plant": "assumed"
+     },
+     "sources": {
+      "prev_harvest": {
+       "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+       "url": null
+      },
+      "next_plant": {
+       "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+       "url": null
+      }
+     },
+     "flagged": [],
+     "manual_check": [
+      "fc_wt_02",
+      "fc_pw_06",
+      "fc_soil_01",
+      "fc_nut_01"
+     ],
+     "unknown": [
+      "fc_pw_01",
+      "fc_pw_02",
+      "fc_pw_03",
+      "fc_pw_04",
+      "fc_pw_05",
+      "fc_wt_01",
+      "fc_pw_07"
+     ]
+    }
+   ],
+   "origins": [
+    "assumed",
+    "verified_source"
+   ],
+   "checks_summary": {
+    "flagged": [],
+    "manual_check": [
+     "fc_nut_01",
+     "fc_pw_06",
+     "fc_soil_01",
+     "fc_wt_02",
+     "sb_nut_01",
+     "sb_pw_02",
+     "sb_pw_03",
+     "sb_pw_05",
+     "sb_soil_01",
+     "sb_soil_02",
+     "sb_soil_03",
+     "sb_wd_01",
+     "sb_wt_01",
+     "sb_wt_02"
+    ],
+    "unknown": 8,
+    "rules_checked": 196
+   },
+   "matches_rotation": "current_practice"
+  },
+  {
+   "plan_id": "c_6a4063b038_s1",
+   "label": "Field corn \u2192 Winter wheat \u2192 Soybean \u2192 Field corn",
+   "previous_crop_id": "field_corn",
+   "prev_harvest": "09-20",
+   "winter": {
+    "kind": "winter_grain",
+    "crop_id": "winter_wheat",
+    "seed": null,
+    "terminate": null,
+    "plant": "10-25",
+    "harvest": "06-05"
+   },
+   "next_crop_id": "soybean",
+   "next_plant": "06-12",
+   "region": "NC Piedmont",
+   "production_system": "conventional",
+   "grower": {
+    "low_moisture_concern": null,
+    "residue_report": null,
+    "observations": []
+   },
+   "candidate_id": "c_6a4063b038",
+   "crops": [
+    "maize",
+    "winter_wheat",
+    "soybean",
+    "maize"
+   ],
+   "seasons": [
+    {
+     "season": 1,
+     "year": 2027,
+     "plan": {
+      "plan_id": "c_6a4063b038_s1",
+      "label": "Season 1: Field corn, winter wheat, then double-crop, then Soybean",
+      "previous_crop_id": "field_corn",
+      "prev_harvest": "09-20",
+      "winter": {
+       "kind": "winter_grain",
+       "crop_id": "winter_wheat",
+       "seed": null,
+       "terminate": null,
+       "plant": "10-25",
+       "harvest": "06-05"
+      },
+      "next_crop_id": "soybean",
+      "next_plant": "06-12",
+      "region": "NC Piedmont",
+      "production_system": "conventional",
+      "grower": {
+       "low_moisture_concern": null,
+       "residue_report": null,
+       "observations": []
+      }
+     },
+     "origins": {
+      "prev_harvest": "assumed",
+      "next_plant": "assumed",
+      "winter.plant": "assumed",
+      "winter.harvest": "assumed"
+     },
+     "sources": {
+      "prev_harvest": {
+       "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+       "url": null
+      },
+      "next_plant": {
+       "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+       "url": null
+      },
+      "winter.plant": {
+       "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+       "url": null
+      },
+      "winter.harvest": {
+       "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+       "url": null
+      }
+     },
+     "flagged": [
+      "ww_rc_01"
+     ],
+     "manual_check": [
+      "sb_pw_02",
+      "sb_pw_03",
+      "sb_pw_05",
+      "sb_wt_01",
+      "sb_wt_02",
+      "sb_wd_01",
+      "sb_soil_01",
+      "sb_soil_02",
+      "sb_soil_03",
+      "sb_nut_01",
+      "ww_v2_pw_local_map",
+      "ww_v2_gd_harvest_context",
+      "sb_v2_pw_after_wheat_context",
+      "sb_v2_mg_mid_july",
+      "sb_v2_pw_delay_yield",
+      "sb_v2_seed_late",
+      "sb_v2_spacing_late"
+     ],
+     "unknown": [
+      "sb_rc_03",
+      "sb_v2_mg_mid_june"
+     ]
+    },
+    {
+     "season": 2,
+     "year": 2028,
+     "plan": {
+      "plan_id": "c_6a4063b038_s2",
+      "label": "Season 2: Soybean, no planted cover, then Field corn",
+      "previous_crop_id": "soybean",
+      "prev_harvest": "10-15",
+      "winter": {
+       "kind": "none",
+       "crop_id": null,
+       "seed": null,
+       "terminate": null,
+       "plant": null,
+       "harvest": null
+      },
+      "next_crop_id": "field_corn",
+      "next_plant": "04-15",
+      "region": "NC Piedmont",
+      "production_system": null,
+      "grower": {
+       "low_moisture_concern": null,
+       "residue_report": null,
+       "observations": []
+      }
+     },
+     "origins": {
+      "prev_harvest": "assumed",
+      "next_plant": "assumed"
+     },
+     "sources": {
+      "prev_harvest": {
+       "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+       "url": null
+      },
+      "next_plant": {
+       "title": "A.C.R.E NC demo presets (typical Piedmont dates, assumed)",
+       "url": null
+      }
+     },
+     "flagged": [],
+     "manual_check": [
+      "fc_wt_02",
+      "fc_pw_06",
+      "fc_soil_01",
+      "fc_nut_01"
+     ],
+     "unknown": [
+      "fc_pw_01",
+      "fc_pw_02",
+      "fc_pw_03",
+      "fc_pw_04",
+      "fc_pw_05",
+      "fc_wt_01",
+      "fc_pw_07"
+     ]
+    }
+   ],
+   "origins": [
+    "assumed",
+    "verified_source"
+   ],
+   "checks_summary": {
+    "flagged": [
+     "ww_rc_01"
+    ],
+    "manual_check": [
+     "fc_nut_01",
+     "fc_pw_06",
+     "fc_soil_01",
+     "fc_wt_02",
+     "sb_nut_01",
+     "sb_pw_02",
+     "sb_pw_03",
+     "sb_pw_05",
+     "sb_soil_01",
+     "sb_soil_02",
+     "sb_soil_03",
+     "sb_v2_mg_mid_july",
+     "sb_v2_pw_after_wheat_context",
+     "sb_v2_pw_delay_yield",
+     "sb_v2_seed_late",
+     "sb_v2_spacing_late",
+     "sb_wd_01",
+     "sb_wt_01",
+     "sb_wt_02",
+     "ww_v2_gd_harvest_context",
+     "ww_v2_pw_local_map"
+    ],
+    "unknown": 9,
+    "rules_checked": 196
+   },
+   "matches_rotation": "add_grain_crop"
+  }
+ ]
+}

@@ -3,7 +3,7 @@
 import httpx
 import pytest
 
-from fieldshift.weather.power_client import (
+from acre.weather.power_client import (
     OFFLINE_ENV,
     OfflineError,
     PowerFetchError,

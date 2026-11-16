@@ -5,8 +5,8 @@ from pathlib import Path
 import httpx
 import pytest
 
-from fieldshift.field import soil as soil_mod
-from fieldshift.field.soil import awc_to_depth, get_soil, parse_sda_table
+from acre.field import soil as soil_mod
+from acre.field.soil import awc_to_depth, get_soil, parse_sda_table
 
 FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "sda" / "union_county_response.json"
 NOW = datetime(2026, 11, 12, 12, 0, tzinfo=UTC)
@@ -57,7 +57,7 @@ def test_awc_by_depth_has_units_and_keeps_a_published_zero(table):
 
 
 def test_missing_awc_makes_the_total_partial_not_zero():
-    from fieldshift.field.soil import SoilHorizon
+    from acre.field.soil import SoilHorizon
 
     hz = [
         SoilHorizon(name="A", top_cm=0, bottom_cm=30, texture=None, texture_code=None,
@@ -183,7 +183,7 @@ def test_malformed_body_from_sda_is_unavailable(tmp_path):
 
 
 def test_corrupt_cache_is_ignored_and_refetched(table, tmp_path):
-    from fieldshift.field.soil import _cache_path, build_query
+    from acre.field.soil import _cache_path, build_query
 
     p = _cache_path(tmp_path, build_query(34.98, -80.55))
     for junk in ("{not json", json.dumps({"fetched_at": "2026-11-12T12:00:00Z", "table": "oops"}),
@@ -223,7 +223,7 @@ def test_expired_cache_is_never_reported_as_current(table, tmp_path):
 
 
 def test_offline_follows_the_environment(tmp_path, monkeypatch):
-    monkeypatch.setenv("FIELDSHIFT_OFFLINE", "1")
+    monkeypatch.setenv("ACRE_OFFLINE", "1")
     r = get_soil(
         34.98, -80.55, client=failing_client(AssertionError("net")), cache_dir=tmp_path, now=NOW
     )

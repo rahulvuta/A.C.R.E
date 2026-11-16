@@ -5,7 +5,7 @@
   Every file is a synthetic response shaped from docs/global/contract.md, labelled with a
   top-level `_fixture` note. The Pergamino seasons are made up (a seeded random series); the
   Union County field result reuses the saved real NASA sample entry for `soy_corn__rye` from
-  public/data/nasa/compare.json. Field polygons are invented shapes, not anyone's farm.
+  public/data/nasa/union/compare.json. Field polygons are invented shapes, not anyone's farm.
 
   Areas use @turf/area's own formula (spherical excess, radius 6378137 m), so C2's check
   "within 0.1% of the fixture's area_ha" compares like with like.
@@ -284,7 +284,7 @@ write("farm-three-fields-two-cells", {
 });
 
 // The NC field reuses the saved real sample entry for soy_corn__rye.
-const compare = JSON.parse(readFileSync(join(root, "public/data/nasa/compare.json"), "utf8"));
+const compare = JSON.parse(readFileSync(join(root, "public/data/nasa/union/compare.json"), "utf8"));
 const nc = structuredClone(compare.plans.find((p) => p.plan_id === "soy_corn__rye"));
 nc.plan_id = "fld_nc_plan";
 nc.plan.plan_id = "fld_nc_plan";

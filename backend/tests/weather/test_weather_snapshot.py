@@ -5,10 +5,10 @@ import socket
 
 import pytest
 
-from fieldshift.weather.coverage import coverage_report
-from fieldshift.weather.normalize import normalize_power_response
-from fieldshift.weather.power_client import RawFetch
-from fieldshift.weather.snapshot import (
+from acre.weather.coverage import coverage_report
+from acre.weather.normalize import normalize_power_response
+from acre.weather.power_client import RawFetch
+from acre.weather.snapshot import (
     DEFAULT_SNAPSHOT_DIR,
     SnapshotError,
     daily_to_parquet_bytes,
@@ -16,7 +16,7 @@ from fieldshift.weather.snapshot import (
     verify_snapshot,
     write_snapshot,
 )
-from fieldshift.weather.sources import derive_grid_cell
+from acre.weather.sources import derive_grid_cell
 
 
 @pytest.fixture
@@ -123,8 +123,8 @@ def test_time_standard_is_documented_as_local_solar_time():
 def test_health_endpoint_reads_only_the_snapshot(no_network, monkeypatch):
     from fastapi.testclient import TestClient
 
-    from fieldshift.api.app import create_app
-    from fieldshift.weather.power_client import OFFLINE_ENV
+    from acre.api.app import create_app
+    from acre.weather.power_client import OFFLINE_ENV
 
     monkeypatch.setenv(OFFLINE_ENV, "1")
     body = TestClient(create_app()).get("/health").json()

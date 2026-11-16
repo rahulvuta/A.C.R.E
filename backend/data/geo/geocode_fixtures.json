@@ -1,0 +1,435 @@
+{
+ "_note": "SYNTHETIC offline fixtures shaped like Nominatim jsonv2 answers (not recorded responses). Reverse keys are the point rounded to 2 decimals. Used for the 8 NC demo points, Pergamino AR, Ludhiana IN and Paris FR so tests and the offline demo never need the network.",
+ "reverse": {
+  "-33.89,-60.57": {
+   "address": {
+    "ISO3166-2-lvl4": "AR-B",
+    "city": "Pergamino",
+    "country": "Argentina",
+    "country_code": "ar",
+    "county": "Partido de Pergamino",
+    "state": "Buenos Aires"
+   },
+   "display_name": "Pergamino, Partido de Pergamino, Buenos Aires, Argentina",
+   "name": "Pergamino"
+  },
+  "30.90,75.85": {
+   "address": {
+    "ISO3166-2-lvl4": "IN-PB",
+    "city": "Ludhiana",
+    "country": "India",
+    "country_code": "in",
+    "state": "Punjab",
+    "state_district": "Ludhiana"
+   },
+   "display_name": "Ludhiana, Punjab, India",
+   "name": "Ludhiana"
+  },
+  "34.64,-79.10": {
+   "address": {
+    "ISO3166-2-lvl4": "US-NC",
+    "country": "United States",
+    "country_code": "us",
+    "county": "Robeson County",
+    "state": "North Carolina"
+   },
+   "boundingbox": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "display_name": "Robeson County, North Carolina, United States",
+   "name": "Robeson County"
+  },
+  "34.94,-77.93": {
+   "address": {
+    "ISO3166-2-lvl4": "US-NC",
+    "country": "United States",
+    "country_code": "us",
+    "county": "Duplin County",
+    "state": "North Carolina"
+   },
+   "boundingbox": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "display_name": "Duplin County, North Carolina, United States",
+   "name": "Duplin County"
+  },
+  "34.98,-80.55": {
+   "address": {
+    "ISO3166-2-lvl4": "US-NC",
+    "country": "United States",
+    "country_code": "us",
+    "county": "Union County",
+    "state": "North Carolina"
+   },
+   "boundingbox": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "display_name": "Union County, North Carolina, United States",
+   "name": "Union County"
+  },
+  "35.36,-77.99": {
+   "address": {
+    "ISO3166-2-lvl4": "US-NC",
+    "country": "United States",
+    "country_code": "us",
+    "county": "Wayne County",
+    "state": "North Carolina"
+   },
+   "boundingbox": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "display_name": "Wayne County, North Carolina, United States",
+   "name": "Wayne County"
+  },
+  "35.52,-78.37": {
+   "address": {
+    "ISO3166-2-lvl4": "US-NC",
+    "country": "United States",
+    "country_code": "us",
+    "county": "Johnston County",
+    "state": "North Carolina"
+   },
+   "boundingbox": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "display_name": "Johnston County, North Carolina, United States",
+   "name": "Johnston County"
+  },
+  "35.59,-77.37": {
+   "address": {
+    "ISO3166-2-lvl4": "US-NC",
+    "country": "United States",
+    "country_code": "us",
+    "county": "Pitt County",
+    "state": "North Carolina"
+   },
+   "boundingbox": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "display_name": "Pitt County, North Carolina, United States",
+   "name": "Pitt County"
+  },
+  "35.64,-80.53": {
+   "address": {
+    "ISO3166-2-lvl4": "US-NC",
+    "country": "United States",
+    "country_code": "us",
+    "county": "Rowan County",
+    "state": "North Carolina"
+   },
+   "boundingbox": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "display_name": "Rowan County, North Carolina, United States",
+   "name": "Rowan County"
+  },
+  "35.81,-80.87": {
+   "address": {
+    "ISO3166-2-lvl4": "US-NC",
+    "country": "United States",
+    "country_code": "us",
+    "county": "Iredell County",
+    "state": "North Carolina"
+   },
+   "boundingbox": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "display_name": "Iredell County, North Carolina, United States",
+   "name": "Iredell County"
+  },
+  "48.85,2.35": {
+   "address": {
+    "ISO3166-2-lvl4": "FR-IDF",
+    "city": "Paris",
+    "country": "France",
+    "country_code": "fr",
+    "county": "Paris",
+    "state": "Ile-de-France"
+   },
+   "display_name": "Paris, Ile-de-France, Metropolitan France, France",
+   "name": "Paris"
+  }
+ },
+ "search": {
+  "duplin county": [
+   {
+    "address": {
+     "ISO3166-2-lvl4": "US-NC",
+     "country": "United States",
+     "country_code": "us",
+     "county": "Duplin County",
+     "state": "North Carolina"
+    },
+    "addresstype": "county",
+    "boundingbox": [
+     "34.64",
+     "35.239999999999995",
+     "-78.23",
+     "-77.63000000000001"
+    ],
+    "display_name": "Duplin County, North Carolina, United States",
+    "lat": "34.94",
+    "lon": "-77.93",
+    "name": "Duplin County",
+    "type": "administrative"
+   }
+  ],
+  "iredell county": [
+   {
+    "address": {
+     "ISO3166-2-lvl4": "US-NC",
+     "country": "United States",
+     "country_code": "us",
+     "county": "Iredell County",
+     "state": "North Carolina"
+    },
+    "addresstype": "county",
+    "boundingbox": [
+     "35.510000000000005",
+     "36.11",
+     "-81.17",
+     "-80.57000000000001"
+    ],
+    "display_name": "Iredell County, North Carolina, United States",
+    "lat": "35.81",
+    "lon": "-80.87",
+    "name": "Iredell County",
+    "type": "administrative"
+   }
+  ],
+  "johnston county": [
+   {
+    "address": {
+     "ISO3166-2-lvl4": "US-NC",
+     "country": "United States",
+     "country_code": "us",
+     "county": "Johnston County",
+     "state": "North Carolina"
+    },
+    "addresstype": "county",
+    "boundingbox": [
+     "35.220000000000006",
+     "35.82",
+     "-78.67",
+     "-78.07000000000001"
+    ],
+    "display_name": "Johnston County, North Carolina, United States",
+    "lat": "35.52",
+    "lon": "-78.37",
+    "name": "Johnston County",
+    "type": "administrative"
+   }
+  ],
+  "ludhiana": [
+   {
+    "address": {
+     "ISO3166-2-lvl4": "IN-PB",
+     "city": "Ludhiana",
+     "country": "India",
+     "country_code": "in",
+     "state": "Punjab",
+     "state_district": "Ludhiana"
+    },
+    "addresstype": "city",
+    "boundingbox": [
+     "30.84",
+     "30.959999999999997",
+     "75.69999999999999",
+     "75.91999999999999"
+    ],
+    "display_name": "Ludhiana, Punjab, India",
+    "lat": "30.9",
+    "lon": "75.85",
+    "name": "Ludhiana",
+    "type": "administrative"
+   }
+  ],
+  "paris": [
+   {
+    "address": {
+     "ISO3166-2-lvl4": "FR-IDF",
+     "city": "Paris",
+     "country": "France",
+     "country_code": "fr",
+     "county": "Paris",
+     "state": "Ile-de-France"
+    },
+    "addresstype": "city",
+    "boundingbox": [
+     "48.7966",
+     "48.9166",
+     "2.2022",
+     "2.4221999999999997"
+    ],
+    "display_name": "Paris, Ile-de-France, Metropolitan France, France",
+    "lat": "48.8566",
+    "lon": "2.3522",
+    "name": "Paris",
+    "type": "administrative"
+   }
+  ],
+  "pergamino": [
+   {
+    "address": {
+     "ISO3166-2-lvl4": "AR-B",
+     "city": "Pergamino",
+     "country": "Argentina",
+     "country_code": "ar",
+     "county": "Partido de Pergamino",
+     "state": "Buenos Aires"
+    },
+    "addresstype": "city",
+    "boundingbox": [
+     "-33.9495",
+     "-33.829499999999996",
+     "-60.7236",
+     "-60.5036"
+    ],
+    "display_name": "Pergamino, Partido de Pergamino, Buenos Aires, Argentina",
+    "lat": "-33.8895",
+    "lon": "-60.5736",
+    "name": "Pergamino",
+    "type": "administrative"
+   }
+  ],
+  "pitt county": [
+   {
+    "address": {
+     "ISO3166-2-lvl4": "US-NC",
+     "country": "United States",
+     "country_code": "us",
+     "county": "Pitt County",
+     "state": "North Carolina"
+    },
+    "addresstype": "county",
+    "boundingbox": [
+     "35.290000000000006",
+     "35.89",
+     "-77.67",
+     "-77.07000000000001"
+    ],
+    "display_name": "Pitt County, North Carolina, United States",
+    "lat": "35.59",
+    "lon": "-77.37",
+    "name": "Pitt County",
+    "type": "administrative"
+   }
+  ],
+  "robeson county": [
+   {
+    "address": {
+     "ISO3166-2-lvl4": "US-NC",
+     "country": "United States",
+     "country_code": "us",
+     "county": "Robeson County",
+     "state": "North Carolina"
+    },
+    "addresstype": "county",
+    "boundingbox": [
+     "34.34",
+     "34.94",
+     "-79.39999999999999",
+     "-78.8"
+    ],
+    "display_name": "Robeson County, North Carolina, United States",
+    "lat": "34.64",
+    "lon": "-79.1",
+    "name": "Robeson County",
+    "type": "administrative"
+   }
+  ],
+  "rowan county": [
+   {
+    "address": {
+     "ISO3166-2-lvl4": "US-NC",
+     "country": "United States",
+     "country_code": "us",
+     "county": "Rowan County",
+     "state": "North Carolina"
+    },
+    "addresstype": "county",
+    "boundingbox": [
+     "35.34",
+     "35.94",
+     "-80.83",
+     "-80.23"
+    ],
+    "display_name": "Rowan County, North Carolina, United States",
+    "lat": "35.64",
+    "lon": "-80.53",
+    "name": "Rowan County",
+    "type": "administrative"
+   }
+  ],
+  "union county": [
+   {
+    "address": {
+     "ISO3166-2-lvl4": "US-NC",
+     "country": "United States",
+     "country_code": "us",
+     "county": "Union County",
+     "state": "North Carolina"
+    },
+    "addresstype": "county",
+    "boundingbox": [
+     "34.68",
+     "35.279999999999994",
+     "-80.85",
+     "-80.25"
+    ],
+    "display_name": "Union County, North Carolina, United States",
+    "lat": "34.98",
+    "lon": "-80.55",
+    "name": "Union County",
+    "type": "administrative"
+   }
+  ],
+  "wayne county": [
+   {
+    "address": {
+     "ISO3166-2-lvl4": "US-NC",
+     "country": "United States",
+     "country_code": "us",
+     "county": "Wayne County",
+     "state": "North Carolina"
+    },
+    "addresstype": "county",
+    "boundingbox": [
+     "35.06",
+     "35.66",
+     "-78.28999999999999",
+     "-77.69"
+    ],
+    "display_name": "Wayne County, North Carolina, United States",
+    "lat": "35.36",
+    "lon": "-77.99",
+    "name": "Wayne County",
+    "type": "administrative"
+   }
+  ]
+ }
+}

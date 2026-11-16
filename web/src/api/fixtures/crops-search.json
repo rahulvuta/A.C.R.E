@@ -1,0 +1,71 @@
+{
+ "meta": {
+  "request_id": "fixture",
+  "snapshot_hash": null
+ },
+ "_fixture": "Synthetic fixture built from docs/global/contract.md \u00a711\u2013\u00a716 (Agent D). Example values, not real backend output.",
+ "can_research": true,
+ "results": [
+  {
+   "crop_id": "soybean",
+   "name": "Soybean",
+   "family": "Fabaceae",
+   "roles": [
+    "cash"
+   ],
+   "origin": "verified_source",
+   "has_calendar": true,
+   "has_economics": true,
+   "region_note": null
+  },
+  {
+   "crop_id": "field_corn",
+   "name": "Field corn",
+   "family": "Poaceae",
+   "roles": [
+    "cash"
+   ],
+   "origin": "verified_source",
+   "has_calendar": true,
+   "has_economics": true,
+   "region_note": null
+  },
+  {
+   "crop_id": "wheat",
+   "name": "Wheat",
+   "family": "Poaceae",
+   "roles": [
+    "cash",
+    "winter_grain"
+   ],
+   "origin": "verified_source",
+   "has_calendar": true,
+   "has_economics": true,
+   "region_note": null
+  },
+  {
+   "crop_id": "cereal_rye",
+   "name": "Cereal rye",
+   "family": "Poaceae",
+   "roles": [
+    "cover"
+   ],
+   "origin": "verified_source",
+   "has_calendar": true,
+   "has_economics": false,
+   "region_note": null
+  },
+  {
+   "crop_id": "crimson_clover",
+   "name": "Crimson clover",
+   "family": "Fabaceae",
+   "roles": [
+    "cover"
+   ],
+   "origin": "source_checked",
+   "has_calendar": true,
+   "has_economics": false,
+   "region_note": "Found by AI research; the quote was found on the cited page."
+  }
+ ]
+}

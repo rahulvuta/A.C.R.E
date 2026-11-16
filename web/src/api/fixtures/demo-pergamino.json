@@ -1,0 +1,147 @@
+{
+ "meta": {
+  "request_id": "fixture",
+  "snapshot_hash": null
+ },
+ "_fixture": "Synthetic fixture built from docs/global/contract.md \u00a711\u2013\u00a716 (Agent D). Example values, not real backend output.",
+ "label": "Demo farm (example values)",
+ "farm": {
+  "farm_id": "farm_demo_pergamino",
+  "name": "Pergamino demo farm",
+  "anchor": {
+   "latitude": -33.89,
+   "longitude": -60.57
+  },
+  "fields": [
+   {
+    "field_id": "fld_demo_lote1",
+    "name": "Lote 1",
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -60.585,
+        -33.895
+       ],
+       [
+        -60.5742,
+        -33.895
+       ],
+       [
+        -60.5742,
+        -33.886
+       ],
+       [
+        -60.585,
+        -33.886
+       ],
+       [
+        -60.585,
+        -33.895
+       ]
+      ]
+     ]
+    },
+    "equipment": [
+     "no_till_drill",
+     "sprayer",
+     "combine"
+    ],
+    "readings": [
+     {
+      "date": "2026-09-10",
+      "kind": "soil_moisture_pct",
+      "value": 19.0,
+      "depth_cm": 20
+     }
+    ]
+   },
+   {
+    "field_id": "fld_demo_lote2",
+    "name": "Lote 2",
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -60.57,
+        -33.884
+       ],
+       [
+        -60.561,
+        -33.884
+       ],
+       [
+        -60.561,
+        -33.8768
+       ],
+       [
+        -60.57,
+        -33.8768
+       ],
+       [
+        -60.57,
+        -33.884
+       ]
+      ]
+     ]
+    },
+    "equipment": [
+     "planter",
+     "sprayer",
+     "combine"
+    ],
+    "readings": []
+   }
+  ]
+ },
+ "current_plans": {
+  "fld_demo_lote1": [
+   {
+    "plan_id": "cur_l1_s1",
+    "label": "Soybean, then maize",
+    "previous_crop_id": "soybean",
+    "prev_harvest": "04-20",
+    "winter": {
+     "kind": "none"
+    },
+    "next_crop_id": "maize",
+    "next_plant": "09-25"
+   }
+  ],
+  "fld_demo_lote2": [
+   {
+    "plan_id": "cur_l2_s1",
+    "label": "Wheat, then second soybean",
+    "previous_crop_id": "maize",
+    "prev_harvest": "03-30",
+    "winter": {
+     "kind": "winter_grain",
+     "crop_id": "wheat",
+     "plant": "06-10",
+     "harvest": "12-05"
+    },
+    "next_crop_id": "soybean",
+    "next_plant": "12-12"
+   }
+  ]
+ },
+ "economics_overrides": {},
+ "goals": {
+  "priorities": {
+   "soil_cover": 1,
+   "water_conservation": 2,
+   "weather_resilience": 2,
+   "crop_diversity": 1,
+   "living_cover_duration": 1,
+   "management_simplicity": 1,
+   "profit": 3
+  }
+ },
+ "loss_assumptions": {
+  "dry_spring_pct": null,
+  "wet_spring_pct": null,
+  "heavy_rain_pct": null
+ }
+}

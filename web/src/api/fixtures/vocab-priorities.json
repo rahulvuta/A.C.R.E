@@ -1,0 +1,44 @@
+{
+ "meta": {
+  "request_id": "fixture",
+  "snapshot_hash": null
+ },
+ "_fixture": "Synthetic fixture built from docs/global/contract.md \u00a711\u2013\u00a716 (Agent D). Example values, not real backend output.",
+ "items": [
+  {
+   "id": "soil_cover",
+   "label": "Soil cover",
+   "explanation": "Days the soil is covered by a growing crop or residue."
+  },
+  {
+   "id": "water_conservation",
+   "label": "Water",
+   "explanation": "Less rain falling on bare soil, where it can run off."
+  },
+  {
+   "id": "weather_resilience",
+   "label": "Weather risk",
+   "explanation": "Fewer springs that are too dry or too wet for the plan."
+  },
+  {
+   "id": "crop_diversity",
+   "label": "Crop variety",
+   "explanation": "More crop families in the rotation."
+  },
+  {
+   "id": "living_cover_duration",
+   "label": "Living cover",
+   "explanation": "Days a planted crop is growing on the field."
+  },
+  {
+   "id": "management_simplicity",
+   "label": "Simplicity",
+   "explanation": "Fewer field passes a year."
+  },
+  {
+   "id": "profit",
+   "label": "Profit",
+   "explanation": "Median 10-year margin from your prices, yields and costs."
+  }
+ ]
+}

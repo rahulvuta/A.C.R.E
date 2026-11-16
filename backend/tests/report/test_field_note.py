@@ -1,8 +1,8 @@
 import json
 from datetime import date
 
-from fieldshift.report.audit import audited_numbers, bare_numbers, verify
-from fieldshift.report.field_note import ADVISER_FIELDS, build_field_note
+from acre.report.audit import audited_numbers, bare_numbers, verify
+from acre.report.field_note import ADVISER_FIELDS, build_field_note
 
 from .conftest import YEAR, edited
 
@@ -51,8 +51,8 @@ def test_audit_entries_say_where_the_numbers_came_from(ctx, rye):
 
 def test_n_reference_in_the_note_is_sourced_and_not_a_target():
     # the corn leg: fc_nut_01 appears as a reference with both ends audited as "extension"
-    from fieldshift.api.samples import load_samples
-    from fieldshift.compare.context import get_context
+    from acre.api.samples import load_samples
+    from acre.compare.context import get_context
 
     ctx = get_context()
     p = load_samples().plans["soy_corn__no_cover"].plan
@@ -255,7 +255,7 @@ def test_published_heavy_rain_threshold_is_an_extension_number_with_its_source(c
 
 
 def test_unresolved_checks_carry_the_same_text_as_the_checker(ctx, rye):
-    from fieldshift.planner.checker import check_plan
+    from acre.planner.checker import check_plan
 
     note = build_field_note(rye, ctx, year=YEAR, as_of=AS_OF)
     rules = {r.rule_id: r for r in check_plan(rye, ctx.index, year=YEAR).rules}
@@ -279,7 +279,7 @@ def test_unresolved_checks_carry_the_same_text_as_the_checker(ctx, rye):
 
 
 def test_unresolved_checks_list_the_printable_ones_first(ctx, rye):
-    from fieldshift.contracts import GrowerInputs
+    from acre.contracts import GrowerInputs
 
     worried = rye.model_copy(update={"grower": GrowerInputs(low_moisture_concern=True)})
     items = build_field_note(worried, ctx, year=YEAR, as_of=AS_OF)["unresolved_checks"]
@@ -290,7 +290,7 @@ def test_unresolved_checks_list_the_printable_ones_first(ctx, rye):
 
 
 def test_calendar_evidence_and_conflict_and_path_notes_have_text(ctx):
-    from fieldshift.planner.wheat_path import demo_plan
+    from acre.planner.wheat_path import demo_plan
 
     note = build_field_note(demo_plan(), ctx, year=YEAR, maturity_group=3)
     for a in note["calendar"]["actions"]:
@@ -304,12 +304,12 @@ def test_calendar_evidence_and_conflict_and_path_notes_have_text(ctx):
 
 
 def test_conflict_group_text_in_the_note(ctx):
-    from fieldshift.contracts import Plan, WinterManagement
+    from acre.contracts import Plan, WinterManagement
 
     corn = Plan(plan_id="c", previous_crop_id="soybean", prev_harvest="10-20",
                 winter=WinterManagement(kind="none"), next_crop_id="field_corn", next_plant="04-25",
                 region="NC Piedmont", production_system="no-till")  # fmt: skip
-    from fieldshift.planner.checker import check_plan
+    from acre.planner.checker import check_plan
 
     res = check_plan(corn, ctx.index, year=YEAR)
     assert res.conflicts and "sources disagree" in res.conflicts[0].text
@@ -317,8 +317,8 @@ def test_conflict_group_text_in_the_note(ctx):
 
 
 def test_printed_conflicts_keep_their_text_in_the_note(ctx):
-    from fieldshift.contracts import Plan, WinterManagement
-    from fieldshift.planner.checker import check_plan
+    from acre.contracts import Plan, WinterManagement
+    from acre.planner.checker import check_plan
 
     corn = Plan(plan_id="c", previous_crop_id="soybean", prev_harvest="10-20",
                 winter=WinterManagement(kind="none"), next_crop_id="field_corn", next_plant="05-05",

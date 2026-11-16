@@ -2,6 +2,7 @@ import { Component, lazy, Suspense, useEffect, useMemo, useState, type CSSProper
 import type { CardKey } from "../../content/strategies";
 import { fieldStateAt, MONTH_TICKS, SEASON_DAYS, seasonDay, seasonLabel } from "../../scene/growth";
 import type { CameraPreset, ScenePalette } from "../../scene/FarmWorld";
+import type { FarmLayout } from "../../scene/polygonShape";
 import type { StripVM } from "../../view/build";
 import { Segmented } from "../../ui/components";
 
@@ -38,7 +39,7 @@ function useMedia(query: string): boolean {
 }
 
 /** Illustration colors. The selection frame uses the theme's accent. */
-function readPalette(): ScenePalette {
+export function readPalette(): ScenePalette {
   const css = getComputedStyle(document.documentElement);
   const v = (name: string, fallback: string) => css.getPropertyValue(name).trim() || fallback;
   return {
@@ -75,7 +76,19 @@ export function FarmView({
   onSelectCard,
   onSpring,
   replay = false,
+  layout,
+  tag = "Illustration of your plan",
+  waterKey = true,
+  still = false,
 }: {
+  /** Draw on demand with no camera drift or opening sweep (cheaper; the farm view uses it). */
+  still?: boolean;
+  /** Farm layout: strips are fields drawn at their real shapes and places (field workspace). */
+  layout?: FarmLayout | null;
+  /** The small label on the stage. */
+  tag?: string;
+  /** Show the "soil water that spring" key (only meaningful when strips carry modeled wetness). */
+  waterKey?: boolean;
   strips: StripVM[];
   /** The spring being replayed, shown as a chip on the stage. */
   spring: { year: number; text: string; dry: boolean } | null;
@@ -84,12 +97,13 @@ export function FarmView({
   /** Past springs page: hold the scene inside the 30 days before planting, where the replayed rain falls. */
   replay?: boolean;
 }) {
-  const reducedMotion = useMedia("(prefers-reduced-motion: reduce)");
+  const reducedMotion = useMedia("(prefers-reduced-motion: reduce)") || still;
   const webgl = useMemo(hasWebGL, []);
   const [day, setDay] = useState(reducedMotion ? DEFAULT_DAY : 0);
   const [playing, setPlaying] = useState(false);
   const [intro, setIntro] = useState(!reducedMotion);
   const [preset, setPreset] = useState<CameraPreset>("overview");
+  const [resetKey, setResetKey] = useState(0);
   const [mounted, setMounted] = useState(false);
   const palette = useMemo(readPalette, []);
 
@@ -174,7 +188,7 @@ export function FarmView({
         }
       >
         <Suspense fallback={loading}>
-          <FarmWorld strips={strips} day={shown} preset={preset} animate={!reducedMotion} palette={palette} onSelect={onSelectCard} />
+          <FarmWorld strips={strips} layout={layout} day={shown} preset={preset} animate={!reducedMotion} palette={palette} onSelect={onSelectCard} resetKey={resetKey} />
         </Suspense>
       </SceneBoundary>
     );
@@ -187,7 +201,13 @@ export function FarmView({
       <div className="fb-stage">
         {canvas}
 
-        <p className="fb-stage-tag">Illustration of your plan</p>
+        <p className="fb-stage-tag">{tag}</p>
+        <div className="fb-stage-nav">
+          <span className="fb-stage-hint">Drag to rotate · scroll or pinch to zoom · right-drag to move</span>
+          <button type="button" onClick={() => setResetKey((n) => n + 1)}>
+            Reset view
+          </button>
+        </div>
         {spring ? (
           <button type="button" className={`fb-stage-spring${spring.dry ? " is-dry" : ""}`} onClick={onSpring}>
             <span className="fb-stage-spring-text">
@@ -196,7 +216,7 @@ export function FarmView({
           </button>
         ) : null}
 
-        {preset === "overview" ? (
+        {preset === "overview" && waterKey ? (
           <p className="fb-stage-key">
             <span className="lg lg-water" /> Blue band: soil water that spring, modeled
           </p>

@@ -1,0 +1,46 @@
+{
+  "cell": {
+    "center": {
+      "latitude": 35.0,
+      "longitude": -80.625
+    },
+    "note": "One NASA POWER weather series covers this whole cell.",
+    "size_deg": [
+      0.5,
+      0.625
+    ]
+  },
+  "cell_id": "cell_+35.000_-80.625",
+  "coverage": {
+    "basis": "complete year = a calendar year with every parameter on every day; complete >= 40 years, insufficient_data < 15",
+    "complete_off_seasons": null,
+    "complete_pre_plant_windows": null,
+    "complete_years": 44,
+    "first_date": "1981-01-01",
+    "last_date": "2025-06-30",
+    "missing_days": {
+      "GWETROOT": 0,
+      "GWETTOP": 0,
+      "PRECTOTCORR": 0,
+      "T2M": 0,
+      "T2M_MAX": 0,
+      "T2M_MIN": 0
+    },
+    "status": "complete"
+  },
+  "job_status": "ready",
+  "meta": {
+    "catalog_version": "v2:8eeb5bf961eb",
+    "plan_version": null,
+    "request_id": "req_example",
+    "snapshot_hash": "5ce131cfcd1f07d3738ecb9afaec6c3ef6a4764b6a3528bdd2b64debe7ba5f4e"
+  },
+  "notes": [],
+  "poll": null,
+  "reason": null,
+  "reason_text": null,
+  "retrieved_at": "2026-11-13T03:24:40Z",
+  "snapshot_hash": "5ce131cfcd1f07d3738ecb9afaec6c3ef6a4764b6a3528bdd2b64debe7ba5f4e",
+  "source": "committed",
+  "status": "complete"
+}

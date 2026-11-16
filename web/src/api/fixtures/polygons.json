@@ -1,5 +1,5 @@
 {
-  "_fixture": "Synthetic fixture built from docs/global/contract.md (Agent D). Not real backend output; geometry is invented. area_ha is the geodesic area on the WGS84 ellipsoid (authalic sphere, radius 6371007.2 m), which is what the backend is expected to return; the first draft used a sphere of the equatorial radius and read 0.22 to 0.25 percent high.",
+  "_fixture": "Synthetic fixture built from docs/global/contract.md (Agent D). Not real backend output; geometry is invented.",
   "polygons": {
     "pergamino_square": {
       "geometry": {
@@ -29,7 +29,7 @@
           ]
         ]
       },
-      "area_ha": 102.61,
+      "area_ha": 102.87,
       "valid": true
     },
     "pergamino_l": {
@@ -68,7 +68,7 @@
           ]
         ]
       },
-      "area_ha": 138.49,
+      "area_ha": 138.85,
       "valid": true
     },
     "pergamino_holed": {
@@ -121,7 +121,7 @@
           ]
         ]
       },
-      "area_ha": 164.1,
+      "area_ha": 164.52,
       "valid": true
     },
     "pergamino_east": {
@@ -152,7 +152,7 @@
           ]
         ]
       },
-      "area_ha": 82.07,
+      "area_ha": 82.28,
       "valid": true
     },
     "union_parcels": {
@@ -209,7 +209,7 @@
           ]
         ]
       },
-      "area_ha": 68.88,
+      "area_ha": 69.04,
       "valid": true
     },
     "bowtie": {

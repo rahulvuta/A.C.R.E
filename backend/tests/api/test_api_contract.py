@@ -11,8 +11,8 @@ import jsonschema
 import pytest
 from fastapi.testclient import TestClient
 
-from fieldshift.api import contract
-from fieldshift.api.app import create_app
+from acre.api import contract
+from acre.api.app import create_app
 
 ROOT = Path(__file__).resolve().parents[2]
 OPENAPI = json.loads(contract.OPENAPI_PATH.read_text(encoding="utf-8"))
@@ -42,8 +42,13 @@ def test_a_corrupted_example_fails_validation():
 
 
 SPECS = {e.name: e for e in contract.example_specs()}
-SCHEMA_CHECKED = ["calendar", "backup", "note", "note_get", "compare", "compare_unsupported_location", "error_invalid_input", "health",
-                  "replay", "sensitivity", "years", "rotations"]
+SCHEMA_CHECKED = ["calendar", "backup", "note", "note_get", "compare", "compare_outside_nc_offline", "error_invalid_input", "health",
+                  "replay", "sensitivity", "years", "rotations",
+                  # A4: the global endpoints
+                  "weather_prepare_union", "weather_prepare_pergamino", "weather_get_offline",
+                  "weather_prepare_pending", "compare_pergamino", "years_post_pergamino",
+                  "sensitivity_pergamino", "farm_analyze_nc_pergamino", "farm_analyze_offline",
+                  "farm_invalid_bowtie", "recommend_union", "recommend_pergamino"]
 
 
 @pytest.mark.parametrize("name", SCHEMA_CHECKED)
@@ -82,7 +87,7 @@ def test_committed_contract_files_are_current():
     """Fails when the API changed but docs/api was not regenerated."""
     stale = [str(p.relative_to(ROOT)) for p, text in contract.render().items()
              if not p.exists() or p.read_text(encoding="utf-8") != text]
-    assert not stale, f"run `python -m fieldshift.api.contract`: {stale}"
+    assert not stale, f"run `python -m acre.api.contract`: {stale}"
 
 
 def test_openapi_documents_the_core_endpoints_and_error_shape():
@@ -121,18 +126,18 @@ def test_grower_entered_text_never_reaches_the_logs(caplog):
     "OBSERVATIONS: [nested [brackets] and } braces] trailing-secret",
 ])
 def test_scrub_filter_removes_the_whole_message_when_grower_fields_appear(caplog, message):
-    from fieldshift.api.logs import REDACTED, install_scrub_filter
+    from acre.api.logs import REDACTED, install_scrub_filter
 
     install_scrub_filter()
-    with caplog.at_level(logging.INFO, logger="fieldshift"):
-        logging.getLogger("fieldshift.test").info(message)
-    (rec,) = [r for r in caplog.records if r.name == "fieldshift.test"]
+    with caplog.at_level(logging.INFO, logger="acre"):
+        logging.getLogger("acre.test").info(message)
+    (rec,) = [r for r in caplog.records if r.name == "acre.test"]
     assert rec.getMessage() == REDACTED
     assert "secret" not in rec.getMessage() and "stalks" not in rec.getMessage()
 
 
 def test_uvicorn_access_log_drops_query_strings():
-    from fieldshift.api.logs import QueryStripFilter
+    from acre.api.logs import QueryStripFilter
 
     rec = logging.LogRecord("uvicorn.access", logging.INFO, "", 0,
                             '%s - "%s %s HTTP/%s" %d',
@@ -152,7 +157,7 @@ def test_framework_errors_carry_the_metadata_envelope():
 
 
 def test_unhandled_errors_return_a_500_envelope_without_leaking_details(monkeypatch):
-    import fieldshift.api.routes as routes
+    import acre.api.routes as routes
 
     def boom(*a, **k):
         raise RuntimeError("secret internal detail")
@@ -181,7 +186,7 @@ def test_offline_demo_serves_the_sample_and_core_calculations_with_the_network_d
     """A fresh process with every non-loopback connection refused: the app still serves."""
     code = f"""
 import os, socket, sys
-os.environ['FIELDSHIFT_OFFLINE'] = '1'
+os.environ['ACRE_OFFLINE'] = '1'
 real = socket.socket.connect
 def guard(self, addr, *a, **k):
     host = addr[0] if isinstance(addr, tuple) else addr
@@ -191,7 +196,7 @@ def guard(self, addr, *a, **k):
 socket.socket.connect = guard
 sys.path.insert(0, {str(ROOT)!r})
 from fastapi.testclient import TestClient
-from fieldshift.api.app import app
+from acre.api.app import app
 c = TestClient(app)
 assert c.get('/health').json()['offline'] is True
 r = c.post('/v1/plans/compare', json={{'rotation_ids': ['winter_cover']}})
@@ -206,11 +211,11 @@ print('offline-ok')
 
 
 def test_generating_the_contract_does_not_leak_offline_mode_into_the_environment(monkeypatch):
-    monkeypatch.delenv("FIELDSHIFT_OFFLINE", raising=False)
+    monkeypatch.delenv("ACRE_OFFLINE", raising=False)
     contract.render()
     import os
 
-    assert "FIELDSHIFT_OFFLINE" not in os.environ
+    assert "ACRE_OFFLINE" not in os.environ
 
 
 def test_405_keeps_the_allow_header_and_errors_carry_cors(caplog):
@@ -223,7 +228,7 @@ def test_405_keeps_the_allow_header_and_errors_carry_cors(caplog):
 
 
 def test_exception_tracebacks_never_carry_message_text_into_logs(caplog, monkeypatch):
-    import fieldshift.api.routes as routes
+    import acre.api.routes as routes
 
     secret = "GROWER-SECRET-TRACEBACK-77"
 
@@ -244,3 +249,21 @@ def test_exception_tracebacks_never_carry_message_text_into_logs(caplog, monkeyp
 def test_cors_allows_vite_fallback_port():
     r = TestClient(create_app()).get("/health", headers={"Origin": "http://localhost:5174"})
     assert r.headers.get("access-control-allow-origin") == "http://localhost:5174"
+
+
+def test_global_examples_say_what_they_show():
+    ex = lambda n: json.loads((contract.EXAMPLES_DIR / f"{n}.json").read_text())  # noqa: E731
+    assert ex("weather_prepare_union")["source"] == "committed"
+    assert ex("weather_prepare_pergamino")["job_status"] == "ready"
+    assert ex("weather_prepare_pending")["job_status"] == "pending"
+    assert ex("weather_get_offline")["reason"] == "offline_no_snapshot"
+    assert ex("compare_outside_nc_offline")["weather_location"]["code"] == "offline_no_snapshot"
+    perg = ex("compare_pergamino")
+    assert perg["plans"][0]["hemisphere"] == "south"
+    assert perg["thresholds"]["heavy_rain"]["method"] == "etccdi_r95p"
+    farm = ex("farm_analyze_nc_pergamino")
+    assert [f["scope"] for f in farm["fields"]] == ["nc", "global"]
+    assert "coordinates" not in json.dumps(farm)
+    assert ex("farm_invalid_bowtie")["issues"][0]["code"] == "self_intersection"
+    for n in ("recommend_union", "recommend_pergamino"):
+        assert "score" not in json.dumps(ex(n)).lower()

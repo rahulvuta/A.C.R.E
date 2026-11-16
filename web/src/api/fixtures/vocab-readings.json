@@ -1,0 +1,29 @@
+{
+ "meta": {
+  "request_id": "fixture",
+  "snapshot_hash": null
+ },
+ "_fixture": "Synthetic fixture built from docs/global/contract.md \u00a711\u2013\u00a716 (Agent D). Example values, not real backend output.",
+ "items": [
+  {
+   "id": "soil_moisture_pct",
+   "label": "Soil moisture (%)"
+  },
+  {
+   "id": "soil_moisture_vwc",
+   "label": "Soil moisture (VWC)"
+  },
+  {
+   "id": "rainfall_mm",
+   "label": "Rain gauge (mm)"
+  },
+  {
+   "id": "soil_temp_c",
+   "label": "Soil temperature (\u00b0C)"
+  },
+  {
+   "id": "note",
+   "label": "Note"
+  }
+ ]
+}

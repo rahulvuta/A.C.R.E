@@ -1,0 +1,86 @@
+{
+  "faostat_prices.zip": {
+    "url": "https://bulks-faostat.fao.org/production/Prices_E_All_Data_(Normalized).zip",
+    "sha256": "327f70a2230032d3966d6e9583ec5caf0e9416aa9fd91b444e02f6b8665c984d",
+    "bytes": 11684078,
+    "retrieved": "2026-11-15"
+  },
+  "faostat_crops.zip": {
+    "url": "https://bulks-faostat.fao.org/production/Production_Crops_Livestock_E_All_Data_(Normalized).zip",
+    "sha256": "c5835418c18f9322e7decbd6800f93a216eaae3cdfa31acb08f0518c0c6d6853",
+    "bytes": 33921825,
+    "retrieved": "2026-11-15"
+  },
+  "nass_crop.pdf": {
+    "url": "https://esmis.nal.usda.gov/sites/default/release-files/k3569432s/nk324887m/qn59s0097/cropan25.pdf",
+    "sha256": "0e3add3bc4c95c8ea5061d8e1e75d166e5d9a4a73dcf9204784be6697e94c0c9",
+    "bytes": 2358486,
+    "retrieved": "2026-11-15"
+  },
+  "nass_prices.pdf": {
+    "url": "https://release.nass.usda.gov/reports/agpr0725.pdf",
+    "sha256": "9be91d713ab4ffd9eca039dbf159ea7c99c01127efd6c71f6467956c4163f2e6",
+    "bytes": 1232555,
+    "retrieved": "2026-11-15"
+  },
+  "iowa.pdf": {
+    "url": "https://www.extension.iastate.edu/agdm/crops/pdf/a3-10.pdf",
+    "sha256": "f5785e149eed5bc522aa83b59d880022984ec5f763e236010f9f25b404225e2c",
+    "bytes": 322121,
+    "retrieved": "2026-11-15"
+  },
+  "ers_corn.csv": {
+    "url": "https://www.ers.usda.gov/media/4962/corn.csv",
+    "sha256": "a42362ce2c9b8f6a5992ae11ef6cb1ed12e25ec59b694782572daea646113951",
+    "bytes": 926106,
+    "retrieved": "2026-11-15"
+  },
+  "ers_cotton.csv": {
+    "url": "https://www.ers.usda.gov/media/4964/cotton.csv",
+    "sha256": "aa8d7e335cf02cf36d40cfd3238ae6b24d560cd509b3ca438527906c23b2daec",
+    "bytes": 907049,
+    "retrieved": "2026-11-15"
+  },
+  "ers_barley.csv": {
+    "url": "https://www.ers.usda.gov/media/4966/barley.csv",
+    "sha256": "c8d1c0cde0bbcb398ca52158941693a65bdb15c6380441d26049a94bba626bb7",
+    "bytes": 549906,
+    "retrieved": "2026-11-15"
+  },
+  "ers_peanuts.csv": {
+    "url": "https://www.ers.usda.gov/media/4968/peanuts.csv",
+    "sha256": "5f60b7b4738e2d72693dc5bec6f946955b8fb18b3c67e1d382b2076affd66c49",
+    "bytes": 681614,
+    "retrieved": "2026-11-15"
+  },
+  "ers_rice.csv": {
+    "url": "https://www.ers.usda.gov/media/4970/rice.csv",
+    "sha256": "0303305c0bd3a0bde99b72e494dd607fdfa35363f1ccc389ecb4bf494833fefb",
+    "bytes": 529684,
+    "retrieved": "2026-11-15"
+  },
+  "ers_sorghum.csv": {
+    "url": "https://www.ers.usda.gov/media/4972/sorghum.csv",
+    "sha256": "5af85d43128fab49edc48e0bbaa30afdf0e4173970748b0a6ead6bba6873c7ee",
+    "bytes": 585542,
+    "retrieved": "2026-11-15"
+  },
+  "ers_oats.csv": {
+    "url": "https://www.ers.usda.gov/media/4974/oats.csv",
+    "sha256": "3e5eeb943f696b39da37bc2b06a294d4a0e4481b0e7a1718ea7aee7fcdd1fd87",
+    "bytes": 481104,
+    "retrieved": "2026-11-15"
+  },
+  "ers_soybeans.csv": {
+    "url": "https://www.ers.usda.gov/media/4976/soybeans.csv",
+    "sha256": "c917b5f19620d1b82c289ce6cca5df270b004e5cd35368c13181efe7c55e1b86",
+    "bytes": 1002125,
+    "retrieved": "2026-11-15"
+  },
+  "ers_wheat.csv": {
+    "url": "https://www.ers.usda.gov/media/4978/wheat.csv",
+    "sha256": "dcb104291c9f34c1b53292fb19ef27e32f9f51eed66915ab35ef6ec6020a8df5",
+    "bytes": 1009366,
+    "retrieved": "2026-11-15"
+  }
+}
