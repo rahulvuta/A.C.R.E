@@ -12,6 +12,7 @@ import { ensureFieldLayers, FIELDS_FILL, setFieldData, STATE_COLOR, type FieldSt
 import { CELL_LABEL, ensureCellLayers, SHARED_NOTICE, setCellData, type WeatherCellView } from "./weatherCells";
 import type { GeoApi } from "./geoApi";
 import type { Pick } from "./LocationCard";
+import { hasWinter } from "../ui/cropNames";
 import { MapScreen } from "./MapScreen";
 
 /*
@@ -39,9 +40,11 @@ export interface FarmMapProps {
   onMapReady?: (map: MlMap) => void;
   /** Rendered under the location card. Defaults to "Start a farm here". */
   pickAction?: (pick: Pick) => ReactNode;
+  /** The guided sequence: the place card's button starts drawing straight away (the farm is made when the field is finished). */
+  drawOnPick?: boolean;
 }
 
-export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, pickAction }: FarmMapProps) {
+export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, pickAction, drawOnPick }: FarmMapProps) {
   const { farms, selectedFarm: farm, selectedFieldId, persistence, notice } = useFarms();
   const [map, setMap] = useState<MlMap | null>(null);
   const drawing = useRef<Drawing | null>(null);
@@ -148,6 +151,14 @@ export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, 
     },
     [map],
   );
+  // A grower who comes back to the map sees their own fields, not the whole world: the first
+  // time the map is ready, it opens on the saved farm. Later edits never move the map.
+  const openedOnFarm = useRef(false);
+  useEffect(() => {
+    if (!map || openedOnFarm.current) return;
+    openedOnFarm.current = true;
+    if (farm && farm.fields.length > 0) zoomToFarm(farm);
+  }, [map, farm, zoomToFarm]);
 
   const loadDemo = useCallback(async () => {
     setMessage({ kind: "info", text: "Loading the demo farm…" });
@@ -195,7 +206,9 @@ export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, 
           if (problem) throw new Error(problem.message);
           const target = ensureFarm();
           const f = farmActions.addField(target.farm_id, g);
-          setMessage({ kind: "info", text: `${f.name} added.` });
+          // A field drawn while zoomed far out comes out far too large; say so instead of saving it silently.
+          const m2 = areaM2(g);
+          setMessage({ kind: "info", text: m2 > LARGE_FIELD_M2 ? `${f.name} added. It is ${fmtHa(m2)} (${fmtAc(m2)}), which is large for one field. If that is not right, zoom in and press Edit shape.` : `${f.name} added.` });
         } else if (selected) {
           const r = t === "draw-parcel" ? addParcel(selected.geometry, ring) : addHole(selected.geometry, ring);
           if (!r.ok) throw new Error(r.message);
@@ -249,6 +262,12 @@ export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, 
     map?.fitBounds([[w, s], [e, n]], { padding: 60, maxZoom: 17, duration: 800 });
   };
 
+  const drawAction = () =>
+    tool === "idle" ? (
+      <button type="button" className="btn btn-primary" onClick={() => startDraw("draw-field")}>
+        Draw my field here
+      </button>
+    ) : null;
   const defaultAction = (pick: Pick) => (
     <button
       type="button"
@@ -264,7 +283,7 @@ export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, 
   );
 
   return (
-    <MapScreen api={api} onMapReady={ready} onMapClick={onMapClick} pickAction={pickAction ?? defaultAction}>
+    <MapScreen api={api} onMapReady={ready} onMapClick={onMapClick} pickAction={pickAction ?? (drawOnPick ? drawAction : defaultAction)}>
       <FarmPanel
         farms={farms}
         farm={farm}
@@ -407,7 +426,7 @@ function FarmPanel({
                 <strong>{fmtAc(liveM2)}</strong> · {fmtHa(liveM2)}
               </>
             ) : (
-              "Place at least three corners to see the acres."
+              "Place at least three corners to see the size."
             )}
           </p>
           <div className="mp-tools">
@@ -453,7 +472,7 @@ function FarmPanel({
                       <strong>{a.ac}</strong> {a.ha}
                     </span>
                   </span>
-                  <span className="mp-field-crops">{planCrops(f.plan)}</span>
+                  <span className="mp-field-crops">{planCrops(f.plan, hasWinter(centroid(f.geometry).latitude))}</span>
                   <span className="mp-field-status" data-state={f.plan ? (fieldStates[f.field_id] ?? "none") : "no-plan"}>
                     <span className="mp-dot" style={{ background: f.plan ? STATE_COLOR[fieldStates[f.field_id] ?? "none"] : "transparent" }} aria-hidden="true" />
                     {f.plan ? PLAN_STATUS[fieldStates[f.field_id] ?? "none"] : "No plan yet"}
@@ -510,10 +529,10 @@ function FarmPanel({
 
       <div className="mp-files">
         <button type="button" className="btn btn-quiet btn-small" onClick={download} disabled={!farm || farm.fields.length === 0 || busy}>
-          Export GeoJSON
+          Save a copy of my fields
         </button>
         <button type="button" className="btn btn-quiet btn-small" onClick={() => fileInput.current?.click()} disabled={busy}>
-          Import GeoJSON
+          Load a saved copy
         </button>
         <input
           ref={fileInput}
@@ -572,6 +591,8 @@ function ResultsLegend({ farm, states = {}, cells = [] }: { farm: Farm; states?:
 }
 
 const fmt = (v: number) => (v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2));
+/** Above this a single drawn shape is probably a zoom mistake: 200 hectares, about 500 acres. */
+const LARGE_FIELD_M2 = 200 * SQ_M_PER_HA;
 const fmtAc = (m2: number) => `${fmt(m2 / SQ_M_PER_AC)} ac`;
 const fmtHa = (m2: number) => `${fmt(m2 / SQ_M_PER_HA)} ha`;
 

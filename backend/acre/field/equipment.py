@@ -17,6 +17,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 EQUIPMENT: dict[str, str] = {
+    # Tractor implements (the first list this vocabulary had; the order is kept).
     "planter": "Row-crop planter",
     "grain_drill": "Grain drill",
     "no_till_drill": "No-till drill",
@@ -30,7 +31,17 @@ EQUIPMENT: dict[str, str] = {
     "forage_harvester": "Forage harvester",
     "irrigation_pivot": "Irrigation: center pivot",
     "irrigation_drip": "Irrigation: drip",
-    "irrigation_none": "No irrigation",
+    "irrigation_none": "Rain only (no irrigation)",
+    # Work done by hand, with animals or with hired help: most of the world's farms.
+    "hand_tools": "Hand tools (hoe, planting stick, machete)",
+    "hand_harvest": "Harvest by hand",
+    "knapsack_sprayer": "Knapsack (backpack) sprayer",
+    "animal_plough": "Plough or cart pulled by animals",
+    "hired_labour": "Hired workers",
+    "hired_tractor": "Hired tractor service",
+    # More ways to water.
+    "irrigation_furrow": "Irrigation: furrow, flood or canal",
+    "irrigation_sprinkler": "Irrigation: sprinkler or hose",
 }
 OTHER_PREFIX = "other:"
 _OTHER = re.compile(r"^other:[\w .,/()+-]{1,40}$")
@@ -50,9 +61,13 @@ READINGS: dict[str, tuple[str, str | None, float | None, float | None]] = {
 MAX_READINGS = 500
 
 DRILLS = ("grain_drill", "no_till_drill")
-SEEDERS = ("planter", "grain_drill", "no_till_drill")
-TERMINATION = {"sprayer": "herbicide", "roller_crimper": "roller_crimp", "disk": "tillage",
-               "chisel_plow": "tillage", "field_cultivator": "tillage"}  # fmt: skip
+# A crop can be planted with a machine or by hand; hand planting comes last so a listed machine is named first.
+SEEDERS = ("planter", "grain_drill", "no_till_drill", "hand_tools")
+TERMINATION = {"sprayer": "herbicide", "knapsack_sprayer": "herbicide",
+               "roller_crimper": "roller_crimp", "disk": "tillage", "chisel_plow": "tillage",
+               "field_cultivator": "tillage", "animal_plough": "tillage",
+               "hired_tractor": "tillage", "hand_tools": "tillage"}  # fmt: skip
+HARVESTERS = ("combine", "forage_harvester", "hand_harvest")
 
 
 def valid_equipment(v: str) -> bool:
@@ -158,7 +173,7 @@ def _uses(k: str) -> list[str]:
         u.append("cover_seeding_broadcast")
     if k in TERMINATION:
         u.append(f"termination:{TERMINATION[k]}")
-    if k in ("combine", "forage_harvester"):
+    if k in HARVESTERS:
         u.append("harvest")
     return u
 
@@ -202,7 +217,7 @@ def season_feasibility(equipment: list[str], next_crop: str, cover: str | None,
     steps.append({"step": "plant", "crop_id": next_crop,
                   "status": "complete" if plant_with else "manual_check",
                   "equipment": plant_with[:1],
-                  "reason_text": None if plant_with else "No planter or drill is listed."})  # fmt: skip
+                  "reason_text": None if plant_with else "No planter, drill or hand tools are listed."})  # fmt: skip
     if grain_crop:
         drills = [e for e in DRILLS if e in have]
         steps.append({"step": "plant", "crop_id": grain_crop, "kind": "winter_grain",

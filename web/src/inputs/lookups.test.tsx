@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { dateValue, setDate } from "./testDates";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { EconomicsEditor, PlanEditor, createEconomicsValue, createPlanEditorValue, resetCalendarLookupsForTests, resetEconomicsLookupsForTests, type EconomicsValue, type PlanEditorValue } from "./index";
@@ -244,11 +245,11 @@ describe("automatic date lookup", () => {
     expect(api.calendarResearch).toHaveBeenCalledTimes(1);
     expect(api.calendarResearch).toHaveBeenCalledWith("soybean", "US-NC", expect.any(AbortSignal));
     expect(screen.getByRole("status")).toHaveTextContent("Looking up typical planting and harvest dates for Soybean… This usually takes under a minute.");
-    expect(screen.getByRole("textbox", { name: "Planting date" })).toHaveValue("");
+    expect(dateValue("Planting date")).toBe("");
     await tick(2000); await tick(10);
     expect(api.calendarResearchJob).toHaveBeenCalledWith("cal-soybean", expect.any(AbortSignal));
     expect(api.autofill).toHaveBeenCalledTimes(2);
-    expect(screen.getByRole("textbox", { name: "Planting date" })).toHaveValue("05-10");
+    expect(dateValue("Planting date")).toBe("05-10");
     expect(screen.getByText("AI suggestion, not verified")).toBeInTheDocument();
     expect(screen.getByText("Dates marked AI-found came from a lookup of published guidance for your area. Check them against what you do.")).toBeInTheDocument();
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
@@ -277,10 +278,10 @@ describe("automatic date lookup", () => {
     const api = planApi({ entries: [entry("soybean", "next")] });
     render(<Plan api={api} />);
     await tick(10);
-    fireEvent.change(screen.getByRole("textbox", { name: "Planting date" }), { target: { value: "06-01" } });
+    setDate("Planting date", "06-01");
     await tick(10); await tick(2100); await tick(10);
     expect(api.autofill).toHaveBeenCalledTimes(2);
-    expect(screen.getByRole("textbox", { name: "Planting date" })).toHaveValue("06-01");
+    expect(dateValue("Planting date")).toBe("06-01");
     expect(screen.getByText("You entered")).toBeInTheDocument();
   });
   it("stops on request, and starts a new lookup after a failure when asked", async () => {
@@ -313,8 +314,8 @@ describe("automatic date lookup", () => {
     expect(api.calendarResearch).toHaveBeenLastCalledWith("soybean", "US-NC", expect.any(AbortSignal));
     await tick(10); await tick(2100); await tick(10);
     expect(api.calendarResearch).toHaveBeenCalledTimes(2);
-    expect(screen.getByRole("textbox", { name: "Harvest date" })).toHaveValue("10-02");
-    expect(screen.getByRole("textbox", { name: "Planting date" })).toHaveValue("05-10");
+    expect(dateValue("Harvest date")).toBe("10-02");
+    expect(dateValue("Planting date")).toBe("05-10");
   });
   it("in the full editor looks up dates only after the grower has asked for typical dates", async () => {
     const api = planApi({ entries: [entry("soybean", "next")] });
@@ -326,7 +327,7 @@ describe("automatic date lookup", () => {
     expect(api.autofill).toHaveBeenCalledTimes(1);
     expect(api.calendarResearch).toHaveBeenCalledTimes(1);
     await tick(10); await tick(2100); await tick(10);
-    expect(screen.getByRole("textbox", { name: "Next planting" })).toHaveValue("05-10");
+    expect(dateValue("Next planting")).toBe("05-10");
   });
 });
 

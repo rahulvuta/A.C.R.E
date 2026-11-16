@@ -98,3 +98,45 @@
 .acre-input-suggestion-main { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; }
 .acre-input-suggestions .acre-input-source { overflow-wrap: anywhere; }
 @media (max-width: 600px) { .acre-input-suggestions button, .acre-input-research-status button { min-height: 44px; } }
+
+/* The picked crop: where it came from and what exists here, then the rest behind one click. */
+.acre-input-crop-facts [data-found="yes"]::before { content: "✓ "; color: var(--cover); font-weight: 600; }
+.acre-input-crop-facts [data-found="no"] { color: var(--ink-muted); }
+.acre-input-crop-more { flex-basis: 100%; font-size: 13px; }
+.acre-input-crop-more > summary { cursor: pointer; color: var(--action); }
+.acre-input-crop-more > span { display: block; margin-top: 4px; }
+
+/* A date is two lists: the day, then the month by name. */
+fieldset.acre-input-date { border: 0; padding: 0; margin: 0 0 12px; min-width: 0; }
+fieldset.acre-input-date > legend { padding: 0; font-weight: 500; margin-bottom: 6px; }
+.acre-input-date-row { display: flex; gap: 8px; }
+.acre-input-date-row select { min-height: 40px; padding: 6px 10px; font: inherit; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--surface); }
+.acre-input-date-row select:first-child { width: 92px; }
+.acre-input-date-row select:last-child { min-width: 170px; }
+
+/* Equipment in three groups: by hand or with animals, with a tractor, water. */
+.acre-input-equipment-group { margin-top: 14px; }
+.acre-input-equipment-group h3 { margin: 0 0 6px; font-size: 15px; font-weight: 600; }
+
+/* Prices: one line on whether money results are possible, named costs to add, the rest behind a click. */
+.acre-input-money-line { margin: 2px 0 10px; font-size: 14px; color: var(--ink-muted); }
+.acre-input-money-line[data-ready="yes"]::before { content: "✓ "; color: var(--cover); font-weight: 600; }
+.acre-input-money-line[data-ready="no"] { color: var(--check); }
+.acre-input-cost-starters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0; font-size: 14px; }
+.acre-input-cost-starters button { padding: 5px 12px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); font: inherit; font-size: 14px; cursor: pointer; text-transform: capitalize; }
+.acre-input-cost-starters button:hover { border-color: var(--action); color: var(--action); }
+.acre-input-more-prices { margin: 8px 0; font-size: 14px; }
+.acre-input-more-prices > summary { cursor: pointer; color: var(--action); }
+
+/* Bad years: four choices and "I don't know" in place of a percent to guess. */
+.acre-input-loss-question { margin: 16px 0; }
+.acre-input-loss-q { margin: 0 0 8px; font-weight: 500; }
+.acre-input-loss-choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.acre-input-loss-choices button { display: grid; gap: 6px; min-width: 128px; padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--surface); font: inherit; font-size: 15px; text-align: left; cursor: pointer; }
+.acre-input-loss-choices button[aria-pressed="true"] { border-color: var(--action); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--action); }
+.acre-input-loss-meter { display: block; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.acre-input-loss-meter i { display: block; height: 100%; background: var(--check); }
+.acre-input-loss-exact { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 14px; color: var(--ink-muted); }
+.acre-input-loss-exact input { width: 84px; }
+
+.acre-inputs input[aria-invalid="true"] { border-color: var(--check); background: var(--check-soft); }

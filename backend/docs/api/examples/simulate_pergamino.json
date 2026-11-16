@@ -179,44 +179,44 @@
   "crop_money": {
     "cereal_rye": {
       "costs_per_area": {
-        "area_unit": "ha",
-        "origin": "assumed",
-        "value": 86.49
+        "area_unit": null,
+        "origin": null,
+        "value": null
       },
       "crop_id": "cereal_rye",
-      "currency": "USD",
+      "currency": null,
       "price": {
         "high": null,
         "low": null,
-        "origin": "assumed",
-        "typical": 0.0
+        "origin": null,
+        "typical": null
       },
-      "status": "complete",
+      "status": "unavailable",
       "yield_per_area": {
-        "area_unit": "ha",
-        "origin": "assumed",
-        "value": 0.0
+        "area_unit": null,
+        "origin": null,
+        "value": null
       }
     },
     "soybean": {
       "costs_per_area": {
         "area_unit": "ha",
-        "origin": "assumed",
-        "value": 160.62
+        "origin": null,
+        "value": null
       },
       "crop_id": "soybean",
-      "currency": "USD",
+      "currency": null,
       "price": {
-        "high": 540.0,
-        "low": 360.0,
-        "origin": "assumed",
-        "typical": 450.0
+        "high": null,
+        "low": null,
+        "origin": null,
+        "typical": null
       },
-      "status": "complete",
+      "status": "unavailable",
       "yield_per_area": {
         "area_unit": "ha",
-        "origin": "assumed",
-        "value": 3.089
+        "origin": "verified_source",
+        "value": 2.945
       }
     }
   },
@@ -697,7 +697,7 @@
         "basis": "Share of crop price, yield and cost inputs supplied by the grower or traceable sources; mock inputs score zero.",
         "level": "Low",
         "note": "Data support only; not a calibrated probability of accuracy or success.",
-        "percent": 0
+        "percent": 33
       },
       "events": [
         {
@@ -1040,7 +1040,7 @@
         "basis": "Share of crop price, yield and cost inputs supplied by the grower or traceable sources; mock inputs score zero.",
         "level": "Low",
         "note": "Data support only; not a calibrated probability of accuracy or success.",
-        "percent": 0
+        "percent": 17
       },
       "events": [
         {

@@ -64,7 +64,7 @@ it("formats supplied zero and null deltas without treating a blank as zero", () 
 it("can render standalone per-plan badges and keeps AI suggestions separate from verified sources", () => {
   const { container } = render(<BadgeRow scenarioId="rye" badges={[{ badge: "best_for_priorities", scenario_id: "rye", why: "Example AI reasoning", origin: "ai_suggested" }, { badge: "most_sustainable", scenario_id: "other", why: "Other plan", origin: "verified_source" }]} />);
   expect(screen.getByText("Example AI reasoning")).toBeVisible();
-  expect(screen.getByText("ai_suggested")).toHaveClass("sim-origin-ai_suggested");
+  expect(screen.getByText("AI suggestion, not verified")).toHaveClass("sim-origin-ai_suggested");
   expect(container.querySelector(".sim-origin-verified_source")).not.toBeInTheDocument();
   expect(screen.queryByText("Other plan")).not.toBeInTheDocument();
 });

@@ -1,4 +1,5 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
+import { ORIGIN_LABEL } from "../ui/OriginBadge";
 import { ScenarioResults } from "./ScenarioResults";
 import { currentExample, EXAMPLE_LABEL, missingMoneyExample } from "./fixtures";
 import { originSchema, scenarioSchema } from "./schema";
@@ -60,21 +61,23 @@ it("shows farmer dots and a separate modeled line without converting or merging 
   expect(screen.getByText(/Readings do not change the simulation/)).toBeVisible();
 });
 
-it.each(originSchema.options)("keeps the exact %s origin label on supplied values", origin => {
+it.each(originSchema.options)("shows the plain label for %s and keeps the exact origin on the element", origin => {
   const scenario = scenarioSchema.parse({ ...currentExample, totals: { living_cover_days_per_year: { median: 123, origin } } });
   const { container } = render(<ScenarioResults scenario={scenario} />);
   const value = screen.getByText("123 days").closest("dd")!;
-  expect(within(value).getByText(origin)).toHaveAttribute("data-origin", origin);
+  expect(within(value).getByText(ORIGIN_LABEL[origin])).toHaveAttribute("data-origin", origin);
   if (origin === "ai_suggested" || origin === "source_checked") {
     expect(value.querySelector(".sim-origin-verified_source")).toBeNull();
-    expect(container.textContent).not.toMatch(/AI.*verified/);
+    // An AI row never reads as a published or checked-by-a-person source.
+    expect(value.textContent).not.toMatch(/Published source/);
+    expect(container.querySelector('[data-origin="verified_source"]')).toBeNull();
   }
 });
 
 it("shows missing provenance honestly and accepts a response with empty sections", () => {
   const scenario = scenarioSchema.parse({ scenario_id: "blank", label: "Blank plan", status: "unavailable", money_status: "unavailable", totals: { crop_families: 2 } });
   render(<ScenarioResults scenario={scenario} />);
-  expect(screen.getAllByText("Origin not available").length).toBeGreaterThan(0);
+  expect(screen.getAllByText("No source given").length).toBeGreaterThan(0);
   expect(screen.getByText(/No field readings were returned/)).toBeVisible();
   expect(screen.queryByText("$0")).not.toBeInTheDocument();
 });

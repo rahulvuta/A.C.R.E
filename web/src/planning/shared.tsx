@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { ZodError } from "zod";
 import { fetchHistoricalReplay, type Indicator, type Origin, type ReplayRequest, type Source, type Vulnerability } from "./api";
+import { ORIGIN_HELP, ORIGIN_LABEL } from "../ui/OriginBadge";
 export const readable = (s: string) => s.replaceAll("_", " ");
 export function OriginBadge({
   origin
 }: {
   origin?: Origin | "generated";
 }) {
-  return <span className={`pl-origin pl-origin-${origin ?? "unknown"}`} data-origin={origin ?? "unknown"}>{origin ?? "unknown"}</span>;
+  const known = origin && origin !== "generated" ? origin : null;
+  const label = known ? ORIGIN_LABEL[known] : origin === "generated" ? "Calculated" : "No source given";
+  return <span className={`pl-origin pl-origin-${origin ?? "unknown"}`} data-origin={origin ?? "unknown"} title={known ? ORIGIN_HELP[known] : undefined}>{label}</span>;
 }
 export function SourceLink({
   source

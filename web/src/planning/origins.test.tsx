@@ -1,4 +1,5 @@
 import { cleanup, render } from "@testing-library/react";
+import { ORIGIN_LABEL } from "../ui/OriginBadge";
 import { afterEach, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { OriginBadge } from "./shared";
@@ -11,7 +12,7 @@ it("gives sourced, estimated, grower and assumed dates visibly distinct styles a
   } = render(<div className="pl"><style>{css.replace(/@import[^;]+;/, "")}</style>{origins.map(origin => <OriginBadge origin={origin} key={origin} />)}</div>);
   const styles = origins.map(origin => {
     const badge = container.querySelector(`[data-origin="${origin}"]`)!;
-    expect(badge).toHaveTextContent(origin);
+    expect(badge).toHaveTextContent(ORIGIN_LABEL[origin]);
     const computed = getComputedStyle(badge);
     return [computed.backgroundColor, computed.borderStyle, computed.fontStyle, computed.borderWidth].join("|");
   });

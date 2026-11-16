@@ -397,3 +397,14 @@
   font-size: 13px;
   pointer-events: none;
 }
+
+/* The place card: where it is, two plain lines, the next action; the technical facts open on a click. */
+.mp-region { margin: 2px 0 8px; font-size: 14px; color: var(--ink-muted); }
+.mp-summary { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; font-size: 14px; }
+.mp-summary li { position: relative; padding-left: 18px; line-height: 1.4; }
+.mp-summary li::before { content: ""; position: absolute; left: 2px; top: 7px; width: 8px; height: 8px; border-radius: 50%; background: var(--ink-faint); }
+.mp-summary li[data-tone="ok"]::before { background: var(--cover); }
+.mp-summary li[data-tone="check"]::before { background: var(--check); }
+.mp-more { margin-top: 12px; font-size: 14px; }
+.mp-more > summary { cursor: pointer; color: var(--action); }
+.mp-more[open] > summary { margin-bottom: 8px; }

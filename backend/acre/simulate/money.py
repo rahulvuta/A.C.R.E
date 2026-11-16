@@ -89,7 +89,7 @@ def _from_record(crop_id: str, price: dict | None, yld: dict | None, costs: dict
     for name, val in (("price", p_val), ("yield", y_val), ("costs", c_val)):
         if val is None:
             m.gaps.append({"crop_id": crop_id, "field": name, "reason": "no_value",
-                           "text": f"No {name} for {crop_id}: give your own or none is used."})  # fmt: skip
+                           "text": f"No {name} for {crop_id} yet. Add your own to get a money result."})  # fmt: skip
     area = AREA_UNITS.get(y_unit[1].lower()) if y_unit else None
     c_area = AREA_UNITS.get(c_unit[1].lower()) if c_unit else None
     quantity_factor = _qty_factor(y_unit[0], p_unit[1]) if y_unit and p_unit else None

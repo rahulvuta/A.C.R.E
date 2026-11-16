@@ -30,9 +30,9 @@ export function MiniTimeline({ plan, year = new Date().getFullYear() + 1 }: { pl
 }
 
 /** "Corn → cereal rye (cover) → soybean". */
-export function planCrops(plan: FieldPlan | null): string {
+export function planCrops(plan: FieldPlan | null, winter = true): string {
   if (!plan) return "No crops yet";
   const w = plan.winter;
-  const mid = w.kind === "cover" ? `${cropName(w.crop_id).toLowerCase()} (cover)` : w.kind === "winter_grain" ? cropName(w.crop_id).toLowerCase() : "bare winter";
+  const mid = w.kind === "cover" ? `${cropName(w.crop_id).toLowerCase()} (cover)` : w.kind === "winter_grain" ? cropName(w.crop_id).toLowerCase() : winter ? "bare winter" : "bare ground";
   return `${cropName(plan.previous_crop_id)} → ${mid} → ${cropName(plan.next_crop_id).toLowerCase()}`;
 }

@@ -184,7 +184,7 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
         </nav>
         <div className="db-side-foot">
           <div className="db-links">
-            <a href="?view=fields">{navIcon("M4 3h10v12H4zM7 7h4M7 10h4")}Field tools</a>
+            <a href="./#d=fields">{navIcon("M3 3h5v5H3zM10 3h5v5h-5zM3 10h5v5H3zM10 10h5v5h-5z")}My fields</a>
             <a href="?view=methods">{navIcon("M9 16A7 7 0 1 0 9 2a7 7 0 0 0 0 14zM7 7a2 2 0 1 1 3 1.700c-.600.400-1 .800-1 1.500M9 12.700v.100")}How it works</a>
             <a href="?view=privacy">{navIcon("M9 2l5.500 2v4.500c0 3.500-2.300 6-5.500 7.500-3.200-1.500-5.500-4-5.500-7.500V4zM6.700 9l1.700 1.700 3-3.200")}Privacy and terms</a>
           </div>
@@ -212,6 +212,11 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
         </header>
         <main className="db-main ws-main gf-main">
           <SourceBanner source={api.source} />
+          <div className="gf-progress" role="progressbar" aria-label="Progress through the six steps" aria-valuemin={1} aria-valuemax={STEPS.length} aria-valuenow={def.n} aria-valuetext={`Step ${def.n} of ${STEPS.length}: ${def.nav}`}>
+            {STEPS.map((s) => (
+              <span key={s.id} data-state={s.id === step ? "now" : done[s.id] ? "done" : "todo"} />
+            ))}
+          </div>
           <StepHeader step={def} />
           {step === "farm" ? <StepFarm ctx={ctx} /> : null}
           {step === "now" && field ? <StepNow ctx={ctx} part={part} /> : null}
@@ -242,12 +247,16 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
               </span>
             ) : next ? (
               <span className="gf-next">
-                {nextBlocked ? <span className="gf-why">{!field ? "Draw a field or try a demo farm first." : "Complete your crops, dates and any money entries first."}</span> : null}
+                {nextBlocked ? <span className="gf-why">{!field ? (farm?.fields.length ? "Draw a new field, or choose one at the top." : "Draw a field or try a demo farm first.") : "Complete your crops, dates and any money entries first."}</span> : null}
                 <button type="button" className="btn btn-primary" disabled={nextBlocked} onClick={() => go(next.id)}>
                   Next: {next.nav}
                 </button>
               </span>
-            ) : null}
+            ) : (
+              <a className="btn btn-primary gf-finish" href="./#d=fields">
+                Done: my fields
+              </a>
+            )}
           </footer>
         </main>
       </div>

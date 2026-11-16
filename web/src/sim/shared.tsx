@@ -1,3 +1,4 @@
+import { ORIGIN_HELP, ORIGIN_LABEL } from "../ui/OriginBadge";
 import type { Distribution, Origin, Reason, Scenario, ScenarioEvent, SummaryValue } from "./schema";
 
 export const OUTLOOK_NOTE = "An evidence-based outlook from this field's real past seasons. It shows what to plan for under conditions seen here; it cannot say what any single year will bring.";
@@ -11,7 +12,7 @@ export function formatMoney(value: number | null | undefined, currency?: string)
   catch { return `${formatNumber(value)} ${currency}`; }
 }
 export function OriginLabel({ origin }: { origin?: Origin | null }) {
-  return <span className={`sim-origin sim-origin-${origin ?? "missing"}`} data-origin={origin ?? "missing"}>{origin ?? "Origin not available"}</span>;
+  return <span className={`sim-origin sim-origin-${origin ?? "missing"}`} data-origin={origin ?? "missing"} title={origin ? ORIGIN_HELP[origin as keyof typeof ORIGIN_HELP] : undefined}>{origin ? (ORIGIN_LABEL[origin as keyof typeof ORIGIN_LABEL] ?? readable(origin)) : "No source given"}</span>;
 }
 export function SourceLink({ source }: { source?: Distribution["source"] }) {
   if (!source?.title) return null;
@@ -33,7 +34,7 @@ export function ReasonText({ reason }: { reason: Reason }) {
   return <>{reason.crop_id && `${readable(reason.crop_id)}: `}{reason.reason_text || reason.text || reason.reason || "Not available"}<OriginLabel origin={reason.origin} /></>;
 }
 export function MarginSummary({ margin }: { margin?: Distribution | null }) {
-  return <div className="sim-margin"><p className="sim-label">10-year margin, median</p><div className="sim-headline"><span>{formatMoney(margin?.median, margin?.currency)}</span><OriginLabel origin={margin?.origin} /></div><p>Money left after the costs included in this plan, over the whole field.</p><p className="sim-range">Bad years: <Value value={margin?.p10} currency={margin?.currency} money origin={margin?.origin} /> <span>to good years: </span><Value value={margin?.p90} currency={margin?.currency} money origin={margin?.origin} /></p><p className="sim-muted">The range from bad years to good years holds the middle 80% of simulated years; the median is the middle result.</p><SourceLink source={margin?.source} /></div>;
+  return <div className="sim-margin"><p className="sim-label">10-year margin, median</p><div className="sim-headline"><span>{formatMoney(margin?.median, margin?.currency)}</span><OriginLabel origin={margin?.origin} /></div><p>Money left after the costs included in this plan, over the whole field.</p>{margin?.p10 != null && margin.p10 === margin.p90 ? <p className="sim-muted">Bad years and good years give the same figure here, because no weather loss was entered.</p> : <><p className="sim-range">Bad years: <Value value={margin?.p10} currency={margin?.currency} money origin={margin?.origin} /> <span>to good years: </span><Value value={margin?.p90} currency={margin?.currency} money origin={margin?.origin} /></p><p className="sim-muted">The range from bad years to good years holds the middle 80% of simulated years; the median is the middle result.</p></>}<SourceLink source={margin?.source} /></div>;
 }
 const assumptionLabels: Record<string, string> = { dry_spring_pct: "dry-spring loss estimate", heavy_rain_pct: "heavy-rain loss estimate" };
 export function MoneyContext({ scenario }: { scenario: Scenario }) {

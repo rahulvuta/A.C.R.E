@@ -1,8 +1,9 @@
 import { ConfidenceBadge } from "../ui/ConfidenceBadge";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { hasWinter, worldCropName } from "../ui/cropNames";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { inputsApi, type InputsApi } from "./api";
 import type { CropEconomics, CropOverrides, EconomicsSuggestion, EconomicsValue, InputArea, InputLocation, PriceCase, Quantity } from "./schema";
-import { ErrorNotice, OriginLabel, SourceLabel, display, errorText, pauseFor, readable, useInputRequest } from "./shared";
+import { ErrorNotice, OriginLabel, SourceLabel, errorText, pauseFor, readable, useInputRequest } from "./shared";
 
 export interface EconomicsEditorProps {
   location: InputLocation; crops: string[]; area: InputArea; value: EconomicsValue;
@@ -44,21 +45,31 @@ function adopted(suggestion: EconomicsSuggestion, overrides: CropOverrides) {
   if (suggestion.field === "yield") return same(overrides.yield);
   return same(overrides.costs?.[suggestion.item || "total"]);
 }
+const LOSS_CHOICES = [{ label: "A little", pct: 10 }, { label: "About a quarter", pct: 25 }, { label: "About half", pct: 50 }, { label: "Most of it", pct: 75 }];
 export const createEconomicsValue = (): EconomicsValue => ({ overrides: {}, loss_assumptions: { dry_spring_pct: null, heavy_rain_pct: null } });
-function ValueRow({ label, explanation, reference, override, onChange, onReset }: { label: string; explanation: string; reference?: Quantity | null; override?: Quantity; onChange: (value: Quantity) => void; onReset: () => void }) {
+/** A number as a grower would write it: two decimals when small, none when large. */
+const round = (v: number | null | undefined) => (v == null || !Number.isFinite(v) ? null : Number(v.toFixed(Math.abs(v) < 10 ? 2 : Math.abs(v) < 1000 ? 1 : 0)));
+const currencyOf = (unit: string | null | undefined) => /^([A-Za-z]{3})\//.exec(unit ?? "")?.[1]?.toUpperCase() ?? "USD";
+const PRICE_UNITS = (cur: string) => [`${cur}/t`, `${cur}/kg`, `${cur}/bu`, `${cur}/cwt`, `${cur}/lb`];
+const YIELD_UNITS = ["t/ha", "kg/ha", "bu/acre", "lb/acre", "t/acre"];
+const COST_UNITS = (cur: string) => [`${cur}/ha`, `${cur}/acre`];
+const COST_STARTERS = ["seed", "fertilizer", "labour", "hired machines", "land rent"];
+function ValueRow({ label, title, explanation, reference, override, onChange, onReset, units }: { label: string; title?: string; explanation: string; reference?: Quantity | null; override?: Quantity; onChange: (value: Quantity) => void; onReset: () => void; units: string[] }) {
   const effective = override ?? reference;
+  const listId = useId();
   return <tr>
-    <th scope="row">{label}<small>{explanation}</small></th>
-    <td><label className="acre-input-sr-only">{label} value</label><input aria-label={`${label} value`} type="number" step="any" min="0" placeholder="Not available" value={effective?.value ?? ""} onChange={event => {
+    <th scope="row">{title ?? label}<small>{explanation}</small></th>
+    <td><label className="acre-input-sr-only">{label} value</label><input aria-label={`${label} value`} type="number" step="any" min="0" placeholder="Enter yours" value={(override ? override.value : round(reference?.value)) ?? ""} onChange={event => {
       const number = event.target.value === "" ? null : Number(event.target.value);
       if (number === null || Number.isFinite(number) && number >= 0) onChange({ value: number, unit: effective?.unit ?? "", origin: "grower" });
-    }} /><input aria-label={`${label} unit`} placeholder="Unit not available" value={effective?.unit ?? ""} onChange={event => onChange({ value: effective?.value ?? null, unit: event.target.value, origin: "grower" })} /><OriginLabel origin={effective?.origin} /></td>
-    <td><span>{display(reference?.value)}{reference?.value != null && reference.unit ? ` ${reference.unit}` : ""}</span><OriginLabel origin={reference?.origin} /><SourceLabel source={reference?.source} /></td>
+    }} /><input aria-label={`${label} unit`} list={listId} placeholder="Pick a unit" aria-invalid={override?.value != null && !override.unit.trim() ? true : undefined} value={effective?.unit ?? ""} onChange={event => onChange({ value: effective?.value ?? null, unit: event.target.value, origin: "grower" })} /><datalist id={listId}>{units.map(unit => <option key={unit} value={unit} />)}</datalist>{effective?.origin ? <OriginLabel origin={effective.origin} /> : null}</td>
+    <td>{reference?.value != null ? <><span>{round(reference.value)}{reference.unit ? ` ${reference.unit}` : ""}</span><OriginLabel origin={reference.origin} /><SourceLabel source={reference.source} /></> : <span className="acre-input-muted">None found for this area</span>}</td>
     <td><button type="button" disabled={override === undefined} onClick={onReset} aria-label={`Reset ${label}`}>Reset</button></td>
   </tr>;
 }
 export function EconomicsEditor({ location, crops, area, value, onChange, api = inputsApi, show = "all" }: EconomicsEditorProps) {
   const prices = show !== "losses";
+  const winter = hasWinter("latitude" in location ? location.latitude : null);
   const losses = show !== "prices";
   const uniqueCrops = [...new Set(crops)];
   const key = JSON.stringify({ location, crops: uniqueCrops, area });
@@ -141,7 +152,7 @@ export function EconomicsEditor({ location, crops, area, value, onChange, api = 
     else update(cropId, { ...overrides, costs: { ...overrides.costs, [suggestion.item || "total"]: quantity } });
   }
   return <section className="acre-inputs acre-input-card" aria-label={prices ? "Prices, yields and costs" : "Weather losses"}>{prices && <><h2>Your prices, yields and costs</h2>
-    <p>Demo defaults may use mock prices, yields and seed costs. Replace them with your own values. Confidence circles show historical coverage or the share of inputs supplied by you or traceable sources; mock inputs do not count. These percentages are not probabilities of accuracy or success.</p>
+    <p>Where a published number exists for your area it is filled in with its source. Where none was found the box is empty. Change any number that is different on your farm.</p>
     {request.loading && <p role="status">Looking up regional references…</p>}
     {request.error && <ErrorNotice error={request.error} retry={request.retry} />}
     {!uniqueCrops.length && <p>Choose crops to enter their prices, yields and costs.</p>}
@@ -157,21 +168,42 @@ export function EconomicsEditor({ location, crops, area, value, onChange, api = 
       const nothingFound = phase?.state === "finished" && !request.refreshing && !!defaults && missing.length > 0 && !suggestions.length;
       const canRepeat = !!regionKey && !!defaults && !running && !waiting && phase?.state !== "failed" && missing.length > 0 && (!!defaults.economics_research?.researched_at || startedLookups.has(lookupKey(cropId)));
       const name = readable(cropId);
-      return <section key={cropId} className="acre-input-economics-crop" aria-label={`${readable(cropId)} economics`}><h3>{readable(cropId)} <ConfidenceBadge value={defaults?.confidence} label="Default input support" /></h3>
+      const hasPrice = (overrides.price?.typical?.value ?? defaults?.price?.typical) != null;
+      const hasYield = (overrides.yield?.value ?? defaults?.yield?.value) != null;
+      const usesOwn = !!overrides.price?.typical || !!overrides.yield;
+      const cur = currencyOf(overrides.price?.typical?.unit ?? defaults?.price?.unit);
+      const areaUnit = area.unit === "acre" ? "acre" : "ha";
+      // One price is asked. The bad-year and good-year prices follow it until the grower sets them apart.
+      const follows = (c: "low" | "high") => { const o = overrides.price?.[c], t = overrides.price?.typical; return !o || (!!t && o.value === t.value && o.unit === t.unit); };
+      const setPrice = (quantity: Quantity) => update(cropId, { ...overrides, price: { ...overrides.price, typical: quantity, ...(follows("low") ? { low: quantity } : {}), ...(follows("high") ? { high: quantity } : {}) } });
+      const resetPrice = () => { const price = { ...overrides.price }; const t = price.typical; delete price.typical; for (const c of ["low", "high"] as const) if (t && price[c]?.value === t.value && price[c]?.unit === t.unit) delete price[c]; const next = { ...overrides }; if (Object.keys(price).length) next.price = price; else delete next.price; update(cropId, next); };
+      const priceRef = (c: PriceCase) => (defaults?.price ? { ...defaults.price, value: defaults.price[c] } : undefined);
+      const resetCase = (c: PriceCase) => { const price = { ...overrides.price }; delete price[c]; const next = { ...overrides }; if (Object.keys(price).length) next.price = price; else delete next.price; update(cropId, next); };
+      return <section key={cropId} className="acre-input-economics-crop" aria-label={`${readable(cropId)} economics`}><h3>{worldCropName(cropId).replace(/^./, c => c.toUpperCase())}</h3>
+        {defaults || Object.keys(overrides).length ? <p className="acre-input-money-line" data-ready={hasPrice && hasYield ? "yes" : "no"}>{hasPrice && hasYield ? (usesOwn ? "Money results for this crop use your numbers." : "Money results for this crop use published numbers for your area.") : "No money results for this crop yet: it needs a price and a yield."}</p> : null}
         {defaults && isChecked(defaults) && <p className="acre-input-help">Found by AI research and checked against the cited page. Change any number that is different on your farm.</p>}
         {running && <div role="status" className="acre-input-research-status"><p>Looking up published prices, yields and costs for {name}… This usually takes under a minute. You can keep going; values fill in when it finishes.</p><button type="button" aria-label={`Stop looking up ${name}`} onClick={() => stopLookup(cropId)}>Stop</button></div>}
         {waiting && <p role="status" className="acre-input-help">Waiting to look up {name}.</p>}
-        {phase?.state === "failed" && <div className="acre-input-error" role="alert"><p>{phase.message}</p><button type="button" aria-label={`Try again to look up ${name}`} onClick={() => void startLookup(cropId)}>Try again</button></div>}
+        {phase?.state === "failed" && <div className="acre-input-error" role="alert"><p>Published numbers for {name} could not be looked up right now. Enter your own, or try again later.</p><small>{phase.message}</small><button type="button" aria-label={`Try again to look up ${name}`} onClick={() => void startLookup(cropId)}>Try again</button></div>}
         {phase?.state === "stopped" && <p className="acre-input-help">The lookup for {name} was stopped.</p>}
         {nothingFound && <p className="acre-input-help">No published {joinWords(missing.map(field => FIELD_WORD[field]))} found for {name} in this area. Enter yours if you know them, or leave them blank: the simulation then runs without money results for this crop.</p>}
         {canRepeat && <p className="acre-input-help"><button type="button" aria-label={`Look up ${name} again`} disabled={!!activeId} onClick={() => void startLookup(cropId, true)}>Look up again</button></p>}
         {defaults?.reason_text && <p>{defaults.reason_text}</p>}
         {defaults?.status && defaults.status !== "complete" && !running && !waiting && !nothingFound && <p className="acre-input-help">{defaults.status === "partial" ? "Some values have no published source for this area. Fill in the blanks if you know them." : "No published prices or costs for this crop in this area. Enter yours if you know them."}</p>}
-        <div className="acre-input-table-wrap"><table><caption className="acre-input-sr-only">{readable(cropId)} price cases, yield and costs</caption><thead><tr><th scope="col">Input</th><th scope="col">Value and unit to use</th><th scope="col">Regional default and source</th><th scope="col">Restore default</th></tr></thead><tbody>
-          {(["low", "typical", "high"] as PriceCase[]).map(priceCase => <ValueRow key={priceCase} label={`Price · ${priceCase}`} explanation={priceCase === "typical" ? "The middle price case for one unit of harvested crop." : `The ${priceCase === "low" ? "lower" : "upper"} price case for one unit of harvested crop.`} reference={defaults?.price ? { ...defaults.price, value: defaults.price[priceCase] } : undefined} override={overrides.price?.[priceCase]} onChange={quantity => update(cropId, { ...overrides, price: { ...overrides.price, [priceCase]: quantity } })} onReset={() => { const price = { ...overrides.price }; delete price[priceCase]; update(cropId, { ...overrides, price }); }} />)}
-          <ValueRow label="Yield" explanation="The harvested amount per acre or hectare, in the unit shown." reference={defaults?.yield} override={overrides.yield} onChange={quantity => update(cropId, { ...overrides, yield: quantity })} onReset={() => { const next = { ...overrides }; delete next.yield; update(cropId, next); }} />
-          {costItems.map(item => <ValueRow key={item} label={`Cost · ${readable(item)}`} explanation="The cost of this item per acre or hectare, in the unit shown." reference={defaults?.costs.items.find(cost => cost.item === item)} override={overrides.costs?.[item]} onChange={quantity => update(cropId, { ...overrides, costs: { ...overrides.costs, [item]: quantity } })} onReset={() => { const costs = { ...overrides.costs }; delete costs[item]; update(cropId, { ...overrides, costs }); }} />)}
+        <div className="acre-input-table-wrap"><table><caption className="acre-input-sr-only">{readable(cropId)} price cases, yield and costs</caption><thead><tr><th scope="col">Input</th><th scope="col">Your number and unit</th><th scope="col">Published for your area</th><th scope="col">Undo</th></tr></thead><tbody>
+          <ValueRow label="Price · typical" title="Price" explanation="What you usually get for one unit of the harvested crop." units={PRICE_UNITS(cur)} reference={priceRef("typical")} override={overrides.price?.typical} onChange={setPrice} onReset={resetPrice} />
+          <ValueRow label="Yield" explanation="What you usually harvest from one hectare or acre." units={YIELD_UNITS} reference={defaults?.yield} override={overrides.yield} onChange={quantity => update(cropId, { ...overrides, yield: quantity })} onReset={() => { const next = { ...overrides }; delete next.yield; update(cropId, next); }} />
+          {costItems.map(item => <ValueRow key={item} label={`Cost · ${readable(item)}`} explanation="What this costs for one hectare or acre." units={COST_UNITS(cur)} reference={defaults?.costs.items.find(cost => cost.item === item)} override={overrides.costs?.[item]} onChange={quantity => update(cropId, { ...overrides, costs: { ...overrides.costs, [item]: quantity } })} onReset={() => { const costs = { ...overrides.costs }; delete costs[item]; update(cropId, { ...overrides, costs }); }} />)}
         </tbody></table></div>
+        <p className="acre-input-help">A unit is a currency code and an amount: USD/t, INR/t, KES/kg, EUR/t. Use the same amount for price and yield (a price per tonne with a yield in tonnes).</p>
+        <div className="acre-input-cost-starters" role="group" aria-label={`Add a cost for ${name}`}><span>Add a cost:</span>{COST_STARTERS.filter(item => !costItems.includes(item)).map(item => <button key={item} type="button" onClick={() => update(cropId, { ...overrides, costs: { ...overrides.costs, [item]: { value: null, unit: `${cur}/${areaUnit}`, origin: "grower" } } })}>{item}</button>)}</div>
+        <details className="acre-input-more-prices"><summary>Prices in a bad and a good year</summary>
+          <p className="acre-input-help">Leave these alone and your one price is used for every year. Set them if what you get swings from year to year.</p>
+          <div className="acre-input-table-wrap"><table><caption className="acre-input-sr-only">{readable(cropId)} low and high prices</caption><tbody>
+            {(["low", "high"] as PriceCase[]).map(priceCase => <ValueRow key={priceCase} label={`Price · ${priceCase}`} title={priceCase === "low" ? "Price in a bad year" : "Price in a good year"} explanation={priceCase === "low" ? "The lowest price you would plan for." : "The highest price you would plan for."} units={PRICE_UNITS(cur)} reference={priceRef(priceCase)} override={overrides.price?.[priceCase]} onChange={quantity => update(cropId, { ...overrides, price: { ...overrides.price, [priceCase]: quantity } })} onReset={() => resetCase(priceCase)} />)}
+          </tbody></table></div>
+        </details>
+        {defaults?.confidence ? <details className="acre-input-more-prices"><summary>How well supported are these numbers?</summary><p className="acre-input-help">The share of these numbers that come from you or from a traceable source. It is not a chance of being right.</p><ConfidenceBadge value={defaults.confidence} label="Default input support" /></details> : null}
         {suggestions.length > 0 && <div className="acre-input-suggestions"><h4>Found by AI, not verified</h4>
           <p className="acre-input-help">These were found by AI research but could not be checked against the cited page. Open the source before using one.</p>
           <ul aria-label={`${name} suggestions found by AI`}>{suggestions.map((suggestion, index) => {
@@ -183,17 +215,30 @@ export function EconomicsEditor({ location, crops, area, value, onChange, api = 
               {suggestion.note && <small>{suggestion.note}</small>}
               <button type="button" disabled={used} aria-label={`${used ? "Using this value" : "Use this value"} for ${name} ${suggestionLabel(suggestion)}`} onClick={() => adopt(cropId, suggestion, overrides)}>{used ? "Using this value" : "Use this value"}</button></li>;
           })}</ul></div>}
-        {!costItems.length && <p>Cost items: Not available. Add a cost you know.</p>}
+        {!costItems.length && <p className="acre-input-help">No costs yet. Without costs, the money result is what the crop sells for, not what is left.</p>}
         <div className="acre-input-inline"><label>Another cost item<input placeholder="For example, seed or fuel" value={costNames[cropId] ?? ""} onChange={event => setCostNames({ ...costNames, [cropId]: event.target.value })} /></label><button type="button" disabled={!costNames[cropId]?.trim() || costItems.includes(costNames[cropId]?.trim() ?? "")} onClick={() => { const name = costNames[cropId]?.trim(); if (name) { update(cropId, { ...overrides, costs: { ...overrides.costs, [name]: { value: null, unit: "", origin: "grower" } } }); setCostNames({ ...costNames, [cropId]: "" }); } }}>Add cost item</button></div>
       </section>;
     })}
     {!!request.data?.gaps.length && <ul aria-label="Economics gaps">{request.data.gaps.map((gap, i) => <li key={i}>{gap}</li>)}</ul>}</>}
-    {losses && <fieldset className="acre-input-loss"><legend>Your estimate of weather losses</legend><p>These percentages are your estimates of lost yield; they are not measured or modeled losses. Leave them blank if unknown.</p>
-      {(["dry_spring_pct", "heavy_rain_pct"] as const).map(kind => <div key={kind}><label>{kind === "dry_spring_pct" ? "In a dry spring I lose about" : "In a heavy-rain year I lose about"}<input aria-label={kind === "dry_spring_pct" ? "Dry spring yield loss percent" : "Heavy rain yield loss percent"} type="number" min="0" max="100" step="any" placeholder="Not available" value={value.loss_assumptions[kind] ?? ""} onChange={event => {
-        const number = event.target.value === "" ? null : Number(event.target.value);
-        if (number === null || Number.isFinite(number) && number >= 0 && number <= 100) onChange({ ...value, loss_assumptions: { ...value.loss_assumptions, [kind]: number } });
-      }} />% of yield</label><span>Your estimate <OriginLabel origin="assumed" /></span></div>)}
-      <p className="acre-input-help">Without an estimate, weather risk and money results stay separate.</p>
+    {losses && <fieldset className="acre-input-loss"><legend>Your estimate of weather losses</legend>
+      <p>Pick the closest answer. These are your own estimates, not measured losses.</p>
+      {(["dry_spring_pct", "heavy_rain_pct"] as const).map(kind => {
+        const current = value.loss_assumptions[kind];
+        const set = (pct: number | null) => onChange({ ...value, loss_assumptions: { ...value.loss_assumptions, [kind]: pct } });
+        const question = kind === "dry_spring_pct" ? (winter ? "In a dry spring, how much of the harvest do you lose?" : "When it is too dry at planting, how much of the harvest do you lose?") : "When heavy rain falls on bare ground, how much do you lose?";
+        return <div key={kind} className="acre-input-loss-question" role="group" aria-label={question}>
+          <p className="acre-input-loss-q">{question}</p>
+          <div className="acre-input-loss-choices">
+            {LOSS_CHOICES.map(choice => <button key={choice.pct} type="button" aria-pressed={current === choice.pct} onClick={() => set(choice.pct)}><span className="acre-input-loss-meter" aria-hidden="true"><i style={{ width: `${choice.pct}%` }} /></span>{choice.label}</button>)}
+            <button type="button" aria-pressed={current == null} onClick={() => set(null)}>I don't know</button>
+          </div>
+          <label className="acre-input-loss-exact">Or enter a number<input aria-label={kind === "dry_spring_pct" ? "Dry spring yield loss percent" : "Heavy rain yield loss percent"} type="number" min="0" max="100" step="any" placeholder="%" value={current ?? ""} onChange={event => {
+            const number = event.target.value === "" ? null : Number(event.target.value);
+            if (number === null || Number.isFinite(number) && number >= 0 && number <= 100) set(number);
+          }} />% of the harvest</label>{current != null ? <span>Your estimate <OriginLabel origin="assumed" /></span> : null}
+        </div>;
+      })}
+      <p className="acre-input-help">With "I don't know", weather risk and money results are shown side by side and never combined.</p>
     </fieldset>}
   </section>;
 }

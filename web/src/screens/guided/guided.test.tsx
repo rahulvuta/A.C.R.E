@@ -62,7 +62,7 @@ describe("guided flow (U1)", () => {
     expect(screen.queryByRole("region", { name: "Equipment" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Next: Simulate current plan/ })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Next: Dates" }));
-    expect(screen.getAllByRole("textbox", { name: "Planting date" }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("group", { name: "Planting date" }).length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("button", { name: "Next: Equipment" }));
     expect(await screen.findByRole("checkbox", { name: "Planter" })).toBeChecked();
     fireEvent.click(screen.getByRole("button", { name: "Next: Prices and costs" }));

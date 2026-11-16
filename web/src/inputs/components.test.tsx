@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { dateValue, setDate } from "./testDates";
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AreaSummary, CropPicker, EconomicsEditor, EquipmentEditor, PlanEditor, ReadingsLog, createEconomicsValue, createPlanEditorValue, type Crop, type EconomicsValue, type PlanEditorValue, type Reading } from "./index";
@@ -24,7 +25,7 @@ describe("farmer inputs", () => {
   });
   it("shows exact origin labels and gives AI origins different classes from verified sources", () => {
     const { container } = render(<>{originSchema.options.map(origin => <OriginLabel key={origin} origin={origin} />)}</>);
-    const labels = { grower: "You entered", verified_source: "Published source", dataset_estimate: "Dataset estimate", ai_suggested: "AI suggestion, not verified", source_checked: "AI-found, quote checked", assumed: "Assumed", calculation: "Calculated", nasa_measured: "NASA measured", nasa_modeled: "NASA model" };
+    const labels = { grower: "You entered", verified_source: "Published source", dataset_estimate: "Area estimate", ai_suggested: "AI suggestion, not verified", source_checked: "AI-found, quote checked", assumed: "Guess", calculation: "Calculated", nasa_measured: "NASA measured", nasa_modeled: "NASA model" };
     for (const origin of originSchema.options) expect(screen.getByText(labels[origin])).toHaveAttribute("data-origin", origin);
     for (const origin of ["ai_suggested", "source_checked"]) expect(container.querySelector(`[data-origin="${origin}"]`)).not.toHaveClass("acre-input-origin-verified_source");
   });
@@ -37,7 +38,7 @@ describe("farmer inputs", () => {
     expect(api.search).toHaveBeenLastCalledWith("soy", "US-NC", expect.any(AbortSignal));
     expect(onChange).toHaveBeenCalledWith(exampleCrops[1]);
     expect(screen.getByText("Family: Fabaceae")).toBeInTheDocument();
-    expect(screen.getByText("Local planting dates: Yes")).toBeInTheDocument();
+    expect(screen.getByText("Typical dates for your area: found")).toBeInTheDocument();
     expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
     expect(screen.getByText("Published source")).toBeInTheDocument();
   });
@@ -73,18 +74,21 @@ describe("farmer inputs", () => {
   it("preserves blank dates, fills typical dates with provenance, and marks farmer edits grower", async () => {
     const api = { ...exampleApi, autofill: vi.fn(exampleApi.autofill) };
     render(<ControlledPlan api={api} initial={{ ...examplePlan, plan: { ...examplePlan.plan, next_plant: null }, dates: examplePlan.dates.filter(date => date.field !== "next_plant") }} />);
-    const date = screen.getByRole("textbox", { name: "Next planting" });
-    expect(date).toHaveValue(""); expect(date).toHaveAttribute("placeholder", "Not available");
+    expect(dateValue("Next planting")).toBe("");
     fireEvent.click(screen.getByRole("button", { name: "Fill typical dates" }));
-    await waitFor(() => expect(date).toHaveValue("05-05"));
+    await waitFor(() => expect(dateValue("Next planting")).toBe("05-05"));
     expect(api.autofill).toHaveBeenCalledWith({ location: exampleLocation, crops: [{ role: "previous", crop_id: "field_corn" }, { role: "cover", crop_id: "cereal_rye" }, { role: "next", crop_id: "soybean" }] }, expect.any(AbortSignal));
-    expect(within(date.parentElement!.parentElement!).getByText("Dataset estimate")).toBeInTheDocument();
-    fireEvent.change(date, { target: { value: "05-12" } });
-    expect(within(date.parentElement!.parentElement!).getByText("You entered")).toBeInTheDocument();
+    const group = () => screen.getByRole("group", { name: "Next planting" });
+    expect(within(group()).getByText("Area estimate")).toBeInTheDocument();
+    setDate("Next planting", "05-12");
+    expect(within(group()).getByText("You entered")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Fill typical dates" }));
     await waitFor(() => expect(api.autofill).toHaveBeenCalledTimes(2));
-    expect(date).toHaveValue("05-12");
-    fireEvent.change(date, { target: { value: "02-31" } }); expect(date).toHaveAttribute("aria-invalid", "true");
+    expect(dateValue("Next planting")).toBe("05-12");
+    // A day that the month does not have cannot be chosen: the list stops at the month's last day.
+    fireEvent.change(within(group()).getByRole("combobox", { name: "Next planting: month" }), { target: { value: "02" } });
+    expect(within(group()).getByRole("combobox", { name: "Next planting: day" }).querySelectorAll("option")).toHaveLength(30);
+    expect(within(group()).getByText("12 February, every year.")).toBeInTheDocument();
   });
   it("matches regional references through backend crop aliases", async () => {
     const defaults = { ...exampleEconomics, crops: [{ ...exampleEconomics.crops[0]!, crop_id: "maize", aliases: ["field_corn"] }] };
@@ -100,23 +104,23 @@ describe("farmer inputs", () => {
     const api = { ...exampleApi, autofill: vi.fn(() => new Promise<Awaited<ReturnType<typeof exampleApi.autofill>>>(resolve => { finish = resolve; })) };
     render(<ControlledPlan api={api} />);
     fireEvent.click(screen.getByRole("button", { name: "Fill typical dates" }));
-    fireEvent.change(screen.getByRole("textbox", { name: "Next planting" }), { target: { value: "05-20" } });
+    setDate("Next planting", "05-20");
     await act(async () => { finish(await exampleApi.autofill({ location: exampleLocation, crops: [{ role: "next", crop_id: "soybean" }] })); });
-    expect(screen.getByRole("textbox", { name: "Next planting" })).toHaveValue("05-20");
+    expect(dateValue("Next planting")).toBe("05-20");
   });
   it("supports winter grain and clears dates when the winter use changes", () => {
     render(<ControlledPlan />);
     fireEvent.change(screen.getByRole("combobox", { name: "Winter use" }), { target: { value: "winter_grain" } });
-    expect(screen.getByRole("textbox", { name: "Winter grain planting" })).toHaveValue("");
-    expect(screen.getByRole("textbox", { name: "Winter grain harvest" })).toHaveValue("");
-    expect(screen.queryByRole("textbox", { name: "Cover seeding" })).not.toBeInTheDocument();
+    expect(dateValue("Winter grain planting")).toBe("");
+    expect(dateValue("Winter grain harvest")).toBe("");
+    expect(screen.queryByRole("group", { name: "Cover seeding" })).not.toBeInTheDocument();
   });
   it("renders defaults with sources, leaves gaps blank, and resets a grower override", async () => {
     render(<ControlledEconomics />);
     const typical = await screen.findByRole("spinbutton", { name: "Price · typical value" });
     await waitFor(() => expect(typical).toHaveValue(11.2));
     expect(screen.getByRole("spinbutton", { name: "Cost · fertilizer value" })).toHaveValue(null);
-    expect(screen.getByRole("spinbutton", { name: "Cost · fertilizer value" })).toHaveAttribute("placeholder", "Not available");
+    expect(screen.getByRole("spinbutton", { name: "Cost · fertilizer value" })).toHaveAttribute("placeholder", "Enter yours");
     expect(screen.getAllByRole("link", { name: /Example price reference/ })).toHaveLength(3);
     fireEvent.change(typical, { target: { value: "12.5" } });
     expect(typical).toHaveValue(12.5);
@@ -127,8 +131,14 @@ describe("farmer inputs", () => {
     expect(screen.getByRole("spinbutton", { name: "Dry spring yield loss percent" })).toHaveValue(null);
     fireEvent.change(screen.getByRole("spinbutton", { name: "Dry spring yield loss percent" }), { target: { value: "15" } });
     expect(screen.getByRole("spinbutton", { name: "Dry spring yield loss percent" })).toHaveValue(15);
-    expect(screen.getAllByText("Assumed")).toHaveLength(2);
-    expect(screen.getByText(/These percentages are your estimates/)).toBeInTheDocument();
+    // The "your estimate" label appears only beside a loss the grower has given.
+    expect(screen.getAllByText("Guess")).toHaveLength(1);
+    expect(screen.getByText(/These are your own estimates/)).toBeInTheDocument();
+    // The choices set the same number as typing it; "I don't know" clears it.
+    fireEvent.click(within(screen.getByRole("group", { name: /heavy rain/ })).getByRole("button", { name: "About half" }));
+    expect(screen.getByRole("spinbutton", { name: "Heavy rain yield loss percent" })).toHaveValue(50);
+    fireEvent.click(within(screen.getByRole("group", { name: /heavy rain/ })).getByRole("button", { name: "I don't know" }));
+    expect(screen.getByRole("spinbutton", { name: "Heavy rain yield loss percent" })).toHaveValue(null);
     expect(screen.queryByText(/score/i)).not.toBeInTheDocument();
   });
   it("keeps overrides through a defaults refresh and lets the grower enter inputs when the API fails", async () => {
@@ -140,7 +150,8 @@ describe("farmer inputs", () => {
     fireEvent.change(screen.getByRole("spinbutton", { name: "Price · typical value" }), { target: { value: "13" } });
     fireEvent.click(screen.getByRole("button", { name: "Try again" }));
     await waitFor(() => expect(api.estimate).toHaveBeenCalledTimes(2));
-    await waitFor(() => expect(screen.getByRole("spinbutton", { name: "Price · low value" })).toHaveValue(9.5));
+    // The one price the grower entered is used for bad and good years too, until they set those apart.
+    await waitFor(() => expect(screen.getByRole("spinbutton", { name: "Price · low value" })).toHaveValue(13));
     expect(screen.getByRole("spinbutton", { name: "Price · typical value" })).toHaveValue(13);
     expect(screen.getByRole("spinbutton", { name: "Yield value" })).toHaveValue(48);
   });
@@ -194,8 +205,8 @@ describe("farmer inputs", () => {
   });
   it("renders a completely blank plan without inventing dates", () => {
     render(<ControlledPlan initial={createPlanEditorValue()} />);
-    expect(screen.getByRole("textbox", { name: "Previous harvest" })).toHaveValue("");
-    expect(screen.getByRole("textbox", { name: "Next planting" })).toHaveValue("");
+    expect(dateValue("Previous harvest")).toBe("");
+    expect(dateValue("Next planting")).toBe("");
     expect(screen.getByRole("button", { name: "Fill typical dates" })).toBeDisabled();
   });
   it("shows failed research and does not offer a crop to select", async () => {
@@ -233,14 +244,14 @@ describe("farmer inputs", () => {
     function Dates() { const [value, setValue] = useState(blank); return <PlanEditor show="dates" location={exampleLocation} regionKey="US-NC" value={value} onChange={setValue} api={api} />; }
     render(<Dates />);
     expect(screen.queryByRole("region", { name: "Previous crop" })).not.toBeInTheDocument();
-    await waitFor(() => expect(screen.getByRole("textbox", { name: "Planting date" })).toHaveValue("05-05"));
+    await waitFor(() => expect(dateValue("Planting date")).toBe("05-05"));
     expect(api.autofill).toHaveBeenCalledTimes(1);
-    expect(screen.getByRole("textbox", { name: "Harvest date" })).toHaveValue("10-10");
+    expect(dateValue("Harvest date")).toBe("10-10");
   });
   it("splits prices from weather-loss estimates and labels the filled-in values", async () => {
     const { unmount } = render(<EconomicsEditor show="prices" location={exampleLocation} crops={["soybean"]} area={{ value: 16.2, unit: "ha" }} value={createEconomicsValue()} onChange={vi.fn()} api={exampleApi} />);
     await waitFor(() => expect(screen.getByRole("spinbutton", { name: "Price · typical value" })).toHaveValue(11.2));
-    expect(screen.getByText(/Demo defaults may use mock prices/)).toBeInTheDocument();
+    expect(screen.getByText(/Where a published number exists for your area/)).toBeInTheDocument();
     expect(screen.queryByRole("group", { name: /weather losses/ })).not.toBeInTheDocument();
     unmount();
     const estimate = vi.fn(exampleApi.estimate);

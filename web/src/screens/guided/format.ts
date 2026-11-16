@@ -1,4 +1,5 @@
 import type { Dist, Odds } from "../../api/simModel";
+import { WORLD_NAMES } from "../../ui/cropNames";
 
 /* Formatting only: every number here is the backend's, shown as it came. Blank stays blank. */
 export const NA = "Not available";
@@ -25,7 +26,7 @@ export function range(d: Dist | null | undefined, fmt: (v: number | null) => str
   return d && d.p10 != null && d.p90 != null ? `${fmt(d.p10)} to ${fmt(d.p90)}` : null;
 }
 
-export const cropLabel = (id: string) => (id ? id.replace(/^other:/, "").replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase()) : "—");
+export const cropLabel = (id: string) => (id ? WORLD_NAMES[id] ?? id.replace(/^other:/, "").replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase()) : "—");
 
 const INDICATOR_LABEL: Record<string, string> = {
   margin_10y: "10-year margin",

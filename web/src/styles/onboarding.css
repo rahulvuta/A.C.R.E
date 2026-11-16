@@ -1,0 +1,101 @@
+/* ================================================================== Onboarding
+   The welcome screen (first visit, no fields yet) and the progress parts of the guided
+   sequence. Desktop first: one hero row, then the six steps laid out in order. */
+.wl { min-height: 100vh; display: flex; flex-direction: column; background: var(--surface-2); color: var(--ink); }
+.wl-top { display: flex; align-items: center; justify-content: space-between; padding: 18px 40px; }
+.wl-brand { display: inline-flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+.wl-brand .fb-mark { --mark-ink: var(--night); background: var(--accent); }
+.wl-links { display: inline-flex; gap: 24px; font-size: 15px; }
+.wl-links a { color: var(--ink-muted); text-decoration: none; }
+.wl-links a:hover { color: var(--action); }
+
+.wl-main { flex: 1; width: 100%; max-width: 1240px; margin: 0 auto; padding: 8px 40px 48px; display: grid; gap: 32px; align-content: center; }
+.wl-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 48px; align-items: center; }
+.wl-copy h1 { margin: 0; font-size: clamp(36px, 3.6vw, 52px); font-weight: 500; line-height: var(--lh-tight); letter-spacing: -0.03em; text-wrap: balance; }
+.wl-lead { margin: 16px 0 0; max-width: 30em; font-size: 19px; line-height: 1.45; color: var(--ink-muted); }
+.wl-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.wl-actions .btn { min-height: 52px; padding: 0 26px; font-size: 17px; text-decoration: none; }
+.wl-copy .banner { margin-top: 16px; }
+.wl-facts { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 15px; color: var(--ink-muted); }
+.wl-facts li { display: inline-flex; align-items: center; gap: 8px; }
+.wl-facts li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--cover); }
+
+/* The picture: a field under rain and the ten seasons after it. */
+.wl-pic { width: 100%; height: auto; max-height: 46vh; }
+.wl-pic-soil { fill: #8a6a48; }
+.wl-pic-top { fill: #cfe7b4; }
+.wl-pic-rows path { stroke: var(--soy); stroke-width: 5; stroke-linecap: round; opacity: 0.75; }
+.wl-pic-rain path { stroke: var(--rain); stroke-width: 2.500; stroke-linecap: round; opacity: 0.55; animation: wl-rain 1.4s linear infinite; }
+.wl-pic-corn { fill: #e3c26a; }
+.wl-pic-soy { fill: #9dbb72; }
+.wl-pic-cover { fill: var(--cover); }
+.wl-pic-bare { fill: var(--line); }
+.wl-pic-years text { font: 500 11px var(--font-body); fill: var(--ink-muted); }
+@keyframes wl-rain { from { transform: translate(4px, -12px); opacity: 0; } 30% { opacity: 0.6; } to { transform: translate(-4px, 14px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .wl-pic-rain path { animation: none; } }
+
+/* The six steps, in order, joined by one line. */
+.wl-path ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+.wl-path li { position: relative; display: grid; gap: 6px; align-content: start; padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); }
+.wl-path li + li::before { content: ""; position: absolute; left: -13px; top: 32px; width: 13px; border-top: 2px solid var(--line-strong); opacity: 0.5; }
+.wl-step-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.wl-num { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--night); color: var(--surface); font-size: 14px; font-weight: 600; }
+.wl-path li:first-child .wl-num { background: var(--accent); color: var(--accent-ink); }
+.wl-icon { color: var(--action); display: inline-flex; }
+.wl-path strong { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+.wl-q { font-size: 14px; line-height: 1.35; color: var(--ink-muted); }
+
+@media (max-width: 960px) {
+  .wl-top, .wl-main { padding-left: 16px; padding-right: 16px; }
+  .wl-hero { grid-template-columns: 1fr; gap: 24px; }
+  .wl-path ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wl-path li + li::before { display: none; }
+}
+
+/* ------------------------------------------------------------------ Inside the sequence */
+/* Six segments under the top bar: filled for finished steps, outlined for the current one. */
+.gf-progress { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; max-width: 860px; }
+.gf-progress span { height: 6px; border-radius: 3px; background: var(--line); }
+.gf-progress span[data-state="done"] { background: var(--action); }
+.gf-progress span[data-state="now"] { background: var(--accent); }
+.gf-finish { text-decoration: none; }
+
+/* A field card on "My fields": where the grower left off, and one button to carry on. */
+.dash-next { display: grid; gap: 8px; }
+.dash-next .btn { text-decoration: none; }
+.dash-step { font-size: 13px; color: var(--ink-muted); }
+
+/* Back and Next stay in view at the bottom of the window, however tall the step is. */
+.gf .gf-foot {
+  position: sticky; bottom: 0; z-index: 15; margin: 8px calc(-1 * var(--sp-5)) calc(-1 * var(--sp-7)); padding: 12px var(--sp-5);
+  background: rgb(255 255 255 / 0.94); backdrop-filter: blur(12px); border-top: 1px solid var(--line);
+}
+.gf .gf-foot .btn { min-height: 44px; }
+
+/* Step 1: the example farms as one slim row above the map. */
+.gf-demo-slim { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; padding-top: 10px; padding-bottom: 10px; }
+.gf-demo-slim h2 { margin: 0; font-size: 15px; font-weight: 500; color: var(--ink-muted); }
+.gf-demo-slim .gf-demo-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+.gf-demo-slim .gf-demo-btn { padding: 7px 12px; }
+.gf-demo-slim .gf-demo-btn strong { font-size: 15px; font-weight: 500; }
+.gf-demo-slim .banner { flex-basis: 100%; }
+
+/* Step 1: the three actions, in order. */
+.gf-howto { list-style: none; counter-reset: howto; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 15px; }
+.gf-howto li { counter-increment: howto; display: inline-flex; align-items: center; gap: 8px; }
+.gf-howto li::before { content: counter(howto); display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--night); color: var(--surface); font-size: 12px; font-weight: 600; }
+
+/* Step 3: the result in three plain sentences, then everything else behind one click. */
+.pa h2 { margin: 0 0 12px; font-size: 20px; font-weight: 500; letter-spacing: -0.01em; }
+.pa-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.pa-rows li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; align-items: start; }
+.pa-icon { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--accent-soft); color: var(--action); }
+.pa-rows li[data-row="dry"] .pa-icon { background: var(--check-soft); color: var(--check); }
+.pa-rows li[data-row="money"] .pa-icon { background: var(--cover-soft); color: var(--cover); }
+.pa-rows p { margin: 0; font-size: 18px; line-height: 1.45; max-width: 46em; }
+.pa-rows .ob { margin-left: 4px; vertical-align: 2px; }
+.pa-link { min-height: 0; padding: 2px 8px; }
+.pa-note { margin: 14px 0 0; font-size: 14px; color: var(--ink-muted); }
+.gf-all-numbers > summary { cursor: pointer; padding: 10px 2px; font-size: 15px; font-weight: 500; color: var(--action); }
+.gf-all-numbers[open] > summary { margin-bottom: 8px; }
+.gf-all-numbers > * + * { margin-top: 16px; }

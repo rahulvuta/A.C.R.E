@@ -3,6 +3,8 @@
   (§13) is the source of truth for what a crop is; unknown ids get a readable name and a
   neutral colour. Colours are illustration fills; text on them uses the kit's ink.
 */
+import { WORLD_NAMES } from "../ui/cropNames";
+
 export type BandKind = "cash" | "cover" | "fallow";
 
 const NAMES: Record<string, string> = {
@@ -43,6 +45,7 @@ const CASH_DEFAULT = "#C8D3A8";
 export function cropName(id: string | null | undefined): string {
   if (!id) return "No crop";
   if (NAMES[id]) return NAMES[id]!;
+  if (WORLD_NAMES[id]) return WORLD_NAMES[id]!;
   const s = id.replace(/^other:/, "").replace(/_/g, " ");
   return s.charAt(0).toUpperCase() + s.slice(1);
 }

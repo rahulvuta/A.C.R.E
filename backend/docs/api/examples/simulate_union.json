@@ -188,14 +188,14 @@
       "price": {
         "high": null,
         "low": null,
-        "origin": "assumed",
-        "typical": 0.0
+        "origin": null,
+        "typical": null
       },
-      "status": "complete",
+      "status": "partial",
       "yield_per_area": {
         "area_unit": "acre",
-        "origin": "assumed",
-        "value": 0.0
+        "origin": null,
+        "value": null
       }
     },
     "field_corn": {

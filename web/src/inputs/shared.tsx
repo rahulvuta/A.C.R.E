@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import { ORIGIN_LABEL } from "../ui/OriginBadge";
+import { ORIGIN_HELP, ORIGIN_LABEL } from "../ui/OriginBadge";
 import type { Origin, Source } from "./schema";
 import "./inputs.css";
 
 export const display = (value: string | number | null | undefined) => value === null || value === undefined || value === "" ? "Not available" : String(value);
 export const readable = (value: string) => value.replaceAll("_", " ");
 export function OriginLabel({ origin }: { origin?: Origin | null }) {
-  return origin ? <span className={`acre-input-origin acre-input-origin-${origin}`} data-origin={origin}>{ORIGIN_LABEL[origin]}</span> : <span className="acre-input-muted">Not available</span>;
+  return origin ? <span className={`acre-input-origin acre-input-origin-${origin}`} data-origin={origin} title={ORIGIN_HELP[origin]}>{ORIGIN_LABEL[origin]}</span> : <span className="acre-input-muted">Not available</span>;
 }
 export function SourceLabel({ source }: { source?: Source | null }) {
-  const title = source?.title || "Not available";
+  // No source is not worth a line of its own: the label beside the number already says "Guess".
+  if (!source?.title && !source?.url) return null;
+  const title = source?.title || "Source";
   return <span className="acre-input-source">Source: {source?.url && /^https?:\/\//i.test(source.url) ? <a href={source.url} target="_blank" rel="noreferrer">{title}</a> : title}{source?.years ? ` (${source.years})` : source?.year ? ` (${source.year})` : ""}</span>;
 }
 export function ErrorNotice({ error, retry }: { error: string; retry?: () => void }) {

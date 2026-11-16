@@ -126,10 +126,10 @@ test("search, draw two fields, plan each, analyse, overview, export, reload", as
   await expect(foot).toContainText("ha");
   await expect(foot).not.toContainText("mm");
 
-  // Export GeoJSON from the map.
+  // Save a copy of my fields from the map.
   await page.getByRole("button", { name: "Farm map" }).click();
   const download = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Export GeoJSON" }).click();
+  await page.getByRole("button", { name: "Save a copy of my fields" }).click();
   expect((await download).suggestedFilename()).toMatch(/\.geojson$/);
 
   // Reload: farm, fields and plans persist.

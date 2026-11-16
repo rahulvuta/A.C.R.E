@@ -1,10 +1,12 @@
-import { lazy, Suspense, type ComponentType } from "react";
+import { lazy, Suspense, useState, type ComponentType } from "react";
 import { useData } from "./state/useData";
 import { Banner, Button } from "./ui/components";
 import { APP_NAME } from "./config";
 import { Dashboard } from "./screens/dashboard/Dashboard";
+import { Welcome } from "./screens/onboarding/Welcome";
+import { useFarms } from "./farm/hooks";
 
-// Only the dashboard (the front door) is in the first download; every other route, and the
+// Only the front door (the welcome screen and the fields list) is in the first download; every other route, and the
 // map and 3D libraries they use, load when that route is opened.
 const named = <K extends string>(load: () => Promise<Record<K, ComponentType>>, name: K) =>
   lazy(() => load().then((m) => ({ default: m[name] })));
@@ -31,8 +33,10 @@ export function App() {
 }
 
 /*
-  Routes (query `view`): the farm dashboard is the front door (no sign-in; `?view=home` is the marketing site); `?view=app` opens the map
-  (the guided Scenario Simulator, card U1); `?view=fields` is the earlier
+  Routes (query `view`): the front door needs no sign-in. A browser with no fields yet gets the
+  welcome screen, which starts the guided sequence; once there are fields it is the fields
+  list ("My fields"), where each field carries on from its next step. `?view=home` is the
+  marketing site; `?view=app` is the guided sequence (the Scenario Simulator, card U1); `?view=fields` is the earlier
   per-field workspace (D1–D4); `?view=demo` is the Union County demo planner, loaded offline
   from the saved record. A link that carries planner state in its hash (older shared links,
   including `?view=app#s=…`) still opens the demo, so nothing shared before the map breaks.
@@ -54,7 +58,16 @@ function Route() {
   if (view === "app") return <Guided />;
   if (view === "fields") return <Workspace />;
   if (view === "home") return <Landing />;
-  return <Dashboard />;
+  return <Front />;
+}
+
+/** The front door: the welcome screen until this browser has a field, then the fields list.
+ *  Decided once per visit, so removing the last field does not swap the page under the grower;
+ *  a link into the dashboard (`#d=…`) always opens the dashboard. */
+function Front() {
+  const { farms } = useFarms();
+  const [welcome] = useState(() => !/[#&]d=/.test(window.location.hash) && farms.every((f) => f.fields.length === 0));
+  return welcome ? <Welcome /> : <Dashboard />;
 }
 
 function PlannerRoute() {

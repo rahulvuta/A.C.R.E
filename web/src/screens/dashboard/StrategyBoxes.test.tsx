@@ -55,8 +55,8 @@ describe("strategy boxes", () => {
     expect(within(money).getByText("Expected crop margin over 10 years").nextSibling?.textContent).toBe("$3,000");
     expect(money.textContent).toContain("Bad years $1,000");
     expect(money.textContent).toContain("good years $5,000");
-    expect(money.textContent).toContain("assumed");
-    expect(within(money).getAllByText("calculation").length).toBeGreaterThan(0);
+    expect(money.textContent).toContain("Guess");
+    expect(within(money).getAllByText("Calculated").length).toBeGreaterThan(0);
   });
 
   it("charts the months with a risk list, operations in text and the timing note tagged assumed", () => {

@@ -39,6 +39,7 @@ test("the card shows the capability statuses from the fixture", async ({ page })
   await page.getByLabel("Find your farm").fill("Pergamino");
   await page.getByRole("button", { name: "Search" }).click();
   await page.getByRole("button", { name: "Pergamino, Buenos Aires, Argentina", exact: true }).click();
+  await page.getByText("More about this place").click();
   const caps = page.getByRole("list", { name: "Capabilities" });
   await expect(caps.locator("[data-capability='weather']")).toHaveAttribute("data-status", "complete");
   await expect(caps.locator("[data-capability='catalog']")).toContainText("Partly available");

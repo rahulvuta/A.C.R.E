@@ -16,16 +16,12 @@ const DEMOS = [
 export function DemoPicker({ ctx }: { ctx: StepContext }) {
   const { demo, load } = useDemoLoader(ctx.api, () => ctx.go("now"));
   return (
-    <section className="db-card gf-demo" aria-label="Try a demo farm">
-      <div className="db-card-head">
-        <h2>Try a demo farm</h2>
-      </div>
-      <p className="gf-muted">Every step comes filled in with example fields, plans, prices and readings, so you can see the whole simulator in a minute.</p>
+    <section className="db-card gf-demo gf-demo-slim" aria-label="Try a demo farm">
+      <h2>Try a demo farm</h2>
       <div className="gf-demo-row">
         {DEMOS.map((d) => (
-          <button key={d.id} type="button" className="gf-demo-btn" onClick={() => void load(d.id)} disabled={demo.state === "loading"}>
+          <button key={d.id} type="button" className="gf-demo-btn" title={d.blurb} onClick={() => void load(d.id)} disabled={demo.state === "loading"}>
             <strong>{demo.state === "loading" && demo.which === d.id ? "Loading…" : d.name}</strong>
-            <span>{d.blurb}</span>
           </button>
         ))}
       </div>
@@ -38,9 +34,14 @@ export function StepFarm({ ctx }: { ctx: StepContext }) {
   // The map panel (C, U4) lists each field with its acres and the farm's area total.
   return (
     <div className="gf-farm">
+      <ol className="gf-howto" aria-label="How to add your field">
+        <li>Search for your town or village</li>
+        <li>Zoom in on your field and press Draw my field here</li>
+        <li>Click each corner, then the first corner again</li>
+      </ol>
       <DemoPicker ctx={ctx} />
       <div className="ws-map gf-map">
-        <FarmMap api={ctx.api.geo} onMapReady={exposeMapForTests} />
+        <FarmMap api={ctx.api.geo} onMapReady={exposeMapForTests} drawOnPick />
       </div>
     </div>
   );

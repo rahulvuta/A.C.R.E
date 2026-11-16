@@ -5,10 +5,12 @@ import { centroid, formatArea } from "../../farm/geometry";
 import type { Farm, Field } from "../../farm/types";
 import { useFieldPlace } from "../../state/useFieldPlace";
 import { useGlobalApi, type GlobalApi } from "../../state/useGlobal";
-import { getSimField, loadDemoFields, removeSimField, updateSimField, useSimField } from "../../state/simField";
+import { getSimField, loadDemoFields, removeSimField, updateSimField, useSimField, type SimField } from "../../state/simField";
 import { Banner } from "../../ui/components";
 import { SourceBanner } from "../workspace/SourceBanner";
-import { cropsOf, rotationReady } from "../guided/context";
+import { baselineReady, cropsOf, rotationReady } from "../guided/context";
+import { economicsReady } from "../guided/inputState";
+import { STEPS, type StepId } from "../guided/steps";
 import { cropLabel } from "../guided/format";
 import { FieldWorkspace, TABS } from "./FieldWorkspace";
 import { navIcon } from "../planner/SideNav";
@@ -64,6 +66,13 @@ export function copyToMyFields(demoFarm: Farm, field: Field, mine: Farm | null):
   return copy.field_id;
 }
 
+/** The step of the guided sequence a field should carry on from, read from what it has saved. */
+export function nextStep(sim: SimField): StepId {
+  if (!(baselineReady(sim) && economicsReady(sim))) return "now";
+  if (sim.chosenId != null) return "plan";
+  return sim.scenarios.length ? "compare" : "simulate";
+}
+
 export function Dashboard({ api: given }: { api?: GlobalApi }) {
   const fallback = useGlobalApi();
   const api = given ?? fallback;
@@ -104,7 +113,8 @@ export function Dashboard({ api: given }: { api?: GlobalApi }) {
     const keep = mine[0];
     if (keep) farmActions.selectFarm(keep.farm_id);
     else farmActions.selectFarm(null);
-    go({ page: "add" });
+    // The guided sequence owns adding a field: step 1 is the same map, and it leads on to step 2.
+    window.location.assign("?view=app#u=farm");
   };
 
   const fieldId = route.page === "field" ? route.id : null;
@@ -283,6 +293,7 @@ function FieldCard({ api, farm, field, onOpen }: { api: GlobalApi; farm: Farm; f
   const c = centroid(field.geometry);
   const coords = `${c.latitude.toFixed(3)}, ${c.longitude.toFixed(3)}`;
   const crops = sim.rotation.length ? cropsOf(sim.rotation).map(cropLabel).join(" → ") : field.plan ? cropsOf([field.plan]).map(cropLabel).join(" → ") : "";
+  const step = STEPS.find((s) => s.id === nextStep(sim))!;
   const status = !sim.rotation.length && !field.plan ? "Needs a rotation" : sim.chosenId ? "Plan chosen" : rotationReady(sim.rotation.length ? sim.rotation : field.plan ? [field.plan] : []) ? "Rotation set" : "Rotation incomplete";
   return (
     <li className="db-card dash-card">
@@ -296,9 +307,17 @@ function FieldCard({ api, farm, field, onOpen }: { api: GlobalApi; farm: Farm; f
         <div><dt>Crop rotation</dt><dd>{crops || "Not set"}</dd></div>
         <div><dt>Planning status</dt><dd>{status}</dd></div>
       </dl>
-      <button type="button" className="btn btn-secondary" onClick={onOpen} aria-label={`Open ${field.name}`}>
-        Open field
-      </button>
+      <div className="dash-next">
+        <span className="dash-step">
+          Step {step.n} of {STEPS.length}
+        </span>
+        <a className="btn btn-primary" href={`?view=app#u=${step.id}`} onClick={() => selectField(field.field_id)} aria-label={`Continue ${field.name}: ${step.nav}`}>
+          {step.id === "plan" ? "See your plan" : `Continue: ${step.nav}`}
+        </a>
+        <button type="button" className="btn btn-secondary" onClick={onOpen} aria-label={`Open ${field.name}`}>
+          Open field
+        </button>
+      </div>
     </li>
   );
 }

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App";
 
@@ -10,8 +10,17 @@ describe("routes", () => {
     vi.unstubAllGlobals();
   });
 
-  it("the root URL opens the empty dashboard: no sign-in, Add Field and Explore Demo Farm", () => {
+  it("the root URL opens the welcome screen when no field is saved: no sign-in, the six steps, one way to start", () => {
     go("/");
+    render(<App />);
+    expect(screen.getByRole("heading", { level: 1, name: /holds up over the next 10 years/ })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Start with my field" })).toHaveAttribute("href", "?view=app");
+    expect(within(screen.getByRole("region", { name: "The six steps" })).getAllByRole("listitem")).toHaveLength(6);
+    expect(screen.queryByText(/sign in|log in|sign up/i)).toBeNull();
+  });
+
+  it("a link into the fields list opens the empty dashboard: Add Field and Explore Demo Farm", () => {
+    go("/#d=fields");
     render(<App />);
     expect(screen.getByRole("heading", { name: "No fields available" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Explore Demo Farm" })).toBeInTheDocument();

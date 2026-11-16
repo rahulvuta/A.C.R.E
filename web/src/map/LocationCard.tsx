@@ -58,6 +58,28 @@ function detail(c: Capability): string | null {
   return bits.length ? bits.join(" · ") : null;
 }
 
+/** The two things a grower needs to know about a place, in the backend's own statuses, as plain lines. */
+function summary(caps: Capabilities): { key: string; tone: "ok" | "check" | "unavailable"; text: string }[] {
+  const out: { key: string; tone: "ok" | "check" | "unavailable"; text: string }[] = [];
+  const weather = caps.features.find((c) => c.key === "weather");
+  if (weather) {
+    out.push({
+      key: "weather",
+      tone: pillKind(weather.status) as "ok" | "check" | "unavailable",
+      text: weather.jobStatus === "pending" ? "NASA weather for this place is being prepared (about a minute)." : weather.status === "complete" ? "NASA weather since 1981 is ready for this place." : weather.status === "partial" ? "NASA weather is partly available for this place." : "NASA weather is not available for this place.",
+    });
+  }
+  const catalog = caps.features.find((c) => c.key === "catalog");
+  if (catalog) {
+    out.push({
+      key: "catalog",
+      tone: pillKind(catalog.status) as "ok" | "check" | "unavailable",
+      text: catalog.status === "complete" ? "Checked local crop guidance is available here." : catalog.status === "partial" ? "No checked local guidance here yet: you get typical planting dates for the area." : "No crop guidance is available here.",
+    });
+  }
+  return out;
+}
+
 export interface Pick {
   point: { latitude: number; longitude: number };
   place: { state: "loading" } | { state: "error"; message: string } | { state: "ready"; data: PlaceInfo };
@@ -74,45 +96,53 @@ export function LocationCard({ pick, action }: { pick: Pick; action?: React.Reac
       <h2 className="mp-card-title">{title}</h2>
       {place.state === "error" ? <p className="mp-error" role="alert">{place.message}</p> : null}
       {p && p.status !== "complete" && p.reasonText ? <p className="mp-error" role="alert">{p.reasonText}</p> : null}
-      {p ? (
-        <dl className="mp-facts">
-          {region && region !== p.display ? (
-            <>
-              <dt>Region</dt>
-              <dd>{region}</dd>
-            </>
-          ) : null}
-          <dt>Climate</dt>
-          <dd>{p.climate ? `${p.climate.code} · ${p.climate.label}` : "Not available"}</dd>
-          <dt>Weather cell</dt>
-          <dd title="One NASA POWER weather series covers a cell of about 0.5° × 0.625°.">{p.cellId ?? "Not available"}</dd>
-          {p.hemisphere ? (
-            <>
-              <dt>Hemisphere</dt>
-              <dd>{p.hemisphere === "south" ? "Southern" : "Northern"}</dd>
-            </>
-          ) : null}
-        </dl>
-      ) : null}
-
-      <h3 className="mp-card-sub">What A.C.R.E can use here</h3>
-      {caps.state === "loading" ? <p className="mp-quiet">Checking…</p> : null}
+      {region && p && region !== p.display ? <p className="mp-region">{region}</p> : null}
+      {caps.state === "loading" ? <p className="mp-quiet">Checking what is available here…</p> : null}
       {caps.state === "error" ? <p className="mp-error" role="alert">{caps.message}</p> : null}
       {caps.state === "ready" ? (
-        <ul className="mp-caps" aria-label="Capabilities">
-          {caps.data.features.map((c) => {
-            const d = detail(c);
-            return (
-              <li key={c.key} data-capability={c.key} data-status={c.status}>
-                <span className="mp-cap-name">{CAPABILITY_LABEL[c.key]}</span>
-                <span className={`pill pill-${pillKind(c.status)}`}>{STATUS_TEXT[c.status] ?? c.status}</span>
-                {d ? <span className="mp-cap-detail">{d}</span> : null}
-              </li>
-            );
-          })}
+        <ul className="mp-summary" aria-label="In short">
+          {summary(caps.data).map((line) => (
+            <li key={line.key} data-tone={line.tone}>
+              {line.text}
+            </li>
+          ))}
         </ul>
       ) : null}
       {action ? <div className="mp-card-action">{action}</div> : null}
+      {p || caps.state === "ready" ? (
+        <details className="mp-more">
+          <summary>More about this place</summary>
+          {p ? (
+            <dl className="mp-facts">
+              <dt>Climate</dt>
+              <dd>{p.climate ? `${p.climate.code} · ${p.climate.label}` : "Not available"}</dd>
+              <dt>Weather cell</dt>
+              <dd title="One NASA POWER weather series covers a cell of about 0.5° × 0.625°.">{p.cellId ?? "Not available"}</dd>
+              {p.hemisphere ? (
+                <>
+                  <dt>Hemisphere</dt>
+                  <dd>{p.hemisphere === "south" ? "Southern" : "Northern"}</dd>
+                </>
+              ) : null}
+            </dl>
+          ) : null}
+          <h3 className="mp-card-sub">What A.C.R.E can use here</h3>
+          {caps.state === "ready" ? (
+            <ul className="mp-caps" aria-label="Capabilities">
+              {caps.data.features.map((c) => {
+                const d = detail(c);
+                return (
+                  <li key={c.key} data-capability={c.key} data-status={c.status}>
+                    <span className="mp-cap-name">{CAPABILITY_LABEL[c.key]}</span>
+                    <span className={`pill pill-${pillKind(c.status)}`}>{STATUS_TEXT[c.status] ?? c.status}</span>
+                    {d ? <span className="mp-cap-detail">{d}</span> : null}
+                  </li>
+                );
+              })}
+            </ul>
+          ) : null}
+        </details>
+      ) : null}
     </section>
   );
 }

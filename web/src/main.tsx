@@ -9,6 +9,7 @@ import "./styles/site.css";
 import "./styles/workspace.css";
 import "./styles/guided.css";
 import "./styles/dashboard.css";
+import "./styles/onboarding.css";
 import { App } from "./App";
 import { trackInputMode } from "./ui/inputMode";
 

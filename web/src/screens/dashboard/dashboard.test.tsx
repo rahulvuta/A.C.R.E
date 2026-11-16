@@ -1,4 +1,5 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
+import { dateValue, setDate } from "../../inputs/testDates";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createFarmStore } from "../../farm/store";
 import { farmActions, resetFarmStoreForTests } from "../../farm/hooks";
@@ -57,6 +58,15 @@ describe("dashboard", () => {
     expect(within(card).getByText("Needs a rotation")).toBeInTheDocument();
     expect(within(card).getByRole("button", { name: "Open East" })).toBeInTheDocument();
   });
+
+  it("a field card carries on the guided sequence from the field's next step", () => {
+    const mine = farmActions.createFarm("My farm", { latitude: 40, longitude: 1 });
+    farmActions.addField(mine.farm_id, square(1), "East");
+    render(<Dashboard />);
+    const card = within(screen.getByRole("list", { name: "Your fields" })).getByRole("listitem");
+    expect(within(card).getByText("Step 2 of 6")).toBeInTheDocument();
+    expect(within(card).getByRole("link", { name: "Continue East: What you do now" })).toHaveAttribute("href", "?view=app#u=now");
+  });
 });
 
 it("keeps rotation edits on the field and returns Done to its overview", async () => {
@@ -70,11 +80,11 @@ it("keeps rotation edits on the field and returns Done to its overview", async (
   render(<Dashboard />);
   fireEvent.click(screen.getByRole("button", { name: "Open Rotation test" }));
   fireEvent.click(screen.getByRole("button", { name: "Edit crop rotation" }));
-  fireEvent.change(screen.getByRole("textbox", { name: "Next planting" }), { target: { value: "05-11" } });
+  setDate("Next planting", "05-11");
   fireEvent.click(screen.getByRole("button", { name: "Done, back to field" }));
   expect(screen.getByRole("tab", { name: "Overview" })).toHaveAttribute("aria-selected", "true");
   expect(window.location.hash).toBe(`#d=f/${field.field_id}/overview`);
   expect(screen.queryByRole("heading", { name: "Where is your field?" })).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Edit crop rotation" }));
-  expect(screen.getByRole("textbox", { name: "Next planting" })).toHaveValue("05-11");
+  expect(dateValue("Next planting")).toBe("05-11");
 });

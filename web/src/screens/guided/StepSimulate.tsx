@@ -7,6 +7,8 @@ import { G } from "../../ui/Glossary";
 import { simulateRequest, type StepContext } from "./context";
 import { MethodNote, ReadingsBeside, ScenarioSummary, YearTable } from "./SimViews";
 import { ScenarioResults, simulationResultSchema } from "../../sim";
+import { hasWinter } from "../../ui/cropNames";
+import { PlainAnswer } from "./PlainAnswer";
 
 /*
   Step 3: the current plan alone, through the next 10 years of this field's real past seasons in new orders (§11 with only the
@@ -72,7 +74,7 @@ function LossEditor({ ctx }: { ctx: StepContext }) {
   );
 }
 
-export function SimulationResult({ data }: { data: Simulation }) {
+export function SimulationResult({ data, winter = true, onPrices }: { data: Simulation; winter?: boolean; onPrices?: () => void }) {
   // U2's view reads the response in the backend's shape; a response its stricter schema
   // rejects falls back to D's view of the adapted model, so the step never goes blank.
   const parsed = simulationResultSchema.safeParse(data.raw);
@@ -81,26 +83,30 @@ export function SimulationResult({ data }: { data: Simulation }) {
   if (!s) return <p className="gf-muted">The service returned no result for this plan.</p>;
   return (
     <>
-      <section className="db-card" aria-label="10-year result">
-        <div className="db-card-head">
-          <h2>{s.label}: 10 years</h2>
-          <ConfidenceBadge value={(data.raw.method as Record<string, unknown> | undefined)?.confidence} label="Simulation support" />
-        </div>
-        <MethodNote sim={data} />
-        {u2 ? <ScenarioResults scenario={u2} /> : <ScenarioSummary s={s} />}
-        <p className="gf-muted">
-          Each value is the middle of all the simulated years, with its <G id="band">typical range</G>. <G id="margin">Margin</G> uses your numbers where you gave them.
-        </p>
-      </section>
-      {u2 ? null : (
-        <section className="db-card" aria-label="Year by year">
+      <PlainAnswer s={s} winter={winter} onPrices={onPrices} />
+      <details className="gf-all-numbers">
+        <summary>See all the numbers</summary>
+        <section className="db-card" aria-label="10-year result">
           <div className="db-card-head">
-            <h2>Year by year</h2>
+            <h2>{s.label}: 10 years</h2>
+            <ConfidenceBadge value={(data.raw.method as Record<string, unknown> | undefined)?.confidence} label="Simulation support" />
           </div>
-          <YearTable s={s} />
-          <ReadingsBeside s={s} />
+          <MethodNote sim={data} />
+          {u2 ? <ScenarioResults scenario={u2} /> : <ScenarioSummary s={s} />}
+          <p className="gf-muted">
+            Each value is the middle of all the simulated years, with its <G id="band">typical range</G>. <G id="margin">Margin</G> uses your numbers where you gave them.
+          </p>
         </section>
-      )}
+        {u2 ? null : (
+          <section className="db-card" aria-label="Year by year">
+            <div className="db-card-head">
+              <h2>Year by year</h2>
+            </div>
+            <YearTable s={s} />
+            <ReadingsBeside s={s} />
+          </section>
+        )}
+      </details>
     </>
   );
 }
@@ -110,24 +116,27 @@ export function StepSimulate({ ctx }: { ctx: StepContext }) {
   const { sim, run } = useSimulation(ctx.api.client, req, ctx.active !== false);
   return (
     <div className="gf-sim">
-      <LossEditor ctx={ctx} />
-      <div className="gf-run">
-        <label className="gf-inline">
-          First season
-          <input
-            className="gf-num"
-            inputMode="numeric"
-            defaultValue={ctx.sim.startSeason}
-            aria-label="First season of the 10 years"
-            onBlur={(e) => /^\d{4}$/.test(e.target.value) && updateSimField(ctx.field!.field_id, { startSeason: e.target.value })}
-          />
-        </label>
-        <button type="button" className="btn btn-secondary" onClick={run} disabled={!req || sim.state === "loading"}>
-          Run again
-        </button>
-      </div>
       <SimStatus sim={sim} onRetry={run} what="your current plan" />
-      {sim.state === "ready" ? <SimulationResult data={sim.data} /> : null}
+      {sim.state === "ready" ? <SimulationResult data={sim.data} winter={hasWinter(ctx.point?.latitude)} onPrices={() => { window.location.hash = "#u=now&p=prices"; }} /> : null}
+      <details className="gf-all-numbers">
+        <summary>Change the loss estimate or the first year</summary>
+        <LossEditor ctx={ctx} />
+        <div className="gf-run">
+          <label className="gf-inline">
+            First season
+            <input
+              className="gf-num"
+              inputMode="numeric"
+              defaultValue={ctx.sim.startSeason}
+              aria-label="First season of the 10 years"
+              onBlur={(e) => /^\d{4}$/.test(e.target.value) && updateSimField(ctx.field!.field_id, { startSeason: e.target.value })}
+            />
+          </label>
+          <button type="button" className="btn btn-secondary" onClick={run} disabled={!req || sim.state === "loading"}>
+            Run again
+          </button>
+        </div>
+      </details>
     </div>
   );
 }

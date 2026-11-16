@@ -82,7 +82,7 @@ test("export then import round-trips the geometry exactly", async ({ page }) => 
   await drawRing(page, [[0.2, 0.2], [0.45, 0.25], [0.4, 0.5], [0.2, 0.45]]);
   await expect(fields(page)).toHaveCount(1);
   const download = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Export GeoJSON" }).click();
+  await page.getByRole("button", { name: "Save a copy of my fields" }).click();
   const file = await (await download).path();
   const { readFileSync } = await import("node:fs");
   const text = readFileSync(file!, "utf8");
