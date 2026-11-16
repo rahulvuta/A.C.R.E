@@ -69,10 +69,10 @@ export function StepHeader({ step, children }: { step: StepDef; children?: React
         Step {step.n} of {STEPS.length}
       </p>
       <h2 className="gf-question">{step.question}</h2>
+      {/* The question stands alone; the longer explanation is one press away, not a line everyone has to read. */}
       <p className="gf-sentence">
-        {step.sentence}{" "}
         <Term term="What does this mean?">
-          <strong>{g.term}.</strong> {g.definition}
+          {step.sentence} <strong>{g.term}.</strong> {g.definition}
         </Term>
       </p>
       {children}

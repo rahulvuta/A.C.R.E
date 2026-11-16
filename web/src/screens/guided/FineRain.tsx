@@ -145,7 +145,7 @@ export function FineRainCard({ doc }: { doc: FineRainDoc }) {
           </table>
         </div>
       </details>
-      <p className="gf-muted">Shown for comparison. The 10-year outlook above still uses the 50 km record, so this changes no result. Two records of the same place can differ; your own rain gauge is the best check.</p>
+      <p className="gf-muted">For comparison only: it changes no result. Your own rain gauge is the best check.</p>
     </section>
   );
 }

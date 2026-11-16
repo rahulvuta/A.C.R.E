@@ -330,7 +330,7 @@ export function CompareRows({ sim, baselineId, chosenId, onChoose }: { sim: Simu
           </tbody>
         </table>
       </div>
-      <p className="gf-muted">Each plan was run through the same years of this field's real past weather. These are typical results, not a forecast.</p>
+      <p className="gf-muted">Every plan gets the same past weather. Typical results, not a forecast.</p>
     </section>
   );
 }

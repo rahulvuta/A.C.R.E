@@ -208,7 +208,7 @@ export function Dashboard({ api: given }: { api?: GlobalApi }) {
             <>
               <header className="gf-head">
                 <h2 className="gf-question">Your fields</h2>
-                <p className="gf-sentence">Each field keeps its own crops, dates, prices and results, saved in this browser. No account needed.</p>
+                <p className="gf-sentence">Saved in this browser. No account needed.</p>
               </header>
               {myFields.length === 0 ? (
                 <section className="db-card dash-empty" aria-label="No fields">
@@ -280,7 +280,9 @@ function FieldCard({ api, farm, field, onOpen }: { api: GlobalApi; farm: Farm; f
   const loc = place?.place.state === "ready" ? [place.place.data.admin2Name, place.place.data.admin1Name, place.place.data.countryName].filter(Boolean).join(", ") : "";
   const c = centroid(field.geometry);
   const coords = `${c.latitude.toFixed(3)}, ${c.longitude.toFixed(3)}`;
-  const crops = sim.rotation.length ? cropsOf(sim.rotation).map(cropLabel).join(" → ") : field.plan ? cropsOf([field.plan]).map(cropLabel).join(" → ") : "";
+  // Every crop on the field, a grazed pasture included (nothing is sold from it, and it is still what grows there).
+  const lasting = sim.rotation.find((p) => p.permanent)?.next_crop_id;
+  const crops = lasting ? cropLabel(lasting) : sim.rotation.length ? cropsOf(sim.rotation).map(cropLabel).join(" → ") : field.plan ? cropsOf([field.plan]).map(cropLabel).join(" → ") : "";
   const step = STEPS.find((s) => s.id === nextStep(sim))!;
   const status = !sim.rotation.length && !field.plan ? "Needs a rotation" : sim.chosenId ? "Plan chosen" : rotationReady(sim.rotation.length ? sim.rotation : field.plan ? [field.plan] : []) ? "Rotation set" : "Rotation incomplete";
   return (
@@ -289,15 +291,18 @@ function FieldCard({ api, farm, field, onOpen }: { api: GlobalApi; farm: Farm; f
         <h3 translate="no">{field.name}</h3>
         {farm.demo ? <span className="dash-tag">Demo</span> : null}
       </div>
-      <dl>
-        <div><dt>Size</dt><dd>{area.main} <span className="dash-muted">({area.other})</span>{field.approx_shape ? <span className="mp-approx">Approximate shape</span> : null}</dd></div>
-        <div><dt>Location</dt><dd translate={loc ? "no" : undefined}>{loc || (place?.place.state === "loading" ? "Looking up…" : coords)}</dd></div>
-        <div><dt>Crop rotation</dt><dd>{crops || "Not set"}</dd></div>
-        <div><dt>Planning status</dt><dd>{status}</dd></div>
-      </dl>
+      {/* A field in three lines: how big and where, what grows on it, and how far along its plan is. */}
+      <p className="dash-meta">
+        <span>{area.main}</span>
+        {field.approx_shape ? <span className="mp-approx">Approximate shape</span> : null}
+        <span translate={loc ? "no" : undefined}>{loc || (place?.place.state === "loading" ? "Looking up…" : coords)}</span>
+      </p>
+      {crops ? <p className="dash-crops">{crops}</p> : null}
       <div className="dash-next">
-        <span className="dash-step">
-          Step {step.n} of {STEPS.length}
+        <span className="dash-steps" role="img" aria-label={`Step ${step.n} of ${STEPS.length}. ${status}.`}>
+          {STEPS.map((x) => (
+            <i key={x.id} data-on={x.n < step.n || (step.id === "plan" && Boolean(sim.chosenId)) ? "done" : x.n === step.n ? "now" : "no"} />
+          ))}
         </span>
         <a className="btn btn-primary" href={`?view=app#u=${step.id}`} onClick={() => selectField(field.field_id)} aria-label={`Continue ${field.name}: ${step.nav}`}>
           {step.id === "plan" ? "See your plan" : `Continue: ${step.nav}`}

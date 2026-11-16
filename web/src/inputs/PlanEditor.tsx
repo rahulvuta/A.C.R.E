@@ -65,7 +65,7 @@ function DateInput({ field, label, value, onChange }: { field: DateField; label:
         {MONTH_NAMES.map((name, i) => <option key={name} value={two(i + 1)}>{name}</option>)}
       </select>
     </div>
-    <p className="acre-input-help">{date ? `${plainDate(date)}, every year.` : half ? "Pick both the day and the month." : "Pick the day and the month. It repeats every year."}</p>
+    {date ? null : <p className="acre-input-help">{half ? "Pick both the day and the month." : "Pick the day and the month."}</p>}
     {evidence?.origin ? <><OriginLabel origin={evidence.origin} /><SourceLabel source={evidence.source} /></> : null}
   </fieldset>;
 }
@@ -200,20 +200,20 @@ export function PlanEditor({ location, value, onChange, regionKey = value.plan.r
   return <section className="acre-inputs acre-input-card" aria-label={show === "dates" ? "Crop dates" : "Crop plan"}>
     {show === "all" && <h2>What do you grow?</h2>}
     <div className={show === "all" ? "acre-input-plan-grid" : "acre-input-plan-stack"}>
-      <div>{crops && <><CropPicker label={winter ? "Previous crop" : "First crop"} regionKey={regionKey} api={api} value={selected(value.plan.previous_crop_id)} onChange={crop => changeCrop("previous", crop)} />{show === "crops" && <p className="acre-input-help">{winter ? "The main crop you harvest before winter." : "The crop you harvest first."}</p>}</>}
+      <div>{crops && <><CropPicker label={winter ? "Previous crop" : "First crop"} regionKey={regionKey} api={api} value={selected(value.plan.previous_crop_id)} onChange={crop => changeCrop("previous", crop)} /></>}
         {dates && <>{show === "dates" && <h3>{name(value.plan.previous_crop_id)}</h3>}<DateInput field="prev_harvest" label={show === "dates" ? "Harvest date" : "Previous harvest"} value={value} onChange={onChange} /></>}</div>
       <div>{crops && <><label>{winter ? "Winter use" : "Between the two crops"}<select value={value.plan.winter.kind} onChange={event => onChange({ ...value, plan: { ...value.plan, winter: { kind: event.target.value as PlanDraft["winter"]["kind"], crop_id: null } }, dates: value.dates.filter(d => !d.field.startsWith("winter.")) })}><option value="none">Nothing (bare or stubble)</option><option value="cover">Cover crop</option><option value="winter_grain">{winter ? "Winter grain (harvested)" : "Another crop you harvest"}</option></select></label>
-        {show === "crops" && <p className="acre-input-help">What is on the field between the two crops.</p>}
+        
         {value.plan.winter.kind !== "none" && <CropPicker label={winter ? "Winter crop" : "Crop in between"} regionKey={regionKey} api={api} value={selected(value.plan.winter.crop_id)} onChange={crop => changeCrop("winter", crop)} />}</>}
         {dates && value.plan.winter.kind !== "none" && show === "dates" && <h3>{name(value.plan.winter.crop_id)} <small>{winter ? "over winter" : "between the two crops"}</small></h3>}
         {dates && value.plan.winter.kind === "cover" && <><DateInput field="winter.seed" label="Cover seeding" value={value} onChange={onChange} /><DateInput field="winter.terminate" label="Cover end date" value={value} onChange={onChange} /></>}
         {dates && value.plan.winter.kind === "winter_grain" && <><DateInput field="winter.plant" label={winter ? "Winter grain planting" : "In-between crop planting"} value={value} onChange={onChange} /><DateInput field="winter.harvest" label={winter ? "Winter grain harvest" : "In-between crop harvest"} value={value} onChange={onChange} /></>}
       </div>
-      <div>{crops && <><CropPicker label="Next crop" regionKey={regionKey} api={api} value={selected(value.plan.next_crop_id)} onChange={crop => changeCrop("next", crop)} />{show === "crops" && <p className="acre-input-help">{winter ? "The main crop you plant after winter." : "The crop you plant after it."}</p>}</>}
+      <div>{crops && <><CropPicker label="Next crop" regionKey={regionKey} api={api} value={selected(value.plan.next_crop_id)} onChange={crop => changeCrop("next", crop)} /></>}
         {dates && <>{show === "dates" && <h3>{name(value.plan.next_crop_id)}</h3>}<DateInput field="next_plant" label={show === "dates" ? "Planting date" : "Next planting"} value={value} onChange={onChange} /></>}</div>
     </div>
     {dates && <><button type="button" className={show === "dates" ? undefined : "acre-input-primary"} disabled={loading || !anyCrop} onClick={() => void fill()}>{show === "dates" ? "Refill blank dates with typical ones" : "Fill typical dates"}</button>
-    <p className="acre-input-help">{show === "dates" ? (value.dates.some(d => d.value !== null && d.origin !== "grower") ? "We filled in typical dates for this location. Change any that differ on your farm; your dates stay yours." : "Pick the dates you use. Where typical dates exist for this location they are filled in for you to check.") : "Typical dates come from the service for this location; dates you enter stay yours."}</p>
+    {show === "dates" && value.dates.some(d => d.value !== null && d.origin !== "grower") ? <p className="acre-input-help">Typical dates are filled in. Change any that differ on your farm.</p> : null}
     {loading && !activeId && <p role="status">Looking up typical dates…</p>}{error && <ErrorNotice error={error} retry={() => void fill()} />}
     {lookupEntries.map(entry => {
       const phase = phases[entry.crop_id];

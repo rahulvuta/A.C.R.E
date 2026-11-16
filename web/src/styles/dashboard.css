@@ -205,3 +205,12 @@
 .sb-more > summary { cursor: pointer; color: var(--ink-muted); }
 .sb-more[open] { display: grid; gap: 10px; }
 .sb-compare { padding: 0 2px; }
+
+/* A field card in three lines and a six-step bar, in place of a table of labels. */
+.dash-meta { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 14px; color: var(--ink-muted); }
+.dash-meta > span:first-child { color: var(--ink); font-weight: 500; }
+.dash-crops { margin: 0; font-size: 16px; }
+.dash-steps { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+.dash-steps i { height: 4px; border-radius: 2px; background: var(--line); }
+.dash-steps i[data-on="done"] { background: var(--night, #17323f); }
+.dash-steps i[data-on="now"] { background: var(--action); }

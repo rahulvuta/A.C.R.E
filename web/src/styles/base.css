@@ -49,6 +49,34 @@ textarea {
   color: inherit;
 }
 
+/*
+  One dropdown everywhere. The browser's own arrow sits flush against the edge and looks
+  different on every system, so each dropdown draws the same small arrow with room around it.
+  These few properties are forced so that no screen's own input style can drop the arrow.
+*/
+:root {
+  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%235B6369' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5'/%3E%3C/svg%3E");
+  --select-arrow-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%23ffffff' stroke-opacity='0.6' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5'/%3E%3C/svg%3E");
+}
+select:not([multiple]):not([size]) {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: var(--select-arrow) !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  background-size: 12px 12px !important;
+  padding-inline-end: 34px !important;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+[dir="rtl"] select:not([multiple]):not([size]) {
+  background-position: left 12px center !important;
+}
+select:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
 a {
   color: var(--action);
 }

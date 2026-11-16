@@ -113,10 +113,13 @@ export function TenYearTimeline({ scenario, riskAt = 0.3, note = OUTLOOK_NOTE, c
 
       <footer className="tl-foot">
         <Legend risk={riskAt} />
-        <p className="tl-note">
-          {note}
-          {datesMissing ? " Some plans have no dates yet, so their crops are shown in order only." : ""}
-        </p>
+        {/* The compact timeline sits on a page that already says what the outlook is built on. */}
+        {(!compact && note) || datesMissing ? (
+          <p className="tl-note">
+            {compact ? "" : note}
+            {datesMissing ? " Some plans have no dates yet, so their crops are shown in order only." : ""}
+          </p>
+        ) : null}
       </footer>
     </section>
   );

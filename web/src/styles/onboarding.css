@@ -87,14 +87,20 @@
 
 /* Step 3: the result in three plain sentences, then everything else behind one click. */
 .pa h2 { margin: 0 0 12px; font-size: 20px; font-weight: 500; letter-spacing: -0.01em; }
-.pa-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
-.pa-rows li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; align-items: start; }
+.pa-rows { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.pa-rows li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 12px; align-items: start; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); }
 .pa-icon { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--accent-soft); color: var(--action); }
 .pa-rows li[data-row="dry"] .pa-icon { background: var(--check-soft); color: var(--check); }
 .pa-rows li[data-row="money"] .pa-icon { background: var(--cover-soft); color: var(--cover); }
-.pa-rows p { margin: 0; font-size: 18px; line-height: 1.45; max-width: 46em; }
-.pa-rows .ob { margin-left: 4px; vertical-align: 2px; }
-.pa-link { min-height: 0; padding: 2px 8px; }
+.pa-body { display: grid; gap: 4px; justify-items: start; min-width: 0; }
+.pa-figure { font-size: 28px; font-weight: 500; line-height: 1.1; letter-spacing: -0.02em; }
+.pa-caption { font-size: 15px; line-height: 1.35; }
+.pa-extra { font-size: 13px; color: var(--ink-muted); }
+.pa-dots { display: flex; gap: 4px; margin: 2px 0; }
+.pa-dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+.pa-dots i[data-on="yes"] { background: var(--check, #b7791f); }
+.pa-rows .ob { margin: 2px 0 0; }
+.pa-link { min-height: 36px; margin-top: 4px; }
 .pa-note { margin: 14px 0 0; font-size: 14px; color: var(--ink-muted); }
 .gf-all-numbers > summary { cursor: pointer; padding: 10px 2px; font-size: 15px; font-weight: 500; color: var(--action); }
 .gf-all-numbers[open] > summary { margin-bottom: 8px; }
@@ -102,15 +108,18 @@
 
 /* ------------------------------------------------------------------ Units (card 15) */
 /* The one place units are changed: a small fold-out in the sidebar. */
-.un { margin: 0 0 var(--sp-3); border-top: 1px solid rgb(255 255 255 / 0.1); padding-top: var(--sp-3); font-size: 13.500px; color: rgb(255 255 255 / 0.8); }
-.un > summary { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; min-height: 32px; padding: 6px 10px; border-radius: var(--radius-md); cursor: pointer; list-style: none; }
+.un { margin: 0; font-size: 13.5px; color: rgb(255 255 255 / 0.66); }
+.un > summary { display: flex; align-items: center; gap: 10px; min-height: 32px; padding: 0 10px; border-radius: var(--radius-md); cursor: pointer; list-style: none; transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease); }
+.un > summary::after { content: ""; flex: none; width: 12px; height: 12px; background: var(--select-arrow-light) center / 12px 12px no-repeat; transition: transform var(--dur) var(--ease); }
+.un[open] > summary::after { transform: rotate(180deg); }
+.un > summary svg { flex: none; color: rgb(255 255 255 / 0.42); }
 .un > summary::-webkit-details-marker { display: none; }
-.un > summary:hover { background: rgb(255 255 255 / 0.08); }
-.un-title { font-weight: 500; }
-.un-now { font-size: 12.500px; color: rgb(255 255 255 / 0.6); }
-.un-body { display: grid; gap: 8px; padding: 8px 10px 4px; }
+.un > summary:hover { background: rgb(255 255 255 / 0.08); color: #fff; }
+.un-title { font-weight: 400; }
+.un-now { margin-left: auto; font-size: 12px; color: rgb(255 255 255 / 0.5); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.un-body { display: grid; gap: 8px; padding: 8px 10px 10px; }
 .un-body label { display: grid; gap: 3px; font-size: 12.500px; color: rgb(255 255 255 / 0.7); }
-.un-body select { min-height: 34px; padding: 0 8px; border-radius: var(--radius-md); border: 1px solid rgb(255 255 255 / 0.25); background: rgb(255 255 255 / 0.06); color: #fff; font: inherit; font-size: 14px; }
+.un-body select { --select-arrow: var(--select-arrow-light); min-height: 36px; padding: 0 10px; border-radius: var(--radius-md); border: 1px solid rgb(255 255 255 / 0.2); background-color: rgb(255 255 255 / 0.06); color: #fff; font: inherit; font-size: 13.5px; }
 .un-body select option { color: #15191c; }
 .un-note { margin: 2px 0 0; font-size: 12px; line-height: 1.35; color: rgb(255 255 255 / 0.55); }
 
@@ -175,9 +184,13 @@
 .lang select { min-height: 38px; max-width: 220px; padding: 0 10px; border: 1px solid var(--line-strong); border-radius: var(--radius-md); background: var(--surface); color: var(--ink); font: inherit; font-size: 15px; }
 .lang-other { display: flex; gap: 6px; }
 .lang-other input { min-height: 38px; min-width: 0; flex: 1; padding: 0 10px; border: 1px solid var(--line-strong); border-radius: var(--radius-md); font: inherit; font-size: 15px; }
-.lang-compact { margin: 0 0 var(--sp-2); padding: 0 10px; min-width: 0; grid-template-columns: minmax(0, 1fr); }
-.lang-compact .lang-label { display: flex; min-width: 0; color: rgb(255 255 255 / 0.8); }
-.lang-compact select { flex: 1; width: 0; min-width: 0; max-width: none; border-color: rgb(255 255 255 / 0.25); background: rgb(255 255 255 / 0.06); color: #fff; font-size: 14px; }
+.lang-compact { margin: 0; padding: 0; min-width: 0; grid-template-columns: minmax(0, 1fr); }
+/* In the sidebar the picker is one quiet row, like the links under it: icon, language, small arrow. */
+.lang-compact .lang-label { display: flex; align-items: center; gap: 10px; min-width: 0; min-height: 32px; padding: 0 0 0 10px; border-radius: var(--radius-md); color: rgb(255 255 255 / 0.66); transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease); }
+.lang-compact .lang-label:hover, .lang-compact .lang-label:focus-within { background: rgb(255 255 255 / 0.08); color: #fff; }
+.lang-compact .lang-label svg { flex: none; width: 16px; height: 16px; color: rgb(255 255 255 / 0.42); }
+.lang-compact select { --select-arrow: var(--select-arrow-light); flex: 1; width: 0; min-width: 0; max-width: none; min-height: 32px; padding: 0; border: 0; border-radius: var(--radius-md); background-color: transparent; color: inherit; font-size: 13.5px; }
+.lang-compact select:focus-visible { outline-offset: -2px; }
 .lang-compact select option { color: #15191c; }
 .lang-compact .lang-other input { background: rgb(255 255 255 / 0.06); border-color: rgb(255 255 255 / 0.25); color: #fff; }
 .wl-top { gap: 16px; }
@@ -293,3 +306,17 @@
 .sm-year { font-size: 10px; fill: var(--ink-muted); }
 .sm-mid { stroke: var(--ink-muted); stroke-width: 1; stroke-dasharray: 3 3; }
 .sm-line { margin: 8px 0; font-size: 16px; }
+
+/* The sidebar's foot is one list: language, units, then the links. */
+.db-side-foot { gap: 1px; }
+.db-side-foot .db-links { margin-top: var(--sp-3); }
+.lang-compact .lang-other { padding: 6px 10px 8px; }
+
+/* The result in words, on request: a quiet link under the three figures. */
+.pa-more { margin-top: 12px; }
+.pa-more > summary { display: inline-block; cursor: pointer; font-size: 14px; color: var(--action); list-style: none; }
+.pa-more > summary::-webkit-details-marker { display: none; }
+.pa-more > summary::after { content: ""; display: inline-block; width: 12px; height: 12px; margin-left: 6px; vertical-align: -1px; background: var(--select-arrow) center / 12px 12px no-repeat; transition: transform var(--dur) var(--ease); }
+.pa-more[open] > summary::after { transform: rotate(180deg); }
+.pa-more .pa-words { margin-top: 8px; }
+.sb-basis details > summary { cursor: pointer; }

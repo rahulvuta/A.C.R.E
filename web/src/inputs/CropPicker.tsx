@@ -27,8 +27,8 @@ function CropFacts({ crop, researched = false }: { crop: Crop; researched?: bool
   return <div className="acre-input-crop-facts">
     <OriginLabel origin={crop.origin} />
     {ai && <span className="acre-input-ai">AI-suggested · review before use</span>}
-    {calendar !== null ? <span data-found={calendar ? "yes" : "no"}>{calendar ? "Typical dates for your area: found" : "No typical dates here: you enter your own"}</span> : null}
-    {economics !== null ? <span data-found={economics ? "yes" : "no"}>{economics ? "Local prices: found" : "Local prices: looked up at the prices step"}</span> : null}
+    {calendar ? <span data-found="yes">Typical dates</span> : null}
+    {economics ? <span data-found="yes">Local prices</span> : null}
     {crop.family || crop.sources?.length ? <details className="acre-input-crop-more"><summary>More about this crop</summary>
       {crop.family ? <span>Family: {crop.family}</span> : null}
       {crop.sources?.map((source, i) => <SourceLabel key={i} source={source} />)}

@@ -50,7 +50,7 @@ function DayMonth({ label, value, onChange }: { label: string; value: string; on
           ))}
         </select>
       </div>
-      <p className="acre-input-help">{month && day ? `${Number(day)} ${MONTHS[Number(month) - 1]}, every year.` : "Pick the day and the month. Any day in the month you usually finish harvesting will do."}</p>
+      {month && day ? null : <p className="acre-input-help">Pick the day and the month you usually finish harvesting.</p>}
     </fieldset>
   );
 }

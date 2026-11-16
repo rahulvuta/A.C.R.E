@@ -38,7 +38,7 @@ describe("farmer inputs", () => {
     expect(api.search).toHaveBeenLastCalledWith("soy", "US-NC", expect.any(AbortSignal));
     expect(onChange).toHaveBeenCalledWith(exampleCrops[1]);
     expect(screen.getByText("Family: Fabaceae")).toBeInTheDocument();
-    expect(screen.getByText("Typical dates for your area: found")).toBeInTheDocument();
+    expect(screen.getByText("Typical dates")).toBeInTheDocument();
     expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
     expect(screen.getByText("Published source")).toBeInTheDocument();
   });
@@ -88,7 +88,8 @@ describe("farmer inputs", () => {
     // A day that the month does not have cannot be chosen: the list stops at the month's last day.
     fireEvent.change(within(group()).getByRole("combobox", { name: "Next planting: month" }), { target: { value: "02" } });
     expect(within(group()).getByRole("combobox", { name: "Next planting: day" }).querySelectorAll("option")).toHaveLength(30);
-    expect(within(group()).getByText("12 February, every year.")).toBeInTheDocument();
+    // A chosen date is not said back in a sentence: the two boxes already show it.
+    expect(within(group()).queryByText(/every year/)).toBeNull();
   });
   it("matches regional references through backend crop aliases", async () => {
     const defaults = { ...exampleEconomics, crops: [{ ...exampleEconomics.crops[0]!, crop_id: "maize", aliases: ["field_corn"] }] };
@@ -133,7 +134,7 @@ describe("farmer inputs", () => {
     expect(screen.getByRole("spinbutton", { name: "Dry spring yield loss percent" })).toHaveValue(15);
     // The "your estimate" label appears only beside a loss the grower has given.
     expect(screen.getAllByText("Guess")).toHaveLength(1);
-    expect(screen.getByText(/These are your own estimates/)).toBeInTheDocument();
+    expect(screen.getByText(/Your own estimate/)).toBeInTheDocument();
     // The choices set the same number as typing it; "I don't know" clears it.
     fireEvent.click(within(screen.getByRole("group", { name: /heavy rain/ })).getByRole("button", { name: "About half" }));
     expect(screen.getByRole("spinbutton", { name: "Heavy rain yield loss percent" })).toHaveValue(50);
@@ -158,7 +159,7 @@ describe("farmer inputs", () => {
   it("leaves unavailable references editable without replacing them with zero", async () => {
     const api = { ...exampleApi, estimate: async () => ({ ...exampleEconomics, currency: null, crops: [{ crop_id: "soybean", aliases: [], price: null, yield: null, costs: { items: [], total_per_area: null }, status: "unavailable" as const, reason_text: "No regional references." }] }) };
     render(<ControlledEconomics api={api} />);
-    await screen.findByText("No regional references.");
+    await screen.findByText("No published numbers for this crop here. Enter yours if you know them.");
     expect(screen.getByRole("spinbutton", { name: "Price · typical value" })).toHaveValue(null);
     fireEvent.change(screen.getByRole("spinbutton", { name: "Yield value" }), { target: { value: "0" } });
     expect(screen.getByRole("spinbutton", { name: "Yield value" })).toHaveValue(0);
@@ -253,7 +254,8 @@ describe("farmer inputs", () => {
   it("splits prices from weather-loss estimates and labels the filled-in values", async () => {
     const { unmount } = render(<EconomicsEditor show="prices" location={exampleLocation} crops={["soybean"]} area={{ value: 16.2, unit: "ha" }} value={createEconomicsValue()} onChange={vi.fn()} api={exampleApi} />);
     await waitFor(() => expect(screen.getByRole("spinbutton", { name: "Price · typical value" })).toHaveValue(11.2));
-    expect(screen.getByText(/Where a published number exists for your area/)).toBeInTheDocument();
+    // no paragraph of instructions above the numbers
+    expect(screen.queryByText(/Where a published number exists/)).toBeNull();
     expect(screen.queryByRole("group", { name: /weather losses/ })).not.toBeInTheDocument();
     unmount();
     const estimate = vi.fn(exampleApi.estimate);

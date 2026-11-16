@@ -31,6 +31,12 @@ export interface PlainSentence {
   note?: string;
   /** True for the money line when there is no money result: the page adds a way to the prices. */
   missing?: boolean;
+  /** What the page shows in place of the sentence: one figure, a few words under it, and at most one small line more. */
+  figure?: string;
+  caption: string;
+  extra?: string;
+  /** Dots drawn for "N of M years": how many, and how many are filled. */
+  dots?: { of: number; filled: number };
 }
 
 /** The three sentences as plain text: what step 3 shows and what the shared page and message carry (card 22). */
@@ -48,19 +54,30 @@ export function plainSentences(s: ScenarioResult): PlainSentence[] {
   // in place of two zeros that would read as good news about weather that was never looked at.
   const covered = s.timeline.length > 0 && s.timeline.every((t) => t.ground === "permanent");
   if (covered) {
-    rows.push({ key: "rain", origin: "calculation", text: "The ground stays covered all year, so no rain falls on bare ground and there is no planting time to check." });
+    rows.push({ key: "rain", origin: "calculation", figure: "All year", caption: "the ground stays covered", text: "The ground stays covered all year, so no rain falls on bare ground and there is no planting time to check." });
   } else if (dry?.median != null) {
     const spread = dry.p10 != null && dry.p90 != null && dry.p10 !== dry.p90 ? ` Across the runs it was between ${num(dry.p10)} and ${num(dry.p90)}.` : "";
     rows.push({
       key: "dry",
       origin: dry.origin,
+      figure: `${num(dry.median)} of ${years}`,
+      caption: "years too dry before planting",
+      extra: dry.p10 != null && dry.p90 != null && dry.p10 !== dry.p90 ? `${num(dry.p10)} to ${num(dry.p90)} across the runs` : undefined,
+      dots: { of: years, filled: Math.max(0, Math.min(years, Math.round(dry.median))) },
       text: dry.median === 0 ? `In a typical run, ${when} not too dry in any of the ${years} years.${spread}` : `In a typical run, ${when} too dry in ${num(dry.median)} of the ${years} years.${spread}`,
     });
   }
   if (!covered && rain?.median != null) {
     const heavyDays = heavy?.median != null && heavy.median > 0 ? num(heavy.median, null, 1) : null;
     const heavyText = heavyDays ? ` Heavy rain hits bare ground on about ${heavyDays} ${heavyDays === "1" ? "day" : "days"} a year.` : "";
-    rows.push({ key: "rain", origin: rain.origin, text: `About ${rainText(rain.median)} of rain a year falls while the ground is bare.${heavyText}` });
+    rows.push({
+      key: "rain",
+      origin: rain.origin,
+      figure: rainText(rain.median),
+      caption: "of rain a year on bare ground",
+      extra: heavyDays ? `Heavy rain on about ${heavyDays} ${heavyDays === "1" ? "day" : "days"} a year` : undefined,
+      text: `About ${rainText(rain.median)} of rain a year falls while the ground is bare.${heavyText}`,
+    });
   }
   if (margin?.median != null) {
     const same = margin.p10 != null && margin.p90 != null && margin.p10 === margin.p90;
@@ -71,16 +88,21 @@ export function plainSentences(s: ScenarioResult): PlainSentence[] {
       origin: margin.origin,
       // A margin that folds in the grower's own loss estimate says so, in place of the bare "Guess" label.
       note: margin.includesAssumption ? "Uses your loss estimate" : undefined,
+      figure: money(margin.median / years, margin.currency),
+      caption: "a year left after costs",
+      extra: margin.p10 != null && margin.p90 != null && !same ? `${years} years: ${money(margin.p10, margin.currency)} to ${money(margin.p90, margin.currency)}` : `${years} years: ${money(margin.median, margin.currency)}`,
       text: `After the costs in your plan, it leaves about ${money(margin.median / years, margin.currency)} a year for the whole field (${money(margin.median, margin.currency)} over ${years} years).${spread}${flat}`,
     });
   } else if (s.nothingSold) {
     // Grazed land, or anything else nothing is sold from: no money result, and nothing to add.
-    rows.push({ key: "money", origin: null, text: "Nothing is sold from this field in the plan, so there is no money result." });
+    rows.push({ key: "money", origin: null, caption: "Nothing is sold from this field, so there is no money result.", text: "Nothing is sold from this field in the plan, so there is no money result." });
   } else {
     rows.push({
       key: "money",
       origin: null,
       missing: true,
+      caption: "No money result yet.",
+      extra: s.moneyGaps.length ? plainIds(s.moneyGaps[0]!) : "Each crop needs a price, a yield and at least one cost.",
       text: `There is no money result yet. ${s.moneyGaps.length ? s.moneyGaps.slice(0, 2).map((gap) => plainIds(gap)).join(" ") : "The plan needs a price, a yield and at least one cost for each crop."}`,
     });
   }
@@ -122,38 +144,46 @@ function PlainWords({ s, crops, twoCropsAYear }: { s: ScenarioResult; crops: str
 
 export function PlainAnswer({ s, winter, onPrices, explain }: { s: ScenarioResult; winter: boolean; onPrices?: () => void; /** Asks for the model's plain-words paragraph (card 26); left out in tests and sample mode. */ explain?: { crops: string[]; twoCropsAYear?: boolean } }) {
   void winter;
-  const rows = plainSentences(s).map((r) => ({
-    ...r,
-    icon: ICON[r.key],
-    text: r.missing ? (
-      <>
-        {r.text}{" "}
-        {onPrices ? (
-          <button type="button" className="btn btn-quiet pa-link" onClick={onPrices}>
-            Add prices and costs
-          </button>
-        ) : null}
-      </>
-    ) : (
-      r.text
-    ),
-  }));
+  const rows = plainSentences(s).map((r) => ({ ...r, icon: ICON[r.key] }));
+  const [words, setWords] = useState(false);
 
   return (
     <section className="db-card pa" aria-label="In short">
       <h2>In short</h2>
+      {/* One figure and a few words each: the sentence form is kept for the shared page and for screen readers. */}
       <ul className="pa-rows">
         {rows.map((r) => (
-          <li key={r.key} data-row={r.key}>
+          <li key={r.key} data-row={r.key} aria-label={r.text}>
             <span className="pa-icon">{r.icon}</span>
-            <p>
-              {r.text} {r.note ? <span className="ob ob-assumed" data-origin={r.origin ?? undefined}>{r.note}</span> : r.origin ? <OriginBadge origin={r.origin} /> : null}
-            </p>
+            <div className="pa-body">
+              {r.figure ? <strong className="pa-figure">{r.figure}</strong> : null}
+              <span className="pa-caption">{r.caption}</span>
+              {r.dots ? (
+                <span className="pa-dots" aria-hidden="true">
+                  {Array.from({ length: r.dots.of }, (_, i) => (
+                    <i key={i} data-on={i < r.dots!.filled ? "yes" : "no"} />
+                  ))}
+                </span>
+              ) : null}
+              {r.extra ? <span className="pa-extra">{r.extra}</span> : null}
+              {r.missing && onPrices ? (
+                <button type="button" className="btn btn-secondary pa-link" onClick={onPrices}>
+                  Add prices and costs
+                </button>
+              ) : null}
+              {r.note ? <span className="ob ob-assumed" data-origin={r.origin ?? undefined}>{r.note}</span> : r.origin ? <OriginBadge origin={r.origin} /> : null}
+            </div>
           </li>
         ))}
       </ul>
-      {explain ? <PlainWords s={s} crops={explain.crops} twoCropsAYear={Boolean(explain.twoCropsAYear)} /> : null}
-      <p className="pa-note">Worked out from this field's real past weather. It shows what to plan for; it cannot say what any single year will bring.</p>
+      {/* The figures above are the answer. The paragraph in words is asked for, not shown to everyone (and is only written when asked). */}
+      {explain ? (
+        <details className="pa-more" onToggle={(e) => { if ((e.currentTarget as HTMLDetailsElement).open) setWords(true); }}>
+          <summary>Say it in words</summary>
+          {words ? <PlainWords s={s} crops={explain.crops} twoCropsAYear={Boolean(explain.twoCropsAYear)} /> : null}
+        </details>
+      ) : null}
+      <p className="pa-note">From this field's real past weather. What to plan for, not a forecast.</p>
     </section>
   );
 }

@@ -496,10 +496,13 @@ function FarmPanel({
                     </span>
                   </span>
                   <span className="mp-field-crops">{planCrops(f.plan, hasWinter(centroid(f.geometry).latitude))}</span>
-                  <span className="mp-field-status" data-state={f.plan ? (fieldStates[f.field_id] ?? "none") : "no-plan"}>
-                    <span className="mp-dot" style={{ background: f.plan ? STATE_COLOR[fieldStates[f.field_id] ?? "none"] : "transparent" }} aria-hidden="true" />
-                    {f.plan ? PLAN_STATUS[fieldStates[f.field_id] ?? "none"] : "No plan yet"}
-                  </span>
+                  {/* A status line only when there is something to tell: a result, or one being prepared. */}
+                  {f.plan && (fieldStates[f.field_id] ?? "none") !== "none" ? (
+                    <span className="mp-field-status" data-state={fieldStates[f.field_id]}>
+                      <span className="mp-dot" style={{ background: STATE_COLOR[fieldStates[f.field_id]!] }} aria-hidden="true" />
+                      {PLAN_STATUS[fieldStates[f.field_id]!]}
+                    </span>
+                  ) : null}
                 </button>
                 {f.plan ? (
                   <div className="mp-field-mini">

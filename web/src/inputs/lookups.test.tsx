@@ -130,13 +130,13 @@ describe("automatic price lookup", () => {
   });
   it("shows the old text when research is unavailable", async () => {
     render(<Econ api={econApi({ available: false })} />); await tick(10);
-    expect(screen.getByText("No published prices or costs for this crop in this area. Enter yours if you know them.")).toBeInTheDocument();
+    expect(screen.getByText("No published numbers for this crop here. Enter yours if you know them.")).toBeInTheDocument();
   });
   it("does not start a second lookup for the same crop and region when the editor is remounted", async () => {
     const api = econApi({ finish: false });
     const first = render(<Econ api={api} />);
     await tick(10); await tick(2100); await tick(10);
-    expect(screen.getByText(/No published prices, yields and costs found for soybean in this area\. Enter yours if you know them, or leave them blank: the simulation then runs without money results for this crop\./)).toBeInTheDocument();
+    expect(screen.getByText(/No published prices, yields and costs found for soybean here\. Enter yours, or leave them blank for no money result\./)).toBeInTheDocument();
     first.unmount();
     render(<Econ api={api} />); await tick(5000);
     expect(api.economicsResearch).toHaveBeenCalledTimes(1);

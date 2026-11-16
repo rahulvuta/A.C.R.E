@@ -134,12 +134,13 @@ export function StepPlan({ ctx }: { ctx: StepContext }) {
         </section>
       ) : null}
       {point && plans.length && yearlyOnly && ctx.api.source === "live" ? (
-        <section className="db-card" aria-label="Actions and deadlines">
-          <div className="db-card-head">
-            <h2>Every date in your plan</h2>
-          </div>
-          <FuturePlan key={JSON.stringify(plans)} location={point} plans={plans} startSeason={sim.startSeason} seasons={plans.length} onChange={setCalendar} />
-        </section>
+        // Folded away: the next jobs are at the top of the step; the full dated list is for whoever wants it.
+        <details className="gf-all-numbers">
+          <summary>Every date in your plan</summary>
+          <section className="db-card" aria-label="Actions and deadlines">
+            <FuturePlan key={JSON.stringify(plans)} location={point} plans={plans} startSeason={sim.startSeason} seasons={plans.length} onChange={setCalendar} />
+          </section>
+        </details>
       ) : null}
       <ReadingsLog ctx={ctx} />
     </div>

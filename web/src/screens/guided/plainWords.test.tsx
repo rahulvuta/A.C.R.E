@@ -66,7 +66,7 @@ describe("rain closer to the field (card 30)", () => {
     expect(card).toHaveTextContent("1,434 mm a year");
     expect(card).toHaveTextContent("1,868 mm a year");
     expect(card).toHaveTextContent("Over 1998 to 2025, the 10 km record is about 23% drier than the 50 km record (lower in 26 of 28 years).");
-    expect(card).toHaveTextContent("this changes no result");
+    expect(card).toHaveTextContent("it changes no result");
     expect(card).toHaveTextContent("NASA measured");
     expect(card).toHaveTextContent("NASA model");
     expect(screen.getByRole("img", { name: /Rain each year from 2023 to 2025/ })).toBeInTheDocument();

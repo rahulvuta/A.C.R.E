@@ -655,7 +655,10 @@ export function OutlookBasis({ raw, runs, sourceYears, notes = [] }: { raw: Reco
   const lines = [...outlookBasis(raw, runs, sourceYears), ...notes.filter(Boolean)];
   return (
     <footer className="sb-basis" aria-label="What this outlook is built on">
-      <p><strong>What this outlook is built on.</strong> {lines.join(" ")} <OriginLabel origin="calculation" /></p>
+      <details>
+        <summary>What this outlook is built on</summary>
+        <p>{lines.join(" ")} <OriginLabel origin="calculation" /></p>
+      </details>
     </footer>
   );
 }

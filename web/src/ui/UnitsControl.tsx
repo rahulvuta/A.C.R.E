@@ -12,6 +12,9 @@ export function UnitsControl() {
   return (
     <details className="un">
       <summary>
+        <svg viewBox="0 0 18 18" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M2.500 11.500 11.500 2.500l4 4-9 9zM5 9l1.500 1.500M7.500 6.500 9 8M10 4l1.500 1.500" />
+        </svg>
         <span className="un-title">Units</span>
         <span className="un-now" translate="no">
           {u.area === "ha" ? "ha" : "ac"} · {u.rain} · °{u.temp}

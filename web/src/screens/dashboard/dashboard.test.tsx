@@ -52,9 +52,12 @@ describe("dashboard", () => {
     render(<Dashboard />);
     const card = within(screen.getByRole("list", { name: "Your fields" })).getByRole("listitem");
     expect(within(card).getByRole("heading", { name: "East" })).toBeInTheDocument();
-    expect(within(card).getByText("Size")).toBeInTheDocument();
-    expect(card.textContent).toMatch(/Location\s*(Looking up…|40\.00\d, 1\.00\d)/);
-    expect(within(card).getByText("Needs a rotation")).toBeInTheDocument();
+    // three lines, no table of labels: the size, then the place (or the point until the place is known)
+    expect(card.querySelector(".dash-meta")!.textContent).toMatch(/(ha|ac).*(Looking up…|40\.00\d, 1\.00\d)/);
+    expect(within(card).queryByText("Size")).toBeNull();
+    // how far along it is: a six-step bar that says so to a screen reader, with no "not set" line
+    expect(within(card).getByRole("img", { name: "Step 2 of 6. Needs a rotation." })).toBeInTheDocument();
+    expect(within(card).queryByText("Not set")).toBeNull();
     expect(within(card).getByRole("button", { name: "Open East" })).toBeInTheDocument();
   });
 
@@ -63,7 +66,9 @@ describe("dashboard", () => {
     farmActions.addField(mine.farm_id, square(1), "East");
     render(<Dashboard />);
     const card = within(screen.getByRole("list", { name: "Your fields" })).getByRole("listitem");
-    expect(within(card).getByText("Step 2 of 6")).toBeInTheDocument();
+    const bar = within(card).getByRole("img", { name: /^Step 2 of 6/ });
+    expect(bar.querySelectorAll('i[data-on="done"]')).toHaveLength(1);
+    expect(bar.querySelectorAll('i[data-on="now"]')).toHaveLength(1);
     expect(within(card).getByRole("link", { name: "Continue East: What you do now" })).toHaveAttribute("href", "?view=app#u=now");
   });
 });

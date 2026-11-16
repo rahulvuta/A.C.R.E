@@ -31,7 +31,7 @@ const PICTURES: Record<Kind, { label: string; tiles: (when: string) => string; m
     scale: GREEN_SCALE,
     ends: ["Bare", "Green"],
     scaleLabel: "Colour scale: from bare ground to dense green plants",
-    note: "Plant cover that month, seen by NASA's MODIS satellite. Each square is about 1 km: the land around your field, not the field alone.",
+    note: "Plant cover from NASA's MODIS satellite. 1 km squares: the land around your field.",
     none: "NASA has no picture for this month. Pick another month.",
   },
   soil: {
@@ -44,7 +44,7 @@ const PICTURES: Record<Kind, { label: string; tiles: (when: string) => string; m
     scale: SOIL_SCALE,
     ends: ["Dry", "Wet"],
     scaleLabel: "Colour scale: from dry soil to wet soil",
-    note: "Water in the top metre of soil that day, from NASA's SMAP satellite combined with NASA's land model. Each square is about 9 km: the land around your field, not a reading from your soil.",
+    note: "Water in the top metre of soil, from NASA's SMAP satellite and land model. 9 km squares: the land around your field, not your soil.",
     none: "NASA has no picture for this day. Pick another day.",
   },
 };

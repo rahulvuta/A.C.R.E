@@ -67,7 +67,7 @@ export function ReadingsLog({ value, onChange }: ReadingsLogProps) {
     if (kind !== "note" && kind !== "custom") setChartKind(kind);
   }
   const shown = (reading: Reading) => reading.kind === "custom" ? `${display(reading.value)}${reading.value !== null ? ` ${reading.unit}` : ""}` : (qtyText(reading.value, readingLabels[reading.kind].unit, units) ?? display(reading.value));
-  return <section className="acre-inputs acre-input-card" aria-label="Field readings"><h2>Your field readings</h2><p>What you measure on this field is used ahead of the estimates for the area. Saved in this browser.</p>
+  return <section className="acre-inputs acre-input-card" aria-label="Field readings"><h2>Your field readings</h2><p>Your own readings come before area estimates. Saved in this browser.</p>
     <fieldset><legend>Add a reading <OriginLabel origin="grower" /></legend>
       <div className="acre-input-quick" role="group" aria-label="What did you measure?">{QUICK.map(q => <button key={q.kind} type="button" className="acre-input-quick-btn" aria-pressed={kind === q.kind} onClick={() => pick(q.kind)}>{q.label}</button>)}</div>
       <details className="acre-input-lab" open={lab || undefined}><summary>From a lab report or a sensor</summary>

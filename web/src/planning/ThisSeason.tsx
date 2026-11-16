@@ -113,7 +113,7 @@ export function ThisSeasonList({ result, own, today = todayIso(), action }: { re
           </li>
         ))}
       </ol>
-      <p className="pl-muted">Your next jobs, from the dates in your plan. They are planned dates, not a forecast.</p>
+      <p className="pl-muted">Planned dates, not a forecast.</p>
     </section>
   );
 }

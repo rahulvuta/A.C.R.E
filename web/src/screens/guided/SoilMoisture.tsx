@@ -77,7 +77,7 @@ export function SoilMoistureCard({ years, now, monthDay, crop }: { years: SmapYe
       <div className="sm-head">
         <strong>{asPercent(mid)}</strong>
         <span className="sm-what">
-          water in the top metre of soil on {day}, when you plant {crop}: the middle value of {years.length} years
+          water in the top metre of soil on {day}, when you plant {crop}
         </span>
         <OriginBadge origin="nasa_modeled" title={BADGE} />
       </div>
@@ -87,8 +87,7 @@ export function SoilMoistureCard({ years, now, monthDay, crop }: { years: SmapYe
         {now ? ` Newest reading, ${longDate(now.date)}: ${asPercent(now.value)}.` : ""}
       </p>
       <p className="gf-muted">
-        From NASA's SMAP satellite, combined with NASA's land model, for the 9 km square around your field: the land around it, not a reading from your soil.{nearby ? " Where NASA has no picture for the day, the nearest day is used." : ""} The 10-year outlook above still uses the weather
-        model's wetness, so this changes no result.
+        NASA's SMAP satellite and land model, 9 km squares: the land around your field, not your soil.{nearby ? " The nearest day is used where NASA has no picture." : ""} It changes no result.
       </p>
     </section>
   );

@@ -20,7 +20,7 @@ export function EquipmentEditor({ value, onChange, api = inputsApi }: EquipmentE
   const extras = value.filter(id => !known.some(item => item.id === id));
   // Display only: the list is the service's; here it is laid out by how the work is done.
   const groups = GROUPS.map(g => ({ ...g, items: known.filter(item => groupOf(item.id) === g.id) })).filter(g => g.items.length);
-  return <section className="acre-inputs acre-input-card" aria-label="Equipment"><h2>Equipment you can use</h2><p>Tick what you can use, whether you own it, borrow it or hire it. Leave the rest blank.</p>
+  return <section className="acre-inputs acre-input-card" aria-label="Equipment"><h2>Equipment you can use</h2><p>Tick what you can use: owned, borrowed or hired.</p>
     {request.loading && <p role="status">Loading equipment choices…</p>}{request.error && <ErrorNotice error={request.error} retry={request.retry} />}
     <fieldset><legend>Available equipment <OriginLabel origin="grower" /></legend>
       {groups.map(g => <div key={g.id} className="acre-input-equipment-group" role="group" aria-label={g.label}>
