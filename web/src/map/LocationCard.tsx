@@ -66,7 +66,7 @@ function summary(caps: Capabilities): { key: string; tone: "ok" | "check" | "una
     out.push({
       key: "weather",
       tone: pillKind(weather.status) as "ok" | "check" | "unavailable",
-      text: weather.jobStatus === "pending" ? "NASA weather for this place is being prepared (about a minute)." : weather.status === "complete" ? "NASA weather since 1981 is ready for this place." : weather.status === "partial" ? "NASA weather is partly available for this place." : "NASA weather is not available for this place.",
+      text: weather.jobStatus === "pending" ? "NASA weather for this place is being prepared (about a minute)." : weather.jobStatus === "failed" ? "NASA weather could not be fetched just now. It is tried again when you run your plan." : weather.status === "complete" ? "NASA weather since 1981 is ready for this place." : weather.status === "partial" ? "NASA weather is partly available for this place." : "NASA weather is not available for this place.",
     });
   }
   const catalog = caps.features.find((c) => c.key === "catalog");
@@ -93,10 +93,10 @@ export function LocationCard({ pick, action }: { pick: Pick; action?: React.Reac
   const region = p ? [p.admin2Name, p.admin1Name, p.countryName].filter(Boolean).join(", ") : null;
   return (
     <section className="mp-card" aria-label="Picked place" aria-busy={place.state === "loading" || caps.state === "loading"}>
-      <h2 className="mp-card-title">{title}</h2>
+      <h2 className="mp-card-title" translate={p?.display ? "no" : undefined}>{title}</h2>
       {place.state === "error" ? <p className="mp-error" role="alert">{place.message}</p> : null}
       {p && p.status !== "complete" && p.reasonText ? <p className="mp-error" role="alert">{p.reasonText}</p> : null}
-      {region && p && region !== p.display ? <p className="mp-region">{region}</p> : null}
+      {region && p && region !== p.display ? <p className="mp-region" translate="no">{region}</p> : null}
       {caps.state === "loading" ? <p className="mp-quiet">Checking what is available here…</p> : null}
       {caps.state === "error" ? <p className="mp-error" role="alert">{caps.message}</p> : null}
       {caps.state === "ready" ? (

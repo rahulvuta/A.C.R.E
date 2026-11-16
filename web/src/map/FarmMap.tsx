@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import * as maplibregl from "maplibre-gl";
 import type { Map as MlMap, MapGeoJSONFeature } from "maplibre-gl";
-import { addHole, addParcel, areaM2, bbox, centroid, checkGeometry, formatArea, SQ_M_PER_AC, SQ_M_PER_HA, type Ring } from "../farm/geometry";
+import { addHole, addParcel, areaM2, bbox, centroid, checkGeometry, SQ_M_PER_AC, SQ_M_PER_HA, squareAround, type Ring } from "../farm/geometry";
+import { areaText, useUnits } from "../ui/units";
 import { loadDemoFarm } from "../farm/demo";
 import { MiniTimeline, planCrops } from "../timeline/MiniTimeline";
 import { exportFarm, exportFileName, importFarm, MAX_IMPORT_BYTES } from "../farm/geojson";
@@ -46,6 +47,7 @@ export interface FarmMapProps {
 
 export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, pickAction, drawOnPick }: FarmMapProps) {
   const { farms, selectedFarm: farm, selectedFieldId, persistence, notice } = useFarms();
+  const units = useUnits();
   const [map, setMap] = useState<MlMap | null>(null);
   const drawing = useRef<Drawing | null>(null);
   const [tool, setTool] = useState<Tool>("idle");
@@ -117,11 +119,12 @@ export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, 
         const el = document.createElement("div");
         el.className = "mp-field-label";
         el.dataset.fieldId = f.field_id;
-        const a = formatArea(f.geometry);
+        const a = areaText(areaM2(f.geometry), units);
         const name = document.createElement("strong");
         name.textContent = f.name;
+        name.setAttribute("translate", "no");
         const ac = document.createElement("span");
-        ac.textContent = `${a.ac} · ${a.ha}`;
+        ac.textContent = `${a.main} · ${a.other}${f.approx_shape ? " · approximate shape" : ""}`;
         el.append(name, ac);
         const c = centroid(f.geometry);
         return new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([c.longitude, c.latitude]).addTo(map);
@@ -135,7 +138,7 @@ export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, 
       for (const mk of fieldLabels.current) mk.remove();
       fieldLabels.current = [];
     };
-  }, [map, farm, tool, selectedFieldId]);
+  }, [map, farm, tool, selectedFieldId, units]);
 
   const zoomToFarm = useCallback(
     (f: Farm) => {
@@ -208,7 +211,7 @@ export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, 
           const f = farmActions.addField(target.farm_id, g);
           // A field drawn while zoomed far out comes out far too large; say so instead of saving it silently.
           const m2 = areaM2(g);
-          setMessage({ kind: "info", text: m2 > LARGE_FIELD_M2 ? `${f.name} added. It is ${fmtHa(m2)} (${fmtAc(m2)}), which is large for one field. If that is not right, zoom in and press Edit shape.` : `${f.name} added.` });
+          setMessage({ kind: "info", text: m2 > LARGE_FIELD_M2 ? `${f.name} added. It is ${areaText(m2).main} (${areaText(m2).other}), which is large for one field. If that is not right, zoom in and press Edit shape.` : `${f.name} added.` });
         } else if (selected) {
           const r = t === "draw-parcel" ? addParcel(selected.geometry, ring) : addHole(selected.geometry, ring);
           if (!r.ok) throw new Error(r.message);
@@ -262,11 +265,27 @@ export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, 
     map?.fitBounds([[w, s], [e, n]], { padding: 60, maxZoom: 17, duration: 800 });
   };
 
-  const drawAction = () =>
+  /** The second way in (card 17): a square of the typed size around the pin, marked as an approximate shape. */
+  const addBySize = (pick: Pick, m2: number) => {
+    try {
+      const g = squareAround(pick.point, m2);
+      const target = ensureFarm();
+      const f = farmActions.addField(target.farm_id, g, undefined, true);
+      const [w, s, e, n] = bbox(g);
+      map?.fitBounds([[w, s], [e, n]], { padding: 120, maxZoom: 17, duration: 600 });
+      setMessage({ kind: "info", text: `${f.name} added as a square of ${areaText(m2).main} around your pin. Its shape is approximate: press Edit shape to trace the real edge whenever you like.` });
+    } catch (e) {
+      setMessage({ kind: "error", text: e instanceof Error ? e.message : "That field could not be added." });
+    }
+  };
+  const drawAction = (pick: Pick) =>
     tool === "idle" ? (
-      <button type="button" className="btn btn-primary" onClick={() => startDraw("draw-field")}>
-        Draw my field here
-      </button>
+      <>
+        <button type="button" className="btn btn-primary" onClick={() => startDraw("draw-field")}>
+          Draw my field here
+        </button>
+        <SizeEntry onAdd={(m2) => addBySize(pick, m2)} />
+      </>
     ) : null;
   const defaultAction = (pick: Pick) => (
     <button
@@ -340,7 +359,8 @@ function FarmPanel({
   fieldStates?: Record<string, FieldState>;
   live: FieldGeometry | null;
 }) {
-  // Acres for display only (turf, contract radius); the backend recomputes area for analysis.
+  // Sizes for display only, in the grower's unit first; the backend recomputes area for analysis.
+  const units = useUnits();
   const liveM2 = live ? areaM2(live) : null;
   const fieldsM2 = (farm?.fields ?? []).reduce((t, f) => t + (tool === "edit" && f.field_id === selected?.field_id ? 0 : areaM2(f.geometry)), 0);
   const totalM2 = fieldsM2 + (liveM2 !== null && (tool === "draw-field" || tool === "edit") ? liveM2 : 0);
@@ -387,7 +407,7 @@ function FarmPanel({
           <h2 className="mp-card-title">Your farm</h2>
         )}
         {farms.length > 1 ? (
-          <select className="input mp-farm-select" aria-label="Saved farms" value={farm?.farm_id ?? ""} onChange={(e) => farmActions.selectFarm(e.target.value)} disabled={busy}>
+          <select className="input mp-farm-select" aria-label="Saved farms" translate="no" value={farm?.farm_id ?? ""} onChange={(e) => farmActions.selectFarm(e.target.value)} disabled={busy}>
             {farms.map((f) => (
               <option key={f.farm_id} value={f.farm_id}>
                 {f.name}
@@ -423,7 +443,7 @@ function FarmPanel({
             {liveM2 !== null ? (
               <>
                 {tool === "draw-hole" ? "Area left out: " : "This shape: "}
-                <strong>{fmtAc(liveM2)}</strong> · {fmtHa(liveM2)}
+                <strong>{areaText(liveM2, units).main}</strong> · {areaText(liveM2, units).other}
               </>
             ) : (
               "Place at least three corners to see the size."
@@ -451,9 +471,9 @@ function FarmPanel({
       {farm && fieldCount > 0 ? (
         <div className="mp-total" aria-live="polite" data-testid="farm-total">
           <span className="mp-total-label">Farm total</span>
-          <span className="mp-total-ac">{fmtAc(totalM2)}</span>
+          <span className="mp-total-ac">{areaText(totalM2, units).main}</span>
           <span className="mp-total-sub">
-            {fmtHa(totalM2)} · {fieldCount} {fieldCount === 1 ? "field" : "fields"}
+            {areaText(totalM2, units).other} · {fieldCount} {fieldCount === 1 ? "field" : "fields"}
           </span>
         </div>
       ) : null}
@@ -461,15 +481,18 @@ function FarmPanel({
       {farm && farm.fields.length > 0 ? (
         <ul className="mp-fields" aria-label="Fields">
           {farm.fields.map((f) => {
-            const a = formatArea(f.geometry);
+            const a = areaText(areaM2(f.geometry), units);
             const isSel = f.field_id === selected?.field_id;
             return (
               <li key={f.field_id} className={isSel ? "is-selected" : undefined} data-field-id={f.field_id}>
                 <button type="button" className="mp-field" aria-pressed={isSel} disabled={busy} onClick={() => farmActions.selectField(isSel ? null : f.field_id)} onDoubleClick={() => onZoom(f)}>
                   <span className="mp-field-top">
-                    <span className="mp-field-name">{f.name}</span>
+                    <span className="mp-field-name">
+                      <span translate="no">{f.name}</span>
+                      {f.approx_shape ? <span className="mp-approx">Approximate shape</span> : null}
+                    </span>
                     <span className="mp-field-area">
-                      <strong>{a.ac}</strong> {a.ha}
+                      <strong>{a.main}</strong> {a.other}
                     </span>
                   </span>
                   <span className="mp-field-crops">{planCrops(f.plan, hasWinter(centroid(f.geometry).latitude))}</span>
@@ -522,7 +545,7 @@ function FarmPanel({
         <div className="mp-empty">
           <p className="mp-quiet">{farm ? "No fields yet. Draw your first field on the map." : "Find your farm, then draw your fields."}</p>
           <button type="button" className="btn btn-secondary btn-small" onClick={onDemo} disabled={busy}>
-            Try a demo farm (Union County, NC)
+            Try an example farm
           </button>
         </div>
       )}
@@ -590,11 +613,38 @@ function ResultsLegend({ farm, states = {}, cells = [] }: { farm: Farm; states?:
   );
 }
 
-const fmt = (v: number) => (v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2));
 /** Above this a single drawn shape is probably a zoom mistake: 200 hectares, about 500 acres. */
 const LARGE_FIELD_M2 = 200 * SQ_M_PER_HA;
-const fmtAc = (m2: number) => `${fmt(m2 / SQ_M_PER_AC)} ac`;
-const fmtHa = (m2: number) => `${fmt(m2 / SQ_M_PER_HA)} ha`;
+
+/** "I know its size": type the size and the field is added as a square around the pin, with no drawing. */
+function SizeEntry({ onAdd }: { onAdd: (m2: number) => void }) {
+  const units = useUnits();
+  const [text, setText] = useState("");
+  const size = Number(text);
+  const ok = text.trim() !== "" && Number.isFinite(size) && size > 0;
+  const m2 = size * (units.area === "ha" ? SQ_M_PER_HA : SQ_M_PER_AC);
+  return (
+    <form
+      className="mp-size"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (ok) onAdd(m2);
+      }}
+    >
+      <label>
+        <span>Or type its size</span>
+        <span className="mp-size-row">
+          <input type="number" inputMode="decimal" min="0" step="any" value={text} onChange={(e) => setText(e.target.value)} aria-label={`Field size in ${units.area === "ha" ? "hectares" : "acres"}`} placeholder="Size" />
+          <span className="mp-size-unit">{units.area === "ha" ? "hectares" : "acres"}</span>
+          <button type="submit" className="btn btn-secondary" disabled={!ok}>
+            Add field
+          </button>
+        </span>
+      </label>
+      {ok && m2 > LARGE_FIELD_M2 ? <small className="mp-size-note">That is large for one field. Check the number and the unit.</small> : null}
+    </form>
+  );
+}
 
 /** A field card's one-line plan status. */
 const PLAN_STATUS: Record<FieldState, string> = {

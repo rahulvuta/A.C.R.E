@@ -53,6 +53,7 @@ export function migrate(raw: unknown): { store: FarmStore; dropped: number } | n
         display_area_ha: areaHa(fl.geometry as FieldGeometry),
         plan: isObj(fl.plan) ? (fl.plan as unknown as FieldPlan) : null,
         ...(typeof fl.notes === "string" ? { notes: fl.notes } : {}),
+        ...(fl.approx_shape === true ? { approx_shape: true as const } : {}),
         ...(Array.isArray(fl.equipment) ? { equipment: fl.equipment.filter((x): x is string => typeof x === "string") } : {}),
         ...(Array.isArray(fl.readings) ? { readings: fl.readings.filter(isObj) as unknown as FieldReading[] } : {}),
       });
@@ -181,12 +182,12 @@ export const ops = {
     return { ...s, selected_farm_id: farmId, selected_field_id: null };
   },
   /** Throws if the geometry is invalid: callers check first and show the message. */
-  addField(s: FarmStore, farmId: string, geometry: FieldGeometry, name?: string): { store: FarmStore; field: Field } {
+  addField(s: FarmStore, farmId: string, geometry: FieldGeometry, name?: string, approx = false): { store: FarmStore; field: Field } {
     const problem = checkGeometry(geometry);
     if (problem) throw new Error(problem.message);
     const farm = s.farms.find((f) => f.farm_id === farmId);
     if (!farm) throw new Error("No such farm.");
-    const field: Field = { field_id: newFieldId(), name: name?.trim() || nextFieldName(farm), geometry, display_area_ha: areaHa(geometry), plan: null };
+    const field: Field = { field_id: newFieldId(), name: name?.trim() || nextFieldName(farm), geometry, display_area_ha: areaHa(geometry), plan: null, ...(approx ? { approx_shape: true } : {}) };
     return { field, store: { ...mapFarm(s, farmId, (f) => ({ ...f, fields: [...f.fields, field] })), selected_farm_id: farmId, selected_field_id: field.field_id } };
   },
   updateField(s: FarmStore, fieldId: string, patch: Partial<Pick<Field, "name" | "geometry" | "plan" | "notes" | "equipment" | "readings">>): FarmStore {
@@ -202,7 +203,11 @@ export const ops = {
         if (x.field_id !== fieldId) return x;
         const next: Field = { ...x, ...patch };
         if (patch.name !== undefined) next.name = patch.name.trim() || x.name;
-        if (patch.geometry) next.display_area_ha = areaHa(patch.geometry);
+        if (patch.geometry) {
+          next.display_area_ha = areaHa(patch.geometry);
+          // A shape the grower has traced or corrected is no longer the stand-in square.
+          delete next.approx_shape;
+        }
         return next;
       }),
     }));

@@ -54,6 +54,7 @@ describe("field conditions", () => {
     expect(screen.getByLabelText("Personal field conditions")).toBeInTheDocument();
     await screen.findByRole("link", { name: "Synthetic soil fixture" });
     const log = screen.getByRole("region", { name: "Field readings" });
+    fireEvent.click(within(log).getByRole("button", { name: "Soil test pH" }));
     fireEvent.change(within(log).getByRole("spinbutton", { name: "Soil pH / acidity (pH)" }), { target: { value: "4.2" } });
     fireEvent.click(within(log).getByRole("button", { name: "Add reading" }));
     await screen.findByText("Outside normal range");

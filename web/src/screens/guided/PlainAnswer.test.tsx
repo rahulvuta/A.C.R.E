@@ -28,7 +28,9 @@ describe("the result in three plain sentences", () => {
   it("says spring where there is a winter, and that weather does not move a flat money figure", () => {
     render(<PlainAnswer winter s={scenario({ dry_springs: dist(0), margin_10y: dist(38264, 38264, 38264, { currency: "USD" }) })} />);
     const text = screen.getByRole("region", { name: "In short" }).textContent!;
-    expect(text).toContain("in spring were not too dry in any of the 10 years");
+    expect(text).toContain("the weeks before planting were not too dry in any of the 10 years");
+    // Planting is not always in spring, so the season is not named.
+    expect(text).not.toContain("in spring");
     expect(text).toContain("$3,826 a year");
     expect(text).toContain("Weather does not move this figure");
   });

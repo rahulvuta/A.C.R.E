@@ -23,6 +23,8 @@ export interface StepContext {
 }
 
 export const planReady = (p: FieldPlan) =>
+  // A crop that stays in the ground needs only its name (and its harvest date, kept in both date fields).
+  p.permanent ? Boolean(p.next_crop_id && p.previous_crop_id === p.next_crop_id && /^\d{2}-\d{2}$/.test(p.prev_harvest) && /^\d{2}-\d{2}$/.test(p.next_plant)) :
   Boolean(p.previous_crop_id && p.next_crop_id && /^\d{2}-\d{2}$/.test(p.prev_harvest) && /^\d{2}-\d{2}$/.test(p.next_plant)) &&
   (p.winter.kind === "none" ||
     (p.winter.kind === "cover" ? Boolean(p.winter.crop_id && p.winter.seed && p.winter.terminate) : Boolean(p.winter.crop_id && p.winter.plant && p.winter.harvest)));
@@ -41,7 +43,11 @@ export const simCrops = (sim: SimField): string[] => cropsOf(zonesOf(sim).length
 /** The crops a rotation uses (for economics), in order of first use. */
 export function cropsOf(r: FieldPlan[]): string[] {
   const out: string[] = [];
-  for (const p of r) for (const c of [p.previous_crop_id, p.winter.kind !== "none" ? p.winter.crop_id : "", p.next_crop_id]) if (c && !out.includes(c)) out.push(c);
+  for (const p of r) {
+    // Ground nothing is sold from (grazed pasture) has no price, yield or cost to ask for.
+    if (p.permanent && !p.permanent.sold) continue;
+    for (const c of [p.previous_crop_id, p.winter.kind !== "none" ? p.winter.crop_id : "", p.next_crop_id, ...(p.permanent ? [] : (p.companions ?? []))]) if (c && !out.includes(c)) out.push(c);
+  }
   return out;
 }
 

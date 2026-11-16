@@ -20,10 +20,10 @@ from typing import Any
 
 from acre.croplib import jobs, library
 from acre.croplib import research as cr
-from acre.economics.estimate import AREAS, _split
+from acre.economics.estimate import AREAS, _split, bag_unit
 from acre.research import guardrails, prompt, verify
 
-PROMPT_VERSION = "e1"
+PROMPT_VERSION = "e2"  # e2: prices and costs in the currency the source prints (card 24)
 SEARCH_RESULTS = 10  # OpenRouter's web plugin includes up to 10 results per search (docs)
 MAX_ITEMS = 40
 MIN_YEAR = 1990
@@ -52,7 +52,9 @@ typical and high can be built), one item per year.
 them, the named items (cost_type "item", with the item name).
 
 For each item give: value, unit (for example USD/bu, USD/t, ARS/t, bu/acre, t/ha, USD/acre; prices \\
-are CURRENCY/quantity, yields quantity/area, costs CURRENCY/area), currency (ISO code, or null), \\
+are CURRENCY/quantity, yields quantity/area, costs CURRENCY/area; a price quoted per bag is \\
+CURRENCY/WEIGHT with the bag's weight, for example KES/90kg, and per quintal CURRENCY/q), \\
+currency (ISO code, or null), \\
 year, source_title, source_url (the page you read), source_locator (table or section) and \\
 evidence_quote: words copied exactly from that page, at most {guardrails.MAX_QUOTE_WORDS} words, that \\
 contain the number.
@@ -64,6 +66,9 @@ Argentina's MAGyP and similar official bodies, India's DES and ICAR, and their e
 2. FAO and FAOSTAT;
 3. university extension enterprise budgets and custom-rate surveys (.edu and national equivalents).
 Never news, commercial sites, blogs, seed or input companies, forums or AI-written pages.
+
+Give every price and cost in the currency the source prints, which is normally the country's \\
+own currency (KES in Kenya, INR in India, ARS in Argentina). Never convert a currency yourself.
 
 Search the most specific region first (state or province), then the country. Prefer an HTML page \\
 to a PDF when both exist. If you cannot find something, leave it out and say so in gaps. No \\
@@ -100,12 +105,17 @@ def cache_key(crop_id: str, region_key: str) -> str:
 
 _QTY = {"tonne": "t", "tonnes": "t", "metric ton": "t", "metric tons": "t", "mt": "t",
         "ton": "t", "kilogram": "kg", "kilograms": "kg", "pound": "lb", "pounds": "lb",
-        "lbs": "lb", "bushel": "bu", "bushels": "bu", "hundredweight": "cwt"}  # fmt: skip
+        "lbs": "lb", "bushel": "bu", "bushels": "bu", "hundredweight": "cwt",
+        "quintal": "q", "quintals": "q", "qtl": "q", "qtls": "q"}  # fmt: skip
 _AREA = {"ac": "acre", "acres": "acre", "hectare": "ha", "hectares": "ha"}
 
 
 def _clean_qty(q: str) -> str | None:
     q = _QTY.get(q.strip().lower(), q.strip().lower())
+    # Markets often quote a bag by its weight ("KES 3,200 per 90 kg bag"): kept as "90kg".
+    bag = bag_unit(q)
+    if bag:
+        return bag
     return q if q and len(q) <= 16 and q.replace(".", "").isalpha() else None
 
 

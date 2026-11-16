@@ -26,6 +26,12 @@ const spaced = (id: string) => id.replace(/^other:/, "").replace(/_/g, " ");
 /** A crop id as a name a grower would use: the world name when there is one, else the id with spaces. */
 export const worldCropName = (id: string): string => WORLD_NAMES[id] ?? spaced(id);
 
+/** The same, starting with a capital, for a line of its own ("Field corn"). */
+export const cropTitle = (id: string): string => {
+  const s = worldCropName(id);
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+};
+
 /** A crop name as the service lists it, tidied for display ("Barley all" → "Barley"). */
 export const tidyCropName = (name: string): string => {
   const s = name.replace(/\s+all$/i, "").trim();

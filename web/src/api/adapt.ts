@@ -1244,13 +1244,24 @@ const fieldPlanToBackend = (p: FieldPlan) => ({
   grower: { low_moisture_concern: p.grower?.low_moisture_concern ?? null },
 });
 
+/** How each season is farmed beyond "one crop, then the next" (card 21), keyed by plan id; empty when every season is an ordinary yearly one. */
+export function systemsOf(rotation: FieldPlan[]): Record<string, { companions?: string[]; ground?: "permanent"; sold?: boolean }> {
+  const out: Record<string, { companions?: string[]; ground?: "permanent"; sold?: boolean }> = {};
+  for (const p of rotation) {
+    if (p.permanent) out[p.plan_id] = { ground: "permanent", sold: p.permanent.sold };
+    else if (p.companions?.length) out[p.plan_id] = { companions: p.companions.filter((c) => c && c !== p.next_crop_id).slice(0, 3) };
+  }
+  return out;
+}
+
 const BackendScenarioResult = z
   .object({
     scenario_id: z.string(),
     label: str,
     status: LooseStatus,
     reason_text: str,
-    timeline: z.array(z.object({ year: int, season: z.union([z.string(), z.number()]).nullable().optional(), crop_sequence: z.array(z.string()).default([]), plan_id: str }).passthrough()).default([]),
+    timeline: z.array(z.object({ year: int, season: z.union([z.string(), z.number()]).nullable().optional(), crop_sequence: z.array(z.string()).default([]), plan_id: str, companions: z.array(z.string()).optional(), ground: z.string().optional() }).passthrough()).default([]),
+    system_notes: z.array(z.object({ kind: z.string(), text: z.string() }).passthrough()).optional(),
     yearly: z
       .array(
         z
@@ -1325,7 +1336,8 @@ export function adaptSimulation(r: z.infer<typeof BackendSimulation>): Simulatio
       label: s.label ?? s.scenario_id,
       status: asStatus(s.status),
       reasonText: nn(s.reason_text),
-      timeline: s.timeline.map((t) => ({ year: t.year, season: String(t.season ?? t.year), cropSequence: t.crop_sequence, planId: nn(t.plan_id) })),
+      timeline: s.timeline.map((t) => ({ year: t.year, season: String(t.season ?? t.year), cropSequence: t.crop_sequence, planId: nn(t.plan_id), ...(t.companions?.length ? { companions: t.companions } : {}), ...(t.ground ? { ground: t.ground } : {}) })),
+      ...(s.system_notes?.length ? { systemNotes: s.system_notes.map((n) => ({ kind: n.kind, text: n.text })) } : {}),
       yearly: s.yearly.map((y) => ({
         year: y.year,
         indicators: Object.fromEntries(Object.entries(y.indicators).map(([k, v]) => [k, distOrOdds(v)])),
@@ -1339,6 +1351,7 @@ export function adaptSimulation(r: z.infer<typeof BackendSimulation>): Simulatio
       events: s.events.map((e) => ({ event: e.event, probability: nn(e.probability), text: e.text })),
       moneyStatus: asStatus(s.money_status),
       moneyGaps: s.money_gaps.map((g) => (typeof g === "string" ? g : g.text)),
+      nothingSold: s.money_gaps.some((g) => typeof g !== "string" && (g as { reason?: unknown }).reason === "nothing_sold"),
       readingsContext: s.readings_context.map((x) => ({
         date: x.date,
         kind: x.kind,
@@ -1395,6 +1408,7 @@ const toBackendOverrides = (o: Record<string, CropOverride>) =>
       },
     ]),
   );
+const allLegs = (s: { rotation: FieldPlan[]; zoneRotations?: Record<string, FieldPlan[]> }) => [...s.rotation, ...Object.values(s.zoneRotations ?? {}).flat()];
 export function toBackendSimulate(q: SimulateRequest) {
   return {
     location: { latitude: q.point.latitude, longitude: q.point.longitude },
@@ -1404,7 +1418,7 @@ export function toBackendSimulate(q: SimulateRequest) {
       overrides: toBackendOverrides(q.overrides),
       loss_assumptions: { dry_spring_pct: q.loss.drySpringPct, heavy_rain_pct: q.loss.heavyRainPct },
     },
-    scenarios: q.scenarios.map((s) => ({ scenario_id: s.scenarioId, label: s.label, ...(s.isBaseline ? { is_baseline: true } : {}), // A zoned baseline sends each zone's own rotation; every other scenario sends one rotation for the whole field.
+    scenarios: q.scenarios.map((s) => ({ scenario_id: s.scenarioId, label: s.label, ...(s.isBaseline ? { is_baseline: true } : {}), ...(Object.keys(systemsOf(allLegs(s))).length ? { systems: systemsOf(allLegs(s)) } : {}), // A zoned baseline sends each zone's own rotation; every other scenario sends one rotation for the whole field.
       rotation: s.zoneRotations && q.field.zones?.length ? undefined : s.rotation.map(fieldPlanToBackend),
       zone_rotations: s.zoneRotations && q.field.zones?.length ? Object.fromEntries(Object.entries(s.zoneRotations).map(([id, r]) => [id, r.map(fieldPlanToBackend)])) : undefined })),
     years: q.years ?? 10,

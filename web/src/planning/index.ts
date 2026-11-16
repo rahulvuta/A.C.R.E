@@ -3,6 +3,7 @@ export type { GoalsPanelProps, GoalsPanelValue } from "./GoalsPanel";
 export { Recommendations } from "./Recommendations";
 export type { RecommendationsProps } from "./Recommendations";
 export { FuturePlan } from "./FuturePlan";
+export { ThisSeason, ThisSeasonList, nextJobs, ownCalendar, seasonJobs, type Job } from "./ThisSeason";
 export type { FuturePlanProps } from "./FuturePlan";
 export { PlanningFlow } from "./PlanningFlow";
 export type { PlanningFlowProps } from "./PlanningFlow";

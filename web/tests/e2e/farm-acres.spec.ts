@@ -17,7 +17,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 async function loadDemo(page: Page) {
-  await page.getByRole("button", { name: /Try a demo farm/ }).click();
+  await page.getByRole("button", { name: /Try an example farm/ }).click();
   await expect(page.getByRole("list", { name: "Fields" }).locator("li")).toHaveCount(3);
 }
 

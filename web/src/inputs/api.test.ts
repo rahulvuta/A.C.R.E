@@ -48,4 +48,15 @@ describe("input API contracts", () => {
     expect(readingSchema.safeParse({ date: "2026-04-02", kind: "soil_moisture_pct", value: 101, origin: "grower" }).success).toBe(false);
     expect(readingSchema.parse({ date: "2026-04-02", kind: "rainfall_mm", value: 0, origin: "grower" }).value).toBe(0);
   });
+  it("says in minutes when lookups are being refused, and when the day's lookups are used up", async () => {
+    // Found by hand: a third lookup within the hour was refused and the page showed "try again in 2811 seconds".
+    vi.stubGlobal("fetch", vi.fn()
+      .mockResolvedValueOnce(json({ status: "unavailable", reason: "rate_limited", reason_text: "Too many requests; try again in 2811 seconds." }, 429))
+      .mockResolvedValueOnce(json({ status: "unavailable", reason: "rate_limited", reason_text: "The daily budget of new AI research jobs is used up; try again tomorrow (UTC)." }, 429))
+      .mockResolvedValueOnce(json({}, 429)));
+    const api = createInputsApi();
+    await expect(api.calendarResearch("teff", "ET-OR")).rejects.toThrow("Too many lookups in the last hour. Try again in about 47 minutes, or enter your own.");
+    await expect(api.economicsResearch("teff", "ET-OR")).rejects.toThrow(/used up for everyone.*tomorrow/);
+    await expect(api.research("teff", "ET-OR")).rejects.toThrow("Too many lookups just now. Try again later, or enter your own.");
+  });
 });

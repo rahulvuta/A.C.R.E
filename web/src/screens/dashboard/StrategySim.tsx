@@ -1,9 +1,10 @@
 import { Component, lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { LOCALE, qtyText, rainText } from "../../ui/units";
 import { z } from "zod";
 import type { CardKey } from "../../content/strategies";
 import { centroid } from "../../farm/geometry";
 import type { FieldGeometry, FieldPlan } from "../../farm/types";
-import { rotationStateAt } from "../../scene/growth";
+import { rotationStateAt, type FieldState } from "../../scene/growth";
 import type { MonthlyMonth, ScenarioMonthly } from "../../sim/schema";
 import type { StripVM } from "../../view/build";
 import { cropLabel, money } from "../guided/format";
@@ -61,8 +62,8 @@ export function climateAdjustmentOf(raw: Record<string, unknown> | null): Climat
 }
 
 const OP_TEXT: Record<string, string> = { plant: "Plant", harvest: "Harvest", seed_cover: "Seed cover crop:", end_cover: "End cover crop:", plant_grain: "Plant winter grain:", harvest_grain: "Harvest winter grain:" };
-const monthTitle = (ym: string) => new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${ym}-01T00:00:00Z`));
-const monthShort = (m: number) => new Intl.DateTimeFormat("en-US", { month: "long", timeZone: "UTC" }).format(new Date(Date.UTC(2001, m - 1, 1)));
+const monthTitle = (ym: string) => new Intl.DateTimeFormat(LOCALE, { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${ym}-01T00:00:00Z`));
+const monthShort = (m: number) => new Intl.DateTimeFormat(LOCALE, { month: "long", timeZone: "UTC" }).format(new Date(Date.UTC(2001, m - 1, 1)));
 const pctOf = (v: number | null | undefined) => (v == null ? null : `${Math.round(v * 100)}%`);
 
 /** The latest month of this plan's calendar at or before `at`; null before its first month. */
@@ -106,13 +107,40 @@ export function ConditionsLine({ conditions, at }: { conditions: FieldConditions
   const cond = conditions?.months.find((m) => m.month === month) ?? null;
   if (!cond) return null;
   const wet = cond.soil_wetness_top?.median ?? null;
-  const parts = [wet != null ? `topsoil ${pctOf(wet)} wet` : null, cond.rain_mm?.median != null ? `rain ${Math.round(cond.rain_mm.median)} mm` : null, cond.air_temp_c?.median != null ? `${Math.round(cond.air_temp_c.median)}°C` : null].filter(Boolean);
+  const parts = [wet != null ? `topsoil ${pctOf(wet)} wet` : null, cond.rain_mm?.median != null ? `rain ${rainText(cond.rain_mm.median)}` : null, cond.air_temp_c?.median != null ? qtyText(Math.round(cond.air_temp_c.median), "°C")?.replace(" °", "°") ?? null : null].filter(Boolean);
   if (!parts.length) return null;
   return (
     <span className="gf-muted sb-small">
       Typical {monthShort(month)} here: {parts.join(" · ")} <span className="ss-src">({conditions?.origin === "calculation" ? "regional record with your dated measurements" : "NASA model, ~50 km area"}{conditions?.years ? `, ${conditions.years}` : ""})</span>
     </span>
   );
+}
+
+/** The field under a crop that stays in the ground: green all year, with no residue, seedlings or planting window. */
+export function lastingState(state: FieldState, crop: string): FieldState {
+  return {
+    ...state,
+    corn: { show: false, h: 0, mature: false },
+    soy: { show: false, h: 0, mature: false },
+    wheat: { show: false, h: 0, ripe: 0 },
+    cover: { show: true, h: 1, ended: false },
+    residue: 0,
+    inSpringWindow: false,
+    label: `${crop} in the ground all year`,
+  };
+}
+
+/** The scene's caption with its stand-in crop names replaced by the crops of this season of the grower's plan. */
+export function ownCrops(label: string, leg: FieldPlan): string {
+  const prev = cropLabel(leg.previous_crop_id);
+  const next = cropLabel(leg.next_crop_id);
+  const between = leg.winter.kind !== "none" && leg.winter.crop_id ? cropLabel(leg.winter.crop_id) : null;
+  let out = label
+    .replace(/^(Corn|Soybean|Crop)(?= before harvest| residue)/, prev)
+    .replace(/^(Corn|Soybean|Crop) (ripening|growing)/, (_m, _c, verb) => `${next} ${verb}`)
+    .replace(/; (corn|soybean|crop) (up|planted)$/, (_m, _c, verb) => `; ${next.toLowerCase()} ${verb}`);
+  if (between) out = out.replace(/^Living (rye|wheat)/, `Living ${between.toLowerCase()}`).replace(/^(Rye|Wheat)(?= ended| ripening| harvested)/, between);
+  return out;
 }
 
 export function StrategySim({ title, rotation, geometry, monthly, conditions, at, startSeason }: { title: string; rotation: FieldPlan[]; geometry: FieldGeometry; monthly: ScenarioMonthly | null; conditions: FieldConditions | null; at: string; startSeason: number }) {
@@ -150,8 +178,15 @@ export function StrategySim({ title, rotation, geometry, monthly, conditions, at
   const [year, month] = at.split("-").map(Number) as [number, number];
   // A southern field's seasons are six months on; the stage is drawn for a northern winter.
   const stageMonth = south ? ((month + 5) % 12) + 1 : month;
-  const stageYear = south && month > 6 ? year + 1 : year;
-  const state = rotationStateAt(plans, startSeason, stageYear, stageMonth);
+  // Season S in the south runs from March of S to February of S + 1 (planting late in S), so
+  // July to December stay in their own year and January to June belong to the season before.
+  const stageYear = south ? (month > 6 ? year : year - 1) : year;
+  const drawn = rotationStateAt(plans, startSeason, stageYear, stageMonth);
+  // The picture draws a few stand-in crops; the caption names the crops the grower actually grows.
+  const ownLeg = rotation.length ? rotation[Math.max(0, stageYear + (stageMonth >= 9 ? 1 : 0) - startSeason) % rotation.length] : undefined;
+  // A crop that stays in the ground (trees, tea, pasture): living cover all year, nothing planted, no bare spell.
+  const state = drawn && ownLeg?.permanent ? lastingState(drawn, cropLabel(ownLeg.next_crop_id)) : drawn;
+  const caption = state && ownLeg && !ownLeg.permanent ? ownCrops(state.label, ownLeg) : state?.label;
   const cond = conditions?.months.find((m) => m.month === month) ?? null;
   const top = cond?.soil_wetness_top ?? null;
   const all = conditions?.months.flatMap((m) => [m.soil_wetness_top?.p10, m.soil_wetness_top?.p90]).filter((v): v is number => v != null) ?? [];
@@ -204,7 +239,7 @@ export function StrategySim({ title, rotation, geometry, monthly, conditions, at
         </div>
       </div>
       <p className="ss-now">
-        <strong>{state?.label ?? "No complete plan for this season"}</strong>
+        <strong>{caption ?? "No complete plan for this season"}</strong>
         {ops.length ? ` · ${ops.map((o) => `${OP_TEXT[o.kind] ?? o.kind} ${o.crop_id ? cropLabel(o.crop_id).toLowerCase() : ""}`.trim()).join("; ")}` : ""}
         {now?.risks.length ? ` · Watch: ${now.risks.map((r) => r.text ?? r.kind).join("; ")}` : ""}
       </p>

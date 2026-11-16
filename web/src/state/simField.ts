@@ -38,6 +38,8 @@ export interface SimField {
   startSeason: string;
   /** Set when the field came from a demo farm, so the screens say "example values". */
   demo: string | null;
+  /** Ways this field is farmed that the plan cannot hold yet (card 21); the results say what they leave out. */
+  fitNotes?: string[];
 }
 export const MAX_ALTERNATIVES = 5;
 export const MAX_ZONES = 8;

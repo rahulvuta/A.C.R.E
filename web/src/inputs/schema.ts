@@ -60,9 +60,15 @@ export const calendarResearchJobSchema = z.object({
   found: z.object({ calendars: z.number() }).passthrough().nullable().optional(),
 }).passthrough();
 export type CalendarResearchJob = z.infer<typeof calendarResearchJobSchema>;
-export const quantitySchema = z.object({ value: z.number().finite().nullable(), unit: z.string(), origin: originSchema, source: sourceSchema.nullable().optional() });
+/** `local` is what a grower typed in a local unit (bags, quintals), kept beside the tonnes that are sent; the service never returns it. */
+export const quantitySchema = z.object({ value: z.number().finite().nullable(), unit: z.string(), origin: originSchema, source: sourceSchema.nullable().optional(), local: z.object({ value: z.number().finite().nullable(), unit: z.string(), bag_kg: z.number().finite().nullable() }).optional() });
 export type Quantity = z.infer<typeof quantitySchema>;
-export const priceSchema = z.object({ low: z.number().finite().nullable(), typical: z.number().finite().nullable(), high: z.number().finite().nullable(), unit: z.string(), origin: originSchema, source: sourceSchema.nullable().optional() });
+/** A sourced price in the grower's own currency, with the exchange rate it was reached by (card 29). A calculation beside the original, never in its place. */
+export const convertedPriceSchema = z.object({ low: z.number().finite().nullable(), typical: z.number().finite().nullable(), high: z.number().finite().nullable(), unit: z.string(), currency: z.string(), rate: z.object({ value: z.number().finite(), from: z.string(), to: z.string(), year: z.number() }), source: sourceSchema.nullable().optional(), note: z.string().nullable().optional() }).passthrough();
+export const priceSchema = z.object({ low: z.number().finite().nullable(), typical: z.number().finite().nullable(), high: z.number().finite().nullable(), unit: z.string(), origin: originSchema, source: sourceSchema.nullable().optional(), converted: convertedPriceSchema.nullable().optional() });
+/** What the crop sells for in town markets (WFP), in local currency. Shown beside the price; used only if the grower takes it. */
+export const marketPriceSchema = priceSchema.extend({ price_type: z.enum(["wholesale", "retail"]), years: z.string().nullable().optional(), markets: z.number().nullable().optional(), note: z.string().nullable().optional() }).passthrough();
+export type MarketPrice = z.infer<typeof marketPriceSchema>;
 export const economicsSuggestionSchema = z.object({
   field: z.enum(["price", "yield", "costs"]), item: z.string().nullable().optional(), value: z.number().finite(), unit: z.string(),
   currency: z.string().nullable().optional(), year: z.union([z.string(), z.number()]).nullable().optional(),
@@ -76,6 +82,7 @@ export const economicsCropSchema = z.object({
   status: statusSchema, reason_text: z.string().nullable().optional(),
   economics_research: z.object({ researched_at: z.string().nullable().optional(), status: z.string().nullable().optional() }).passthrough().nullable().optional(),
   suggestions: z.array(economicsSuggestionSchema).nullable().optional(),
+  market_price: marketPriceSchema.nullable().optional(),
 });
 export const economicsResponseSchema = z.object({ meta, status: statusSchema.optional(), currency: z.string().nullable(), area_unit: z.enum(["acre", "ha"]), crops: z.array(economicsCropSchema), equipment_costs: z.array(quantitySchema.extend({ equipment: z.string(), pass: z.string() })).default([]), gaps: z.array(z.string()), research: z.object({ available: z.boolean(), region_key: z.string().nullable().optional() }).passthrough().nullable().optional() });
 export const economicsResearchJobSchema = z.object({
@@ -92,7 +99,7 @@ export type EconomicsValue = {
   overrides: Record<string, CropOverrides>;
   loss_assumptions: { dry_spring_pct: number | null; heavy_rain_pct: number | null };
 };
-export const economicsRequestSchema = z.object({ location: locationSchema, crops: z.array(z.string().min(1)).min(1), area: areaSchema.nullable(), equipment: z.array(z.string()), overrides: z.record(z.unknown()) });
+export const economicsRequestSchema = z.object({ location: locationSchema, crops: z.array(z.string().min(1)).min(1), area: areaSchema.nullable(), equipment: z.array(z.string()), overrides: z.record(z.unknown()), currency: z.string().regex(/^[A-Za-z]{3}$/).optional() });
 export type EconomicsRequest = z.infer<typeof economicsRequestSchema>;
 export const equipmentResponseSchema = z.object({ meta, equipment: z.array(z.object({ id: z.string().min(1), label: z.string().min(1) })) });
 export type EquipmentOption = z.infer<typeof equipmentResponseSchema>["equipment"][number];

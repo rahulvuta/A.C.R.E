@@ -1,14 +1,15 @@
 import { ORIGIN_HELP, ORIGIN_LABEL } from "../ui/OriginBadge";
 import type { Distribution, Origin, Reason, Scenario, ScenarioEvent, SummaryValue } from "./schema";
+import { convert, LOCALE } from "../ui/units";
 
 export const OUTLOOK_NOTE = "An evidence-based outlook from this field's real past seasons. It shows what to plan for under conditions seen here; it cannot say what any single year will bring.";
 export const COMPARISON_CAVEAT = "The stronger of the plans you compared, given these numbers and the conditions seen at this field. An evidence-based outlook, not a guarantee.";
 export const readable = (text: string) => text.replaceAll("_", " ");
-export const formatNumber = (value: number | null | undefined) => value == null || !Number.isFinite(value) ? "Not available" : new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(value);
+export const formatNumber = (value: number | null | undefined) => value == null || !Number.isFinite(value) ? "Not available" : new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 2 }).format(value);
 export function formatMoney(value: number | null | undefined, currency?: string) {
   if (value == null || !Number.isFinite(value)) return "Not available";
   if (!currency) return `${formatNumber(value)} (currency not available)`;
-  try { return new Intl.NumberFormat("en-US", { style: "currency", currency, maximumFractionDigits: 0 }).format(value); }
+  try { return new Intl.NumberFormat(LOCALE, { style: "currency", currency, maximumFractionDigits: 0 }).format(value); }
   catch { return `${formatNumber(value)} ${currency}`; }
 }
 export function OriginLabel({ origin }: { origin?: Origin | null }) {
@@ -19,7 +20,9 @@ export function SourceLink({ source }: { source?: Distribution["source"] }) {
   return source.url && /^https?:\/\//i.test(source.url) ? <a href={source.url} target="_blank" rel="noreferrer">{source.title}</a> : <span>{source.title}</span>;
 }
 export function Value({ value, origin, unit, currency, money = false }: { value?: number | null; origin?: Origin | null; unit?: string; currency?: string; money?: boolean }) {
-  return <span className="sim-value-pair"><span>{money || currency ? formatMoney(value, currency) : formatNumber(value)}{value != null && !money && !currency && unit ? ` ${unit}` : ""}</span><OriginLabel origin={origin} /></span>;
+  // A measured amount is shown in the grower's units (millimetres or inches, °C or °F).
+  const shown = value != null && !money && !currency ? convert(value, unit) : { value, unit: unit ?? null };
+  return <span className="sim-value-pair"><span>{money || currency ? formatMoney(value, currency) : formatNumber(shown.value)}{value != null && !money && !currency && shown.unit ? ` ${shown.unit}` : ""}</span><OriginLabel origin={origin} /></span>;
 }
 export function asDistribution(value?: SummaryValue): Distribution | undefined {
   if (value == null) return undefined;
@@ -50,5 +53,5 @@ const eventLabels: Record<string, string> = {
 };
 export function EventOdds({ events }: { events: ScenarioEvent[] }) {
   if (!events.length) return <p className="sim-muted">Not available. No event odds were returned.</p>;
-  return <ul className="sim-events">{events.map((event, index) => <li key={`${event.event}-${index}`}><p>{event.text || eventLabels[event.event] || `The service tracked this event: ${readable(event.event)}.`}<OriginLabel origin={event.origin} /></p><p className="sim-muted">{event.probability == null ? "Event odds: Not available." : `${new Intl.NumberFormat("en-US", { style: "percent", maximumFractionDigits: 1 }).format(event.probability)} of simulated years included this event.`}<OriginLabel origin={event.origin} /></p></li>)}</ul>;
+  return <ul className="sim-events">{events.map((event, index) => <li key={`${event.event}-${index}`}><p>{event.text || eventLabels[event.event] || `The service tracked this event: ${readable(event.event)}.`}<OriginLabel origin={event.origin} /></p><p className="sim-muted">{event.probability == null ? "Event odds: Not available." : `${new Intl.NumberFormat(LOCALE, { style: "percent", maximumFractionDigits: 1 }).format(event.probability)} of simulated years included this event.`}<OriginLabel origin={event.origin} /></p></li>)}</ul>;
 }

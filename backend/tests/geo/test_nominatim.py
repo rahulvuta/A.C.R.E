@@ -127,3 +127,45 @@ def test_malformed_search_rows_are_a_bad_response_and_not_cached(tmp_path, paylo
         client.search("Pergamino")
     assert exc.value.code == "geocoder_bad_response"
     assert not list((tmp_path / "c").rglob("*.json"))
+
+
+# ------------------------------------------------------------------ settings (card 32)
+def test_the_service_its_name_and_its_key_are_settings(tmp_path, monkeypatch):
+    for name in (nominatim.URL_ENV, nominatim.USER_AGENT_ENV, nominatim.KEY_ENV,
+                 nominatim.KEY_PARAM_ENV, nominatim.ATTRIBUTION_ENV,
+                 nominatim.ATTRIBUTION_URL_ENV):  # fmt: skip
+        monkeypatch.delenv(name, raising=False)
+    plain = nominatim.from_settings()
+    assert plain.base_url == nominatim.BASE_URL and plain.user_agent == nominatim.USER_AGENT
+    assert "@" not in plain.user_agent and "http" not in plain.user_agent
+    assert nominatim.attribution() == {"text": nominatim.ATTRIBUTION,
+                                       "url": nominatim.ATTRIBUTION_URL}  # fmt: skip
+    assert "OpenStreetMap" in nominatim.ATTRIBUTION
+
+    monkeypatch.setenv(nominatim.URL_ENV, "https://geocode.example.org/v1/")
+    monkeypatch.setenv(nominatim.USER_AGENT_ENV, "ExampleFarmSite/1.0 (https://farm.example.org)")
+    monkeypatch.setenv(nominatim.KEY_ENV, "test-key-123")
+    monkeypatch.setenv(nominatim.ATTRIBUTION_ENV, "Search by Example")
+    set_up = nominatim.from_settings()
+    assert set_up.base_url == "https://geocode.example.org/v1"
+    assert nominatim.attribution() == {"text": "Search by Example", "url": ""}
+
+    calls: list[httpx.Request] = []
+
+    def handler(request):
+        calls.append(request)
+        return httpx.Response(200, json=[ROW])
+
+    client = Nominatim(base_url=set_up.base_url, user_agent=set_up.user_agent, key="test-key-123",
+                       cache_dir=tmp_path / "c", min_interval=0.0,
+                       client=httpx.Client(transport=httpx.MockTransport(handler)),
+                       fixtures={"search": {}, "reverse": {}})  # fmt: skip
+    client.search("Pergamino", 5)
+    assert str(calls[0].url).startswith("https://geocode.example.org/v1/search?")
+    assert calls[0].url.params["key"] == "test-key-123"
+    assert calls[0].headers["user-agent"] == "ExampleFarmSite/1.0 (https://farm.example.org)"
+    # the key is sent, and kept nowhere
+    assert "test-key-123" not in "".join(p.read_text() for p in (tmp_path / "c").glob("*.json"))
+
+    monkeypatch.setenv(nominatim.URL_ENV, "not an address")
+    assert nominatim.from_settings().base_url == nominatim.BASE_URL

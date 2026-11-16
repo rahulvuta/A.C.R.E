@@ -9,6 +9,7 @@ import { MAX_ZONES, ZONES_ENABLED, evenShares, newZoneId, setZoneLayout, updateS
 import { baselineReady, cropsOf, planReady, simCrops, zonesOk, type StepContext } from "./context";
 import { cropLabel } from "./format";
 import { hasWinter } from "../../ui/cropNames";
+import { FarmFit, PermanentSeason } from "./FarmFit";
 import { economicsReady, economicsValue, simulationOverrides } from "./inputState";
 
 const TRUST: Origin[] = ["grower", "verified_source", "source_checked", "dataset_estimate", "nasa_measured", "nasa_modeled", "calculation", "ai_suggested", "assumed"];
@@ -72,15 +73,16 @@ export function RotationEditor({ ctx, rotation, onChange, idPrefix = "rot", show
   return <div className="gf-rotation">
     {seasons.map((plan, i) => <section key={`${idPrefix}-${i}`} className="gf-season" aria-label={`Season ${i + 1}`}>
       {many || show !== "dates" ? <div className="gf-season-head"><h3>Season {i + 1}</h3>{many && show !== "dates" ? <button type="button" className="btn btn-quiet" onClick={() => { updateSimField(ctx.field!.field_id, (current) => { const { [planInputKey(idPrefix, plan.plan_id)]: _gone, ...planInputs } = current.planInputs ?? {}; return { planInputs }; }); onChange(seasons.filter((_, j) => j !== i)); }}>Remove season</button> : null}</div> : null}
+      {plan.permanent ? <PermanentSeason plan={plan} show={show} onChange={(next) => onChange(latest.current.map((p, j) => (j === i ? { ...next, plan_id: p.plan_id, label: p.label } : p)))} onYearly={() => onChange([emptySeason(0)])} /> :
       <PlanEditor show={show} location={ctx.point!} regionKey={ctx.regionKey ?? ""} api={ctx.api.client.inputs} value={editorValue(ctx, plan, idPrefix)} onChange={value => {
         updateSimField(ctx.field!.field_id, current => ({ planInputs: { ...current.planInputs, [planInputKey(idPrefix, plan.plan_id)]: { dates: value.dates, cropDetails: value.cropDetails } } }));
         const next = latest.current.map((p, j) => j === i ? fieldPlan(p, value) : p);
         latest.current = next;
         onChange(next);
-      }} />
+      }} />}
     </section>)}
-    {show !== "dates" && seasons.length < MAX_ROTATION_LEGS ? <button type="button" className="btn btn-secondary" onClick={() => onChange([...seasons, emptySeason(seasons.length, seasons.at(-1)?.next_crop_id, seasons.map((p) => p.plan_id))])}>Add a season</button> : null}
-    {show !== "dates" ? <p className="gf-muted">{show === "crops" ? (hasWinter(ctx.point?.latitude) ? "One season is one main crop, what covers the field over winter, and the next main crop. Add a season if your rotation is longer. " : "One season is one crop, what is on the field after it, and the next crop. Add a season if your rotation is longer. ") : ""}This rotation repeats through the 10-year outlook.</p> : null}
+    {show !== "dates" && seasons.length < MAX_ROTATION_LEGS && !seasons.some((p) => p.permanent) ? <button type="button" className="btn btn-secondary" onClick={() => onChange([...seasons, emptySeason(seasons.length, seasons.at(-1)?.next_crop_id, seasons.map((p) => p.plan_id))])}>Add a season</button> : null}
+    {show !== "dates" && !seasons.some((p) => p.permanent) ? <p className="gf-muted">{show === "crops" ? (hasWinter(ctx.point?.latitude) ? "One season is one main crop, what covers the field over winter, and the next main crop. Add a season if your rotation is longer. " : "One season is one crop, what is on the field after it, and the next crop. Add a season if your rotation is longer. ") : ""}This rotation repeats through the 10-year outlook.</p> : null}
   </div>;
 }
 /** The field split into zones, each with its own current rotation. The simulation runs the whole field: zones are added together. */
@@ -156,6 +158,7 @@ export function StepNow({ ctx, part = "all" }: { ctx: StepContext; part?: Part }
     </div> : null}
     {showRotation ? zoned ? <ZonesRotation ctx={ctx} show={rotationShow} />
       : single ? <section className="db-card" aria-label={`Current plan for ${field.name}`}><RotationEditor ctx={ctx} rotation={sim.rotation} onChange={setRotation} show={rotationShow} />
+        {rotationShow === "crops" ? <FarmFit ctx={ctx} rotation={sim.rotation} onChange={setRotation} /> : null}
         {ZONES_ENABLED && rotationShow !== "dates" ? <button type="button" className="btn btn-secondary" onClick={splitIntoZones}>Split this field into zones</button> : null}</section>
       : <section className="db-card" aria-label={`Current plan for ${field.name}`}>
       <div className="db-card-head"><h2>Current plan for {field.name}</h2><span className={ready ? "gf-ok" : "gf-muted"}>{ready ? "Ready to simulate" : "Not complete yet"}</span></div>
@@ -164,7 +167,7 @@ export function StepNow({ ctx, part = "all" }: { ctx: StepContext; part?: Part }
     </section> : null}
     {showEquipment ? <EquipmentEditor api={ctx.api.client.inputs} value={sim.equipment} onChange={equipment => { updateSimField(field.field_id, { equipment }); farmActions.updateField(field.field_id, { equipment }); }} /> : null}
     {showMoney ? <><EconomicsEditor show={economicsShow} location={point} area={{ value: areaHa(field.geometry) || null, unit: "ha" }} crops={simCrops(sim)} api={ctx.api.client.inputs} value={economicsValue(sim)} onChange={value => updateSimField(field.field_id, { economicsInputs: value, overrides: simulationOverrides(value), loss: { ...sim.loss, drySpringPct: value.loss_assumptions.dry_spring_pct, heavyRainPct: value.loss_assumptions.heavy_rain_pct } })} />
-    {economicsShow !== "losses" ? <p className="gf-muted">The price you enter is used for every year unless you open \u201CPrices in a bad and a good year\u201D. A cost list you enter replaces the published costs, so include every cost.</p> : null}
+    {economicsShow !== "losses" ? <p className="gf-muted">The price you enter is used for every year unless you open “Prices in a bad and a good year”. A cost list you enter replaces the published costs, so include every cost.</p> : null}
     {economicsShow !== "losses" && !economicsReady(sim) ? <p role="alert" className="gf-error">Finish or undo the incomplete money entries before continuing: every number you added needs a value and a unit.</p> : null}</> : null}
   </div>;
 }

@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { tidyCropName } from "../ui/cropNames";
 import { inputsApi, type InputsApi } from "./api";
-import { ErrorNotice, OriginLabel, SourceLabel, errorText } from "./shared";
+import { ErrorNotice, LookupProgress, OriginLabel, SourceLabel, errorText } from "./shared";
 import type { Crop, ResearchJob } from "./schema";
 
 /*
@@ -15,6 +15,8 @@ export interface CropPickerProps {
   onChange: (value: Crop | null) => void;
   api?: InputsApi;
   label?: string;
+  /** The words on the button that swaps the chosen crop; "Change " and the label when not given. */
+  changeLabel?: string;
 }
 function CropFacts({ crop, researched = false }: { crop: Crop; researched?: boolean }) {
   const calendar = crop.has_calendar ?? (crop.calendars ? crop.calendars.length > 0 : null);
@@ -42,7 +44,7 @@ function pause(signal: AbortSignal) {
 }
 const norm = (s: string) => s.trim().toLowerCase().replaceAll("_", " ");
 
-export function CropPicker({ regionKey, value, onChange, api = inputsApi, label = "Crop" }: CropPickerProps) {
+export function CropPicker({ regionKey, value, onChange, api = inputsApi, label = "Crop", changeLabel }: CropPickerProps) {
   const id = useId();
   const listId = `${id}-list`;
   const [query, setQuery] = useState("");
@@ -121,7 +123,7 @@ export function CropPicker({ regionKey, value, onChange, api = inputsApi, label 
     <label htmlFor={id}>{label}</label>
     {!editing && value ? <div className="acre-input-selected">
       <div className="acre-input-selected-head"><strong>{tidyCropName(value.name)}</strong>
-        <button type="button" className="acre-input-change" onClick={() => { setChanging(true); setOpen(true); setTimeout(() => input.current?.focus(), 0); }}>Change {label.toLowerCase()}</button></div>
+        <button type="button" className="acre-input-change" onClick={() => { setChanging(true); setOpen(true); setTimeout(() => input.current?.focus(), 0); }}>{changeLabel ?? `Change ${label.toLowerCase()}`}</button></div>
       <CropFacts crop={value} />
     </div> : <div className="acre-input-combo">
       <input ref={input} id={id} type="text" role="combobox" autoComplete="off" value={query}
@@ -154,7 +156,7 @@ export function CropPicker({ regionKey, value, onChange, api = inputsApi, label 
     </div>}
     {editing && value && changing && <button type="button" className="acre-input-change" onClick={() => { setChanging(false); setOpen(false); setQuery(""); }}>Keep {tidyCropName(value.name)}</button>}
     {search.error && editing && <ErrorNotice error={search.error} retry={() => setAttempt(n => n + 1)} />}
-    {researching && <div role="status" className="acre-input-research-status"><p>{job?.progress || `Looking up “${researchName}”: checking published references…`}</p><button type="button" onClick={() => { researchController.current?.abort(); setResearching(false); setJob(null); }}>Stop</button></div>}
+    {researching && <LookupProgress onStop={() => { researchController.current?.abort(); setResearching(false); setJob(null); }} stopLabel={`Stop looking up ${researchName}`}>{job?.progress || `Looking up “${researchName}”: checking published references…`}</LookupProgress>}
     {researchError && <ErrorNotice error={researchError} />}
     {result && <div className="acre-input-researched"><strong>{tidyCropName(result.name)}</strong><CropFacts crop={result} researched />{!result.sources?.length && <p>No source was found for this crop.</p>}
       <p className="acre-input-help">AI received only the crop name and region. Check its sources before using it.</p>

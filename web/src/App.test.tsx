@@ -33,7 +33,7 @@ describe("routes", () => {
     render(<App />);
     // Routes other than the dashboard load on demand.
     expect(await screen.findByRole("heading", { name: "Where is your farm?" }, { timeout: 5000 })).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: "Try a demo farm" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Try an example farm" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /Union County deep-dive/ })).toBeNull();
   });
 

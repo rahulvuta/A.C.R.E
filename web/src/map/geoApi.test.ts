@@ -15,6 +15,16 @@ describe("geo stand-in parsers", () => {
     expect(r.data.hits[0]).toEqual({ label: "Pergamino, Buenos Aires, Argentina", point: { latitude: -33.89, longitude: -60.57 }, bbox: [-60.65, -33.95, -60.5, -33.83], kind: "city" });
   });
 
+  it("carries the credit the place search asks for, and only an https link (card 32)", () => {
+    const row = { label: "Kitale, Kenya", latitude: 1.02, longitude: 35.0, bbox: null, kind: "town" };
+    const r = parseSearch({ query_kind: "text", results: [row], attribution: { text: "Place search © OpenStreetMap contributors", url: "https://www.openstreetmap.org/copyright" } });
+    expect(r.ok && r.data.credit).toEqual({ text: "Place search © OpenStreetMap contributors", url: "https://www.openstreetmap.org/copyright" });
+    const odd = parseSearch({ query_kind: "text", results: [row], attribution: { text: "Search by Example", url: "javascript:alert(1)" } });
+    expect(odd.ok && odd.data.credit).toEqual({ text: "Search by Example", url: null });
+    const none = parseSearch({ query_kind: "text", results: [row] });
+    expect(none.ok && none.data.credit).toBeNull();
+  });
+
   it("reads a coordinate search with no bbox", () => {
     const r = parseSearch(searchCoords);
     expect(r.ok && r.data.queryKind).toBe("coordinates");

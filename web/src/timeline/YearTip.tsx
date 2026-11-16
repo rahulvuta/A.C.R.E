@@ -1,4 +1,5 @@
 import { bandFill, cropName } from "./crops";
+import { rainText } from "../ui/units";
 import { money, moneyRange, pct } from "./format";
 import { formatMd, type Row } from "./schedule";
 import type { YearResult } from "./types";
@@ -19,7 +20,8 @@ export function yearSummary(row: Row, y: YearResult | undefined): string {
   const m = y?.money?.margin;
   if (m) parts.push(`Margin median ${money(m.median, m.currency)}.`);
   const dry = y?.indicators?.dry_pre_plant?.probability;
-  if (dry != null) parts.push(`Dry before planting in ${pct(dry)} of simulated years.`);
+  if (row.lasting) parts.push("In the ground all year.");
+  else if (dry != null) parts.push(`Dry before planting in ${pct(dry)} of simulated years.`);
   return parts.join(" ");
 }
 
@@ -64,22 +66,22 @@ export function YearTip({ row, y, x }: { row: Row; y: YearResult | undefined; x:
             <dd>{range}</dd>
           </div>
         ) : null}
-        {dry != null ? (
+        {dry != null && !row.lasting ? (
           <div>
             <dt>Dry before planting</dt>
             <dd>{pct(dry)} of simulated years</dd>
           </div>
         ) : null}
-        {heavy != null ? (
+        {heavy != null && !row.lasting ? (
           <div>
             <dt>Heavy rain at planting</dt>
             <dd>{pct(heavy)} of simulated years</dd>
           </div>
         ) : null}
-        {bare != null ? (
+        {bare != null && !row.lasting ? (
           <div>
             <dt>Rain on bare soil</dt>
-            <dd>{Math.round(bare)} mm (median)</dd>
+            <dd>{rainText(bare)} (median)</dd>
           </div>
         ) : null}
         {living != null ? (

@@ -740,12 +740,15 @@
       ],
       "scenario_id": "now",
       "status": "complete",
+      "system_notes": [],
       "timeline": [
         {
+          "companions": [],
           "crop_sequence": [
             "maize",
             "soybean"
           ],
+          "ground": "yearly",
           "next_plant": "11-15",
           "plan_id": "perg_bare",
           "prev_harvest": "04-20",
@@ -754,10 +757,12 @@
           "year": 2027
         },
         {
+          "companions": [],
           "crop_sequence": [
             "maize",
             "soybean"
           ],
+          "ground": "yearly",
           "next_plant": "11-15",
           "plan_id": "perg_bare",
           "prev_harvest": "04-20",
@@ -766,10 +771,12 @@
           "year": 2028
         },
         {
+          "companions": [],
           "crop_sequence": [
             "maize",
             "soybean"
           ],
+          "ground": "yearly",
           "next_plant": "11-15",
           "plan_id": "perg_bare",
           "prev_harvest": "04-20",
@@ -778,10 +785,12 @@
           "year": 2029
         },
         {
+          "companions": [],
           "crop_sequence": [
             "maize",
             "soybean"
           ],
+          "ground": "yearly",
           "next_plant": "11-15",
           "plan_id": "perg_bare",
           "prev_harvest": "04-20",
@@ -790,10 +799,12 @@
           "year": 2030
         },
         {
+          "companions": [],
           "crop_sequence": [
             "maize",
             "soybean"
           ],
+          "ground": "yearly",
           "next_plant": "11-15",
           "plan_id": "perg_bare",
           "prev_harvest": "04-20",
@@ -1083,13 +1094,16 @@
       ],
       "scenario_id": "rye",
       "status": "complete",
+      "system_notes": [],
       "timeline": [
         {
+          "companions": [],
           "crop_sequence": [
             "maize",
             "cereal_rye",
             "soybean"
           ],
+          "ground": "yearly",
           "next_plant": "11-15",
           "plan_id": "perg_soy",
           "prev_harvest": "04-20",
@@ -1098,11 +1112,13 @@
           "year": 2027
         },
         {
+          "companions": [],
           "crop_sequence": [
             "maize",
             "cereal_rye",
             "soybean"
           ],
+          "ground": "yearly",
           "next_plant": "11-15",
           "plan_id": "perg_soy",
           "prev_harvest": "04-20",
@@ -1111,11 +1127,13 @@
           "year": 2028
         },
         {
+          "companions": [],
           "crop_sequence": [
             "maize",
             "cereal_rye",
             "soybean"
           ],
+          "ground": "yearly",
           "next_plant": "11-15",
           "plan_id": "perg_soy",
           "prev_harvest": "04-20",
@@ -1124,11 +1142,13 @@
           "year": 2029
         },
         {
+          "companions": [],
           "crop_sequence": [
             "maize",
             "cereal_rye",
             "soybean"
           ],
+          "ground": "yearly",
           "next_plant": "11-15",
           "plan_id": "perg_soy",
           "prev_harvest": "04-20",
@@ -1137,11 +1157,13 @@
           "year": 2030
         },
         {
+          "companions": [],
           "crop_sequence": [
             "maize",
             "cereal_rye",
             "soybean"
           ],
+          "ground": "yearly",
           "next_plant": "11-15",
           "plan_id": "perg_soy",
           "prev_harvest": "04-20",

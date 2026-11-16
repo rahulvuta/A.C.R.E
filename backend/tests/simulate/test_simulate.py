@@ -424,6 +424,18 @@ def test_exact_mass_units_can_be_combined_without_bushel_assumptions():
     assert cm.price * cm.yield_per_area - cm.cost_per_area == pytest.approx(470)
 
 
+def test_a_price_per_bag_of_known_weight_gives_money():
+    """KES 3,600 for a 90 kg bag is KES 40,000 a tonne; with 2 t/ha that is KES 80,000 a hectare."""
+    cm = money._from_record("maize", {"value": 3600, "unit": "KES/90kg"},
+                            {"value": 2.0, "unit": "t/ha"},
+                            {"value": 30000, "unit": "KES/ha"}, {})
+    assert cm.status == "complete" and cm.currency == "KES"
+    assert cm.price * cm.yield_per_area - cm.cost_per_area == pytest.approx(50000)
+    q = money._from_record("wheat", {"value": 2275, "unit": "INR/q"},
+                           {"value": 4.5, "unit": "t/ha"}, {"value": 40000, "unit": "INR/ha"}, {})
+    assert q.price * q.yield_per_area == pytest.approx(2275 * 45)
+
+
 def test_zero_loss_is_an_explicit_assumption(client):
     out = _sim(client, economics={"overrides": ECON, "loss_assumptions": {"dry_spring_pct": 0}},
                field={"area_ha": 16.2})

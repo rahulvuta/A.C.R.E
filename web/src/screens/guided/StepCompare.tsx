@@ -1,7 +1,12 @@
+import { useState } from "react";
 import { updateSimField } from "../../state/simField";
+import { StrategyView } from "../dashboard/StrategyBoxes";
+import { pictureTab } from "./StepSimulate";
+import { SavedNotice } from "../../ui/OfflineNote";
+import { FitCaution } from "./FarmFit";
 import { useSimulation } from "../../state/useSimulation";
 import { simulateRequest, type StepContext } from "./context";
-import { CompareColumns, MethodNote } from "./SimViews";
+import { CompareColumns, CompareRows, MethodNote } from "./SimViews";
 import { SimStatus } from "./StepSimulate";
 import { ScenarioCompare, simulationResultSchema } from "../../sim";
 import { TimelineCompare, withRotations, type ScenarioResult as TimelineResult } from "../../timeline";
@@ -12,6 +17,7 @@ export function StepCompare({ ctx }: { ctx: StepContext }) {
   const { sim, field } = ctx;
   const req = simulateRequest(ctx, sim.scenarios);
   const { sim: result, run } = useSimulation(ctx.api.client, sim.scenarios.length ? req : null, ctx.active !== false);
+  const [pictures, setPictures] = useState(false);
   const choose = (id: string) => {
     updateSimField(field!.field_id, { chosenId: id });
     ctx.go("plan");
@@ -28,14 +34,28 @@ export function StepCompare({ ctx }: { ctx: StepContext }) {
   return (
     <div className="gf-cmp">
       <SimStatus sim={result} onRetry={run} what={`${sim.scenarios.length + 1} plans`} />
+      <SavedNotice sim={result} onRetry={run} />
       {result.state === "ready" ? (
-        <section className="db-card" aria-label="Comparison">
-          <MethodNote sim={result.data} />
-          {(() => {
-            const parsed = simulationResultSchema.safeParse(result.data.raw);
-            return parsed.success ? <ScenarioCompare result={parsed.data} baselineId={BASELINE_ID} onChoose={choose} /> : <CompareColumns sim={result.data} chosenId={sim.chosenId} onChoose={choose} />;
-          })()}
-        </section>
+        <>
+          <FitCaution ids={sim.fitNotes} notes={result.data.scenarios.find((x) => x.scenarioId === BASELINE_ID)?.systemNotes} />
+          <CompareRows sim={result.data} baselineId={BASELINE_ID} chosenId={sim.chosenId} onChoose={choose} />
+          <details className="gf-all-numbers">
+            <summary>See all the numbers</summary>
+            <section className="db-card" aria-label="Comparison">
+              <MethodNote sim={result.data} />
+              {(() => {
+                const parsed = simulationResultSchema.safeParse(result.data.raw);
+                return parsed.success ? <ScenarioCompare result={parsed.data} baselineId={BASELINE_ID} onChoose={choose} /> : <CompareColumns sim={result.data} chosenId={sim.chosenId} onChoose={choose} />;
+              })()}
+            </section>
+          </details>
+        </>
+      ) : null}
+      {result.state === "ready" ? (
+        <details className="gf-all-numbers" onToggle={(e) => setPictures((e.target as HTMLDetailsElement).open)}>
+          <summary>See each plan through the years</summary>
+          {pictures ? <StrategyView ctx={ctx} onTab={pictureTab(ctx)} mode="chosen" /> : null}
+        </details>
       ) : null}
       {result.state === "ready" && req ? <details className="db-card"><summary>Compare crop calendars</summary><TimelineCompare
         scenarios={withRotations(result.data.raw as unknown as { scenarios: TimelineResult[] }, { scenarios: req.scenarios.map(s => ({ scenario_id: s.scenarioId, rotation: s.rotation, is_baseline: s.isBaseline })) })}

@@ -1,21 +1,26 @@
 import type { Dist, Odds } from "../../api/simModel";
 import { WORLD_NAMES } from "../../ui/cropNames";
+import { convert, LOCALE } from "../../ui/units";
 
 /* Formatting only: every number here is the backend's, shown as it came. Blank stays blank. */
 export const NA = "Not available";
 
-export function money(v: number | null | undefined, currency: string | null = "USD"): string {
+/** Money in the currency that was entered. With no currency it is a plain number: a dollar sign is never assumed. */
+export function money(v: number | null | undefined, currency?: string | null): string {
   if (v == null) return NA;
+  if (!currency) return Math.round(v).toLocaleString(LOCALE);
   try {
-    return new Intl.NumberFormat("en-US", { style: "currency", currency: currency ?? "USD", maximumFractionDigits: 0 }).format(v);
+    return new Intl.NumberFormat(LOCALE, { style: "currency", currency, maximumFractionDigits: 0 }).format(v);
   } catch {
-    return `${Math.round(v).toLocaleString("en-US")} ${currency ?? ""}`.trim();
+    return `${Math.round(v).toLocaleString(LOCALE)} ${currency}`.trim();
   }
 }
+/** A number with its unit, in the grower's units (millimetres or inches, °C or °F). */
 export function num(v: number | null | undefined, unit?: string | null, digits = 0): string {
   if (v == null) return NA;
-  const s = v.toLocaleString("en-US", { maximumFractionDigits: digits, minimumFractionDigits: 0 });
-  return unit ? `${s} ${unit}` : s;
+  const c = convert(v, unit);
+  const s = c.value.toLocaleString(LOCALE, { maximumFractionDigits: c.converted ? Math.max(1, digits) : digits, minimumFractionDigits: 0 });
+  return c.unit ? `${s} ${c.unit}` : s;
 }
 export const pct = (p: number | null | undefined) => (p == null ? NA : `${Math.round(p * 100)}%`);
 export const isDist = (x: Dist | Odds | number | null | undefined): x is Dist => !!x && typeof x === "object" && "median" in x;

@@ -7,6 +7,10 @@ import { useGlobalApi, type GlobalApi } from "../../state/useGlobal";
 import { hasSimField, loadDemoFields, updateSimField, useSimField } from "../../state/simField";
 import { peekSimulation } from "../../state/useSimulation";
 import { Banner, Term } from "../../ui/components";
+import { suggestUnits, useUnits } from "../../ui/units";
+import { UnitsControl } from "../../ui/UnitsControl";
+import { OfflineNote } from "../../ui/OfflineNote";
+import { LanguagePicker } from "../../i18n/LanguagePicker";
 import { navIcon } from "../planner/SideNav";
 import { SourceBanner } from "../workspace/SourceBanner";
 import { baselineReady, simulateRequest, type StepContext } from "./context";
@@ -17,7 +21,7 @@ import { NOW_PARTS, StepNow, nowPartReady, type NowPart } from "./StepNow";
 import { StepSimulate } from "./StepSimulate";
 import { StepTry } from "./StepTry";
 import { StepCompare } from "./StepCompare";
-import { ReadingsLog, StepPlan } from "./StepPlan";
+import { StepPlan } from "./StepPlan";
 
 /*
   The Scenario Simulator's guided flow (card U1, docs/global/simulator.md): Your farm → What
@@ -91,6 +95,11 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
     window.scrollTo?.({ top: 0 });
   };
   const place = useFieldPlace(api.client, field);
+  // Every number on these steps is shown in the grower's units; the field's country sets them
+  // the first time, until the grower chooses their own.
+  useUnits();
+  const country = place?.place.state === "ready" ? place.place.data.country : null;
+  useEffect(() => suggestUnits(country), [country]);
   const profile = place?.profile.state === "ready" ? place.profile.data : null;
   const regionKey = profile?.regionKey ?? (place?.place.state === "ready" ? (place.place.data.regionKeys[0] ?? null) : null);
   // The simulation uses the field's own centre; the profile lookup above uses a rounded one.
@@ -183,6 +192,8 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
           </ol>
         </nav>
         <div className="db-side-foot">
+          <LanguagePicker compact />
+          <UnitsControl />
           <div className="db-links">
             <a href="./#d=fields">{navIcon("M3 3h5v5H3zM10 3h5v5h-5zM3 10h5v5H3zM10 10h5v5h-5z")}My fields</a>
             <a href="?view=methods">{navIcon("M9 16A7 7 0 1 0 9 2a7 7 0 0 0 0 14zM7 7a2 2 0 1 1 3 1.700c-.600.400-1 .800-1 1.500M9 12.700v.100")}How it works</a>
@@ -197,7 +208,7 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
             {farm && farm.fields.length ? (
               <label className="ws-switch">
                 <span>Field</span>
-                <select aria-label="Selected field" value={field?.field_id ?? ""} onChange={(e) => selectField(e.target.value || null)}>
+                <select aria-label="Selected field" translate="no" value={field?.field_id ?? ""} onChange={(e) => selectField(e.target.value || null)}>
                   {!field ? <option value="">Choose a field</option> : null}
                   {farm.fields.map((f) => (
                     <option key={f.field_id} value={f.field_id}>
@@ -212,6 +223,7 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
         </header>
         <main className="db-main ws-main gf-main">
           <SourceBanner source={api.source} />
+          <OfflineNote />
           <div className="gf-progress" role="progressbar" aria-label="Progress through the six steps" aria-valuemin={1} aria-valuemax={STEPS.length} aria-valuenow={def.n} aria-valuetext={`Step ${def.n} of ${STEPS.length}: ${def.nav}`}>
             {STEPS.map((s) => (
               <span key={s.id} data-state={s.id === step ? "now" : done[s.id] ? "done" : "todo"} />
@@ -224,7 +236,6 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
           {step === "try" && field ? <StepTry ctx={ctx} /> : null}
           {step === "compare" && field ? <StepCompare ctx={ctx} /> : null}
           {step === "plan" && field ? <StepPlan ctx={ctx} /> : null}
-          {field && step !== "plan" ? <details className="db-card gf-reading-tools gf-no-print"><summary>Log a field reading</summary><ReadingsLog ctx={ctx} /></details> : null}
           {!field && step !== "farm" ? <Banner kind="info">Choose a field first.</Banner> : null}
           <footer className="gf-foot">
             {prevPart ? (

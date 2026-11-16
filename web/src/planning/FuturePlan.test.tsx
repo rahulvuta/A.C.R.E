@@ -20,9 +20,10 @@ it("renders multiple seasons, origins, milestones, deadlines and backup", async 
     name: "2028"
   })).toBeInTheDocument();
   expect(screen.getAllByText("Check cover condition")).toHaveLength(2);
-  expect(screen.getAllByText("synthetic_backup", {
-    exact: false
-  })).toHaveLength(2);
+  expect(screen.getAllByText("A backup plan is ready for this season.")).toHaveLength(2);
+  // Empty sections are hidden, and dates read in words.
+  expect(screen.queryByText(/No .* returned|No backup plan available/)).toBeNull();
+  expect(container.textContent).not.toMatch(/\b20\d\d-\d\d-\d\d\b/);
   expect(container.querySelector(".pl-window.pl-date-verified_source")).toHaveAttribute("data-origin", "verified_source");
   expect(container.querySelector(".pl-window.pl-date-dataset_estimate")).toHaveAttribute("data-origin", "dataset_estimate");
   expect(container.querySelector(".pl-window.pl-date-assumed")).toHaveAttribute("data-origin", "assumed");
@@ -40,7 +41,7 @@ it("sends season-specific cumulative edits, shows the returned diff and updated 
   await screen.findByRole("heading", {
     name: "2027"
   });
-  const editor = screen.getByLabelText("Edit Terminate rye, season 1");
+  const editor = screen.getByLabelText("Edit End the rye cover crop, season 1");
   fireEvent.change(editor, {
     target: {
       value: "2027-04-03"
@@ -94,13 +95,15 @@ it("prints the plan and can restore the original after an invalid edit", async (
     name: "Print plan"
   }));
   expect(print).toHaveBeenCalledOnce();
-  const folded = screen.getAllByText("Historical vulnerabilities (0)")[0]!.closest("details")!;
+  // A section the grower has folded shut is opened for printing and folded again afterwards.
+  const folded = screen.getAllByText("Jobs and checks, in date order")[0]!.closest("details")!;
+  folded.open = false;
   expect(folded.open).toBe(false);
   fireEvent(window, new Event("beforeprint"));
   expect(folded.open).toBe(true);
   fireEvent(window, new Event("afterprint"));
   expect(folded.open).toBe(false);
-  const editor = screen.getByLabelText("Edit Terminate rye, season 1");
+  const editor = screen.getByLabelText("Edit End the rye cover crop, season 1");
   fireEvent.change(editor, {
     target: {
       value: "2027-04-03"
@@ -110,7 +113,7 @@ it("prints the plan and can restore the original after an invalid edit", async (
   expect(await screen.findByRole("alert")).toHaveTextContent("breaks chronology");
   expect(within(screen.getByRole("article", {
     name: "2027"
-  })).getByLabelText("Edit Terminate rye, season 1")).toBeEnabled();
+  })).getByLabelText("Edit End the rye cover crop, season 1")).toBeEnabled();
   fireEvent.click(screen.getByRole("button", {
     name: "Restore original dates"
   }));

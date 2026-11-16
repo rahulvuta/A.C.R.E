@@ -2,8 +2,10 @@ import { ConfidenceBadge } from "../ui/ConfidenceBadge";
 import { hasWinter, worldCropName } from "../ui/cropNames";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { inputsApi, type InputsApi } from "./api";
-import type { CropEconomics, CropOverrides, EconomicsSuggestion, EconomicsValue, InputArea, InputLocation, PriceCase, Quantity } from "./schema";
-import { ErrorNotice, OriginLabel, SourceLabel, errorText, pauseFor, readable, useInputRequest } from "./shared";
+import type { CropEconomics, CropOverrides, EconomicsSuggestion, EconomicsValue, InputArea, InputLocation, MarketPrice, PriceCase, Quantity, Source } from "./schema";
+import { ErrorNotice, LookupProgress, OriginLabel, SourceLabel, errorText, pauseFor, readable, useInputRequest } from "./shared";
+import { getUnits, useUnits } from "../ui/units";
+import { fromTyped, inWords, isBagUnit, localPriceUnits, localYieldUnits, parseLocalUnit, sentWords } from "./localUnits";
 
 export interface EconomicsEditorProps {
   location: InputLocation; crops: string[]; area: InputArea; value: EconomicsValue;
@@ -39,8 +41,16 @@ type LookupPhase = { state: "running" } | { state: "finished" } | { state: "stop
 function suggestionLabel(suggestion: EconomicsSuggestion) {
   return suggestion.field === "price" ? "Price" : suggestion.field === "yield" ? "Yield" : `Cost · ${readable(suggestion.item || "total")}`;
 }
+/** A found number as the grower's own entry. A price per bag of known weight ("KES/90kg") or per quintal
+ *  becomes the same local unit the grower would type (card 16), so it reads "3,200 KES per bag of 90 kg". */
+export function suggestionQuantity(suggestion: Pick<EconomicsSuggestion, "value" | "unit">): Quantity {
+  const bag = /^([A-Za-z]{3})\/(\d+(?:\.\d+)?)kg$/.exec(suggestion.unit ?? "");
+  if (bag) return fromTyped(suggestion.value, `${bag[1]!.toUpperCase()}/bag`, Number(bag[2]));
+  return fromTyped(suggestion.value, suggestion.unit ?? "", null);
+}
 function adopted(suggestion: EconomicsSuggestion, overrides: CropOverrides) {
-  const same = (quantity?: Quantity) => quantity?.origin === "grower" && quantity.value === suggestion.value && quantity.unit === suggestion.unit;
+  const typed = suggestionQuantity(suggestion);
+  const same = (quantity?: Quantity) => quantity?.origin === "grower" && quantity.value === typed.value && quantity.unit === typed.unit;
   if (suggestion.field === "price") return same(overrides.price?.typical) && same(overrides.price?.low) && same(overrides.price?.high);
   if (suggestion.field === "yield") return same(overrides.yield);
   return same(overrides.costs?.[suggestion.item || "total"]);
@@ -49,21 +59,71 @@ const LOSS_CHOICES = [{ label: "A little", pct: 10 }, { label: "About a quarter"
 export const createEconomicsValue = (): EconomicsValue => ({ overrides: {}, loss_assumptions: { dry_spring_pct: null, heavy_rain_pct: null } });
 /** A number as a grower would write it: two decimals when small, none when large. */
 const round = (v: number | null | undefined) => (v == null || !Number.isFinite(v) ? null : Number(v.toFixed(Math.abs(v) < 10 ? 2 : Math.abs(v) < 1000 ? 1 : 0)));
-const currencyOf = (unit: string | null | undefined) => /^([A-Za-z]{3})\//.exec(unit ?? "")?.[1]?.toUpperCase() ?? "USD";
-const PRICE_UNITS = (cur: string) => [`${cur}/t`, `${cur}/kg`, `${cur}/bu`, `${cur}/cwt`, `${cur}/lb`];
-const YIELD_UNITS = ["t/ha", "kg/ha", "bu/acre", "lb/acre", "t/acre"];
-const COST_UNITS = (cur: string) => [`${cur}/ha`, `${cur}/acre`];
+// The currency already typed for this crop; failing that, the one set under Units. The unit
+// lists start with the units the grower's own setting uses (hectares and tonnes, or acres and bushels).
+const currencyOf = (unit: string | null | undefined) => /^([A-Za-z]{3})\//.exec(unit ?? "")?.[1]?.toUpperCase() ?? getUnits().currency ?? "USD";
+const acresFirst = () => getUnits().area === "ac";
+/** The grower's own currency first, then the one the published number uses, so neither has to be typed out. */
+const currencies = (cur: string) => [...new Set([getUnits().currency, cur].filter((c): c is string => Boolean(c)))];
+// Bags and quintals (card 16) sit beside tonnes and kilos; the page turns them into tonnes before sending.
+const PRICE_UNITS = (cur: string) => currencies(cur).flatMap((c) => (acresFirst() ? [`${c}/bu`, `${c}/cwt`, `${c}/lb`, `${c}/t`, `${c}/kg`, ...localPriceUnits(c)] : [`${c}/t`, `${c}/kg`, ...localPriceUnits(c), `${c}/bu`, `${c}/cwt`, `${c}/lb`]));
+const YIELD_UNITS = () => (acresFirst() ? ["bu/acre", "lb/acre", "t/acre", ...localYieldUnits(true), "t/ha", "kg/ha"] : ["t/ha", "kg/ha", ...localYieldUnits(false), "bu/acre", "lb/acre", "t/acre"]);
+const COST_UNITS = (cur: string) => currencies(cur).flatMap((c) => (acresFirst() ? [`${c}/acre`, `${c}/ha`] : [`${c}/ha`, `${c}/acre`]));
 const COST_STARTERS = ["seed", "fertilizer", "labour", "hired machines", "land rent"];
-function ValueRow({ label, title, explanation, reference, override, onChange, onReset, units }: { label: string; title?: string; explanation: string; reference?: Quantity | null; override?: Quantity; onChange: (value: Quantity) => void; onReset: () => void; units: string[] }) {
+/** A sourced number with thousands grouped the way the grower's browser writes them. */
+const shown = (v: number | null | undefined) => round(v)?.toLocaleString() ?? "";
+/** "50,000 KES/t" also as "50 KES a kilo": the unit a grower hears in the market. */
+const perKilo = (value: number | null | undefined, unit: string) => {
+  const m = /^([A-Za-z]{3})\/t$/.exec(unit);
+  return m && value != null ? `${round(value / 1000)} ${m[1]} a kilo` : null;
+};
+/** Under the published price (card 29): the same price in the grower's currency, and what town markets pay. Each is taken up only by pressing its button. */
+function LocalPrices({ name, reference, market, onUse }: { name: string; reference?: (Quantity & { converted?: { typical: number | null; unit: string; rate: { value: number; from: string; to: string; year: number }; source?: Source | null } | null }) | null; market?: MarketPrice | null; onUse: (value: number, unit: string) => void }) {
+  const conv = reference?.converted;
+  const marketConv = market?.converted;
+  if (!conv?.typical && !market?.typical) return null;
+  return <div className="acre-input-local-prices">
+    {conv?.typical != null ? <div className="acre-input-local-price">
+      <span><strong>About {shown(conv.typical)} {conv.unit}</strong>{perKilo(conv.typical, conv.unit) ? ` (${perKilo(conv.typical, conv.unit)})` : ""} in your currency</span>
+      <small>At {round(conv.rate.value)} {conv.rate.to} for 1 {conv.rate.from}, the {conv.rate.year} average. <SourceLabel source={conv.source} /></small>
+      <button type="button" aria-label={`Use the converted price for ${name}`} onClick={() => onUse(round(conv.typical)!, conv.unit)}>Use this price</button>
+    </div> : null}
+    {market?.typical != null ? <div className="acre-input-local-price">
+      <span><strong>Town markets: {shown(market.typical)} {market.unit}</strong>{perKilo(market.typical, market.unit) ? ` (${perKilo(market.typical, market.unit)})` : ""}, {market.price_type}</span>
+      <small>{market.note} {market.years ? `Years: ${market.years.replaceAll(",", ", ")}. ` : ""}<SourceLabel source={market.source} /></small>
+      {marketConv?.typical != null ? <small>About {shown(marketConv.typical)} {marketConv.unit} at the {marketConv.rate.year} average exchange rate.</small> : null}
+      <button type="button" aria-label={`Use the town market price for ${name}`} onClick={() => onUse(round(market.typical)!, market.unit)}>Use this price</button>
+    </div> : null}
+  </div>;
+}
+function ValueRow({ label, title, explanation, reference, override, onChange, onReset, units, extra }: { label: string; title?: string; explanation: string; reference?: Quantity | null; override?: Quantity; onChange: (value: Quantity) => void; onReset: () => void; units: string[]; extra?: React.ReactNode }) {
   const effective = override ?? reference;
   const listId = useId();
+  const bagListId = useId();
+  // A local unit (bags, quintals) shows what the grower typed; the tonnes worked out from it are what is sent.
+  const local = override?.local;
+  const shownValue = local ? local.value : (override ? override.value : round(reference?.value)) ?? null;
+  const shownUnit = local ? local.unit : (effective?.unit ?? "");
+  const bag = isBagUnit(shownUnit);
+  const words = override && local ? inWords(override) : null;
+  const sent = override && local ? sentWords(override) : null;
   return <tr>
     <th scope="row">{title ?? label}<small>{explanation}</small></th>
-    <td><label className="acre-input-sr-only">{label} value</label><input aria-label={`${label} value`} type="number" step="any" min="0" placeholder="Enter yours" value={(override ? override.value : round(reference?.value)) ?? ""} onChange={event => {
+    <td data-label="Your number and unit"><label className="acre-input-sr-only">{label} value</label><input aria-label={`${label} value`} type="number" step="any" min="0" placeholder="Enter yours" value={shownValue ?? ""} onChange={event => {
       const number = event.target.value === "" ? null : Number(event.target.value);
-      if (number === null || Number.isFinite(number) && number >= 0) onChange({ value: number, unit: effective?.unit ?? "", origin: "grower" });
-    }} /><input aria-label={`${label} unit`} list={listId} placeholder="Pick a unit" aria-invalid={override?.value != null && !override.unit.trim() ? true : undefined} value={effective?.unit ?? ""} onChange={event => onChange({ value: effective?.value ?? null, unit: event.target.value, origin: "grower" })} /><datalist id={listId}>{units.map(unit => <option key={unit} value={unit} />)}</datalist>{effective?.origin ? <OriginLabel origin={effective.origin} /> : null}</td>
-    <td>{reference?.value != null ? <><span>{round(reference.value)}{reference.unit ? ` ${reference.unit}` : ""}</span><OriginLabel origin={reference.origin} /><SourceLabel source={reference.source} /></> : <span className="acre-input-muted">None found for this area</span>}</td>
+      if (number === null || Number.isFinite(number) && number >= 0) onChange(fromTyped(number, shownUnit, local?.bag_kg ?? null));
+    }} /><input aria-label={`${label} unit`} list={listId} placeholder="Pick a unit" aria-invalid={override && shownValue != null && !shownUnit.trim() ? true : undefined} value={shownUnit} onChange={event => {
+      // A published number is in the published unit; moving to a local unit starts from the grower's own number.
+      const carried = override ? shownValue : parseLocalUnit(event.target.value) ? null : (effective?.value ?? null);
+      onChange(fromTyped(carried, event.target.value, local?.bag_kg ?? null));
+    }} /><datalist id={listId}>{units.map(unit => <option key={unit} value={unit} />)}</datalist>
+    {bag ? <><input className="acre-input-bag" aria-label={`${label} kilos in one bag`} type="number" step="any" min="0" list={bagListId} placeholder="kg in a bag" aria-invalid={shownValue != null && !local?.bag_kg ? true : undefined} value={local?.bag_kg ?? ""} onChange={event => {
+      const kg = event.target.value === "" ? null : Number(event.target.value);
+      if (kg === null || Number.isFinite(kg) && kg > 0) onChange(fromTyped(shownValue, shownUnit, kg));
+    }} /><datalist id={bagListId}>{[50, 90, 100].map(kg => <option key={kg} value={kg} />)}</datalist></> : null}
+    {effective?.origin ? <OriginLabel origin={effective.origin} /> : null}
+    {words ? <small className="acre-input-words">{sent ? `${words} (${sent})` : bag && !local?.bag_kg ? `${words}: say how many kilos are in one bag` : words}</small> : null}</td>
+    <td data-label="Published for your area">{reference?.value != null ? <><span>{round(reference.value)}{reference.unit ? ` ${reference.unit}` : ""}</span><OriginLabel origin={reference.origin} /><SourceLabel source={reference.source} /></> : <span className="acre-input-muted">None found for this area</span>}{extra}</td>
     <td><button type="button" disabled={override === undefined} onClick={onReset} aria-label={`Reset ${label}`}>Reset</button></td>
   </tr>;
 }
@@ -72,8 +132,10 @@ export function EconomicsEditor({ location, crops, area, value, onChange, api = 
   const winter = hasWinter("latitude" in location ? location.latitude : null);
   const losses = show !== "prices";
   const uniqueCrops = [...new Set(crops)];
-  const key = JSON.stringify({ location, crops: uniqueCrops, area });
-  const loader = useCallback((signal: AbortSignal) => api.estimate({ location, crops: uniqueCrops, area, equipment: [], overrides: {} }, signal), [api, key]); // eslint-disable-line react-hooks/exhaustive-deps
+  // The grower's currency (Units) is sent so published prices come back in it too (card 29).
+  const displayCurrency = useUnits().currency;
+  const key = JSON.stringify({ location, crops: uniqueCrops, area, displayCurrency });
+  const loader = useCallback((signal: AbortSignal) => api.estimate({ location, crops: uniqueCrops, area, equipment: [], overrides: {}, ...(displayCurrency && /^[A-Za-z]{3}$/.test(displayCurrency) ? { currency: displayCurrency } : {}) }, signal), [api, key]); // eslint-disable-line react-hooks/exhaustive-deps
   const request = useInputRequest(key, loader, prices && uniqueCrops.length > 0);
   const [costNames, setCostNames] = useState<Record<string, string>>({});
   const [phases, setPhases] = useState<Record<string, LookupPhase>>({});
@@ -146,7 +208,7 @@ export function EconomicsEditor({ location, crops, area, value, onChange, api = 
     onChange({ ...value, overrides: { ...value.overrides, [cropId]: overrides } });
   }
   function adopt(cropId: string, suggestion: EconomicsSuggestion, overrides: CropOverrides) {
-    const quantity: Quantity = { value: suggestion.value, unit: suggestion.unit, origin: "grower" };
+    const quantity = suggestionQuantity(suggestion);
     if (suggestion.field === "price") update(cropId, { ...overrides, price: { low: quantity, typical: quantity, high: quantity } });
     else if (suggestion.field === "yield") update(cropId, { ...overrides, yield: quantity });
     else update(cropId, { ...overrides, costs: { ...overrides.costs, [suggestion.item || "total"]: quantity } });
@@ -168,6 +230,11 @@ export function EconomicsEditor({ location, crops, area, value, onChange, api = 
       const nothingFound = phase?.state === "finished" && !request.refreshing && !!defaults && missing.length > 0 && !suggestions.length;
       const canRepeat = !!regionKey && !!defaults && !running && !waiting && phase?.state !== "failed" && missing.length > 0 && (!!defaults.economics_research?.researched_at || startedLookups.has(lookupKey(cropId)));
       const name = readable(cropId);
+      // "Find local prices" (card 24): the grower can ask for a search at any time, also when nothing is missing
+      // (a published price in another currency is still a reason to look for a local one).
+      const lookedUp = !!defaults?.economics_research?.researched_at || startedLookups.has(lookupKey(cropId));
+      const canFind = !!regionKey && !!defaults && !running && !waiting && !canRepeat && phase?.state !== "failed";
+      const noLookupHere = !!request.data && !regionKey && !!defaults && missing.length > 0;
       const hasPrice = (overrides.price?.typical?.value ?? defaults?.price?.typical) != null;
       const hasYield = (overrides.yield?.value ?? defaults?.yield?.value) != null;
       const usesOwn = !!overrides.price?.typical || !!overrides.yield;
@@ -182,20 +249,23 @@ export function EconomicsEditor({ location, crops, area, value, onChange, api = 
       return <section key={cropId} className="acre-input-economics-crop" aria-label={`${readable(cropId)} economics`}><h3>{worldCropName(cropId).replace(/^./, c => c.toUpperCase())}</h3>
         {defaults || Object.keys(overrides).length ? <p className="acre-input-money-line" data-ready={hasPrice && hasYield ? "yes" : "no"}>{hasPrice && hasYield ? (usesOwn ? "Money results for this crop use your numbers." : "Money results for this crop use published numbers for your area.") : "No money results for this crop yet: it needs a price and a yield."}</p> : null}
         {defaults && isChecked(defaults) && <p className="acre-input-help">Found by AI research and checked against the cited page. Change any number that is different on your farm.</p>}
-        {running && <div role="status" className="acre-input-research-status"><p>Looking up published prices, yields and costs for {name}… This usually takes under a minute. You can keep going; values fill in when it finishes.</p><button type="button" aria-label={`Stop looking up ${name}`} onClick={() => stopLookup(cropId)}>Stop</button></div>}
+        {running && <LookupProgress onStop={() => stopLookup(cropId)} stopLabel={`Stop looking up ${name}`}>Looking up published prices, yields and costs for {name}… This usually takes under a minute. You can keep going; values fill in when it finishes.</LookupProgress>}
         {waiting && <p role="status" className="acre-input-help">Waiting to look up {name}.</p>}
         {phase?.state === "failed" && <div className="acre-input-error" role="alert"><p>Published numbers for {name} could not be looked up right now. Enter your own, or try again later.</p><small>{phase.message}</small><button type="button" aria-label={`Try again to look up ${name}`} onClick={() => void startLookup(cropId)}>Try again</button></div>}
         {phase?.state === "stopped" && <p className="acre-input-help">The lookup for {name} was stopped.</p>}
         {nothingFound && <p className="acre-input-help">No published {joinWords(missing.map(field => FIELD_WORD[field]))} found for {name} in this area. Enter yours if you know them, or leave them blank: the simulation then runs without money results for this crop.</p>}
-        {canRepeat && <p className="acre-input-help"><button type="button" aria-label={`Look up ${name} again`} disabled={!!activeId} onClick={() => void startLookup(cropId, true)}>Look up again</button></p>}
+        {canRepeat && <p className="acre-input-help"><button type="button" aria-label={`Look up ${name} again`} disabled={!!activeId} onClick={() => void startLookup(cropId, true)}>Look for local prices again</button></p>}
+        {canFind && <div className="acre-input-find"><button type="button" aria-label={`Find local prices for ${name}`} disabled={!!activeId} onClick={() => void startLookup(cropId, lookedUp)}>{lookedUp ? "Look for local prices again" : "Find local prices"}</button><span className="acre-input-help">{lookedUp ? "AI searches published sources again." : `AI searches published sources for ${name} prices, yields and costs near you (about a minute). Each number comes with its source for you to check.`}</span></div>}
+        {noLookupHere && <p className="acre-input-help">Looking up local prices is not available for this place yet. Enter your own numbers.</p>}
         {defaults?.reason_text && <p>{defaults.reason_text}</p>}
         {defaults?.status && defaults.status !== "complete" && !running && !waiting && !nothingFound && <p className="acre-input-help">{defaults.status === "partial" ? "Some values have no published source for this area. Fill in the blanks if you know them." : "No published prices or costs for this crop in this area. Enter yours if you know them."}</p>}
         <div className="acre-input-table-wrap"><table><caption className="acre-input-sr-only">{readable(cropId)} price cases, yield and costs</caption><thead><tr><th scope="col">Input</th><th scope="col">Your number and unit</th><th scope="col">Published for your area</th><th scope="col">Undo</th></tr></thead><tbody>
-          <ValueRow label="Price · typical" title="Price" explanation="What you usually get for one unit of the harvested crop." units={PRICE_UNITS(cur)} reference={priceRef("typical")} override={overrides.price?.typical} onChange={setPrice} onReset={resetPrice} />
-          <ValueRow label="Yield" explanation="What you usually harvest from one hectare or acre." units={YIELD_UNITS} reference={defaults?.yield} override={overrides.yield} onChange={quantity => update(cropId, { ...overrides, yield: quantity })} onReset={() => { const next = { ...overrides }; delete next.yield; update(cropId, next); }} />
+          <ValueRow label="Price · typical" title="Price" explanation="What you usually get for one unit of the harvested crop." units={PRICE_UNITS(cur)} reference={priceRef("typical")} override={overrides.price?.typical} onChange={setPrice} onReset={resetPrice}
+            extra={<LocalPrices name={name} reference={defaults?.price ? { ...defaults.price, value: defaults.price.typical } : null} market={defaults?.market_price} onUse={(value, unit) => setPrice(suggestionQuantity({ value, unit }))} />} />
+          <ValueRow label="Yield" explanation="What you usually harvest from one hectare or acre." units={YIELD_UNITS()} reference={defaults?.yield} override={overrides.yield} onChange={quantity => update(cropId, { ...overrides, yield: quantity })} onReset={() => { const next = { ...overrides }; delete next.yield; update(cropId, next); }} />
           {costItems.map(item => <ValueRow key={item} label={`Cost · ${readable(item)}`} explanation="What this costs for one hectare or acre." units={COST_UNITS(cur)} reference={defaults?.costs.items.find(cost => cost.item === item)} override={overrides.costs?.[item]} onChange={quantity => update(cropId, { ...overrides, costs: { ...overrides.costs, [item]: quantity } })} onReset={() => { const costs = { ...overrides.costs }; delete costs[item]; update(cropId, { ...overrides, costs }); }} />)}
         </tbody></table></div>
-        <p className="acre-input-help">A unit is a currency code and an amount: USD/t, INR/t, KES/kg, EUR/t. Use the same amount for price and yield (a price per tonne with a yield in tonnes).</p>
+        <p className="acre-input-help">Pick the unit you sell in: per tonne (t), per kilo (kg), per quintal of 100 kg (q) or per bag. For bags, say how many kilos are in one bag. A price starts with its currency code: KES/bag, INR/q, USD/t.</p>
         <div className="acre-input-cost-starters" role="group" aria-label={`Add a cost for ${name}`}><span>Add a cost:</span>{COST_STARTERS.filter(item => !costItems.includes(item)).map(item => <button key={item} type="button" onClick={() => update(cropId, { ...overrides, costs: { ...overrides.costs, [item]: { value: null, unit: `${cur}/${areaUnit}`, origin: "grower" } } })}>{item}</button>)}</div>
         <details className="acre-input-more-prices"><summary>Prices in a bad and a good year</summary>
           <p className="acre-input-help">Leave these alone and your one price is used for every year. Set them if what you get swings from year to year.</p>
@@ -211,7 +281,7 @@ export function EconomicsEditor({ location, crops, area, value, onChange, api = 
             const quote = suggestion.source?.evidence_quote;
             return <li key={index}><div className="acre-input-suggestion-main"><strong>{suggestionLabel(suggestion)}</strong> <span>{suggestion.value} {suggestion.unit}{suggestion.year != null ? `, ${suggestion.year}` : ""}</span> <OriginLabel origin={suggestion.origin} /></div>
               <SourceLabel source={suggestion.source} />
-              {quote && <blockquote><q>{quote}</q></blockquote>}
+              {quote && <><blockquote translate="no"><q>{quote}</q></blockquote><small className="acre-input-muted">Quoted from the source, in its own words.</small></>}
               {suggestion.note && <small>{suggestion.note}</small>}
               <button type="button" disabled={used} aria-label={`${used ? "Using this value" : "Use this value"} for ${name} ${suggestionLabel(suggestion)}`} onClick={() => adopt(cropId, suggestion, overrides)}>{used ? "Using this value" : "Use this value"}</button></li>;
           })}</ul></div>}

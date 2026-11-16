@@ -53,6 +53,29 @@ class Zone:
     rotation: list[Plan]
 
 
+@dataclass(frozen=True)
+class LegSystem:
+    """How one season of a rotation is farmed beyond "one crop, then the next" (card 21).
+
+    ``companions``: crops grown in the same field at the same time as the season's crop and
+    harvested with it. They are counted in the money and in the crop families. Their own effect
+    on soil cover and on the weather measures is not modelled.
+
+    ``permanent``: the season's crop stays in the ground all year (a tree crop, sugarcane, tea,
+    pasture). There is no planting and no bare ground, so the planting-time and bare-ground
+    measures are zero by definition and no weather is read for it. Its yield is the grower's
+    own; weather does not change it here. ``sold`` is false for ground nothing is sold from
+    (grazed pasture): then it has no money lines at all.
+    """
+
+    companions: tuple[str, ...] = ()
+    permanent: bool = False
+    sold: bool = True
+
+
+YEARLY = LegSystem()
+
+
 @dataclass
 class Scenario:
     scenario_id: str
@@ -60,6 +83,10 @@ class Scenario:
     rotation: list[Plan]
     is_baseline: bool = False
     zones: list[Zone] | None = None  # None: the whole field follows ``rotation``
+    systems: dict[str, LegSystem] = field(default_factory=dict)  # by plan_id; missing = yearly
+
+    def system(self, p: Plan) -> LegSystem:
+        return self.systems.get(p.plan_id, YEARLY)
 
     def all_rotations(self) -> list[list[Plan]]:
         return [z.rotation for z in self.zones] if self.zones else [self.rotation]
@@ -136,7 +163,9 @@ class Matrices:
         return (h >= 0.5).astype(float)
 
 
-def matrices(sc: Scenario | Zone, legs: dict[str, LegSeasons], d: Draws, years: int) -> Matrices:
+def matrices(sc: Scenario | Zone, legs: dict[str, LegSeasons], d: Draws, years: int,
+             owner: Scenario | None = None,
+             permanent: dict[tuple[str, bool], LegSeasons] | None = None) -> Matrices:
     runs = d.index.shape[0]
     rain = np.empty((runs, years))
     heavy = np.empty((runs, years))
@@ -145,7 +174,10 @@ def matrices(sc: Scenario | Zone, legs: dict[str, LegSeasons], d: Draws, years: 
     ops = np.empty(years)
     pool = np.array(d.pool)
     for t in range(years):
-        leg = legs[plan_key(sc.rotation[t % len(sc.rotation)])]
+        p = sc.rotation[t % len(sc.rotation)]
+        sy = owner.system(p) if owner is not None else YEARLY
+        leg = (permanent[(plan_key(p), sy.sold)] if sy.permanent and permanent is not None
+               else legs[plan_key(p)])  # fmt: skip
         ix = d.pos[d.index[:, t]]
         rain[:, t] = leg.rain_bare_mm[ix]
         heavy[:, t] = leg.heavy_bare_days[ix]
@@ -167,10 +199,11 @@ def combine(ms: list[Matrices], weights: list[float]) -> Matrices:
                     ms[0].seasons, mean("heavy_area"))
 
 
-def _families(rotations: list[list[Plan]], ctx: Context, years: int
-              ) -> tuple[int | None, dict[str, str | None]]:  # fmt: skip
+def _families(rotations: list[list[Plan]], ctx: Context, years: int,
+              sc: Scenario | None = None) -> tuple[int | None, dict[str, str | None]]:  # fmt: skip
     crops = [c for rot in rotations for p in rot[:years]
-             for c in (p.previous_crop_id, p.winter.crop_id, p.next_crop_id) if c]  # fmt: skip
+             for c in (p.previous_crop_id, p.winter.crop_id, p.next_crop_id,
+                       *(sc.system(p).companions if sc else ())) if c]  # fmt: skip
     fams = {c: family_of(c, ctx.index) for c in dict.fromkeys(crops)}
     if any(f is None for f in fams.values()):
         return None, fams
@@ -199,22 +232,65 @@ def _events(m: Matrices, years: int) -> list[dict[str, Any]]:
     return [{**event, "origin": "calculation"} for event in out]
 
 
-def _timeline(rotation: list[Plan], inp: Inputs) -> list[dict[str, Any]]:
+def _timeline(rotation: list[Plan], inp: Inputs, sc: Scenario | None = None) -> list[dict[str, Any]]:
     out = []
     for t in range(inp.years):
         p = rotation[t % len(rotation)]
+        sy = sc.system(p) if sc else YEARLY
         seq = [c for c in (p.previous_crop_id, p.winter.crop_id, p.next_crop_id) if c]
+        if sy.permanent:
+            seq = [p.next_crop_id]
         out.append({"year": inp.start_season + t, "season": str(inp.start_season + t),
                     "crop_sequence": seq, "plan_id": p.plan_id, "winter_kind": p.winter.kind,
-                    "next_plant": p.next_plant, "prev_harvest": p.prev_harvest})  # fmt: skip
+                    "next_plant": p.next_plant, "prev_harvest": p.prev_harvest,
+                    "companions": list(sy.companions),
+                    "ground": "permanent" if sy.permanent else "yearly"})  # fmt: skip
+    return out
+
+
+def permanent_seasons(plan: Plan, sold: bool) -> LegSeasons:
+    """The per-season values of ground that stays planted all year: nothing is bare and nothing is
+    planted, in every past year, so no weather is read. Modeled wetness at planting has no value."""
+    n = len(engine.YEARS)
+    zero = np.zeros(n)
+    return LegSeasons(plan, tuple(engine.YEARS), zero.copy(), zero.copy(), zero.copy(),
+                      np.full(n, np.nan), 365, 1 if sold else 0)  # fmt: skip
+
+
+def system_notes(sc: Scenario) -> list[dict[str, str]]:
+    """What the result does and does not cover for seasons that are not "one crop, then the next"."""
+    out: list[dict[str, str]] = []
+    seen: set[tuple[str, ...]] = set()
+    for rot in sc.all_rotations():
+        for p in rot:
+            sy = sc.system(p)
+            crop = p.next_crop_id.replace("_", " ")
+            if sy.permanent and ("p", p.next_crop_id) not in seen:
+                seen.add(("p", p.next_crop_id))
+                out.append({"kind": "permanent_ground", "crop_id": p.next_crop_id,
+                            "text": f"The ground stays covered all year under {crop}, so rain on "
+                                    "bare ground and dry planting time do not apply. "
+                                    + ("Weather is not used to change its yield: the money is "
+                                       "your own yield, price and costs, the same every year."
+                                       if sy.sold else
+                                       "Nothing is sold from it in this plan, so there is no "
+                                       "money result.")})  # fmt: skip
+            for c in sy.companions:
+                if ("c", p.next_crop_id, c) in seen:
+                    continue
+                seen.add(("c", p.next_crop_id, c))
+                out.append({"kind": "grown_together", "crop_id": c,
+                            "text": f"{c.replace('_', ' ').capitalize()} is grown together with "
+                                    f"{crop} and counted in the money in the same season. What "
+                                    "it adds to soil cover is not worked out."})  # fmt: skip
     return out
 
 
 # --------------------------------------------------------------------------- money (S2)
 
 
-def _money(parts: list[Zone], ms: list[Matrices], inp: Inputs, crops: dict[str, mon.CropMoney]
-           ) -> dict[str, Any]:  # fmt: skip
+def _money(parts: list[Zone], ms: list[Matrices], inp: Inputs, crops: dict[str, mon.CropMoney],
+           sc: Scenario | None = None) -> dict[str, Any]:  # fmt: skip
     """Money of the whole field: every zone's amounts are added per run (same replayed seasons)."""
     gaps: list[dict[str, str]] = []
     if not parts or any(not z.area_ha for z in parts):
@@ -230,14 +306,29 @@ def _money(parts: list[Zone], ms: list[Matrices], inp: Inputs, crops: dict[str, 
         cost_z: list[list[str]] = []
         for t in range(inp.years):
             p = z.rotation[t % len(z.rotation)]
-            rev = [p.next_crop_id] + ([p.winter.crop_id] if p.winter.kind == "winter_grain"
-                                      and p.winter.crop_id else [])  # fmt: skip
-            cost = rev + ([p.winter.crop_id] if p.winter.kind == "cover" and p.winter.crop_id else [])
+            sy = sc.system(p) if sc else YEARLY
+            if sy.permanent:  # one crop all year; nothing at all when nothing is sold from it
+                rev = [p.next_crop_id] if sy.sold else []
+                cost = list(rev)
+            else:
+                rev = [p.next_crop_id] + ([p.winter.crop_id] if p.winter.kind == "winter_grain"
+                                          and p.winter.crop_id else [])  # fmt: skip
+                cost = rev + ([p.winter.crop_id] if p.winter.kind == "cover" and p.winter.crop_id
+                              else [])  # fmt: skip
+            # crops grown together with the season's crop: sold and paid for in the same season
+            rev = rev + [c for c in sy.companions if c not in rev]
+            cost = cost + [c for c in sy.companions if c not in cost]
             rev_z.append(rev)
             cost_z.append(cost)
         need_rev.append(rev_z)
         need_cost.append(cost_z)
     used = sorted({c for pz in need_cost for cs in pz for c in cs})
+    if not used:
+        gaps.append({"field": "crops", "reason": "nothing_sold",
+                     "text": "Nothing is sold from this field in the plan, so there is no money "
+                             "result."})  # fmt: skip
+        return {"money_status": "unavailable", "money_gaps": gaps, "yearly": None, "totals": None,
+                "monthly": None}  # fmt: skip
     for c in used:
         cm = crops[c]
         is_rev = any(c in r for pz in need_rev for r in pz)
@@ -272,7 +363,8 @@ def _money(parts: list[Zone], ms: list[Matrices], inp: Inputs, crops: dict[str, 
                     cm = crops[c]
                     base = cm.yield_per_area * price_of[c] * mon.area_in(cm.area_unit, z.area_ha)  # type: ignore[operator, arg-type]
                     factor = np.ones(runs)
-                    if c == p.next_crop_id:  # the crop planted after the window the events describe
+                    planted_now = (c == p.next_crop_id or c in (sc.system(p) if sc else YEARLY).companions)
+                    if planted_now:  # the crops planted after the window the events describe
                         if inp.loss.get("dry_spring_pct") is not None and (m.dry[:, t] > 0).any():
                             factor *= 1 - dry_l * (m.dry[:, t] > 0)
                             used_by_year[t].add("dry_spring_pct")
@@ -327,7 +419,7 @@ def _money(parts: list[Zone], ms: list[Matrices], inp: Inputs, crops: dict[str, 
     else:
         totals["weather_link"] = ("assumed (your estimate): your loss assumption is applied only "
                                   "in replayed years with that event")  # fmt: skip
-    monthly = _monthly(parts, ms, inp, typical_pieces, cur, all_flags)
+    monthly = _monthly(parts, ms, inp, typical_pieces, cur, all_flags, sc)
     return {"money_status": "complete", "money_gaps": [], "yearly": yearly, "totals": totals,
             "monthly": monthly}  # fmt: skip
 
@@ -336,6 +428,8 @@ def _money(parts: list[Zone], ms: list[Matrices], inp: Inputs, crops: dict[str, 
 
 TIMING_TEXT = ("Costs are counted in the month each crop is planted or seeded, and sales in its "
                "harvest month. Your real timing of input purchases and grain sales may differ.")
+LASTING_TIMING_TEXT = ("For a crop that stays in the ground, the year's costs are spread evenly over "
+                       "its twelve months and its sale lands in the harvest month.")  # fmt: skip
 
 
 def _on(md: str, year: int) -> date:
@@ -379,7 +473,8 @@ def _ym(d: date) -> tuple[int, int]:
 
 def _monthly(zones: list[Zone], ms: list[Matrices], inp: Inputs,
              pieces: list[tuple[int, int, str, str, np.ndarray]],
-             cur: str | None, assumption: list[str]) -> dict[str, Any] | None:  # fmt: skip
+             cur: str | None, assumption: list[str],
+             sc: Scenario | None = None) -> dict[str, Any] | None:  # fmt: skip
     """The seasons' money laid on a calendar, month by month (timing assumed, amounts calculated).
 
     Each crop's cost lands in the month it is planted or seeded and its sales in its harvest
@@ -399,8 +494,20 @@ def _monthly(zones: list[Zone], ms: list[Matrices], inp: Inputs,
         book[ym] = book.get(ym, np.zeros(runs)) + v
         flows.setdefault(ym, np.zeros(runs))
 
+    lasting = False
     for i, t, crop, kind, values in pieces:
         dt, w = dates[i][t], dates[i][t]["winter"]
+        leg = zones[i].rotation[t % len(zones[i].rotation)]
+        if (sc.system(leg) if sc else YEARLY).permanent:
+            # nothing is planted: the year's costs are spread over its twelve months and the
+            # sale lands in the harvest month of the same year
+            lasting = True
+            if kind == "cost":
+                for mo in range(1, 13):
+                    add(costs, (dt["plant"].year, mo), values / 12)
+            else:
+                add(revs, _ym(dt["plant"]), values)
+            continue
         grain = w is not None and w[0] == "winter_grain" and w[1] == crop
         cover = w is not None and w[0] == "cover" and w[1] == crop
         if kind == "cost":
@@ -414,8 +521,16 @@ def _monthly(zones: list[Zone], ms: list[Matrices], inp: Inputs,
         who = f"{z.name or z.zone_id}: " if z.zone_id else ""
         for t, dt in enumerate(dates[i]):
             p = z.rotation[t % len(z.rotation)]
+            sy = sc.system(p) if sc else YEARLY
+            if sy.permanent:  # nothing is planted; a harvest only when something is sold
+                if sy.sold:  # its one date is the harvest, in the season's own year
+                    ops.setdefault(_ym(dt["plant"]), []).append({"kind": "harvest", "crop_id": p.next_crop_id, **tag})
+                continue
             ops.setdefault(_ym(dt["plant"]), []).append({"kind": "plant", "crop_id": p.next_crop_id, **tag})
             ops.setdefault(_ym(dt["harvest"]), []).append({"kind": "harvest", "crop_id": p.next_crop_id, **tag})
+            for c in sy.companions:
+                ops.setdefault(_ym(dt["plant"]), []).append({"kind": "plant", "crop_id": c, **tag})
+                ops.setdefault(_ym(dt["harvest"]), []).append({"kind": "harvest", "crop_id": c, **tag})
             w = dt["winter"]
             bare = [(dt["prev_harvest"], dt["plant"])]
             if w is not None:
@@ -469,7 +584,8 @@ def _monthly(zones: list[Zone], ms: list[Matrices], inp: Inputs,
     if all(v >= 0 for v in medians):
         even = months[0]["month"]
     return {"currency": cur, "origin": "calculation", "timing_origin": "assumed",
-            "timing_text": TIMING_TEXT, "includes_assumption": "+".join(assumption) or None,
+            "timing_text": TIMING_TEXT + (" " + LASTING_TIMING_TEXT if lasting else ""),
+            "includes_assumption": "+".join(assumption) or None,
             "funding_gap": {**q(-lowest, 0), "currency": cur, "origin": "calculation",
                             "deepest_month": months[deepest]["month"] if medians[deepest] < 0 else None,
                             "text": "The most money this plan is out of pocket at any point: the "
@@ -565,7 +681,7 @@ def _zone_info(sc: Scenario, parts: list[Zone], inp: Inputs) -> list[dict[str, A
     if not sc.zones:
         return None
     return [{"zone_id": z.zone_id, "name": z.name, "area_ha": z.area_ha,
-             "share": round(z.weight, 4), "timeline": _timeline(z.rotation, inp)}
+             "share": round(z.weight, 4), "timeline": _timeline(z.rotation, inp, sc)}
             for z in parts]  # fmt: skip
 
 
@@ -586,8 +702,21 @@ def simulate(ctx: Context, inp: Inputs, *, readings: list[Any] | None = None) ->
         replace(ctx, series=adjusted or ctx.series), readings or [])
     if used_readings:
         adjusted = replay_ctx.series
-    legs = {k: leg_seasons(p, ctx, ts, adjusted) for k, p in plans.items()}
-    d = draws(list(legs.values()), inp.runs, inp.years, inp.seed)
+    # Ground that stays planted all year reads no weather: its seasons are zeros by definition.
+    # The same plan may be yearly in one scenario and permanent in another, so the two are kept apart.
+    perm_legs: dict[tuple[str, bool], LegSeasons] = {}
+    yearly_plans: dict[str, Plan] = {}
+    for sc in inp.scenarios:
+        for rot in sc.all_rotations():
+            for p in rot[:inp.years]:
+                sy = sc.system(p)
+                if sy.permanent:
+                    perm_legs.setdefault((plan_key(p), sy.sold), permanent_seasons(p, sy.sold))
+                else:
+                    yearly_plans[plan_key(p)] = p
+    legs = {k: leg_seasons(p, ctx, ts, adjusted) for k, p in yearly_plans.items()}
+    # the seasons that can be replayed are set by the yearly plans; permanent ground fits any season
+    d = draws(list(legs.values()) or list(perm_legs.values()), inp.runs, inp.years, inp.seed)
     source_years = f"{engine.YEARS[0]}-{engine.YEARS[-1]}"
     note = method_note(source_years, inp.years, bool(climate and climate.get("applied")))
     from acre.confidence import rating
@@ -613,7 +742,7 @@ def simulate(ctx: Context, inp: Inputs, *, readings: list[Any] | None = None) ->
                                f"here (at least {MIN_POOL} are needed).",
                 "scenarios": []}  # fmt: skip
     crops = sorted({c for sc in inp.scenarios for rot in sc.all_rotations() for p in rot[:inp.years]
-                    for c in (p.next_crop_id, p.winter.crop_id) if c})  # fmt: skip
+                    for c in (p.next_crop_id, p.winter.crop_id, *sc.system(p).companions) if c})  # fmt: skip
     cm, money_source = mon.crop_money(inp.location, crops, inp.area_ha, inp.equipment,
                                       inp.overrides)  # fmt: skip
     out = []
@@ -622,18 +751,18 @@ def simulate(ctx: Context, inp: Inputs, *, readings: list[Any] | None = None) ->
         from acre.confidence import SUPPORTED
 
         used = {c for rot in sc.all_rotations() for p in rot[:inp.years]
-                for c in (p.next_crop_id, p.winter.crop_id) if c}
+                for c in (p.next_crop_id, p.winter.crop_id, *sc.system(p).companions) if c}
         supported = sum(cm[c].origins.get(k) in SUPPORTED
                         for c in used for k in ("price", "yield", "costs"))
         estimate_confidence = rating(supported, 3 * len(used),
                                      "Share of crop price, yield and cost inputs supplied by "
                                      "the grower or traceable sources; mock inputs score zero.")
         parts = _parts(sc, inp)
-        part_ms = [matrices(z, legs, d, inp.years) for z in parts]
+        part_ms = [matrices(z, legs, d, inp.years, sc, perm_legs) for z in parts]
         m = combine(part_ms, [z.weight for z in parts])
         mats[sc.scenario_id] = m
-        fam_n, fams = _families(sc.all_rotations(), ctx, inp.years)
-        money = _money(parts, part_ms, inp, cm)
+        fam_n, fams = _families(sc.all_rotations(), ctx, inp.years, sc)
+        money = _money(parts, part_ms, inp, cm, sc)
         yearly = []
         for t in range(inp.years):
             row = {"year": inp.start_season + t,
@@ -674,7 +803,8 @@ def simulate(ctx: Context, inp: Inputs, *, readings: list[Any] | None = None) ->
         out.append({"confidence": confidence, "estimate_confidence": estimate_confidence,
                     "scenario_id": sc.scenario_id, "label": sc.label,
                     "is_baseline": sc.is_baseline, "status": "complete",
-                    "timeline": _timeline(max(parts, key=lambda z: z.weight).rotation, inp),
+                    "timeline": _timeline(max(parts, key=lambda z: z.weight).rotation, inp, sc),
+                    "system_notes": system_notes(sc),
                     "zones": _zone_info(sc, parts, inp), "yearly": yearly, "totals": totals,
                     "events": _events(m, inp.years), "money_status": money["money_status"],
                     "monthly": money["monthly"],

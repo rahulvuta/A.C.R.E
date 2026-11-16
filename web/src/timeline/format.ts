@@ -1,9 +1,11 @@
 import type { Dist } from "./types";
+import { LOCALE } from "../ui/units";
 
 /** "$13,100" / "−$1,200"; blank (null) is "Not available", never $0. */
-export function money(v: number | null | undefined, currency = "USD"): string {
+export function money(v: number | null | undefined, currency?: string | null): string {
   if (v === null || v === undefined || !Number.isFinite(v)) return "Not available";
-  const s = new Intl.NumberFormat("en-US", { style: "currency", currency, maximumFractionDigits: 0 }).format(Math.abs(v));
+  // With no currency the figure is a plain number: a dollar sign is never assumed.
+  const s = currency ? new Intl.NumberFormat(LOCALE, { style: "currency", currency, maximumFractionDigits: 0 }).format(Math.abs(v)) : Math.round(Math.abs(v)).toLocaleString(LOCALE);
   return v < 0 ? `−${s}` : s;
 }
 

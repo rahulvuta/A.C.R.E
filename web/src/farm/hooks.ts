@@ -50,8 +50,8 @@ export const farmActions = {
   deleteFarm: (farmId: string) => update((s) => ops.deleteFarm(s, farmId)),
   selectFarm: (farmId: string | null) => update((s) => ops.selectFarm(s, farmId)),
   /** Throws with a plain message when the shape is invalid. */
-  addField(farmId: string, geometry: FieldGeometry, name?: string): Field {
-    const r = ops.addField(store().get(), farmId, geometry, name);
+  addField(farmId: string, geometry: FieldGeometry, name?: string, approx = false): Field {
+    const r = ops.addField(store().get(), farmId, geometry, name, approx);
     store().set(r.store);
     return r.field;
   },

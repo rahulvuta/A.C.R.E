@@ -45,6 +45,8 @@ from acre.report.http import issue
 from acre.report.meta import response_meta
 from acre.report.routes import router as report_router
 from acre.tools.routes import router as tools_router
+from acre.explain.routes import router as explain_router
+from acre.translate.routes import router as translate_router
 from acre.weather.locations import get_index as get_location_index
 from acre.weather.power_client import is_offline
 from acre.weather.snapshot import load_snapshot, set_active_snapshot_dir
@@ -295,7 +297,8 @@ def create_app() -> FastAPI:
 
     error_docs = {400: {"model": InvalidInputResponse}, 500: {"model": ServerErrorResponse}}
     for r in (core_router, planner_router, report_router, field_router, tools_router,
-              weather_router, recommend_router, farm_router, simulate_router, conditions_router):
+              weather_router, recommend_router, farm_router, simulate_router, conditions_router,
+              translate_router, explain_router):
         app.include_router(r, responses=error_docs)
     # Routes that depend on ``get_context`` follow the request's place (location_id / point).
     app.dependency_overrides[get_context] = request_context

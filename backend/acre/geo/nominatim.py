@@ -11,6 +11,18 @@ Rules this module keeps:
 * offline mode (``ACRE_OFFLINE=1``) answers only from the cache and the committed fixtures
   in ``data/geo/geocode_fixtures.json``; it never opens a connection.
 
+Which service answers is a setting (card 32; ``docs/global/map-and-search-terms.md`` has what the
+public Nominatim service asks of an app). All are read once, when the process's client is made:
+
+* ``ACRE_GEOCODER_URL``: another service that speaks Nominatim's ``/search`` and ``/reverse``
+  (a self-hosted Nominatim, or a hosted one). Default: the public OpenStreetMap service.
+* ``ACRE_GEOCODER_USER_AGENT``: how this deployment names itself. The public service asks for a
+  User-Agent that identifies the application; a public site should put its own address here.
+* ``ACRE_GEOCODER_KEY`` (and ``ACRE_GEOCODER_KEY_PARAM``, default ``key``): sent as a query
+  parameter with every request, for a service that needs one. It is never cached or logged.
+* ``ACRE_GEOCODER_ATTRIBUTION`` / ``ACRE_GEOCODER_ATTRIBUTION_URL``: the credit shown with
+  search results. Default: OpenStreetMap's.
+
 Failures are :class:`GeoError` with a ``code`` the routes turn into ``unavailable``.
 """
 
@@ -18,6 +30,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import threading
 import time
 from collections.abc import Callable
@@ -29,7 +42,16 @@ import httpx
 from acre.geo.config import GEO_DATA_DIR, cache_root, is_offline
 
 BASE_URL = "https://nominatim.openstreetmap.org"
-USER_AGENT = "acre-acre/0.1"  # generic on purpose: no personal contact details
+# Names the application, as the public service asks; no personal contact details.
+USER_AGENT = "ACRE-crop-planner/0.1 (NASA Space Apps 2026 project)"
+URL_ENV = "ACRE_GEOCODER_URL"
+USER_AGENT_ENV = "ACRE_GEOCODER_USER_AGENT"
+KEY_ENV = "ACRE_GEOCODER_KEY"
+KEY_PARAM_ENV = "ACRE_GEOCODER_KEY_PARAM"
+ATTRIBUTION_ENV = "ACRE_GEOCODER_ATTRIBUTION"
+ATTRIBUTION_URL_ENV = "ACRE_GEOCODER_ATTRIBUTION_URL"
+ATTRIBUTION = "Place search © OpenStreetMap contributors"
+ATTRIBUTION_URL = "https://www.openstreetmap.org/copyright"
 MIN_INTERVAL_S = 1.0
 TIMEOUT_S = 8.0
 FIXTURES_PATH = GEO_DATA_DIR / "geocode_fixtures.json"
@@ -87,9 +109,13 @@ class Nominatim:
         clock: Callable[[], float] = time.monotonic,
         sleep: Callable[[float], None] = time.sleep,
         fixtures: dict[str, Any] | None = None,
+        key: str | None = None,
+        key_param: str = "key",
     ) -> None:
         self.base_url = base_url.rstrip("/")
         self.user_agent = user_agent
+        self._key = key or None
+        self._key_param = key_param or "key"
         self._cache_dir = cache_dir
         self._client = client
         self._offline = offline
@@ -123,6 +149,8 @@ class Nominatim:
     # -------------------------------------------------------------- http
     def _get(self, path: str, params: dict[str, Any]) -> Any:
         client = self._client or httpx.Client(timeout=TIMEOUT_S)
+        if self._key:
+            params = {**params, self._key_param: self._key}
         with self._lock:  # one request at a time, at most one per second
             wait = self._min_interval - (self._clock() - self._last_request)
             if wait > 0:
@@ -198,11 +226,36 @@ _CLIENT: Nominatim | None = None
 _CLIENT_LOCK = threading.Lock()
 
 
+def _setting(name: str) -> str:
+    return os.environ.get(name, "").strip()
+
+
+def from_settings() -> Nominatim:
+    """The client this deployment's settings describe (see the module text)."""
+    url = _setting(URL_ENV)
+    if not url.startswith(("https://", "http://")):
+        url = BASE_URL  # an address that is not one is ignored, never guessed at
+    return Nominatim(
+        base_url=url,
+        user_agent=_setting(USER_AGENT_ENV) or USER_AGENT,
+        key=_setting(KEY_ENV) or None,
+        key_param=_setting(KEY_PARAM_ENV) or "key",
+    )
+
+
+def attribution() -> dict[str, str]:
+    """The credit to show with search results: the configured service's, or OpenStreetMap's."""
+    text = _setting(ATTRIBUTION_ENV)
+    if text:
+        return {"text": text, "url": _setting(ATTRIBUTION_URL_ENV)}
+    return {"text": ATTRIBUTION, "url": ATTRIBUTION_URL}
+
+
 def get_client() -> Nominatim:
     global _CLIENT
     with _CLIENT_LOCK:
         if _CLIENT is None:
-            _CLIENT = Nominatim()
+            _CLIENT = from_settings()
         return _CLIENT
 
 

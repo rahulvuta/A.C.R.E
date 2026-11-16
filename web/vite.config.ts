@@ -7,6 +7,8 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   base: "./",
   plugins: [react()],
+  // The list of built files, read by the service worker so the whole app is kept for use offline (card 20).
+  build: { manifest: "asset-manifest.json" },
   test: {
     environment: "jsdom",
     globals: true,

@@ -1,4 +1,5 @@
 import { lazy, Suspense, useState, type ComponentType } from "react";
+import { TranslatedMark } from "./i18n/LanguagePicker";
 import { useData } from "./state/useData";
 import { Banner, Button } from "./ui/components";
 import { APP_NAME } from "./config";
@@ -26,9 +27,12 @@ const Guided = named(() => import("./screens/guided/Guided"), "Guided");
 
 export function App() {
   return (
-    <Suspense fallback={<main className="center-state" aria-busy="true"><p className="marker">{APP_NAME}</p></main>}>
-      <Route />
-    </Suspense>
+    <>
+      <TranslatedMark />
+      <Suspense fallback={<main className="center-state" aria-busy="true"><p className="marker">{APP_NAME}</p></main>}>
+        <Route />
+      </Suspense>
+    </>
   );
 }
 

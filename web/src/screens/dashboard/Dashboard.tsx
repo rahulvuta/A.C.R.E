@@ -1,18 +1,23 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { APP_NAME } from "../../config";
 import { farmActions, putFarm, selectField, useFarms } from "../../farm/hooks";
-import { centroid, formatArea } from "../../farm/geometry";
+import { areaM2, centroid } from "../../farm/geometry";
+import { areaText, useUnits } from "../../ui/units";
+import { UnitsControl } from "../../ui/UnitsControl";
+import { OfflineNote } from "../../ui/OfflineNote";
+import { LanguagePicker } from "../../i18n/LanguagePicker";
 import type { Farm, Field } from "../../farm/types";
 import { useFieldPlace } from "../../state/useFieldPlace";
 import { useGlobalApi, type GlobalApi } from "../../state/useGlobal";
-import { getSimField, loadDemoFields, removeSimField, updateSimField, useSimField, type SimField } from "../../state/simField";
+import { getSimField, loadDemoFields, removeSimField, updateSimField, useSimField } from "../../state/simField";
 import { Banner } from "../../ui/components";
 import { SourceBanner } from "../workspace/SourceBanner";
-import { baselineReady, cropsOf, rotationReady } from "../guided/context";
-import { economicsReady } from "../guided/inputState";
-import { STEPS, type StepId } from "../guided/steps";
+import { cropsOf, rotationReady } from "../guided/context";
+import { STEPS } from "../guided/steps";
 import { cropLabel } from "../guided/format";
-import { FieldWorkspace, TABS } from "./FieldWorkspace";
+import { FieldWorkspace } from "./FieldWorkspace";
+import { nextStep } from "../guided/progress";
+export { nextStep } from "../guided/progress";
 import { navIcon } from "../planner/SideNav";
 
 /*
@@ -37,8 +42,8 @@ function readRoute(): Route {
 const hashFor = (r: Route) => (r.page === "add" ? "#d=add" : r.page === "field" ? `#d=f/${encodeURIComponent(r.id)}/${r.tab}` : "#d=fields");
 
 export const DEMOS = [
-  { id: "union" as const, name: "Union County, North Carolina", blurb: "Corn and soybean fields in the NC Piedmont." },
-  { id: "pergamino" as const, name: "Pergamino, Buenos Aires", blurb: "Soybean, maize and wheat in the Argentine Pampas." },
+  { id: "union" as const, name: "United States: Union County, North Carolina", blurb: "Maize and soybean fields, with a winter between the crops." },
+  { id: "pergamino" as const, name: "Argentina: Pergamino, Buenos Aires", blurb: "Soybean, maize and wheat, with southern-hemisphere seasons." },
 ];
 
 export function useRoute(): [Route, (r: Route) => void] {
@@ -66,17 +71,11 @@ export function copyToMyFields(demoFarm: Farm, field: Field, mine: Farm | null):
   return copy.field_id;
 }
 
-/** The step of the guided sequence a field should carry on from, read from what it has saved. */
-export function nextStep(sim: SimField): StepId {
-  if (!(baselineReady(sim) && economicsReady(sim))) return "now";
-  if (sim.chosenId != null) return "plan";
-  return sim.scenarios.length ? "compare" : "simulate";
-}
-
 export function Dashboard({ api: given }: { api?: GlobalApi }) {
   const fallback = useGlobalApi();
   const api = given ?? fallback;
   const { farms, notice, selectedFarm } = useFarms();
+  const units = useUnits();
   const [route, go] = useRoute();
   // However the add page is reached (button, reload, shared link), the map editor never
   // starts on a demo farm: a new field goes into the grower's own farm.
@@ -122,7 +121,6 @@ export function Dashboard({ api: given }: { api?: GlobalApi }) {
 
   const title = route.page === "add" ? "Add a field" : current ? current.field.name : "Fields";
   const onFieldPage = route.page === "field" && current;
-  const activeTab = route.page === "field" ? route.tab : "";
 
   return (
     <div className="db ws gf dash">
@@ -147,22 +145,11 @@ export function Dashboard({ api: given }: { api?: GlobalApi }) {
             </li>
           </ol>
         </nav>
-        {onFieldPage ? (
-          <nav className="gf-steps dash-sections" aria-label="Field sections">
-            <p className="dash-side-label">{current.field.name}</p>
-            <div role="tablist" aria-label="Field sections" aria-orientation="vertical">
-              {TABS.map((t, i) => (
-                <button key={t.id} type="button" role="tab" id={`tab-${t.id}`} aria-selected={activeTab === t.id} aria-current={activeTab === t.id ? "step" : undefined} aria-controls={`pane-${t.id}`} onClick={() => go({ page: "field", id: current.field.field_id, tab: t.id })}>
-                  <span className="gf-dot" aria-hidden="true">{i + 1}</span>
-                  <span>{t.label}</span>
-                </button>
-              ))}
-            </div>
-          </nav>
-        ) : null}
         <div className="db-side-foot">
+          <LanguagePicker compact />
+          <UnitsControl />
           <div className="db-links">
-            <a href="?view=app">{navIcon("M4 4h10M4 9h10M4 14h6")}Guided simulator</a>
+            <a href="?view=app">{navIcon("M4 4h10M4 9h10M4 14h6")}The six steps</a>
             <a href="?view=methods">{navIcon("M9 16A7 7 0 1 0 9 2a7 7 0 0 0 0 14zM7 7a2 2 0 1 1 3 1.700c-.600.400-1 .800-1 1.500M9 12.700v.100")}How it works</a>
             <a href="?view=privacy">{navIcon("M9 2l5.500 2v4.500c0 3.500-2.300 6-5.500 7.500-3.200-1.500-5.500-4-5.500-7.500V4zM6.700 9l1.700 1.700 3-3.200")}Privacy and terms</a>
             <a href="?view=home">{navIcon("M9 16A7 7 0 1 0 9 2a7 7 0 0 0 0 14zM9 8v5M9 5.500v.100")}About A.C.R.E</a>
@@ -177,8 +164,8 @@ export function Dashboard({ api: given }: { api?: GlobalApi }) {
                 ← All fields
               </button>
             ) : null}
-            <h1>{title}</h1>
-            {onFieldPage ? <span className="dash-muted">{formatArea(current.field.geometry).ac}</span> : null}
+            <h1 translate={onFieldPage ? "no" : undefined}>{title}</h1>
+            {onFieldPage ? <span className="dash-muted">{areaText(areaM2(current.field.geometry), units).main}</span> : null}
             {onFieldPage && current.farm.demo ? <span className="gf-demo-tag">Demo farm</span> : null}
           </div>
           {route.page === "add" ? (
@@ -193,12 +180,13 @@ export function Dashboard({ api: given }: { api?: GlobalApi }) {
         </header>
         <main className="db-main ws-main gf-main">
           <SourceBanner source={api.source} />
+          <OfflineNote />
           {notice ? <Banner kind="info">{notice}</Banner> : null}
           {route.page === "add" ? (
             <section aria-label="Add a field" className="gf-farm">
               <header className="gf-head">
                 <h2 className="gf-question">Where is your field?</h2>
-                <p className="gf-sentence">Find your farm on the map, draw the boundary and name the field. Acres show as soon as you finish the shape.</p>
+                <p className="gf-sentence">Find your farm on the map, draw the boundary and name the field. Its size shows as soon as you finish the shape.</p>
               </header>
               <div className="ws-map gf-map">
                 <Suspense fallback={<p className="gf-muted">Loading the map…</p>}>
@@ -220,7 +208,7 @@ export function Dashboard({ api: given }: { api?: GlobalApi }) {
             <>
               <header className="gf-head">
                 <h2 className="gf-question">Your fields</h2>
-                <p className="gf-sentence">Each field keeps its own rotation, dates, money entries and simulations, saved in this browser. No account needed.</p>
+                <p className="gf-sentence">Each field keeps its own crops, dates, prices and results, saved in this browser. No account needed.</p>
               </header>
               {myFields.length === 0 ? (
                 <section className="db-card dash-empty" aria-label="No fields">
@@ -246,7 +234,7 @@ export function Dashboard({ api: given }: { api?: GlobalApi }) {
               )}
               <section className="db-card gf-demo dash-demos" aria-label="Demo farms">
                 <div className="db-card-head">
-                  <h2>Try a demo farm</h2>
+                  <h2>Try an example farm</h2>
                 </div>
                 <p className="gf-muted">Example fields with sample plans, prices and readings, kept apart from your own fields. Copy a demo field to make it yours.</p>
                 {demoFields.length ? (
@@ -288,7 +276,7 @@ export function Dashboard({ api: given }: { api?: GlobalApi }) {
 function FieldCard({ api, farm, field, onOpen }: { api: GlobalApi; farm: Farm; field: Field; onOpen: () => void }) {
   const sim = useSimField(field.field_id);
   const place = useFieldPlace(api.client, field);
-  const area = formatArea(field.geometry);
+  const area = areaText(areaM2(field.geometry), useUnits());
   const loc = place?.place.state === "ready" ? [place.place.data.admin2Name, place.place.data.admin1Name, place.place.data.countryName].filter(Boolean).join(", ") : "";
   const c = centroid(field.geometry);
   const coords = `${c.latitude.toFixed(3)}, ${c.longitude.toFixed(3)}`;
@@ -298,12 +286,12 @@ function FieldCard({ api, farm, field, onOpen }: { api: GlobalApi; farm: Farm; f
   return (
     <li className="db-card dash-card">
       <div className="dash-card-head">
-        <h3>{field.name}</h3>
+        <h3 translate="no">{field.name}</h3>
         {farm.demo ? <span className="dash-tag">Demo</span> : null}
       </div>
       <dl>
-        <div><dt>Acreage</dt><dd>{area.ac} <span className="dash-muted">({area.ha})</span></dd></div>
-        <div><dt>Location</dt><dd>{loc || (place?.place.state === "loading" ? "Looking up…" : coords)}</dd></div>
+        <div><dt>Size</dt><dd>{area.main} <span className="dash-muted">({area.other})</span>{field.approx_shape ? <span className="mp-approx">Approximate shape</span> : null}</dd></div>
+        <div><dt>Location</dt><dd translate={loc ? "no" : undefined}>{loc || (place?.place.state === "loading" ? "Looking up…" : coords)}</dd></div>
         <div><dt>Crop rotation</dt><dd>{crops || "Not set"}</dd></div>
         <div><dt>Planning status</dt><dd>{status}</dd></div>
       </dl>

@@ -26,7 +26,7 @@ from acre.report.meta import response_meta
 from acre.simulate import compare as sim_compare
 from acre.simulate.autofill import autofill
 from acre.simulate.demo import demo_farm
-from acre.simulate.engine import Inputs, Scenario, Zone, readings_context, simulate
+from acre.simulate.engine import Inputs, LegSystem, Scenario, Zone, readings_context, simulate
 from acre.simulate.money import MoneyInputError
 from acre.simulate.vocab import OUTLOOK_NOTE, PRIORITIES, priorities_vocab
 from acre.weather.ondemand import Cell, CellIdError
@@ -100,6 +100,19 @@ class EconomicsIn(BaseModel):
     loss_assumptions: LossIn = Field(default_factory=LossIn)
 
 
+class LegSystemIn(BaseModel):
+    """How one season is farmed beyond "one crop, then the next" (card 21). ``companions`` are crops
+    grown in the same field at the same time as the season's crop; ``ground: "permanent"`` is a
+    crop that stays in the ground all year (trees, sugarcane, tea, pasture), with ``sold: false``
+    when nothing is sold from it."""
+
+    model_config = ConfigDict(extra="forbid")
+    companions: Annotated[list[Annotated[str, Field(min_length=1, max_length=64)]],
+                          Field(max_length=3)] = Field(default_factory=list)  # fmt: skip
+    ground: Literal["yearly", "permanent"] = "yearly"
+    sold: bool = True
+
+
 class ScenarioIn(BaseModel):
     model_config = ConfigDict(extra="forbid")
     scenario_id: Annotated[str, Field(min_length=1, max_length=64)]
@@ -110,6 +123,8 @@ class ScenarioIn(BaseModel):
     zone_rotations: dict[
         str, Annotated[list[Plan], Field(min_length=1, max_length=MAX_ROTATION_LEGS)]
     ] = Field(default_factory=dict)
+    # by plan_id; a season not named here is an ordinary yearly one
+    systems: Annotated[dict[str, LegSystemIn], Field(max_length=60)] = Field(default_factory=dict)
 
 
 class SimulateRequest(BaseModel):
@@ -139,6 +154,9 @@ def _result_id(body: SimulateRequest) -> str:
         doc["field"].pop("readings")
     for k in ("geometry", "name"):
         doc["field"].pop(k, None)
+    for sc in doc["scenarios"]:  # a request with no systems keeps the id it had before they existed
+        if not sc.get("systems"):
+            sc.pop("systems", None)
     return "sim_" + hashlib.sha256(json.dumps(doc, sort_keys=True).encode()).hexdigest()[:16]
 
 
@@ -167,12 +185,33 @@ def validate(body: SimulateRequest) -> list[dict[str, str]]:
                                 "zone_rotations names a zone the field does not have"))  # fmt: skip
         legs = ([("rotation", s.rotation)] if s.rotation else []) + [
             (f"zone_rotations.{z}", r) for z, r in s.zone_rotations.items()]
+        plan_ids = {p.plan_id for _where, rot in legs for p in rot}
+        for pid in sorted(set(s.systems) - plan_ids):
+            issues.append(issue(f"scenarios.{i}.systems.{pid}", "unknown_plan",
+                                "systems names a plan_id this scenario does not have"))  # fmt: skip
         for where, rot in legs:
             for j, p in enumerate(rot):
+                sy = s.systems.get(p.plan_id)
+                at = f"scenarios.{i}.{where}.{j}"
+                if sy is not None and sy.ground == "permanent":
+                    # nothing is planted: the dates are not a season, so no calendar is built
+                    if p.previous_crop_id != p.next_crop_id or p.winter.kind != "none":
+                        issues.append(issue(at, "permanent_leg_shape",
+                                            "a season of permanent ground has one crop: the same "
+                                            "previous and next crop and nothing in between"))  # fmt: skip
+                    if sy.companions:
+                        issues.append(issue(at, "permanent_with_companions",
+                                            "crops grown together are for yearly seasons"))  # fmt: skip
+                    continue
+                if sy is not None and len(set(sy.companions)) != len(sy.companions):
+                    issues.append(issue(at, "duplicate_companion", "name each companion crop once"))
+                if sy is not None and p.next_crop_id in sy.companions:
+                    issues.append(issue(at, "companion_is_the_crop",
+                                        "a companion is a different crop from the season's own"))  # fmt: skip
                 try:
                     engine.build_calendar(p, engine.REFERENCE_YEAR)
                 except InvalidPlanError as exc:
-                    issues += _issues_from_plan_error(exc, f"scenarios.{i}.{where}.{j}")
+                    issues += _issues_from_plan_error(exc, at)
     if not 1981 <= int(body.start_season) <= 2100:
         issues.append(issue("start_season", "invalid_start_season",
                             "start_season is a year between 1981 and 2100"))  # fmt: skip
@@ -279,8 +318,10 @@ def simulate_scenarios(body: SimulateRequest) -> Any:
         zs = [Zone(z.zone_id, z.name, a, w, list(s.zone_rotations.get(z.zone_id) or s.rotation or []))
               for z, a, w in zone_rows] or None
         first = s.rotation or next(iter(s.zone_rotations.values()))
+        systems = {pid: LegSystem(tuple(sy.companions), sy.ground == "permanent", sy.sold)
+                   for pid, sy in s.systems.items()}  # fmt: skip
         scs.append(Scenario(s.scenario_id, s.label, list(first),
-                            s.is_baseline or (not has_base and i == 0), zs))
+                            s.is_baseline or (not has_base and i == 0), zs, systems))
     loc = (body.location.model_dump(exclude_none=True) if body.location else {})
     inp = Inputs(scs, body.years, body.runs, body.seed, int(body.start_season), area,
                  list(f.equipment), body.economics.overrides,
@@ -292,7 +333,8 @@ def simulate_scenarios(body: SimulateRequest) -> Any:
     out.pop("_matrices", None)
     effective = effective_conditions(list(f.readings), ctx=ctx)
     crops = sorted({c for sc in scs for rot in sc.all_rotations() for p in rot
-                    for c in (p.previous_crop_id, p.next_crop_id, p.winter.crop_id) if c})
+                    for c in (p.previous_crop_id, p.next_crop_id, p.winter.crop_id,
+                              *sc.system(p).companions) if c})  # fmt: skip
     out["effective_field_conditions"] = effective
     out["condition_assessment"] = assess(effective, crops, f.region_key)
     readings = readings_context([r.model_dump(mode="json") for r in f.readings], ctx)

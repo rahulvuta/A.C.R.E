@@ -28,7 +28,7 @@ export type TermId =
 export const GLOSSARY: Record<TermId, { term: string; definition: string }> = {
   "cover-crop": {
     term: "Cover crop",
-    definition: "A crop planted to protect and build the soil between cash crops, not to sell. Cereal rye is a common winter cover before soybeans.",
+    definition: "A crop planted to protect and build the soil between the crops you sell, not to sell itself. Rye, oats, vetch, cowpea and mucuna are common ones.",
   },
   "living-cover": {
     term: "Living cover",
@@ -43,8 +43,8 @@ export const GLOSSARY: Record<TermId, { term: string; definition: string }> = {
     definition: "Killing the cover crop before planting the next crop (often called termination). After it ends it stops using soil water.",
   },
   "double-crop": {
-    term: "Double-crop soybeans",
-    definition: "Soybeans planted right after a winter grain such as wheat is harvested, usually in June, so the land yields two crops in one year.",
+    term: "Two crops in one year",
+    definition: "A second crop planted right after the first is harvested, so the land gives two harvests in one year: wheat after rice, beans after maize, or soybeans after a winter grain.",
   },
   "soil-wetness": {
     term: "Modeled soil wetness",
@@ -53,11 +53,11 @@ export const GLOSSARY: Record<TermId, { term: string; definition: string }> = {
   },
   "driest-20": {
     term: "Driest 20%",
-    definition: "Springs whose 30-day rainfall before planting was at or below the 20th percentile of all complete springs here. A label for comparing past years, not a drought declaration.",
+    definition: "Planting seasons whose rain in the 30 days before planting was among the driest fifth of all the years on record here. A label for comparing past years, not a drought declaration.",
   },
   rank: {
     term: "Rank",
-    definition: "Where a spring's 30-day rainfall falls among all complete springs for the same dates. 1 is the driest.",
+    definition: "Where one year's rain in the 30 days before planting falls among all the years on record for the same dates. 1 is the driest.",
   },
   "regional-estimate": {
     term: "Regional estimate",
@@ -65,15 +65,15 @@ export const GLOSSARY: Record<TermId, { term: string; definition: string }> = {
   },
   replay: {
     term: "Historical replay",
-    definition: "Running this year's planned dates against the weather of a past year. It shows how a plan would have fared in that year; it cannot say what next spring will bring.",
+    definition: "Running this year's planned dates against the weather of a past year. It shows how a plan would have fared in that year; it cannot say what the next season will bring.",
   },
   extension: {
-    term: "Extension agent",
-    definition: "A local adviser from NC State Extension (the county Cooperative Extension office) who helps growers with crop decisions.",
+    term: "Local farm adviser",
+    definition: "Someone near you whose job is to help growers with crop decisions: an extension officer, a co-op or farmer-group agronomist, or the district agriculture office. Take your plan to them before you change what you grow.",
   },
   "farm-field": {
-    term: "Fields and acres",
-    definition: "Each field you draw keeps its own plan. Acres are measured from the outline you draw; the service measures them again for any money result. Your outlines stay in this browser.",
+    term: "Fields and their size",
+    definition: "Each field you draw keeps its own plan. The size is measured from the outline you draw, in hectares or acres as you choose under Units; the service measures it again for any money result. Your outlines stay in this browser.",
   },
   "current-plan": {
     term: "Your current plan",
@@ -85,7 +85,7 @@ export const GLOSSARY: Record<TermId, { term: string; definition: string }> = {
   },
   scenario: {
     term: "Scenario",
-    definition: "Another plan for the same field, such as adding a cover crop or a winter grain. Each one is run through the same simulated years as your current plan, so they can be compared fairly.",
+    definition: "Another plan for the same field, such as adding a cover crop or a second crop. Each one is run through the same simulated years as your current plan, so they can be compared fairly.",
   },
   "comparison-badge": {
     term: "Badges",
@@ -101,10 +101,10 @@ export const GLOSSARY: Record<TermId, { term: string; definition: string }> = {
   },
   margin: {
     term: "Margin",
-    definition: "Revenue minus costs, from your own prices, yields and costs or from sourced regional figures (USDA, university surveys, FAOSTAT), including AI-found figures whose quote was checked on the cited page (labelled \"AI-found, quote checked\"). A crop with none has no money result.",
+    definition: "Revenue minus costs, from your own prices, yields and costs or from sourced regional figures (FAOSTAT, national statistics, university surveys), including AI-found figures whose quote was checked on the cited page (labelled \"AI-found, quote checked\"). A crop with none has no money result.",
   },
   "loss-assumption": {
     term: "Your loss estimate",
-    definition: "Your own guess of how much yield you lose in a dry spring or a very wet one. It is the only way weather turns into money here, and results that use it are labelled as your estimate.",
+    definition: "Your own guess of how much of the harvest you lose when planting time is too dry or when heavy rain falls on bare ground. It is the only way weather turns into money here, and results that use it are labelled as your estimate.",
   },
 };

@@ -1,4 +1,5 @@
-"""Weather on demand (A1): ``POST /v1/weather/prepare`` and ``GET /v1/weather/{cell_id}``.
+"""Weather on demand (A1): ``POST /v1/weather/prepare`` and ``GET /v1/weather/{cell_id}``, and
+the finer rain record beside it (card 30): ``POST /v1/weather/fine-rain``.
 
 A point is turned into its POWER grid cell at once; only the cell id is used after that, and no
 coordinate is logged or echoed (the response gives the cell centre, a grid value).
@@ -16,7 +17,7 @@ from acre.compare.models import Meta
 from acre.contracts import Status
 from acre.report.http import issue
 from acre.report.meta import response_meta
-from acre.weather import ondemand
+from acre.weather import fine_rain, ondemand
 
 router = APIRouter(prefix="/v1/weather", tags=["weather"])
 
@@ -110,6 +111,23 @@ def prepare_weather(req: PrepareRequest) -> Any:
     if isinstance(cell, JSONResponse):
         return cell
     return _body(ondemand.prepare(cell, refresh=req.refresh, wait_s=req.wait_s))
+
+
+class FineRainRequest(BaseModel):
+    """A point. It is turned into its 0.1-degree square at once; POWER is asked for the square's
+    centre, and the point is neither logged nor echoed."""
+
+    model_config = ConfigDict(extra="forbid")
+    latitude: float = Field(ge=-90, le=90)
+    longitude: float = Field(ge=-180, le=180)
+
+
+@router.post("/fine-rain")
+def fine_rain_compare(req: FineRainRequest) -> Any:
+    """Yearly rain of the 10 km NASA GPM IMERG square that holds the point, beside the 50 km
+    record the simulation uses. A comparison only; it changes no result."""
+    return {"meta": {**response_meta(), "snapshot_hash": None},
+            **fine_rain.compare(req.latitude, req.longitude)}  # fmt: skip
 
 
 @router.get("/{cell_id}", response_model=WeatherCellResponse)

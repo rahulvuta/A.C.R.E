@@ -1,0 +1,1975 @@
+region_key,country,crop_id,currency,year,price_type,median_per_kg,observations,markets,commodities
+KE,Kenya,cowpea,KES,2021,wholesale,66.6833,134,18,Cowpea leaves; Cowpeas
+KE,Kenya,cowpea,KES,2022,wholesale,101.2500,82,11,Cowpeas
+KE,Kenya,cowpea,KES,2023,retail,190.0000,32,32,Cowpeas (dry)
+KE,Kenya,cowpea,KES,2023,wholesale,113.3444,35,10,Cowpeas
+KE,Kenya,cowpea,KES,2024,retail,160.0000,170,97,Cowpeas (dry)
+KE,Kenya,cowpea,KES,2024,wholesale,78.8889,25,5,Cowpeas
+KE,Kenya,cowpea,KES,2025,retail,145.0000,61,35,Cowpeas (dry)
+KE,Kenya,cowpea,KES,2025,wholesale,100.0000,15,3,Cowpeas
+KE,Kenya,dry_beans,KES,2006,retail,44.0000,12,1,Beans (dry)
+KE,Kenya,dry_beans,KES,2006,wholesale,35.4167,96,4,Beans; Beans (dry)
+KE,Kenya,dry_beans,KES,2007,retail,35.0000,12,1,Beans (dry)
+KE,Kenya,dry_beans,KES,2007,wholesale,35.9283,96,4,Beans; Beans (dry)
+KE,Kenya,dry_beans,KES,2008,retail,62.5000,12,1,Beans (dry)
+KE,Kenya,dry_beans,KES,2008,wholesale,53.3300,101,5,Beans; Beans (dry)
+KE,Kenya,dry_beans,KES,2009,retail,65.0000,12,1,Beans (dry)
+KE,Kenya,dry_beans,KES,2009,wholesale,53.7778,106,5,Beans; Beans (dry)
+KE,Kenya,dry_beans,KES,2010,retail,50.0000,12,1,Beans (dry)
+KE,Kenya,dry_beans,KES,2010,wholesale,49.4833,106,5,Beans; Beans (dry)
+KE,Kenya,dry_beans,KES,2011,retail,78.7350,12,1,Beans (dry)
+KE,Kenya,dry_beans,KES,2011,wholesale,65.1667,106,5,Beans; Beans (dry)
+KE,Kenya,dry_beans,KES,2012,retail,79.1750,12,1,Beans (dry)
+KE,Kenya,dry_beans,KES,2012,wholesale,63.5100,96,5,Beans; Beans (dry)
+KE,Kenya,dry_beans,KES,2013,retail,73.5000,12,1,Beans (dry)
+KE,Kenya,dry_beans,KES,2013,wholesale,69.9667,105,5,Beans; Beans (dry)
+KE,Kenya,dry_beans,KES,2014,retail,76.5000,12,1,Beans (dry)
+KE,Kenya,dry_beans,KES,2014,wholesale,72.4500,106,5,Beans; Beans (dry)
+KE,Kenya,dry_beans,KES,2015,retail,91.0000,48,4,Beans (dry)
+KE,Kenya,dry_beans,KES,2015,wholesale,70.2667,104,5,Beans; Beans (dry)
+KE,Kenya,dry_beans,KES,2016,retail,87.0000,45,4,Beans (dry)
+KE,Kenya,dry_beans,KES,2016,wholesale,66.5556,103,5,Beans; Beans (dry)
+KE,Kenya,dry_beans,KES,2017,retail,114.1500,48,4,Beans (dry)
+KE,Kenya,dry_beans,KES,2017,wholesale,82.2300,109,5,Beans; Beans (dry)
+KE,Kenya,dry_beans,KES,2018,retail,90.2000,49,5,Beans (dry)
+KE,Kenya,dry_beans,KES,2018,wholesale,64.1700,117,5,Beans; Beans (dry)
+KE,Kenya,dry_beans,KES,2019,retail,100.2000,49,5,Beans (dry)
+KE,Kenya,dry_beans,KES,2019,wholesale,79.9500,91,5,Beans; Beans (dry)
+KE,Kenya,dry_beans,KES,2020,retail,104.0500,48,5,Beans (dry)
+KE,Kenya,dry_beans,KES,2020,wholesale,92.7778,13,4,Beans; Beans (dry)
+KE,Kenya,dry_beans,KES,2021,retail,105.7500,274,31,Beans (dry)
+KE,Kenya,dry_beans,KES,2021,wholesale,85.0000,460,20,Beans; Beans (dolichos); Beans (kidney); Beans (rosecoco); Beans (yellow)
+KE,Kenya,dry_beans,KES,2022,retail,110.3850,32,20,Beans (dry)
+KE,Kenya,dry_beans,KES,2022,wholesale,109.3625,336,16,Beans (dolichos); Beans (rosecoco); Beans (yellow)
+KE,Kenya,dry_beans,KES,2023,retail,178.0000,236,111,Beans; Beans (dry)
+KE,Kenya,dry_beans,KES,2023,wholesale,157.7333,146,14,Beans (dolichos); Beans (kidney); Beans (rosecoco); Beans (yellow)
+KE,Kenya,dry_beans,KES,2024,retail,155.0000,520,170,Beans; Beans (dry)
+KE,Kenya,dry_beans,KES,2024,wholesale,146.4006,48,7,Beans (dolichos); Beans (rosecoco); Beans (yellow)
+KE,Kenya,dry_beans,KES,2025,retail,135.0000,214,59,Beans; Beans (dry)
+KE,Kenya,dry_beans,KES,2025,wholesale,109.1622,20,4,Beans (dolichos); Beans (rosecoco); Beans (yellow)
+KE,Kenya,maize,KES,2006,retail,22.0000,48,4,Maize (white)
+KE,Kenya,maize,KES,2006,wholesale,15.5556,96,4,Maize; Maize (white)
+KE,Kenya,maize,KES,2007,retail,21.0000,48,4,Maize (white)
+KE,Kenya,maize,KES,2007,wholesale,13.3701,96,4,Maize; Maize (white)
+KE,Kenya,maize,KES,2008,retail,32.0000,48,4,Maize (white)
+KE,Kenya,maize,KES,2008,wholesale,21.7433,100,5,Maize; Maize (white)
+KE,Kenya,maize,KES,2009,retail,42.0000,48,4,Maize (white)
+KE,Kenya,maize,KES,2009,wholesale,27.4444,106,5,Maize; Maize (white)
+KE,Kenya,maize,KES,2010,retail,36.0000,48,4,Maize (white)
+KE,Kenya,maize,KES,2010,wholesale,18.7000,108,5,Maize; Maize (white)
+KE,Kenya,maize,KES,2011,retail,51.0000,45,4,Maize (white)
+KE,Kenya,maize,KES,2011,wholesale,33.5928,108,5,Maize; Maize (white)
+KE,Kenya,maize,KES,2012,retail,53.9600,48,4,Maize (white)
+KE,Kenya,maize,KES,2012,wholesale,34.3889,97,5,Maize; Maize (white)
+KE,Kenya,maize,KES,2013,retail,64.0000,47,4,Maize (white)
+KE,Kenya,maize,KES,2013,wholesale,31.6500,100,5,Maize; Maize (white)
+KE,Kenya,maize,KES,2014,retail,53.6000,47,4,Maize (white)
+KE,Kenya,maize,KES,2014,wholesale,33.3750,106,5,Maize; Maize (white)
+KE,Kenya,maize,KES,2015,retail,47.0000,107,9,Maize (white)
+KE,Kenya,maize,KES,2015,wholesale,29.5333,110,5,Maize; Maize (white)
+KE,Kenya,maize,KES,2016,retail,46.5500,100,9,Maize (white)
+KE,Kenya,maize,KES,2016,wholesale,29.9050,116,5,Maize; Maize (white)
+KE,Kenya,maize,KES,2017,retail,58.5000,108,9,Maize (white)
+KE,Kenya,maize,KES,2017,wholesale,40.2600,120,5,Maize; Maize (white)
+KE,Kenya,maize,KES,2018,retail,50.0000,108,9,Maize (white)
+KE,Kenya,maize,KES,2018,wholesale,27.7778,119,5,Maize; Maize (white)
+KE,Kenya,maize,KES,2019,retail,52.0000,105,9,Maize (white)
+KE,Kenya,maize,KES,2019,wholesale,34.0278,111,5,Maize; Maize (white)
+KE,Kenya,maize,KES,2020,retail,51.8500,98,10,Maize; Maize (white)
+KE,Kenya,maize,KES,2020,wholesale,32.5250,48,5,Maize; Maize (white)
+KE,Kenya,maize,KES,2021,retail,48.7500,265,30,Maize
+KE,Kenya,maize,KES,2021,wholesale,31.1000,169,21,"Maize; Maize (white, dry)"
+KE,Kenya,maize,KES,2022,retail,48.0400,28,18,Maize
+KE,Kenya,maize,KES,2022,wholesale,52.9667,140,16,"Maize; Maize (white, dry)"
+KE,Kenya,maize,KES,2023,retail,80.0000,210,96,"Maize; Maize (white, dry)"
+KE,Kenya,maize,KES,2023,wholesale,66.6056,82,14,"Maize (white, dry)"
+KE,Kenya,maize,KES,2024,retail,75.0000,437,148,"Maize; Maize (white, dry)"
+KE,Kenya,maize,KES,2024,wholesale,40.0000,39,8,"Maize (white, dry)"
+KE,Kenya,maize,KES,2025,retail,65.0000,193,54,"Maize; Maize (white, dry)"
+KE,Kenya,maize,KES,2025,wholesale,50.0000,29,4,"Maize (white, dry)"
+KE,Kenya,millet,KES,2021,wholesale,80.5000,77,13,Millet (finger)
+KE,Kenya,pigeon_pea,KES,2023,retail,320.0000,11,11,Pigeon peas (dry)
+KE,Kenya,pigeon_pea,KES,2024,retail,171.2500,74,50,Pigeon peas (dry)
+KE,Kenya,pigeon_pea,KES,2025,retail,170.0000,12,12,Pigeon peas (dry)
+KE,Kenya,potato,KES,2006,wholesale,16.5720,36,4,Potatoes (Irish)
+KE,Kenya,potato,KES,2007,wholesale,17.3504,41,4,Potatoes (Irish)
+KE,Kenya,potato,KES,2008,wholesale,23.4186,48,4,Potatoes (Irish)
+KE,Kenya,potato,KES,2009,wholesale,29.7943,48,4,Potatoes (Irish)
+KE,Kenya,potato,KES,2010,wholesale,26.6832,48,4,Potatoes (Irish)
+KE,Kenya,potato,KES,2011,wholesale,37.5832,48,4,Potatoes (Irish)
+KE,Kenya,potato,KES,2012,wholesale,42.7776,47,5,Potatoes (Irish)
+KE,Kenya,potato,KES,2013,wholesale,38.0554,47,4,Potatoes (Irish)
+KE,Kenya,potato,KES,2014,wholesale,36.0138,48,4,Potatoes (Irish)
+KE,Kenya,potato,KES,2015,wholesale,32.2776,53,5,Potatoes (Irish)
+KE,Kenya,potato,KES,2016,wholesale,56.0000,56,5,Potatoes (Irish)
+KE,Kenya,potato,KES,2017,wholesale,44.5000,60,5,Potatoes (Irish)
+KE,Kenya,potato,KES,2018,wholesale,49.0000,59,5,Potatoes (Irish)
+KE,Kenya,potato,KES,2019,wholesale,48.0000,55,5,Potatoes (Irish)
+KE,Kenya,potato,KES,2020,wholesale,50.0000,12,4,Potatoes (Irish)
+KE,Kenya,potato,KES,2021,retail,50.2850,270,31,Potatoes (Irish)
+KE,Kenya,potato,KES,2021,wholesale,30.7600,199,19,"Potatoes (Irish, red); Potatoes (Irish, white)"
+KE,Kenya,potato,KES,2022,retail,50.0000,30,20,Potatoes (Irish)
+KE,Kenya,potato,KES,2022,wholesale,49.2600,192,17,"Potatoes (Irish, red); Potatoes (Irish, white)"
+KE,Kenya,potato,KES,2023,retail,76.5600,102,12,Potatoes (Irish)
+KE,Kenya,potato,KES,2023,wholesale,61.4900,106,16,"Potatoes (Irish, red); Potatoes (Irish, white)"
+KE,Kenya,potato,KES,2024,retail,78.5300,95,12,Potatoes (Irish)
+KE,Kenya,potato,KES,2024,wholesale,56.5000,46,7,"Potatoes (Irish, red); Potatoes (Irish, white)"
+KE,Kenya,potato,KES,2025,retail,72.0500,101,12,Potatoes (Irish)
+KE,Kenya,potato,KES,2025,wholesale,53.2500,30,5,"Potatoes (Irish, red); Potatoes (Irish, white)"
+KE,Kenya,sorghum,KES,2006,wholesale,17.7778,36,4,Sorghum
+KE,Kenya,sorghum,KES,2007,wholesale,16.8254,41,4,Sorghum
+KE,Kenya,sorghum,KES,2008,wholesale,22.2222,47,4,Sorghum
+KE,Kenya,sorghum,KES,2009,wholesale,31.1111,48,4,Sorghum
+KE,Kenya,sorghum,KES,2010,wholesale,30.2111,48,4,Sorghum
+KE,Kenya,sorghum,KES,2011,wholesale,36.3889,47,4,Sorghum
+KE,Kenya,sorghum,KES,2012,wholesale,40.2778,48,5,Sorghum
+KE,Kenya,sorghum,KES,2013,wholesale,40.0000,47,4,Sorghum
+KE,Kenya,sorghum,KES,2014,wholesale,41.1056,48,4,Sorghum
+KE,Kenya,sorghum,KES,2015,wholesale,40.0000,53,5,Sorghum
+KE,Kenya,sorghum,KES,2016,wholesale,39.6111,56,5,Sorghum
+KE,Kenya,sorghum,KES,2017,wholesale,57.0833,60,5,Sorghum
+KE,Kenya,sorghum,KES,2018,wholesale,45.7111,59,5,Sorghum
+KE,Kenya,sorghum,KES,2019,wholesale,50.0000,58,5,Sorghum
+KE,Kenya,sorghum,KES,2020,wholesale,58.8889,12,4,Sorghum
+KE,Kenya,sorghum,KES,2021,retail,69.7750,174,27,Sorghum
+KE,Kenya,sorghum,KES,2021,wholesale,50.0000,134,15,Sorghum (red); Sorghum (white)
+KE,Kenya,sorghum,KES,2022,retail,60.0000,17,15,Sorghum
+KE,Kenya,sorghum,KES,2022,wholesale,75.0000,40,8,Sorghum (white)
+KE,Kenya,sorghum,KES,2023,retail,70.0000,69,11,Sorghum
+KE,Kenya,sorghum,KES,2023,wholesale,70.1556,23,7,Sorghum (white)
+KE,Kenya,sorghum,KES,2024,retail,60.0000,51,11,Sorghum
+KE,Kenya,sorghum,KES,2024,wholesale,70.0000,7,2,Sorghum (white)
+KE,Kenya,sorghum,KES,2025,retail,80.0000,36,12,Sorghum
+ET,Ethiopia,barley_all,ETB,2015,retail,7.5550,10,10,Barley
+ET,Ethiopia,barley_all,ETB,2020,retail,15.5500,94,21,Barley
+ET,Ethiopia,barley_all,ETB,2020,wholesale,18.6250,105,11,Barley (mixed); Barley (white)
+ET,Ethiopia,barley_all,ETB,2021,retail,26.5000,69,10,Barley
+ET,Ethiopia,barley_all,ETB,2021,wholesale,29.0000,91,10,Barley (mixed); Barley (white)
+ET,Ethiopia,barley_all,ETB,2022,retail,45.0000,143,25,Barley
+ET,Ethiopia,barley_all,ETB,2023,retail,45.0000,113,23,Barley
+ET,Ethiopia,barley_all,ETB,2024,retail,65.0000,122,21,Barley
+ET,Ethiopia,barley_all,ETB,2025,retail,90.0000,184,24,Barley
+ET,Ethiopia,broad_bean,ETB,2014,retail,9.1750,138,25,"Beans (fava, dry)"
+ET,Ethiopia,broad_bean,ETB,2015,retail,11.2000,69,19,"Beans (fava, dry)"
+ET,Ethiopia,broad_bean,ETB,2020,retail,34.0000,197,33,Beans (fava)
+ET,Ethiopia,broad_bean,ETB,2020,wholesale,31.5625,116,13,Beans (fava)
+ET,Ethiopia,broad_bean,ETB,2021,retail,40.0000,163,22,Beans (fava)
+ET,Ethiopia,broad_bean,ETB,2021,wholesale,34.5000,117,13,Beans (fava)
+ET,Ethiopia,broad_bean,ETB,2022,retail,55.0000,294,43,Beans (fava)
+ET,Ethiopia,broad_bean,ETB,2023,retail,56.0000,239,35,Beans (fava)
+ET,Ethiopia,broad_bean,ETB,2024,retail,75.0000,172,32,Beans (fava)
+ET,Ethiopia,broad_bean,ETB,2025,retail,120.0000,284,32,Beans (fava)
+ET,Ethiopia,chickpea,ETB,2014,retail,9.6000,31,15,Chickpeas
+ET,Ethiopia,chickpea,ETB,2015,retail,10.6250,12,6,Chickpeas
+ET,Ethiopia,chickpea,ETB,2020,retail,27.7500,56,17,Chickpeas
+ET,Ethiopia,chickpea,ETB,2020,wholesale,30.4150,66,9,Chickpeas
+ET,Ethiopia,chickpea,ETB,2021,retail,43.0000,17,5,Chickpeas
+ET,Ethiopia,chickpea,ETB,2021,wholesale,36.1000,66,8,Chickpeas
+ET,Ethiopia,chickpea,ETB,2022,retail,45.9000,49,8,Chickpeas
+ET,Ethiopia,chickpea,ETB,2023,retail,49.3800,35,6,Chickpeas
+ET,Ethiopia,chickpea,ETB,2024,retail,71.0000,36,5,Chickpeas
+ET,Ethiopia,chickpea,ETB,2025,retail,130.0000,91,8,Chickpeas
+ET,Ethiopia,dry_beans,ETB,2020,retail,18.0000,105,19,Beans; Beans (haricot)
+ET,Ethiopia,dry_beans,ETB,2021,retail,32.0000,149,19,Beans; Beans (haricot)
+ET,Ethiopia,dry_beans,ETB,2022,retail,40.0000,167,20,Beans; Beans (haricot)
+ET,Ethiopia,dry_beans,ETB,2023,retail,51.9400,216,32,Beans; Beans (haricot)
+ET,Ethiopia,dry_beans,ETB,2024,retail,70.0000,188,31,Beans; Beans (haricot)
+ET,Ethiopia,dry_beans,ETB,2025,retail,75.0000,257,26,Beans; Beans (haricot); Beans (kidney)
+ET,Ethiopia,lentil,ETB,2014,retail,17.0000,144,24,Lentils
+ET,Ethiopia,lentil,ETB,2015,retail,19.6500,30,18,Lentils
+ET,Ethiopia,lentil,ETB,2020,retail,65.0000,130,30,Lentils
+ET,Ethiopia,lentil,ETB,2020,wholesale,49.0000,46,6,Lentils
+ET,Ethiopia,lentil,ETB,2021,retail,75.0000,99,12,Lentils
+ET,Ethiopia,lentil,ETB,2021,wholesale,62.5000,49,5,Lentils
+ET,Ethiopia,lentil,ETB,2022,retail,120.0000,182,18,Lentils
+ET,Ethiopia,lentil,ETB,2023,retail,140.0000,151,19,Lentils
+ET,Ethiopia,lentil,ETB,2024,retail,137.3000,181,21,Lentils
+ET,Ethiopia,lentil,ETB,2025,retail,240.0000,237,21,Lentils
+ET,Ethiopia,maize,ETB,2000,wholesale,1.2712,48,4,Maize (white)
+ET,Ethiopia,maize,ETB,2001,wholesale,0.7600,48,4,Maize (white)
+ET,Ethiopia,maize,ETB,2002,wholesale,0.9738,48,4,Maize (white)
+ET,Ethiopia,maize,ETB,2003,wholesale,1.4916,48,4,Maize (white)
+ET,Ethiopia,maize,ETB,2004,wholesale,1.3000,47,4,Maize (white)
+ET,Ethiopia,maize,ETB,2005,wholesale,1.5775,96,12,Maize (white)
+ET,Ethiopia,maize,ETB,2006,retail,1.7000,116,22,Maize (white)
+ET,Ethiopia,maize,ETB,2006,wholesale,1.5200,136,12,Maize (white)
+ET,Ethiopia,maize,ETB,2007,retail,1.8500,253,22,Maize (white)
+ET,Ethiopia,maize,ETB,2007,wholesale,1.6900,133,12,Maize (white)
+ET,Ethiopia,maize,ETB,2008,retail,4.6750,260,22,Maize (white)
+ET,Ethiopia,maize,ETB,2008,wholesale,4.0500,144,13,Maize (white)
+ET,Ethiopia,maize,ETB,2009,retail,4.0000,264,22,Maize (white)
+ET,Ethiopia,maize,ETB,2009,wholesale,3.5250,142,12,Maize (white)
+ET,Ethiopia,maize,ETB,2010,retail,3.2500,247,22,Maize (white)
+ET,Ethiopia,maize,ETB,2010,wholesale,2.7000,141,12,Maize (white)
+ET,Ethiopia,maize,ETB,2011,retail,5.2000,213,24,Maize (white)
+ET,Ethiopia,maize,ETB,2011,wholesale,4.5200,165,16,Maize (white)
+ET,Ethiopia,maize,ETB,2012,retail,6.0000,271,29,Maize (white)
+ET,Ethiopia,maize,ETB,2012,wholesale,5.1000,185,16,Maize (white)
+ET,Ethiopia,maize,ETB,2013,retail,6.5000,265,29,Maize (white)
+ET,Ethiopia,maize,ETB,2013,wholesale,5.6250,183,16,Maize (white)
+ET,Ethiopia,maize,ETB,2014,retail,6.4000,269,31,Maize (white)
+ET,Ethiopia,maize,ETB,2014,wholesale,5.1800,181,17,Maize (white)
+ET,Ethiopia,maize,ETB,2015,retail,6.0000,164,32,Maize (white)
+ET,Ethiopia,maize,ETB,2015,wholesale,4.4600,124,17,Maize (white)
+ET,Ethiopia,maize,ETB,2016,retail,6.6000,68,10,Maize (white)
+ET,Ethiopia,maize,ETB,2016,wholesale,4.9450,108,9,Maize (white)
+ET,Ethiopia,maize,ETB,2017,retail,9.5000,57,5,Maize (white)
+ET,Ethiopia,maize,ETB,2017,wholesale,6.6750,108,9,Maize (white)
+ET,Ethiopia,maize,ETB,2018,retail,10.0000,35,5,Maize (white)
+ET,Ethiopia,maize,ETB,2018,wholesale,7.0000,80,9,Maize (white)
+ET,Ethiopia,maize,ETB,2019,retail,12.0000,30,5,Maize (white)
+ET,Ethiopia,maize,ETB,2019,wholesale,9.4334,62,8,Maize (white)
+ET,Ethiopia,maize,ETB,2020,retail,12.2629,482,70,Maize (food aid); Maize (white); Maize (yellow)
+ET,Ethiopia,maize,ETB,2020,wholesale,11.0000,218,26,Maize (white)
+ET,Ethiopia,maize,ETB,2021,retail,20.7200,437,49,Maize (food aid); Maize (white); Maize (yellow)
+ET,Ethiopia,maize,ETB,2021,wholesale,14.3500,206,22,Maize (white)
+ET,Ethiopia,maize,ETB,2022,retail,30.0000,659,74,Maize (white)
+ET,Ethiopia,maize,ETB,2023,retail,37.6500,566,71,Maize (food aid); Maize (white); Maize (yellow)
+ET,Ethiopia,maize,ETB,2024,retail,45.0000,421,70,Maize (food aid); Maize (white); Maize (yellow)
+ET,Ethiopia,maize,ETB,2025,retail,45.0000,670,73,Maize (white)
+ET,Ethiopia,millet,ETB,2020,retail,15.0000,19,4,Millet (finger)
+ET,Ethiopia,millet,ETB,2021,retail,20.0000,7,2,Millet (finger)
+ET,Ethiopia,millet,ETB,2022,retail,26.5000,18,2,Millet (finger)
+ET,Ethiopia,millet,ETB,2023,retail,41.0000,22,2,Millet (finger)
+ET,Ethiopia,millet,ETB,2024,retail,63.5000,8,2,Millet (finger)
+ET,Ethiopia,millet,ETB,2025,retail,75.0000,7,2,Millet (finger)
+ET,Ethiopia,potato,ETB,2020,retail,20.0000,85,16,Potatoes; Potatoes (Irish)
+ET,Ethiopia,potato,ETB,2021,retail,25.0000,45,11,Potatoes
+ET,Ethiopia,potato,ETB,2022,retail,45.0000,156,29,Potatoes
+ET,Ethiopia,potato,ETB,2023,retail,45.0000,125,26,Potatoes
+ET,Ethiopia,potato,ETB,2024,retail,52.0000,152,27,Potatoes
+ET,Ethiopia,potato,ETB,2025,retail,60.0000,188,28,Potatoes
+ET,Ethiopia,sesame,ETB,2020,retail,42.0000,28,7,Sesame
+ET,Ethiopia,sesame,ETB,2021,retail,62.0000,20,2,Sesame
+ET,Ethiopia,sesame,ETB,2022,retail,120.0000,20,2,Sesame
+ET,Ethiopia,sesame,ETB,2023,retail,78.0000,44,4,Sesame
+ET,Ethiopia,sesame,ETB,2024,retail,78.5000,22,5,Sesame
+ET,Ethiopia,sesame,ETB,2025,retail,78.0000,17,5,Sesame
+ET,Ethiopia,sorghum,ETB,2000,wholesale,2.0850,12,1,Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2001,wholesale,1.3375,22,1,Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2002,wholesale,1.1538,24,1,Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2003,wholesale,1.5350,24,1,Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2004,wholesale,1.4140,23,1,Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2005,wholesale,2.0600,47,4,Sorghum; Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2006,wholesale,2.1400,72,4,Sorghum; Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2007,retail,2.0000,136,12,Sorghum
+ET,Ethiopia,sorghum,ETB,2007,wholesale,2.6000,72,4,Sorghum; Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2008,retail,5.2000,143,12,Sorghum
+ET,Ethiopia,sorghum,ETB,2008,wholesale,5.5925,72,4,Sorghum; Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2009,retail,4.3500,144,12,Sorghum
+ET,Ethiopia,sorghum,ETB,2009,wholesale,5.4700,72,4,Sorghum; Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2010,retail,4.0000,120,12,Sorghum
+ET,Ethiopia,sorghum,ETB,2010,wholesale,5.5340,84,5,Sorghum; Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2011,retail,5.4000,182,24,Sorghum
+ET,Ethiopia,sorghum,ETB,2011,wholesale,5.0500,109,8,Sorghum; Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2012,retail,6.5000,233,27,Sorghum
+ET,Ethiopia,sorghum,ETB,2012,wholesale,7.5000,87,8,Sorghum; Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2013,retail,7.9100,230,26,Sorghum
+ET,Ethiopia,sorghum,ETB,2013,wholesale,9.4425,88,8,Sorghum; Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2014,retail,8.2250,246,27,Sorghum
+ET,Ethiopia,sorghum,ETB,2014,wholesale,8.5150,88,7,Sorghum; Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2015,retail,7.5500,122,29,Sorghum
+ET,Ethiopia,sorghum,ETB,2015,wholesale,8.2200,81,7,Sorghum; Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2016,retail,9.0000,37,7,Sorghum
+ET,Ethiopia,sorghum,ETB,2016,wholesale,10.2240,84,4,Sorghum; Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2017,retail,13.7500,24,2,Sorghum
+ET,Ethiopia,sorghum,ETB,2017,wholesale,9.0000,93,4,Sorghum; Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2018,retail,17.5000,14,2,Sorghum
+ET,Ethiopia,sorghum,ETB,2018,wholesale,10.2650,66,4,Sorghum; Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2019,retail,21.2500,12,2,Sorghum
+ET,Ethiopia,sorghum,ETB,2019,wholesale,15.2050,41,4,Sorghum; Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2020,retail,17.0000,447,58,Sorghum; Sorghum (food aid); Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2020,wholesale,15.9400,152,9,Sorghum; Sorghum (mixed); Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2021,retail,20.2500,298,36,Sorghum (food aid); Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2021,wholesale,21.8350,118,7,Sorghum (mixed); Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2022,retail,34.0000,463,55,Sorghum (food aid); Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2023,retail,46.1400,391,53,Sorghum (food aid); Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2024,retail,60.0000,303,45,Sorghum (red); Sorghum (white)
+ET,Ethiopia,sorghum,ETB,2025,retail,61.0300,375,50,Sorghum (red); Sorghum (white)
+ET,Ethiopia,soybean,ETB,2025,retail,160.0000,50,5,Soybeans
+ET,Ethiopia,sweet_potato,ETB,2020,retail,15.0000,52,9,Sweet potatoes
+ET,Ethiopia,sweet_potato,ETB,2021,retail,20.0000,18,9,Sweet potatoes
+ET,Ethiopia,sweet_potato,ETB,2022,retail,37.5000,24,5,Sweet potatoes
+ET,Ethiopia,sweet_potato,ETB,2023,retail,50.0000,33,5,Sweet potatoes
+ET,Ethiopia,sweet_potato,ETB,2024,retail,50.0000,24,5,Sweet potatoes
+ET,Ethiopia,sweet_potato,ETB,2025,retail,60.0000,21,5,Sweet potatoes
+ET,Ethiopia,teff,ETB,2000,wholesale,2.4437,12,1,Teff
+ET,Ethiopia,teff,ETB,2001,wholesale,1.8113,12,1,Teff
+ET,Ethiopia,teff,ETB,2002,wholesale,1.7500,12,1,Teff
+ET,Ethiopia,teff,ETB,2003,wholesale,2.2713,12,1,Teff
+ET,Ethiopia,teff,ETB,2004,wholesale,2.4562,12,1,Teff
+ET,Ethiopia,teff,ETB,2005,wholesale,2.7000,12,1,Teff
+ET,Ethiopia,teff,ETB,2006,wholesale,3.5466,12,1,Teff
+ET,Ethiopia,teff,ETB,2007,wholesale,4.0563,12,1,Teff
+ET,Ethiopia,teff,ETB,2008,wholesale,8.7750,12,1,Teff
+ET,Ethiopia,teff,ETB,2009,wholesale,8.4475,12,1,Teff
+ET,Ethiopia,teff,ETB,2010,wholesale,6.7400,60,5,Teff
+ET,Ethiopia,teff,ETB,2011,wholesale,7.9000,60,5,Teff
+ET,Ethiopia,teff,ETB,2012,wholesale,12.1850,60,5,Teff
+ET,Ethiopia,teff,ETB,2013,wholesale,13.1625,60,5,Teff
+ET,Ethiopia,teff,ETB,2014,wholesale,12.2300,60,5,Teff
+ET,Ethiopia,teff,ETB,2015,wholesale,13.1875,60,5,Teff
+ET,Ethiopia,teff,ETB,2016,wholesale,16.2130,60,5,Teff
+ET,Ethiopia,teff,ETB,2017,wholesale,17.8750,60,5,Teff
+ET,Ethiopia,teff,ETB,2018,wholesale,19.0000,39,5,Teff
+ET,Ethiopia,teff,ETB,2019,wholesale,23.7230,10,1,Teff
+ET,Ethiopia,teff,ETB,2020,retail,36.1900,307,40,Teff (Sergegna); Teff (mixed); Teff (red); Teff (white)
+ET,Ethiopia,teff,ETB,2020,wholesale,37.0000,519,26,Teff; Teff (Sergegna); Teff (red); Teff (white)
+ET,Ethiopia,teff,ETB,2021,retail,43.5800,129,12,Teff (Sergegna); Teff (mixed); Teff (white)
+ET,Ethiopia,teff,ETB,2021,wholesale,41.0000,516,23,Teff (Sergegna); Teff (red); Teff (white)
+ET,Ethiopia,teff,ETB,2022,retail,50.0000,288,35,Teff (Sergegna); Teff (mixed); Teff (red); Teff (white)
+ET,Ethiopia,teff,ETB,2023,retail,76.0000,233,32,Teff (Sergegna); Teff (mixed); Teff (red); Teff (white)
+ET,Ethiopia,teff,ETB,2024,retail,113.0000,224,31,Teff (mixed); Teff (red); Teff (white)
+ET,Ethiopia,teff,ETB,2025,retail,110.0000,296,32,Teff (mixed); Teff (white)
+ET,Ethiopia,wheat_all,ETB,2000,wholesale,1.9350,12,1,Wheat
+ET,Ethiopia,wheat_all,ETB,2001,wholesale,1.2000,12,1,Wheat
+ET,Ethiopia,wheat_all,ETB,2002,wholesale,1.3750,12,1,Wheat
+ET,Ethiopia,wheat_all,ETB,2003,wholesale,1.8875,12,1,Wheat
+ET,Ethiopia,wheat_all,ETB,2004,wholesale,1.7100,12,1,Wheat
+ET,Ethiopia,wheat_all,ETB,2005,wholesale,2.1200,70,11,Wheat
+ET,Ethiopia,wheat_all,ETB,2006,wholesale,2.4800,132,11,Wheat
+ET,Ethiopia,wheat_all,ETB,2007,retail,0.0280,153,14,Wheat
+ET,Ethiopia,wheat_all,ETB,2007,wholesale,2.9800,131,11,Wheat
+ET,Ethiopia,wheat_all,ETB,2008,retail,0.0600,168,14,Wheat
+ET,Ethiopia,wheat_all,ETB,2008,wholesale,5.3500,125,11,Wheat
+ET,Ethiopia,wheat_all,ETB,2009,retail,0.0535,168,14,Wheat
+ET,Ethiopia,wheat_all,ETB,2009,wholesale,4.8750,120,10,Wheat
+ET,Ethiopia,wheat_all,ETB,2010,retail,0.0450,126,14,Wheat
+ET,Ethiopia,wheat_all,ETB,2010,wholesale,4.5300,156,13,Wheat
+ET,Ethiopia,wheat_all,ETB,2011,retail,0.0750,147,20,Wheat
+ET,Ethiopia,wheat_all,ETB,2011,wholesale,7.2050,158,15,Wheat
+ET,Ethiopia,wheat_all,ETB,2012,retail,0.0800,200,23,Wheat
+ET,Ethiopia,wheat_all,ETB,2012,wholesale,7.1113,174,15,Wheat
+ET,Ethiopia,wheat_all,ETB,2013,retail,0.0825,214,25,Wheat
+ET,Ethiopia,wheat_all,ETB,2013,wholesale,7.4300,161,14,Wheat
+ET,Ethiopia,wheat_all,ETB,2014,retail,0.0900,204,24,Wheat
+ET,Ethiopia,wheat_all,ETB,2014,wholesale,8.9500,161,16,Wheat
+ET,Ethiopia,wheat_all,ETB,2015,retail,0.0956,114,25,Wheat
+ET,Ethiopia,wheat_all,ETB,2015,wholesale,9.5000,130,17,Wheat
+ET,Ethiopia,wheat_all,ETB,2016,retail,0.1100,40,5,Wheat
+ET,Ethiopia,wheat_all,ETB,2016,wholesale,8.5867,120,10,Wheat
+ET,Ethiopia,wheat_all,ETB,2017,retail,0.0964,24,2,Wheat
+ET,Ethiopia,wheat_all,ETB,2017,wholesale,9.2150,118,10,Wheat
+ET,Ethiopia,wheat_all,ETB,2018,retail,0.1495,14,2,Wheat
+ET,Ethiopia,wheat_all,ETB,2018,wholesale,12.9857,99,10,Wheat
+ET,Ethiopia,wheat_all,ETB,2019,retail,0.1763,12,2,Wheat
+ET,Ethiopia,wheat_all,ETB,2019,wholesale,15.9884,66,9,Wheat
+ET,Ethiopia,wheat_all,ETB,2020,retail,20.0000,481,59,Wheat; Wheat (food aid); Wheat (mixed); Wheat (white)
+ET,Ethiopia,wheat_all,ETB,2020,wholesale,18.0000,222,22,Wheat; Wheat (mixed); Wheat (white)
+ET,Ethiopia,wheat_all,ETB,2021,retail,27.3600,388,41,Wheat; Wheat (food aid); Wheat (mixed); Wheat (white)
+ET,Ethiopia,wheat_all,ETB,2021,wholesale,26.0000,189,19,Wheat (mixed); Wheat (white)
+ET,Ethiopia,wheat_all,ETB,2022,retail,38.0000,613,66,Wheat; Wheat (food aid); Wheat (mixed); Wheat (white)
+ET,Ethiopia,wheat_all,ETB,2023,retail,52.0000,491,65,Wheat; Wheat (food aid); Wheat (white)
+ET,Ethiopia,wheat_all,ETB,2024,retail,65.4300,420,66,Wheat; Wheat (food aid); Wheat (white)
+ET,Ethiopia,wheat_all,ETB,2025,retail,73.8000,587,62,Wheat; Wheat (white)
+NG,Nigeria,cowpea,NGN,2002,wholesale,236.2000,24,3,Beans (niebe)
+NG,Nigeria,cowpea,NGN,2014,wholesale,148.0000,119,11,Cowpeas (brown); Cowpeas (white)
+NG,Nigeria,cowpea,NGN,2015,wholesale,124.1250,338,15,Cowpeas (brown); Cowpeas (white)
+NG,Nigeria,cowpea,NGN,2016,retail,197.6000,11,11,Cowpeas; Cowpeas (brown)
+NG,Nigeria,cowpea,NGN,2016,wholesale,177.7500,343,15,Cowpeas (brown); Cowpeas (white)
+NG,Nigeria,cowpea,NGN,2017,retail,333.2000,108,12,Cowpeas; Cowpeas (brown)
+NG,Nigeria,cowpea,NGN,2017,wholesale,260.0000,341,16,Cowpeas (brown); Cowpeas (white)
+NG,Nigeria,cowpea,NGN,2018,retail,250.0000,165,24,Cowpeas; Cowpeas (brown); Cowpeas (white)
+NG,Nigeria,cowpea,NGN,2018,wholesale,285.0000,281,15,Cowpeas (brown); Cowpeas (white)
+NG,Nigeria,cowpea,NGN,2019,retail,192.4000,403,33,Cowpeas; Cowpeas (brown); Cowpeas (white)
+NG,Nigeria,cowpea,NGN,2019,wholesale,157.2125,282,15,Cowpeas (brown); Cowpeas (white)
+NG,Nigeria,cowpea,NGN,2020,retail,192.4000,546,33,Cowpeas; Cowpeas (brown); Cowpeas (white)
+NG,Nigeria,cowpea,NGN,2020,wholesale,187.5000,347,15,Cowpeas (brown); Cowpeas (white)
+NG,Nigeria,cowpea,NGN,2021,retail,407.5100,570,34,Cowpeas; Cowpeas (brown); Cowpeas (white)
+NG,Nigeria,cowpea,NGN,2021,wholesale,446.1032,367,16,Cowpeas (brown); Cowpeas (white)
+NG,Nigeria,cowpea,NGN,2022,retail,458.3000,455,32,Cowpeas; Cowpeas (brown); Cowpeas (white)
+NG,Nigeria,cowpea,NGN,2022,wholesale,421.1505,370,16,Cowpeas (brown); Cowpeas (white)
+NG,Nigeria,cowpea,NGN,2023,retail,480.0000,256,50,Cowpeas; Cowpeas (brown); Cowpeas (white)
+NG,Nigeria,cowpea,NGN,2023,wholesale,360.0000,31,16,Cowpeas (brown); Cowpeas (white)
+NG,Nigeria,cowpea,NGN,2024,retail,1242.5800,227,36,Cowpeas
+NG,Nigeria,cowpea,NGN,2025,retail,1102.6080,281,42,Cowpeas
+NG,Nigeria,dry_beans,NGN,2016,retail,269.2000,125,17,Beans (red); Beans (white)
+NG,Nigeria,dry_beans,NGN,2017,retail,340.8000,408,20,Beans (red); Beans (white)
+NG,Nigeria,dry_beans,NGN,2018,retail,375.2000,456,19,Beans (red); Beans (white)
+NG,Nigeria,dry_beans,NGN,2019,retail,203.6000,452,19,Beans (red); Beans (white)
+NG,Nigeria,dry_beans,NGN,2020,retail,192.4000,404,19,Beans (red); Beans (white)
+NG,Nigeria,dry_beans,NGN,2021,retail,500.0000,406,19,Beans (red); Beans (white)
+NG,Nigeria,dry_beans,NGN,2022,retail,526.2000,170,17,Beans (red); Beans (white)
+NG,Nigeria,dry_beans,NGN,2023,retail,539.2000,465,35,Beans (red); Beans (white)
+NG,Nigeria,dry_beans,NGN,2024,retail,1440.0000,499,38,Beans (red); Beans (white)
+NG,Nigeria,dry_beans,NGN,2025,retail,1000.0000,672,44,Beans (red); Beans (white)
+NG,Nigeria,maize,NGN,2002,wholesale,171.2500,25,3,Maize
+NG,Nigeria,maize,NGN,2003,wholesale,88.3800,37,5,Maize; Maize (white)
+NG,Nigeria,maize,NGN,2004,wholesale,45.0000,12,1,Maize (white)
+NG,Nigeria,maize,NGN,2005,wholesale,147.9200,44,5,Maize; Maize (white)
+NG,Nigeria,maize,NGN,2006,wholesale,125.8300,25,5,Maize; Maize (white)
+NG,Nigeria,maize,NGN,2007,wholesale,43.6000,22,5,Maize; Maize (white)
+NG,Nigeria,maize,NGN,2008,wholesale,181.9800,58,5,Maize; Maize (white)
+NG,Nigeria,maize,NGN,2009,wholesale,161.0350,52,6,Maize; Maize (white)
+NG,Nigeria,maize,NGN,2010,wholesale,165.1700,74,7,Maize; Maize (white)
+NG,Nigeria,maize,NGN,2011,wholesale,162.8600,74,7,Maize; Maize (white)
+NG,Nigeria,maize,NGN,2012,wholesale,177.0200,91,9,Maize; Maize (white)
+NG,Nigeria,maize,NGN,2013,wholesale,167.7800,112,11,Maize; Maize (white)
+NG,Nigeria,maize,NGN,2014,wholesale,59.3250,208,16,Maize; Maize (white); Maize (yellow)
+NG,Nigeria,maize,NGN,2015,wholesale,53.0000,372,20,Maize; Maize (white); Maize (yellow)
+NG,Nigeria,maize,NGN,2016,wholesale,110.3400,388,19,Maize; Maize (white); Maize (yellow)
+NG,Nigeria,maize,NGN,2017,retail,131.0000,22,4,Maize (white); Maize (yellow)
+NG,Nigeria,maize,NGN,2017,wholesale,143.7200,331,20,Maize; Maize (white); Maize (yellow)
+NG,Nigeria,maize,NGN,2018,retail,93.2900,49,14,Maize (white); Maize (yellow)
+NG,Nigeria,maize,NGN,2018,wholesale,100.1500,288,15,Maize (white); Maize (yellow)
+NG,Nigeria,maize,NGN,2019,retail,87.2300,221,15,Maize (white); Maize (yellow)
+NG,Nigeria,maize,NGN,2019,wholesale,83.0000,295,15,Maize (white); Maize (yellow)
+NG,Nigeria,maize,NGN,2020,retail,138.9550,344,15,Maize (white); Maize (yellow)
+NG,Nigeria,maize,NGN,2020,wholesale,137.6000,346,15,Maize (white); Maize (yellow)
+NG,Nigeria,maize,NGN,2021,retail,202.6700,368,16,Maize (white); Maize (yellow)
+NG,Nigeria,maize,NGN,2021,wholesale,201.4000,363,16,Maize (white); Maize (yellow)
+NG,Nigeria,maize,NGN,2022,retail,228.4600,372,16,Maize (white); Maize (yellow)
+NG,Nigeria,maize,NGN,2022,wholesale,217.8583,372,16,Maize (white); Maize (yellow)
+NG,Nigeria,maize,NGN,2023,retail,234.8200,31,16,Maize (white); Maize (yellow)
+NG,Nigeria,maize,NGN,2023,wholesale,219.7000,31,16,Maize (white); Maize (yellow)
+NG,Nigeria,millet,NGN,2002,wholesale,150.1800,25,3,Millet
+NG,Nigeria,millet,NGN,2003,wholesale,91.4300,38,5,Millet
+NG,Nigeria,millet,NGN,2004,wholesale,36.0000,12,1,Millet
+NG,Nigeria,millet,NGN,2005,wholesale,148.1600,44,5,Millet
+NG,Nigeria,millet,NGN,2006,wholesale,134.4300,25,5,Millet
+NG,Nigeria,millet,NGN,2007,wholesale,43.0500,22,5,Millet
+NG,Nigeria,millet,NGN,2008,wholesale,161.2450,58,5,Millet
+NG,Nigeria,millet,NGN,2009,wholesale,149.1750,52,6,Millet
+NG,Nigeria,millet,NGN,2010,wholesale,153.2900,71,6,Millet
+NG,Nigeria,millet,NGN,2011,wholesale,157.2700,67,6,Millet
+NG,Nigeria,millet,NGN,2012,wholesale,202.3100,59,6,Millet
+NG,Nigeria,millet,NGN,2013,wholesale,218.2150,72,6,Millet
+NG,Nigeria,millet,NGN,2014,retail,113.4615,7,2,Millet
+NG,Nigeria,millet,NGN,2014,wholesale,78.0000,122,16,Millet
+NG,Nigeria,millet,NGN,2015,retail,113.4615,12,1,Millet
+NG,Nigeria,millet,NGN,2015,wholesale,55.0000,215,20,Millet
+NG,Nigeria,millet,NGN,2016,retail,140.9615,48,18,Millet
+NG,Nigeria,millet,NGN,2016,wholesale,107.8750,218,19,Millet
+NG,Nigeria,millet,NGN,2017,retail,167.6923,206,22,Millet
+NG,Nigeria,millet,NGN,2017,wholesale,157.5000,184,20,Millet
+NG,Nigeria,millet,NGN,2018,retail,128.2692,240,31,Millet
+NG,Nigeria,millet,NGN,2018,wholesale,122.8800,158,15,Millet
+NG,Nigeria,millet,NGN,2019,retail,92.8846,338,35,Millet
+NG,Nigeria,millet,NGN,2019,wholesale,91.2075,158,15,Millet
+NG,Nigeria,millet,NGN,2020,retail,128.4615,370,33,Millet
+NG,Nigeria,millet,NGN,2020,wholesale,147.9032,179,15,Millet
+NG,Nigeria,millet,NGN,2021,retail,202.0385,382,34,Millet
+NG,Nigeria,millet,NGN,2021,wholesale,210.8500,190,16,Millet
+NG,Nigeria,millet,NGN,2022,retail,236.9231,272,32,Millet
+NG,Nigeria,millet,NGN,2022,wholesale,234.4083,192,16,Millet
+NG,Nigeria,millet,NGN,2023,retail,346.1538,245,50,Millet
+NG,Nigeria,millet,NGN,2023,wholesale,247.4000,16,16,Millet
+NG,Nigeria,millet,NGN,2024,retail,704.0673,246,38,Millet
+NG,Nigeria,millet,NGN,2025,retail,490.2058,330,44,Millet
+NG,Nigeria,sorghum,NGN,2002,wholesale,163.3700,25,3,Sorghum
+NG,Nigeria,sorghum,NGN,2003,wholesale,79.7900,38,5,Sorghum; Sorghum (white)
+NG,Nigeria,sorghum,NGN,2004,wholesale,30.5000,12,1,Sorghum (white)
+NG,Nigeria,sorghum,NGN,2005,wholesale,137.6850,44,5,Sorghum; Sorghum (white)
+NG,Nigeria,sorghum,NGN,2006,wholesale,113.4100,25,5,Sorghum; Sorghum (white)
+NG,Nigeria,sorghum,NGN,2007,wholesale,43.5000,22,5,Sorghum; Sorghum (white)
+NG,Nigeria,sorghum,NGN,2008,wholesale,157.5000,57,5,Sorghum; Sorghum (white)
+NG,Nigeria,sorghum,NGN,2009,wholesale,141.2550,52,6,Sorghum; Sorghum (white)
+NG,Nigeria,sorghum,NGN,2010,wholesale,142.6000,71,6,Sorghum; Sorghum (white)
+NG,Nigeria,sorghum,NGN,2011,wholesale,146.1250,72,6,Sorghum; Sorghum (white)
+NG,Nigeria,sorghum,NGN,2012,wholesale,160.7200,91,9,Sorghum; Sorghum (white)
+NG,Nigeria,sorghum,NGN,2013,wholesale,155.6300,112,11,Sorghum; Sorghum (white)
+NG,Nigeria,sorghum,NGN,2014,wholesale,62.0000,208,16,Sorghum; Sorghum (brown); Sorghum (white)
+NG,Nigeria,sorghum,NGN,2015,wholesale,50.0200,366,20,Sorghum; Sorghum (brown); Sorghum (white)
+NG,Nigeria,sorghum,NGN,2016,retail,152.2222,17,8,Sorghum
+NG,Nigeria,sorghum,NGN,2016,wholesale,112.5000,388,19,Sorghum; Sorghum (brown); Sorghum (white)
+NG,Nigeria,sorghum,NGN,2017,retail,167.7778,202,20,Sorghum
+NG,Nigeria,sorghum,NGN,2017,wholesale,150.0000,349,20,Sorghum; Sorghum (brown); Sorghum (white)
+NG,Nigeria,sorghum,NGN,2018,retail,121.4507,256,31,Sorghum; Sorghum (brown); Sorghum (white)
+NG,Nigeria,sorghum,NGN,2018,wholesale,108.6125,298,15,Sorghum (brown); Sorghum (white)
+NG,Nigeria,sorghum,NGN,2019,retail,84.4444,446,33,Sorghum; Sorghum (brown); Sorghum (white)
+NG,Nigeria,sorghum,NGN,2019,wholesale,75.0000,303,15,Sorghum (brown); Sorghum (white)
+NG,Nigeria,sorghum,NGN,2020,retail,121.8100,555,33,Sorghum; Sorghum (brown); Sorghum (white)
+NG,Nigeria,sorghum,NGN,2020,wholesale,137.7097,357,15,Sorghum (brown); Sorghum (white)
+NG,Nigeria,sorghum,NGN,2021,retail,200.0000,579,34,Sorghum; Sorghum (brown); Sorghum (white)
+NG,Nigeria,sorghum,NGN,2021,wholesale,209.4187,376,16,Sorghum (brown); Sorghum (white)
+NG,Nigeria,sorghum,NGN,2022,retail,223.2900,465,32,Sorghum; Sorghum (brown); Sorghum (white)
+NG,Nigeria,sorghum,NGN,2022,wholesale,215.9140,380,16,Sorghum (brown); Sorghum (white)
+NG,Nigeria,sorghum,NGN,2023,retail,335.8037,259,50,Sorghum; Sorghum (brown); Sorghum (white)
+NG,Nigeria,sorghum,NGN,2023,wholesale,199.8500,32,16,Sorghum (brown); Sorghum (white)
+NG,Nigeria,sorghum,NGN,2024,retail,674.8722,248,38,Sorghum
+NG,Nigeria,sorghum,NGN,2025,retail,444.4444,338,44,Sorghum
+NG,Nigeria,wheat_all,NGN,2003,wholesale,176.4050,30,4,Wheat
+NG,Nigeria,wheat_all,NGN,2005,wholesale,198.0300,28,3,Wheat
+NG,Nigeria,yam,NGN,2014,retail,94.8000,18,4,Yam; Yam (Abuja)
+NG,Nigeria,yam,NGN,2014,wholesale,145.0000,55,10,Yam
+NG,Nigeria,yam,NGN,2015,retail,106.8000,54,5,Yam
+NG,Nigeria,yam,NGN,2015,wholesale,155.6000,131,12,Yam; Yam (Abuja)
+NG,Nigeria,yam,NGN,2016,retail,117.6000,110,23,Yam
+NG,Nigeria,yam,NGN,2016,wholesale,232.2500,140,14,Yam; Yam (Abuja)
+NG,Nigeria,yam,NGN,2017,retail,161.2000,331,35,Yam; Yam (Abuja)
+NG,Nigeria,yam,NGN,2017,wholesale,280.0000,35,13,Yam; Yam (Abuja)
+NG,Nigeria,yam,NGN,2018,retail,161.6000,367,33,Yam
+NG,Nigeria,yam,NGN,2018,wholesale,309.6250,6,6,Yam
+NG,Nigeria,yam,NGN,2019,retail,177.6000,370,33,Yam; Yam (Abuja)
+NG,Nigeria,yam,NGN,2019,wholesale,300.0000,13,13,Yam
+NG,Nigeria,yam,NGN,2020,retail,206.0000,379,33,Yam; Yam (Abuja)
+NG,Nigeria,yam,NGN,2021,retail,246.0000,388,34,Yam; Yam (Abuja)
+NG,Nigeria,yam,NGN,2022,retail,281.5600,281,32,Yam; Yam (Abuja)
+NG,Nigeria,yam,NGN,2023,retail,497.0340,246,50,Yam; Yam (Abuja)
+NG,Nigeria,yam,NGN,2024,retail,1124.6240,242,37,Yam
+NG,Nigeria,yam,NGN,2025,retail,1200.0000,307,43,Yam
+IN,India,chickpea,INR,2000,retail,20.0000,46,4,Chickpeas
+IN,India,chickpea,INR,2001,retail,24.8750,48,4,Chickpeas
+IN,India,chickpea,INR,2002,retail,23.7750,48,4,Chickpeas
+IN,India,chickpea,INR,2003,retail,23.0000,48,4,Chickpeas
+IN,India,chickpea,INR,2004,retail,22.8050,48,4,Chickpeas
+IN,India,chickpea,INR,2005,retail,23.2450,48,4,Chickpeas
+IN,India,chickpea,INR,2006,retail,31.2950,48,4,Chickpeas
+IN,India,chickpea,INR,2007,retail,34.0550,48,4,Chickpeas
+IN,India,chickpea,INR,2008,retail,35.4100,48,4,Chickpeas
+IN,India,chickpea,INR,2009,retail,34.4200,48,4,Chickpeas
+IN,India,chickpea,INR,2010,retail,33.9900,48,4,Chickpeas
+IN,India,chickpea,INR,2011,retail,39.0000,48,4,Chickpeas
+IN,India,chickpea,INR,2012,retail,61.7600,48,4,Chickpeas
+IN,India,chickpea,INR,2013,retail,53.7550,48,4,Chickpeas
+IN,India,chickpea,INR,2014,retail,49.1200,48,4,Chickpeas
+IN,India,chickpea,INR,2015,retail,64.9000,48,4,Chickpeas
+IN,India,chickpea,INR,2016,retail,92.5450,48,4,Chickpeas
+IN,India,chickpea,INR,2017,retail,85.4800,48,4,Chickpeas
+IN,India,chickpea,INR,2018,retail,67.2200,48,4,Chickpeas
+IN,India,chickpea,INR,2019,retail,68.7500,48,4,Chickpeas
+IN,India,chickpea,INR,2020,retail,72.3700,40,4,Chickpeas
+IN,India,lentil,INR,2012,retail,52.0000,345,41,Lentils (masur)
+IN,India,lentil,INR,2013,retail,54.3500,885,49,Lentils; Lentils (masur)
+IN,India,lentil,INR,2014,retail,55.1050,1104,49,Lentils; Lentils (masur)
+IN,India,lentil,INR,2015,retail,84.2050,2242,57,Lentils; Lentils (masur); Lentils (moong); Lentils (urad)
+IN,India,lentil,INR,2016,retail,94.0000,2605,56,Lentils; Lentils (masur); Lentils (moong); Lentils (urad)
+IN,India,lentil,INR,2017,retail,77.3150,2404,56,Lentils; Lentils (masur); Lentils (moong); Lentils (urad)
+IN,India,lentil,INR,2018,retail,67.0000,2413,56,Lentils; Lentils (masur); Lentils (moong); Lentils (urad)
+IN,India,lentil,INR,2019,retail,75.0000,1732,56,Lentils; Lentils (masur); Lentils (moong); Lentils (urad)
+IN,India,lentil,INR,2020,retail,95.0000,3196,118,Lentils; Lentils (masur); Lentils (moong); Lentils (urad)
+IN,India,lentil,INR,2021,retail,102.0000,6973,162,Lentils; Lentils (masur); Lentils (moong); Lentils (urad)
+IN,India,lentil,INR,2022,retail,101.2600,7760,163,Lentils; Lentils (masur); Lentils (moong); Lentils (urad)
+IN,India,lentil,INR,2023,retail,107.0000,4604,167,Lentils; Lentils (masur); Lentils (moong); Lentils (urad)
+IN,India,lentil,INR,2024,retail,121.0000,239,5,Lentils; Lentils (masur); Lentils (moong); Lentils (urad)
+IN,India,lentil,INR,2025,retail,113.1250,240,5,Lentils; Lentils (masur); Lentils (moong); Lentils (urad)
+IN,India,potato,INR,2000,retail,5.2500,46,4,Potatoes
+IN,India,potato,INR,2001,retail,7.7050,48,4,Potatoes
+IN,India,potato,INR,2002,retail,7.5000,48,4,Potatoes
+IN,India,potato,INR,2003,retail,6.2750,48,4,Potatoes
+IN,India,potato,INR,2004,retail,7.2850,48,4,Potatoes
+IN,India,potato,INR,2005,retail,7.9750,48,4,Potatoes
+IN,India,potato,INR,2006,retail,9.7750,48,4,Potatoes
+IN,India,potato,INR,2007,retail,10.6650,48,4,Potatoes
+IN,India,potato,INR,2008,retail,9.1150,48,4,Potatoes
+IN,India,potato,INR,2009,retail,13.5000,48,4,Potatoes
+IN,India,potato,INR,2010,retail,11.7000,48,4,Potatoes
+IN,India,potato,INR,2011,retail,12.4450,48,4,Potatoes
+IN,India,potato,INR,2012,retail,16.4600,353,48,Potatoes
+IN,India,potato,INR,2013,retail,16.8300,571,49,Potatoes
+IN,India,potato,INR,2014,retail,21.9100,582,49,Potatoes
+IN,India,potato,INR,2015,retail,13.7050,666,57,Potatoes
+IN,India,potato,INR,2016,retail,19.8950,672,56,Potatoes
+IN,India,potato,INR,2017,retail,13.7350,666,56,Potatoes
+IN,India,potato,INR,2018,retail,19.0000,615,56,Potatoes
+IN,India,potato,INR,2019,retail,18.7000,439,56,Potatoes
+IN,India,potato,INR,2020,retail,32.0650,808,118,Potatoes
+IN,India,potato,INR,2021,retail,20.0000,1728,162,Potatoes
+IN,India,potato,INR,2022,retail,23.7950,1942,163,Potatoes
+IN,India,potato,INR,2023,retail,20.1500,1151,167,Potatoes
+IN,India,potato,INR,2024,retail,32.7200,60,5,Potatoes
+IN,India,potato,INR,2025,retail,25.2500,60,5,Potatoes
+IN,India,wheat_all,INR,1994,retail,6.0000,114,14,Wheat
+IN,India,wheat_all,INR,1995,retail,5.5000,86,9,Wheat
+IN,India,wheat_all,INR,1996,retail,7.4500,154,13,Wheat
+IN,India,wheat_all,INR,1997,retail,8.0000,158,14,Wheat
+IN,India,wheat_all,INR,1998,retail,7.5000,146,13,Wheat
+IN,India,wheat_all,INR,1999,retail,8.0000,112,10,Wheat
+IN,India,wheat_all,INR,2000,retail,8.0000,127,11,Wheat
+IN,India,wheat_all,INR,2000,wholesale,8.0250,45,4,Wheat
+IN,India,wheat_all,INR,2001,retail,8.0000,83,11,Wheat
+IN,India,wheat_all,INR,2001,wholesale,7.7700,48,4,Wheat
+IN,India,wheat_all,INR,2002,retail,8.2500,149,13,Wheat
+IN,India,wheat_all,INR,2002,wholesale,8.3750,48,4,Wheat
+IN,India,wheat_all,INR,2003,retail,9.5000,159,14,Wheat
+IN,India,wheat_all,INR,2003,wholesale,8.5060,48,4,Wheat
+IN,India,wheat_all,INR,2004,retail,10.0000,156,13,Wheat
+IN,India,wheat_all,INR,2004,wholesale,8.4962,48,4,Wheat
+IN,India,wheat_all,INR,2005,retail,10.0000,154,13,Wheat
+IN,India,wheat_all,INR,2005,wholesale,9.2850,48,4,Wheat
+IN,India,wheat_all,INR,2006,retail,11.7500,144,12,Wheat
+IN,India,wheat_all,INR,2006,wholesale,10.8875,48,4,Wheat
+IN,India,wheat_all,INR,2007,retail,12.0000,150,13,Wheat
+IN,India,wheat_all,INR,2007,wholesale,11.6562,48,4,Wheat
+IN,India,wheat_all,INR,2008,retail,13.0000,149,13,Wheat
+IN,India,wheat_all,INR,2008,wholesale,12.2500,48,4,Wheat
+IN,India,wheat_all,INR,2009,retail,14.0000,151,13,Wheat
+IN,India,wheat_all,INR,2009,wholesale,13.7859,48,4,Wheat
+IN,India,wheat_all,INR,2010,retail,16.0000,160,14,Wheat
+IN,India,wheat_all,INR,2010,wholesale,14.7360,48,4,Wheat
+IN,India,wheat_all,INR,2011,retail,15.0000,442,43,Wheat
+IN,India,wheat_all,INR,2011,wholesale,14.7639,48,4,Wheat
+IN,India,wheat_all,INR,2012,retail,16.0000,469,42,Wheat
+IN,India,wheat_all,INR,2012,wholesale,16.5140,48,4,Wheat
+IN,India,wheat_all,INR,2013,retail,19.0000,468,42,Wheat
+IN,India,wheat_all,INR,2013,wholesale,19.7778,48,4,Wheat
+IN,India,wheat_all,INR,2014,retail,19.2900,487,42,Wheat
+IN,India,wheat_all,INR,2014,wholesale,19.5057,48,4,Wheat
+IN,India,wheat_all,INR,2015,retail,19.3700,570,50,Wheat
+IN,India,wheat_all,INR,2015,wholesale,18.7632,48,4,Wheat
+IN,India,wheat_all,INR,2016,retail,21.9750,576,48,Wheat
+IN,India,wheat_all,INR,2016,wholesale,21.9954,48,4,Wheat
+IN,India,wheat_all,INR,2017,retail,22.0000,510,47,Wheat
+IN,India,wheat_all,INR,2017,wholesale,22.0666,48,4,Wheat
+IN,India,wheat_all,INR,2018,retail,23.0000,517,47,Wheat
+IN,India,wheat_all,INR,2018,wholesale,22.0928,48,4,Wheat
+IN,India,wheat_all,INR,2019,retail,25.0000,416,52,Wheat
+IN,India,wheat_all,INR,2019,wholesale,25.1858,48,4,Wheat
+IN,India,wheat_all,INR,2020,retail,26.0000,742,110,Wheat
+IN,India,wheat_all,INR,2020,wholesale,24.0714,40,4,Wheat
+IN,India,wheat_all,INR,2021,retail,26.0900,1629,156,Wheat
+IN,India,wheat_all,INR,2022,retail,29.5500,1779,151,Wheat
+IN,India,wheat_all,INR,2023,retail,31.6800,1051,154,Wheat
+IN,India,wheat_all,INR,2024,retail,32.3300,60,5,Wheat
+IN,India,wheat_all,INR,2025,retail,32.6150,60,5,Wheat
+TZ,United Republic of Tanzania,dry_beans,TZS,2006,wholesale,586.6083,210,20,Beans
+TZ,United Republic of Tanzania,dry_beans,TZS,2007,wholesale,558.0000,239,20,Beans
+TZ,United Republic of Tanzania,dry_beans,TZS,2008,wholesale,870.5000,222,20,Beans
+TZ,United Republic of Tanzania,dry_beans,TZS,2009,wholesale,991.1905,122,19,Beans
+TZ,United Republic of Tanzania,dry_beans,TZS,2010,wholesale,1.0420,11,1,Beans
+TZ,United Republic of Tanzania,dry_beans,TZS,2011,wholesale,1205.8250,204,20,Beans
+TZ,United Republic of Tanzania,dry_beans,TZS,2012,wholesale,1294.4200,225,19,Beans
+TZ,United Republic of Tanzania,dry_beans,TZS,2013,wholesale,1308.3325,237,20,Beans
+TZ,United Republic of Tanzania,dry_beans,TZS,2014,wholesale,1400.0000,221,20,Beans
+TZ,United Republic of Tanzania,dry_beans,TZS,2015,wholesale,1611.2500,246,23,Beans
+TZ,United Republic of Tanzania,dry_beans,TZS,2016,retail,2000.0000,600,25,Beans (dry); Beans (spotted)
+TZ,United Republic of Tanzania,dry_beans,TZS,2016,wholesale,1615.0000,237,20,Beans
+TZ,United Republic of Tanzania,dry_beans,TZS,2017,retail,2000.0000,600,25,Beans (dry); Beans (spotted)
+TZ,United Republic of Tanzania,dry_beans,TZS,2017,wholesale,1785.0000,185,20,Beans
+TZ,United Republic of Tanzania,dry_beans,TZS,2018,retail,2000.0000,600,25,Beans (dry); Beans (spotted)
+TZ,United Republic of Tanzania,dry_beans,TZS,2018,wholesale,1696.1111,199,20,Beans
+TZ,United Republic of Tanzania,dry_beans,TZS,2019,retail,2000.0000,600,25,Beans (dry); Beans (spotted)
+TZ,United Republic of Tanzania,dry_beans,TZS,2019,wholesale,1743.7500,237,20,Beans
+TZ,United Republic of Tanzania,dry_beans,TZS,2020,retail,2200.0000,595,25,Beans (dry); Beans (spotted)
+TZ,United Republic of Tanzania,dry_beans,TZS,2020,wholesale,2024.7728,258,25,Beans
+TZ,United Republic of Tanzania,dry_beans,TZS,2021,retail,2000.0000,623,26,Beans (dry); Beans (spotted)
+TZ,United Republic of Tanzania,dry_beans,TZS,2021,wholesale,1800.0000,254,27,Beans
+TZ,United Republic of Tanzania,dry_beans,TZS,2022,retail,2148.2000,582,26,Beans (dry); Beans (spotted)
+TZ,United Republic of Tanzania,dry_beans,TZS,2022,wholesale,2036.3600,239,24,Beans
+TZ,United Republic of Tanzania,dry_beans,TZS,2023,wholesale,2850.0000,209,29,Beans
+TZ,United Republic of Tanzania,dry_beans,TZS,2024,wholesale,2669.4450,342,31,Beans
+TZ,United Republic of Tanzania,dry_beans,TZS,2025,wholesale,2738.4600,359,30,Beans
+TZ,United Republic of Tanzania,maize,TZS,2006,wholesale,256.8750,213,20,Maize
+TZ,United Republic of Tanzania,maize,TZS,2007,wholesale,178.0000,240,20,Maize
+TZ,United Republic of Tanzania,maize,TZS,2008,wholesale,300.5000,216,20,Maize
+TZ,United Republic of Tanzania,maize,TZS,2009,wholesale,400.0000,205,20,Maize
+TZ,United Republic of Tanzania,maize,TZS,2010,wholesale,315.3550,228,19,Maize
+TZ,United Republic of Tanzania,maize,TZS,2011,wholesale,412.8200,234,20,Maize
+TZ,United Republic of Tanzania,maize,TZS,2012,wholesale,516.2000,226,19,Maize
+TZ,United Republic of Tanzania,maize,TZS,2013,wholesale,577.9175,237,20,Maize
+TZ,United Republic of Tanzania,maize,TZS,2014,wholesale,472.2902,220,20,Maize
+TZ,United Republic of Tanzania,maize,TZS,2015,wholesale,513.4850,246,23,Maize
+TZ,United Republic of Tanzania,maize,TZS,2016,retail,852.0500,300,25,Maize (white)
+TZ,United Republic of Tanzania,maize,TZS,2016,wholesale,623.7500,237,20,Maize
+TZ,United Republic of Tanzania,maize,TZS,2017,retail,1200.0000,300,25,Maize (white)
+TZ,United Republic of Tanzania,maize,TZS,2017,wholesale,812.0000,191,20,Maize
+TZ,United Republic of Tanzania,maize,TZS,2018,retail,800.0000,300,25,Maize (white)
+TZ,United Republic of Tanzania,maize,TZS,2018,wholesale,435.2952,202,20,Maize
+TZ,United Republic of Tanzania,maize,TZS,2019,retail,800.0000,300,25,Maize (white)
+TZ,United Republic of Tanzania,maize,TZS,2019,wholesale,643.3333,237,20,Maize
+TZ,United Republic of Tanzania,maize,TZS,2020,retail,1000.0000,300,25,Maize (white)
+TZ,United Republic of Tanzania,maize,TZS,2020,wholesale,583.5700,269,26,Maize
+TZ,United Republic of Tanzania,maize,TZS,2021,retail,566.5000,311,26,Maize (white)
+TZ,United Republic of Tanzania,maize,TZS,2021,wholesale,465.8300,259,27,Maize
+TZ,United Republic of Tanzania,maize,TZS,2022,retail,996.7000,291,26,Maize (white)
+TZ,United Republic of Tanzania,maize,TZS,2022,wholesale,800.0000,240,24,Maize
+TZ,United Republic of Tanzania,maize,TZS,2023,wholesale,1037.5000,213,29,Maize
+TZ,United Republic of Tanzania,maize,TZS,2024,wholesale,652.7600,332,30,Maize
+TZ,United Republic of Tanzania,maize,TZS,2025,wholesale,801.5000,345,29,Maize
+TZ,United Republic of Tanzania,millet,TZS,2020,wholesale,1200.0000,302,23,Millet (bulrush); Millet (finger)
+TZ,United Republic of Tanzania,millet,TZS,2021,wholesale,1337.5000,383,26,Millet (bulrush); Millet (finger)
+TZ,United Republic of Tanzania,millet,TZS,2022,wholesale,1590.9100,335,22,Millet (bulrush); Millet (finger)
+TZ,United Republic of Tanzania,millet,TZS,2023,wholesale,1650.0000,290,26,Millet (bulrush); Millet (finger)
+TZ,United Republic of Tanzania,millet,TZS,2024,wholesale,1600.0000,580,30,Millet (bulrush); Millet (finger)
+TZ,United Republic of Tanzania,millet,TZS,2025,wholesale,1922.9200,618,29,Millet (bulrush); Millet (finger)
+TZ,United Republic of Tanzania,potato,TZS,2016,retail,1000.0000,300,25,Potatoes (Irish)
+TZ,United Republic of Tanzania,potato,TZS,2017,retail,1000.0000,300,25,Potatoes (Irish)
+TZ,United Republic of Tanzania,potato,TZS,2018,retail,1000.0000,300,25,Potatoes (Irish)
+TZ,United Republic of Tanzania,potato,TZS,2019,retail,998.2850,300,25,Potatoes (Irish)
+TZ,United Republic of Tanzania,potato,TZS,2020,retail,1000.0000,298,25,Potatoes (Irish)
+TZ,United Republic of Tanzania,potato,TZS,2020,wholesale,754.5500,201,24,Potatoes (Irish)
+TZ,United Republic of Tanzania,potato,TZS,2021,retail,865.3000,311,26,Potatoes (Irish)
+TZ,United Republic of Tanzania,potato,TZS,2021,wholesale,682.5000,249,26,Potatoes (Irish)
+TZ,United Republic of Tanzania,potato,TZS,2022,retail,1000.0000,291,26,Potatoes (Irish)
+TZ,United Republic of Tanzania,potato,TZS,2022,wholesale,825.0000,227,24,Potatoes (Irish)
+TZ,United Republic of Tanzania,potato,TZS,2023,wholesale,925.0000,207,28,Potatoes (Irish)
+TZ,United Republic of Tanzania,potato,TZS,2024,wholesale,900.0000,337,31,Potatoes (Irish)
+TZ,United Republic of Tanzania,potato,TZS,2025,wholesale,882.5000,355,30,Potatoes (Irish)
+TZ,United Republic of Tanzania,sorghum,TZS,2020,wholesale,1000.0000,151,20,Sorghum
+TZ,United Republic of Tanzania,sorghum,TZS,2021,wholesale,880.0000,197,21,Sorghum
+TZ,United Republic of Tanzania,sorghum,TZS,2022,wholesale,1100.0000,191,21,Sorghum
+TZ,United Republic of Tanzania,sorghum,TZS,2023,wholesale,1475.0000,171,24,Sorghum
+TZ,United Republic of Tanzania,sorghum,TZS,2024,wholesale,1386.1100,284,29,Sorghum
+TZ,United Republic of Tanzania,sorghum,TZS,2025,wholesale,1400.0000,328,28,Sorghum
+TZ,United Republic of Tanzania,soybean,TZS,2016,retail,2000.0000,300,25,Soybeans
+TZ,United Republic of Tanzania,soybean,TZS,2017,retail,2275.0000,300,25,Soybeans
+TZ,United Republic of Tanzania,soybean,TZS,2018,retail,2050.0000,300,25,Soybeans
+TZ,United Republic of Tanzania,soybean,TZS,2019,retail,2000.0000,300,25,Soybeans
+TZ,United Republic of Tanzania,soybean,TZS,2020,retail,2500.0000,300,25,Soybeans
+TZ,United Republic of Tanzania,soybean,TZS,2021,retail,2248.4000,311,26,Soybeans
+TZ,United Republic of Tanzania,soybean,TZS,2022,retail,2349.5000,291,26,Soybeans
+TZ,United Republic of Tanzania,sweet_potato,TZS,2016,retail,815.7000,300,25,Sweet potatoes
+TZ,United Republic of Tanzania,sweet_potato,TZS,2017,retail,895.2000,300,25,Sweet potatoes
+TZ,United Republic of Tanzania,sweet_potato,TZS,2018,retail,766.6500,300,25,Sweet potatoes
+TZ,United Republic of Tanzania,sweet_potato,TZS,2019,retail,724.0000,300,25,Sweet potatoes
+TZ,United Republic of Tanzania,sweet_potato,TZS,2020,retail,687.0500,300,25,Sweet potatoes
+TZ,United Republic of Tanzania,sweet_potato,TZS,2021,retail,614.6000,311,26,Sweet potatoes
+TZ,United Republic of Tanzania,sweet_potato,TZS,2022,retail,710.0000,291,26,Sweet potatoes
+TZ,United Republic of Tanzania,wheat_all,TZS,2020,wholesale,1250.0000,121,17,Wheat
+TZ,United Republic of Tanzania,wheat_all,TZS,2021,wholesale,1287.1200,142,20,Wheat
+TZ,United Republic of Tanzania,wheat_all,TZS,2022,wholesale,1812.0000,155,19,Wheat
+TZ,United Republic of Tanzania,wheat_all,TZS,2023,wholesale,1993.6350,116,23,Wheat
+TZ,United Republic of Tanzania,wheat_all,TZS,2024,wholesale,1857.6900,213,26,Wheat
+TZ,United Republic of Tanzania,wheat_all,TZS,2025,wholesale,1770.4550,280,27,Wheat
+UG,Uganda,dry_beans,UGX,2008,wholesale,1085.2900,15,2,Beans
+UG,Uganda,dry_beans,UGX,2009,retail,1532.8650,12,1,Beans
+UG,Uganda,dry_beans,UGX,2009,wholesale,1161.1650,14,2,Beans
+UG,Uganda,dry_beans,UGX,2010,retail,1532.3750,24,2,Beans
+UG,Uganda,dry_beans,UGX,2010,wholesale,1232.3500,12,1,Beans
+UG,Uganda,dry_beans,UGX,2011,retail,1759.0000,67,8,Beans
+UG,Uganda,dry_beans,UGX,2011,wholesale,1651.7900,21,2,Beans
+UG,Uganda,dry_beans,UGX,2012,retail,1814.0000,84,7,Beans
+UG,Uganda,dry_beans,UGX,2012,wholesale,1539.7900,24,2,Beans
+UG,Uganda,dry_beans,UGX,2013,retail,2058.7500,90,8,Beans
+UG,Uganda,dry_beans,UGX,2013,wholesale,1653.1750,24,2,Beans
+UG,Uganda,dry_beans,UGX,2014,retail,2000.0000,71,8,Beans
+UG,Uganda,dry_beans,UGX,2014,wholesale,1627.4250,24,2,Beans
+UG,Uganda,dry_beans,UGX,2015,retail,2400.0000,67,6,Beans
+UG,Uganda,dry_beans,UGX,2015,wholesale,2032.1850,24,2,Beans
+UG,Uganda,dry_beans,UGX,2016,retail,2508.5000,66,6,Beans
+UG,Uganda,dry_beans,UGX,2016,wholesale,2301.5500,23,2,Beans
+UG,Uganda,dry_beans,UGX,2017,retail,2700.0000,63,6,Beans
+UG,Uganda,dry_beans,UGX,2017,wholesale,2363.6150,24,2,Beans
+UG,Uganda,dry_beans,UGX,2018,retail,2458.5000,74,13,Beans
+UG,Uganda,dry_beans,UGX,2018,wholesale,1553.6700,24,2,Beans
+UG,Uganda,dry_beans,UGX,2019,retail,3150.0000,139,12,Beans
+UG,Uganda,dry_beans,UGX,2019,wholesale,2307.7800,23,2,Beans
+UG,Uganda,dry_beans,UGX,2020,retail,3500.0000,155,28,Beans
+UG,Uganda,dry_beans,UGX,2020,wholesale,2574.2800,24,2,Beans
+UG,Uganda,dry_beans,UGX,2021,retail,2500.0000,293,33,Beans
+UG,Uganda,dry_beans,UGX,2021,wholesale,1830.9700,23,2,Beans
+UG,Uganda,dry_beans,UGX,2022,retail,3333.0000,395,41,Beans
+UG,Uganda,dry_beans,UGX,2022,wholesale,2025.5800,10,2,Beans
+UG,Uganda,dry_beans,UGX,2023,retail,4167.0000,465,40,Beans
+UG,Uganda,dry_beans,UGX,2024,retail,4000.0000,487,41,Beans
+UG,Uganda,dry_beans,UGX,2025,retail,3788.0000,449,41,Beans
+UG,Uganda,maize,UGX,2006,wholesale,300.6300,33,3,Maize
+UG,Uganda,maize,UGX,2007,wholesale,264.3300,21,2,Maize
+UG,Uganda,maize,UGX,2008,wholesale,516.1600,24,3,Maize
+UG,Uganda,maize,UGX,2009,wholesale,644.0900,24,3,Maize
+UG,Uganda,maize,UGX,2010,retail,594.3000,24,2,Maize
+UG,Uganda,maize,UGX,2010,wholesale,305.4200,13,2,Maize
+UG,Uganda,maize,UGX,2011,retail,850.0000,87,8,Maize; Maize (white)
+UG,Uganda,maize,UGX,2011,wholesale,646.1900,24,3,Maize
+UG,Uganda,maize,UGX,2012,retail,833.0000,107,7,Maize; Maize (white)
+UG,Uganda,maize,UGX,2012,wholesale,690.4650,36,3,Maize
+UG,Uganda,maize,UGX,2013,retail,850.0000,114,8,Maize; Maize (white)
+UG,Uganda,maize,UGX,2013,wholesale,770.7250,36,3,Maize
+UG,Uganda,maize,UGX,2014,retail,800.0000,97,8,Maize; Maize (white)
+UG,Uganda,maize,UGX,2014,wholesale,658.0300,36,3,Maize
+UG,Uganda,maize,UGX,2015,retail,933.0000,91,6,Maize; Maize (white)
+UG,Uganda,maize,UGX,2015,wholesale,803.7550,36,3,Maize
+UG,Uganda,maize,UGX,2016,retail,1029.0000,80,6,Maize; Maize (white)
+UG,Uganda,maize,UGX,2016,wholesale,862.4200,36,3,Maize
+UG,Uganda,maize,UGX,2017,retail,1400.0000,79,6,Maize; Maize (white)
+UG,Uganda,maize,UGX,2017,wholesale,1028.0600,36,3,Maize
+UG,Uganda,maize,UGX,2018,retail,800.0000,79,13,Maize; Maize (white)
+UG,Uganda,maize,UGX,2018,wholesale,654.1500,36,3,Maize
+UG,Uganda,maize,UGX,2019,retail,1200.0000,139,12,Maize (white)
+UG,Uganda,maize,UGX,2019,wholesale,1051.7250,42,5,Maize
+UG,Uganda,maize,UGX,2020,retail,1000.0000,155,28,Maize (white)
+UG,Uganda,maize,UGX,2020,wholesale,798.4800,48,4,Maize
+UG,Uganda,maize,UGX,2021,retail,1000.0000,286,32,Maize (white)
+UG,Uganda,maize,UGX,2021,wholesale,772.0750,48,4,Maize
+UG,Uganda,maize,UGX,2022,retail,1800.0000,395,41,Maize (white)
+UG,Uganda,maize,UGX,2022,wholesale,1090.5850,20,4,Maize
+UG,Uganda,maize,UGX,2023,retail,1660.0000,465,40,Maize (white)
+UG,Uganda,maize,UGX,2024,retail,1100.0000,487,41,Maize (white)
+UG,Uganda,maize,UGX,2025,retail,1452.0000,449,41,Maize (white)
+UG,Uganda,millet,UGX,2011,retail,1267.5000,66,8,Millet
+UG,Uganda,millet,UGX,2012,retail,1650.0000,84,7,Millet
+UG,Uganda,millet,UGX,2013,retail,1504.1250,90,8,Millet
+UG,Uganda,millet,UGX,2014,retail,1675.0000,73,8,Millet
+UG,Uganda,millet,UGX,2015,retail,1800.0000,65,6,Millet
+UG,Uganda,millet,UGX,2016,retail,2000.0000,65,6,Millet
+UG,Uganda,millet,UGX,2017,retail,2500.0000,59,6,Millet
+UG,Uganda,millet,UGX,2018,retail,2200.0000,59,10,Millet
+UG,Uganda,millet,UGX,2019,retail,1725.0000,108,12,Millet
+UG,Uganda,millet,UGX,2020,retail,1500.0000,46,14,Millet
+UG,Uganda,millet,UGX,2021,retail,2500.0000,86,17,Millet
+UG,Uganda,millet,UGX,2022,retail,3000.0000,215,24,Millet
+UG,Uganda,millet,UGX,2023,retail,3000.0000,252,22,Millet
+UG,Uganda,millet,UGX,2024,retail,2960.0000,277,25,Millet
+UG,Uganda,millet,UGX,2025,retail,3400.0000,241,26,Millet
+UG,Uganda,sorghum,UGX,2011,retail,808.0000,63,8,Sorghum
+UG,Uganda,sorghum,UGX,2012,retail,806.5000,84,7,Sorghum
+UG,Uganda,sorghum,UGX,2013,retail,800.0000,90,8,Sorghum
+UG,Uganda,sorghum,UGX,2014,retail,1000.0000,72,8,Sorghum
+UG,Uganda,sorghum,UGX,2015,retail,1450.0000,67,6,Sorghum
+UG,Uganda,sorghum,UGX,2016,retail,1350.0000,65,6,Sorghum
+UG,Uganda,sorghum,UGX,2017,retail,1550.0000,59,6,Sorghum
+UG,Uganda,sorghum,UGX,2018,retail,1000.0000,68,13,Sorghum
+UG,Uganda,sorghum,UGX,2019,retail,1216.0000,139,12,Sorghum
+UG,Uganda,sorghum,UGX,2020,retail,1200.0000,143,27,Sorghum
+UG,Uganda,sorghum,UGX,2021,retail,1200.0000,255,31,Sorghum
+UG,Uganda,sorghum,UGX,2022,retail,1838.1650,378,40,Sorghum
+UG,Uganda,sorghum,UGX,2023,retail,1925.5000,442,38,Sorghum
+UG,Uganda,sorghum,UGX,2024,retail,1625.0000,463,40,Sorghum
+UG,Uganda,sorghum,UGX,2025,retail,1839.5000,434,41,Sorghum
+GH,Ghana,cassava,GHS,2006,wholesale,0.1429,46,4,Cassava
+GH,Ghana,cassava,GHS,2007,wholesale,0.1429,48,4,Cassava
+GH,Ghana,cassava,GHS,2008,wholesale,0.1764,144,12,Cassava
+GH,Ghana,cassava,GHS,2009,wholesale,0.2148,170,15,Cassava
+GH,Ghana,cassava,GHS,2010,wholesale,0.2500,164,15,Cassava
+GH,Ghana,cassava,GHS,2011,wholesale,0.2610,178,15,Cassava
+GH,Ghana,cassava,GHS,2012,wholesale,0.4121,168,14,Cassava
+GH,Ghana,cassava,GHS,2013,wholesale,0.5495,168,14,Cassava
+GH,Ghana,cassava,GHS,2014,wholesale,0.4396,186,38,Cassava
+GH,Ghana,cassava,GHS,2015,wholesale,0.4945,135,14,Cassava
+GH,Ghana,cassava,GHS,2016,wholesale,1.0440,167,15,Cassava
+GH,Ghana,cassava,GHS,2017,wholesale,0.9890,136,14,Cassava
+GH,Ghana,cassava,GHS,2018,wholesale,0.6962,86,11,Cassava
+GH,Ghana,cassava,GHS,2019,retail,2.3000,83,18,Cassava
+GH,Ghana,cassava,GHS,2019,wholesale,1.5934,122,14,Cassava
+GH,Ghana,cassava,GHS,2020,retail,2.2300,170,19,Cassava
+GH,Ghana,cassava,GHS,2020,wholesale,2.2730,122,13,Cassava
+GH,Ghana,cassava,GHS,2021,retail,1.7300,167,19,Cassava
+GH,Ghana,cassava,GHS,2021,wholesale,1.6799,94,11,Cassava
+GH,Ghana,cassava,GHS,2022,retail,1.7100,155,18,Cassava
+GH,Ghana,cassava,GHS,2022,wholesale,1.6200,90,11,Cassava
+GH,Ghana,cassava,GHS,2023,retail,5.8900,118,20,Cassava
+GH,Ghana,cassava,GHS,2023,wholesale,8.2128,80,15,Cassava
+GH,Ghana,cowpea,GHS,2019,retail,1.7300,83,18,Cowpeas
+GH,Ghana,cowpea,GHS,2019,wholesale,1.2742,18,6,Cowpeas (white)
+GH,Ghana,cowpea,GHS,2020,retail,3.0100,173,19,Cowpeas
+GH,Ghana,cowpea,GHS,2020,wholesale,2.7272,108,16,Cowpeas (white)
+GH,Ghana,cowpea,GHS,2021,retail,5.5600,151,19,Cowpeas
+GH,Ghana,cowpea,GHS,2021,wholesale,3.3950,74,12,Cowpeas (white)
+GH,Ghana,cowpea,GHS,2022,retail,7.5900,148,20,Cowpeas
+GH,Ghana,cowpea,GHS,2022,wholesale,4.1749,81,14,Cowpeas (white)
+GH,Ghana,cowpea,GHS,2023,retail,9.2400,86,18,Cowpeas
+GH,Ghana,cowpea,GHS,2023,wholesale,4.2612,51,12,Cowpeas (white)
+GH,Ghana,maize,GHS,2006,wholesale,0.1788,72,6,Maize
+GH,Ghana,maize,GHS,2007,wholesale,0.2108,72,6,Maize
+GH,Ghana,maize,GHS,2008,wholesale,0.4384,168,14,Maize
+GH,Ghana,maize,GHS,2009,wholesale,0.5450,179,15,Maize
+GH,Ghana,maize,GHS,2010,wholesale,0.4525,171,15,Maize
+GH,Ghana,maize,GHS,2011,wholesale,0.6500,180,15,Maize
+GH,Ghana,maize,GHS,2012,wholesale,0.8838,180,15,Maize
+GH,Ghana,maize,GHS,2013,wholesale,0.7400,180,15,Maize
+GH,Ghana,maize,GHS,2014,wholesale,1.0362,208,43,Maize
+GH,Ghana,maize,GHS,2015,wholesale,1.4400,147,15,Maize
+GH,Ghana,maize,GHS,2016,wholesale,1.4700,163,15,Maize
+GH,Ghana,maize,GHS,2017,wholesale,1.2500,145,15,Maize
+GH,Ghana,maize,GHS,2018,wholesale,1.3353,100,15,Maize
+GH,Ghana,maize,GHS,2019,retail,1.4100,167,19,Maize; Maize (yellow)
+GH,Ghana,maize,GHS,2019,wholesale,1.2747,199,15,Maize; Maize (yellow)
+GH,Ghana,maize,GHS,2020,retail,1.7700,352,19,Maize; Maize (yellow)
+GH,Ghana,maize,GHS,2020,wholesale,1.3801,296,16,Maize; Maize (yellow)
+GH,Ghana,maize,GHS,2021,retail,3.0700,383,19,Maize; Maize (yellow)
+GH,Ghana,maize,GHS,2021,wholesale,2.6188,302,16,Maize; Maize (yellow)
+GH,Ghana,maize,GHS,2022,retail,4.3500,347,20,Maize; Maize (yellow)
+GH,Ghana,maize,GHS,2022,wholesale,3.6371,285,17,Maize; Maize (yellow)
+GH,Ghana,maize,GHS,2023,retail,6.2400,262,20,Maize; Maize (yellow)
+GH,Ghana,maize,GHS,2023,wholesale,5.3811,222,18,Maize; Maize (yellow)
+GH,Ghana,millet,GHS,2006,wholesale,0.3226,71,6,Millet
+GH,Ghana,millet,GHS,2007,wholesale,0.3159,72,6,Millet
+GH,Ghana,millet,GHS,2008,wholesale,0.6349,72,6,Millet
+GH,Ghana,millet,GHS,2009,wholesale,0.7151,71,6,Millet
+GH,Ghana,millet,GHS,2010,wholesale,0.6573,72,6,Millet
+GH,Ghana,millet,GHS,2011,wholesale,0.7769,72,6,Millet
+GH,Ghana,millet,GHS,2012,wholesale,1.1290,72,6,Millet
+GH,Ghana,millet,GHS,2013,wholesale,1.2097,72,6,Millet
+GH,Ghana,millet,GHS,2014,wholesale,1.1510,30,6,Millet
+GH,Ghana,millet,GHS,2015,wholesale,1.5914,72,6,Millet
+GH,Ghana,millet,GHS,2016,wholesale,1.6258,72,6,Millet
+GH,Ghana,millet,GHS,2017,wholesale,2.0000,69,6,Millet
+GH,Ghana,millet,GHS,2018,wholesale,2.2887,48,5,Millet
+GH,Ghana,millet,GHS,2019,retail,2.8900,90,19,Millet
+GH,Ghana,millet,GHS,2019,wholesale,2.2154,94,14,Millet
+GH,Ghana,millet,GHS,2020,retail,3.3900,186,19,Millet
+GH,Ghana,millet,GHS,2020,wholesale,2.8495,159,16,Millet
+GH,Ghana,millet,GHS,2021,retail,4.1700,199,19,Millet
+GH,Ghana,millet,GHS,2021,wholesale,3.5000,161,16,Millet
+GH,Ghana,millet,GHS,2022,retail,6.6500,182,20,Millet
+GH,Ghana,millet,GHS,2022,wholesale,5.5694,148,17,Millet
+GH,Ghana,millet,GHS,2023,retail,9.8700,137,20,Millet
+GH,Ghana,millet,GHS,2023,wholesale,8.0777,111,17,Millet
+GH,Ghana,rice,GHS,2010,wholesale,0.5208,25,5,Rice (paddy)
+GH,Ghana,rice,GHS,2011,wholesale,0.5833,56,5,Rice (paddy)
+GH,Ghana,rice,GHS,2012,wholesale,0.7307,60,5,Rice (paddy)
+GH,Ghana,rice,GHS,2013,wholesale,0.7946,60,5,Rice (paddy)
+GH,Ghana,rice,GHS,2014,wholesale,0.8125,25,5,Rice (paddy)
+GH,Ghana,rice,GHS,2015,wholesale,1.1429,57,5,Rice (paddy)
+GH,Ghana,rice,GHS,2016,wholesale,1.3048,53,5,Rice (paddy)
+GH,Ghana,rice,GHS,2017,wholesale,1.1607,19,4,Rice (paddy)
+GH,Ghana,sorghum,GHS,2006,wholesale,0.2560,71,6,Sorghum
+GH,Ghana,sorghum,GHS,2007,wholesale,0.2569,72,6,Sorghum
+GH,Ghana,sorghum,GHS,2008,wholesale,0.4890,72,6,Sorghum
+GH,Ghana,sorghum,GHS,2009,wholesale,0.5541,72,6,Sorghum
+GH,Ghana,sorghum,GHS,2010,wholesale,0.5461,72,6,Sorghum
+GH,Ghana,sorghum,GHS,2011,wholesale,0.6422,72,6,Sorghum
+GH,Ghana,sorghum,GHS,2012,wholesale,0.8142,72,6,Sorghum
+GH,Ghana,sorghum,GHS,2013,wholesale,0.9174,72,6,Sorghum
+GH,Ghana,sorghum,GHS,2014,wholesale,0.9174,30,6,Sorghum
+GH,Ghana,sorghum,GHS,2015,wholesale,1.2844,72,6,Sorghum
+GH,Ghana,sorghum,GHS,2016,wholesale,1.3372,72,6,Sorghum
+GH,Ghana,sorghum,GHS,2017,wholesale,1.4937,70,6,Sorghum
+GH,Ghana,sorghum,GHS,2018,wholesale,1.7431,49,5,Sorghum
+GH,Ghana,sorghum,GHS,2019,retail,2.7400,85,18,Sorghum
+GH,Ghana,sorghum,GHS,2019,wholesale,2.2152,92,14,Sorghum
+GH,Ghana,sorghum,GHS,2020,retail,2.8100,176,18,Sorghum
+GH,Ghana,sorghum,GHS,2020,wholesale,2.4000,157,16,Sorghum
+GH,Ghana,sorghum,GHS,2021,retail,3.6900,187,18,Sorghum
+GH,Ghana,sorghum,GHS,2021,wholesale,2.8300,161,16,Sorghum
+GH,Ghana,sorghum,GHS,2022,retail,5.4700,172,20,Sorghum
+GH,Ghana,sorghum,GHS,2022,wholesale,4.5483,148,17,Sorghum
+GH,Ghana,sorghum,GHS,2023,retail,8.6700,129,19,Sorghum
+GH,Ghana,sorghum,GHS,2023,wholesale,6.7624,111,17,Sorghum
+GH,Ghana,soybean,GHS,2019,retail,2.3900,78,18,Soybeans
+GH,Ghana,soybean,GHS,2019,wholesale,1.0794,17,4,Soybeans
+GH,Ghana,soybean,GHS,2020,retail,5.2600,163,19,Soybeans
+GH,Ghana,soybean,GHS,2020,wholesale,0.1835,102,15,Soybeans
+GH,Ghana,soybean,GHS,2021,retail,6.5000,141,19,Soybeans
+GH,Ghana,soybean,GHS,2021,wholesale,1.1360,108,14,Soybeans
+GH,Ghana,soybean,GHS,2022,retail,9.3200,119,19,Soybeans
+GH,Ghana,soybean,GHS,2022,wholesale,1.2091,104,14,Soybeans
+GH,Ghana,soybean,GHS,2023,retail,7.0050,106,20,Soybeans
+GH,Ghana,soybean,GHS,2023,wholesale,2.6443,80,15,Soybeans
+GH,Ghana,yam,GHS,2006,wholesale,0.2458,68,6,Yam
+GH,Ghana,yam,GHS,2007,wholesale,0.2940,72,6,Yam
+GH,Ghana,yam,GHS,2010,wholesale,0.4645,6,6,Yam
+GH,Ghana,yam,GHS,2017,wholesale,1.4579,13,5,Yam
+GH,Ghana,yam,GHS,2018,wholesale,2.2834,10,5,Yam
+GH,Ghana,yam,GHS,2019,retail,6.3500,162,18,Yam; Yam (puna)
+GH,Ghana,yam,GHS,2019,wholesale,1.0130,137,15,Yam; Yam (puna)
+GH,Ghana,yam,GHS,2020,retail,4.4600,321,19,Yam; Yam (puna)
+GH,Ghana,yam,GHS,2020,wholesale,1.6667,247,15,Yam; Yam (puna)
+GH,Ghana,yam,GHS,2021,retail,3.8500,345,19,Yam; Yam (puna)
+GH,Ghana,yam,GHS,2021,wholesale,2.4348,204,15,Yam; Yam (puna)
+GH,Ghana,yam,GHS,2022,retail,4.4100,313,20,Yam; Yam (puna)
+GH,Ghana,yam,GHS,2022,wholesale,3.4167,205,14,Yam; Yam (puna)
+GH,Ghana,yam,GHS,2023,retail,11.0600,249,20,Yam; Yam (puna)
+GH,Ghana,yam,GHS,2023,wholesale,3.3059,189,17,Yam; Yam (puna)
+MW,Malawi,cassava,MWK,2007,retail,31.3200,11,1,Cassava
+MW,Malawi,cassava,MWK,2008,retail,40.0350,12,1,Cassava
+MW,Malawi,cassava,MWK,2009,retail,42.1600,12,1,Cassava
+MW,Malawi,cassava,MWK,2010,retail,41.9400,12,1,Cassava
+MW,Malawi,cassava,MWK,2011,retail,37.9550,8,1,Cassava
+MW,Malawi,cassava,MWK,2012,retail,64.7750,324,64,Cassava
+MW,Malawi,cassava,MWK,2013,retail,92.5000,537,70,Cassava
+MW,Malawi,cassava,MWK,2014,retail,120.4000,201,61,Cassava
+MW,Malawi,cassava,MWK,2015,retail,168.8000,71,40,Cassava
+MW,Malawi,cassava,MWK,2016,retail,256.4300,9,1,Cassava
+MW,Malawi,cassava,MWK,2017,retail,352.6600,11,1,Cassava
+MW,Malawi,cassava,MWK,2018,retail,321.8000,12,1,Cassava
+MW,Malawi,cassava,MWK,2019,retail,342.5400,10,1,Cassava
+MW,Malawi,cassava,MWK,2020,retail,300.0000,128,61,Cassava
+MW,Malawi,cassava,MWK,2021,retail,283.3300,241,65,Cassava
+MW,Malawi,cassava,MWK,2025,retail,2400.0000,581,97,Cassava
+MW,Malawi,cowpea,MWK,2015,retail,325.1900,48,37,Cowpeas
+MW,Malawi,cowpea,MWK,2019,retail,362.5000,202,78,Cowpeas
+MW,Malawi,cowpea,MWK,2020,retail,576.6700,204,73,Cowpeas
+MW,Malawi,cowpea,MWK,2021,retail,633.3300,283,73,Cowpeas
+MW,Malawi,cowpea,MWK,2022,retail,778.8500,69,40,Cowpeas
+MW,Malawi,cowpea,MWK,2023,retail,1112.5000,718,95,Cowpeas
+MW,Malawi,cowpea,MWK,2024,retail,2000.0000,536,96,Cowpeas
+MW,Malawi,cowpea,MWK,2025,retail,3146.4450,900,98,Cowpeas
+MW,Malawi,dry_beans,MWK,2012,retail,300.0000,379,65,Beans
+MW,Malawi,dry_beans,MWK,2013,retail,357.1200,647,70,Beans
+MW,Malawi,dry_beans,MWK,2014,retail,466.2900,241,66,Beans
+MW,Malawi,dry_beans,MWK,2015,retail,523.2950,336,68,Beans
+MW,Malawi,dry_beans,MWK,2016,retail,709.0500,490,69,Beans
+MW,Malawi,dry_beans,MWK,2017,retail,730.8100,314,55,Beans
+MW,Malawi,dry_beans,MWK,2018,retail,733.1200,203,30,Beans
+MW,Malawi,dry_beans,MWK,2019,retail,766.5600,420,107,Beans
+MW,Malawi,dry_beans,MWK,2020,retail,860.0000,303,96,Beans
+MW,Malawi,dry_beans,MWK,2021,retail,1025.0000,338,80,Beans
+MW,Malawi,dry_beans,MWK,2022,retail,1400.0000,95,47,Beans
+MW,Malawi,dry_beans,MWK,2023,retail,1750.0000,926,96,Beans
+MW,Malawi,dry_beans,MWK,2024,retail,3500.0000,809,96,Beans
+MW,Malawi,dry_beans,MWK,2025,retail,6000.0000,1315,99,Beans; Beans (new harvest)
+MW,Malawi,maize,MWK,2003,retail,12.8900,211,27,Maize
+MW,Malawi,maize,MWK,2004,retail,15.3550,440,40,Maize
+MW,Malawi,maize,MWK,2005,retail,20.2550,604,66,Maize
+MW,Malawi,maize,MWK,2006,retail,21.7550,722,68,Maize
+MW,Malawi,maize,MWK,2007,retail,18.0300,789,70,Maize
+MW,Malawi,maize,MWK,2008,retail,46.9100,770,70,Maize
+MW,Malawi,maize,MWK,2009,retail,43.3350,480,71,Maize
+MW,Malawi,maize,MWK,2010,retail,31.9600,449,71,Maize
+MW,Malawi,maize,MWK,2011,retail,29.7950,606,69,Maize
+MW,Malawi,maize,MWK,2012,retail,52.2750,680,69,Maize
+MW,Malawi,maize,MWK,2013,retail,106.2300,650,69,Maize
+MW,Malawi,maize,MWK,2014,retail,92.5900,484,69,Maize
+MW,Malawi,maize,MWK,2015,retail,125.1400,509,102,Maize
+MW,Malawi,maize,MWK,2016,retail,224.7600,1046,110,Maize
+MW,Malawi,maize,MWK,2017,retail,104.6800,1102,111,Maize
+MW,Malawi,maize,MWK,2018,retail,115.9900,1079,103,Maize
+MW,Malawi,maize,MWK,2019,retail,189.1900,1110,118,Maize
+MW,Malawi,maize,MWK,2020,retail,200.0000,687,101,Maize; Maize (new harvest)
+MW,Malawi,maize,MWK,2021,retail,155.0000,944,88,Maize; Maize (new harvest)
+MW,Malawi,maize,MWK,2022,retail,290.0000,229,91,Maize
+MW,Malawi,maize,MWK,2023,retail,650.0000,923,96,Maize (new harvest)
+MW,Malawi,maize,MWK,2024,retail,768.1800,829,96,Maize (new harvest)
+MW,Malawi,maize,MWK,2025,retail,1233.3300,1050,99,Maize; Maize (new harvest)
+MW,Malawi,maize,SOS,1998,retail,1540.0000,12,1,Maize (white)
+MW,Malawi,maize,SOS,1999,retail,1634.0000,12,1,Maize (white)
+MW,Malawi,maize,SOS,2000,retail,1231.5000,12,1,Maize (white)
+MW,Malawi,maize,SOS,2001,retail,1884.0000,12,1,Maize (white)
+MW,Malawi,maize,SOS,2002,retail,1814.0000,8,1,Maize (white)
+MW,Malawi,maize,SOS,2003,retail,2330.0000,11,1,Maize (white)
+MW,Malawi,maize,SOS,2004,retail,2583.5000,12,1,Maize (white)
+MW,Malawi,maize,SOS,2005,retail,2736.5000,12,1,Maize (white)
+MW,Malawi,maize,SOS,2006,retail,2410.5000,12,1,Maize (white)
+MW,Malawi,maize,SOS,2007,retail,2979.0000,12,1,Maize (white)
+MW,Malawi,maize,SOS,2008,retail,9500.0000,12,1,Maize (white)
+MW,Malawi,maize,SOS,2009,retail,5750.0000,12,1,Maize (white)
+MW,Malawi,maize,SOS,2010,retail,8041.5000,12,1,Maize (white)
+MW,Malawi,maize,SOS,2011,retail,11874.5000,12,1,Maize (white)
+MW,Malawi,maize,SOS,2012,retail,6487.5000,12,1,Maize (white)
+MW,Malawi,maize,SOS,2013,retail,5530.0000,12,1,Maize (white)
+MW,Malawi,maize,SOS,2014,retail,8055.0000,12,1,Maize (white)
+MW,Malawi,maize,SOS,2015,retail,8433.5000,12,1,Maize (white)
+MW,Malawi,maize,SOS,2016,retail,7650.0000,9,1,Maize (white)
+MW,Malawi,maize,SOS,2017,retail,10333.5000,12,1,Maize (white)
+MW,Malawi,maize,SOS,2018,retail,6800.0000,12,1,Maize (white)
+MW,Malawi,maize,SOS,2019,retail,7400.0000,6,1,Maize (white)
+MW,Malawi,millet,MWK,2020,retail,396.8800,83,45,Millet
+MW,Malawi,millet,MWK,2021,retail,425.0000,179,53,Millet
+MW,Malawi,millet,MWK,2025,retail,2281.2500,305,87,Millet
+MW,Malawi,pigeon_pea,MWK,2015,retail,332.5850,22,19,Pigeon peas
+MW,Malawi,pigeon_pea,MWK,2019,retail,300.0000,147,64,Pigeon peas
+MW,Malawi,pigeon_pea,MWK,2020,retail,553.3300,103,53,Pigeon peas
+MW,Malawi,pigeon_pea,MWK,2021,retail,602.9400,219,60,Pigeon peas
+MW,Malawi,pigeon_pea,MWK,2023,retail,1000.0000,571,93,Pigeon peas
+MW,Malawi,pigeon_pea,MWK,2024,retail,2000.0000,452,95,Pigeon peas
+MW,Malawi,pigeon_pea,MWK,2025,retail,2650.0000,702,88,Pigeon peas
+MW,Malawi,potato,MWK,2020,retail,500.0000,137,70,Potatoes
+MW,Malawi,potato,MWK,2021,retail,585.2900,261,68,Potatoes
+MW,Malawi,sorghum,MWK,2020,retail,302.5000,76,41,Sorghum
+MW,Malawi,sorghum,MWK,2021,retail,328.7500,150,47,Sorghum
+MW,Malawi,sorghum,MWK,2025,retail,1200.0000,303,72,Sorghum
+MW,Malawi,sorghum,SOS,2001,retail,2043.0000,11,1,Sorghum (red)
+MW,Malawi,sorghum,SOS,2002,retail,2000.0000,8,1,Sorghum (red)
+MW,Malawi,sorghum,SOS,2003,retail,2250.0000,11,1,Sorghum (red)
+MW,Malawi,sorghum,SOS,2004,retail,2667.0000,11,1,Sorghum (red)
+MW,Malawi,sorghum,SOS,2005,retail,2292.0000,11,1,Sorghum (red)
+MW,Malawi,sorghum,SOS,2006,retail,1916.5000,12,1,Sorghum (red)
+MW,Malawi,sorghum,SOS,2007,retail,2208.0000,12,1,Sorghum (red)
+MW,Malawi,sorghum,SOS,2008,retail,6583.5000,12,1,Sorghum (red)
+MW,Malawi,sorghum,SOS,2009,retail,4791.5000,12,1,Sorghum (red)
+MW,Malawi,sorghum,SOS,2010,retail,7760.5000,12,1,Sorghum (red)
+MW,Malawi,sorghum,SOS,2011,retail,17904.0000,12,1,Sorghum (red)
+MW,Malawi,sorghum,SOS,2012,retail,5300.0000,12,1,Sorghum (red)
+MW,Malawi,sorghum,SOS,2013,retail,5557.5000,12,1,Sorghum (red)
+MW,Malawi,sorghum,SOS,2014,retail,10300.0000,12,1,Sorghum (red)
+MW,Malawi,sorghum,SOS,2015,retail,8725.0000,12,1,Sorghum (red)
+MW,Malawi,sorghum,SOS,2016,retail,6600.0000,9,1,Sorghum (red)
+MW,Malawi,sorghum,SOS,2017,retail,11900.0000,12,1,Sorghum (red)
+MW,Malawi,sorghum,SOS,2018,retail,8000.0000,12,1,Sorghum (red)
+MW,Malawi,sorghum,SOS,2019,retail,7762.5000,6,1,Sorghum (red)
+MW,Malawi,soybean,MWK,2025,retail,2500.0000,738,97,Soybeans
+MW,Malawi,sweet_potato,MWK,2020,retail,300.0000,128,66,Sweet potatoes
+MW,Malawi,sweet_potato,MWK,2021,retail,312.5000,251,65,Sweet potatoes
+MW,Malawi,sweet_potato,MWK,2025,retail,833.0000,848,97,Sweet potatoes
+MZ,Mozambique,cowpea,MZN,2011,retail,24.3100,168,23,Cowpeas
+MZ,Mozambique,cowpea,MZN,2012,retail,25.4300,262,25,Cowpeas
+MZ,Mozambique,cowpea,MZN,2013,retail,25.0000,252,25,Cowpeas
+MZ,Mozambique,cowpea,MZN,2014,retail,22.5000,239,24,Cowpeas
+MZ,Mozambique,cowpea,MZN,2015,retail,25.7050,196,23,Cowpeas
+MZ,Mozambique,cowpea,MZN,2016,retail,45.0000,173,19,Cowpeas
+MZ,Mozambique,cowpea,MZN,2017,retail,31.7250,194,23,Cowpeas
+MZ,Mozambique,cowpea,MZN,2018,retail,30.0000,213,23,Cowpeas
+MZ,Mozambique,cowpea,MZN,2019,retail,40.0000,229,25,Cowpeas
+MZ,Mozambique,cowpea,MZN,2020,retail,53.6800,313,48,Cowpeas
+MZ,Mozambique,cowpea,MZN,2021,retail,65.0000,561,79,Cowpeas
+MZ,Mozambique,cowpea,MZN,2022,retail,60.0000,384,68,Cowpeas
+MZ,Mozambique,cowpea,MZN,2023,retail,60.0000,194,65,Cowpeas
+MZ,Mozambique,cowpea,MZN,2024,retail,61.6950,118,42,Cowpeas
+MZ,Mozambique,cowpea,MZN,2025,retail,67.9700,87,37,Cowpeas
+MZ,Mozambique,dry_beans,MZN,2003,retail,15.2500,79,8,Beans (dry)
+MZ,Mozambique,dry_beans,MZN,2004,retail,16.6350,58,8,Beans (dry)
+MZ,Mozambique,dry_beans,MZN,2005,retail,19.0500,95,9,Beans (dry)
+MZ,Mozambique,dry_beans,MZN,2006,retail,24.2050,108,9,Beans (dry)
+MZ,Mozambique,dry_beans,MZN,2007,retail,25.7200,108,9,Beans (dry)
+MZ,Mozambique,dry_beans,MZN,2008,retail,30.0000,108,9,Beans (dry)
+MZ,Mozambique,dry_beans,MZN,2009,retail,28.8700,202,24,Beans (dry)
+MZ,Mozambique,dry_beans,MZN,2010,retail,36.0100,271,24,Beans (dry)
+MZ,Mozambique,dry_beans,MZN,2011,retail,40.4200,271,24,Beans (dry)
+MZ,Mozambique,dry_beans,MZN,2012,retail,41.0000,289,25,Beans (dry)
+MZ,Mozambique,dry_beans,MZN,2013,retail,44.5500,271,25,Beans (dry)
+MZ,Mozambique,dry_beans,MZN,2014,retail,49.4150,296,25,Beans (dry); Beans (red)
+MZ,Mozambique,dry_beans,MZN,2015,retail,50.0000,424,25,Beans (butter); Beans (catarino); Beans (dry); Beans (magnum); Beans (red)
+MZ,Mozambique,dry_beans,MZN,2016,retail,75.0000,418,19,Beans (butter); Beans (catarino); Beans (magnum)
+MZ,Mozambique,dry_beans,MZN,2017,retail,65.0000,485,23,Beans (butter); Beans (catarino); Beans (magnum)
+MZ,Mozambique,dry_beans,MZN,2018,retail,60.0000,540,23,Beans (butter); Beans (catarino); Beans (magnum)
+MZ,Mozambique,dry_beans,MZN,2019,retail,75.0000,596,25,Beans (butter); Beans (catarino); Beans (magnum)
+MZ,Mozambique,dry_beans,MZN,2020,retail,90.0000,835,49,Beans (butter); Beans (catarino); Beans (magnum)
+MZ,Mozambique,dry_beans,MZN,2021,retail,100.0000,1044,82,Beans (butter); Beans (catarino); Beans (magnum)
+MZ,Mozambique,dry_beans,MZN,2022,retail,100.0000,787,74,Beans (butter); Beans (catarino); Beans (magnum)
+MZ,Mozambique,dry_beans,MZN,2023,retail,100.0000,453,72,Beans (butter); Beans (catarino); Beans (magnum)
+MZ,Mozambique,dry_beans,MZN,2024,retail,100.0000,170,48,Beans (butter); Beans (catarino); Beans (magnum)
+MZ,Mozambique,dry_beans,MZN,2025,retail,120.0000,113,39,Beans (butter)
+MZ,Mozambique,maize,MZN,1993,retail,1.3350,14,3,Maize (white)
+MZ,Mozambique,maize,MZN,1994,retail,1.3300,30,6,Maize (white)
+MZ,Mozambique,maize,MZN,1995,retail,1.6250,64,7,Maize (white)
+MZ,Mozambique,maize,MZN,1996,retail,2.1300,75,7,Maize (white)
+MZ,Mozambique,maize,MZN,1997,retail,1.7300,73,7,Maize (white)
+MZ,Mozambique,maize,MZN,1998,retail,2.0350,88,8,Maize (white)
+MZ,Mozambique,maize,MZN,1998,wholesale,3.0200,6,2,Maize (white)
+MZ,Mozambique,maize,MZN,1999,retail,1.5700,87,8,Maize (white)
+MZ,Mozambique,maize,MZN,1999,wholesale,1.7400,22,2,Maize (white)
+MZ,Mozambique,maize,MZN,2000,retail,1.4200,76,8,Maize (white)
+MZ,Mozambique,maize,MZN,2000,wholesale,2.4300,22,2,Maize (white)
+MZ,Mozambique,maize,MZN,2001,retail,2.2500,88,8,Maize (white)
+MZ,Mozambique,maize,MZN,2001,wholesale,2.7850,24,2,Maize (white)
+MZ,Mozambique,maize,MZN,2002,retail,3.7050,76,9,Maize (white)
+MZ,Mozambique,maize,MZN,2002,wholesale,4.3150,24,2,Maize (white)
+MZ,Mozambique,maize,MZN,2003,retail,3.6050,140,12,Maize (white)
+MZ,Mozambique,maize,MZN,2003,wholesale,4.2900,24,2,Maize (white)
+MZ,Mozambique,maize,MZN,2004,retail,3.5500,139,12,Maize (white)
+MZ,Mozambique,maize,MZN,2004,wholesale,4.1300,24,2,Maize (white)
+MZ,Mozambique,maize,MZN,2005,retail,4.4350,146,13,Maize (white)
+MZ,Mozambique,maize,MZN,2005,wholesale,5.1200,26,3,Maize (white)
+MZ,Mozambique,maize,MZN,2006,retail,4.0350,156,13,Maize (white)
+MZ,Mozambique,maize,MZN,2006,wholesale,4.7100,36,3,Maize (white)
+MZ,Mozambique,maize,MZN,2007,retail,4.5700,156,13,Maize (white)
+MZ,Mozambique,maize,MZN,2007,wholesale,4.2850,36,3,Maize (white)
+MZ,Mozambique,maize,MZN,2008,retail,8.5300,156,13,Maize (white)
+MZ,Mozambique,maize,MZN,2008,wholesale,8.2250,36,3,Maize (white)
+MZ,Mozambique,maize,MZN,2009,retail,7.4300,219,24,Maize (white)
+MZ,Mozambique,maize,MZN,2009,wholesale,7.6350,36,3,Maize (white)
+MZ,Mozambique,maize,MZN,2010,retail,8.1250,268,25,Maize (white)
+MZ,Mozambique,maize,MZN,2010,wholesale,8.1000,33,3,Maize (white)
+MZ,Mozambique,maize,MZN,2011,retail,7.7700,277,25,Maize (white)
+MZ,Mozambique,maize,MZN,2011,wholesale,8.2300,34,3,Maize (white)
+MZ,Mozambique,maize,MZN,2012,retail,8.5700,281,25,Maize (white)
+MZ,Mozambique,maize,MZN,2012,wholesale,8.0300,35,3,Maize (white)
+MZ,Mozambique,maize,MZN,2013,retail,10.8800,259,24,Maize (white)
+MZ,Mozambique,maize,MZN,2013,wholesale,10.8000,34,3,Maize (white)
+MZ,Mozambique,maize,MZN,2014,retail,8.7100,260,25,Maize (white)
+MZ,Mozambique,maize,MZN,2014,wholesale,9.5400,31,3,Maize (white)
+MZ,Mozambique,maize,MZN,2015,retail,11.0100,240,26,Maize (white)
+MZ,Mozambique,maize,MZN,2015,wholesale,12.1500,31,3,Maize (white)
+MZ,Mozambique,maize,MZN,2016,retail,22.8600,211,21,Maize (white)
+MZ,Mozambique,maize,MZN,2016,wholesale,23.2200,34,3,Maize (white)
+MZ,Mozambique,maize,MZN,2017,retail,11.4300,223,23,Maize (white)
+MZ,Mozambique,maize,MZN,2017,wholesale,23.1700,27,3,Maize (white)
+MZ,Mozambique,maize,MZN,2018,retail,11.4300,216,23,Maize (white)
+MZ,Mozambique,maize,MZN,2018,wholesale,17.1400,23,2,Maize (white)
+MZ,Mozambique,maize,MZN,2019,retail,18.5700,235,24,Maize (white)
+MZ,Mozambique,maize,MZN,2019,wholesale,20.1350,20,2,Maize (white)
+MZ,Mozambique,maize,MZN,2020,retail,22.4550,310,44,Maize (white)
+MZ,Mozambique,maize,MZN,2020,wholesale,25.5350,6,2,Maize (white)
+MZ,Mozambique,maize,MZN,2021,retail,25.1400,256,39,Maize (white)
+MZ,Mozambique,maize,MZN,2022,retail,24.9500,217,30,Maize (white)
+MZ,Mozambique,maize,MZN,2023,retail,24.9500,146,26,Maize (white)
+MZ,Mozambique,maize,MZN,2024,retail,29.4050,20,9,Maize (white)
+MZ,Mozambique,potato,MZN,2013,retail,25.0000,80,23,"Potatoes (Irish, local); Potatoes (unica)"
+MZ,Mozambique,potato,MZN,2021,retail,60.0000,430,43,Potatoes
+MZ,Mozambique,potato,MZN,2022,retail,63.3300,256,45,Potatoes
+MZ,Mozambique,potato,MZN,2023,retail,70.0000,69,42,Potatoes
+MZ,Mozambique,potato,MZN,2024,retail,70.0000,120,37,Potatoes
+MZ,Mozambique,potato,MZN,2025,retail,63.7500,70,38,Potatoes
+MZ,Mozambique,sesame,MZN,2022,retail,85.0000,22,6,Sesame
+MZ,Mozambique,sesame,MZN,2023,retail,84.1650,12,5,Sesame
+MZ,Mozambique,soybean,MZN,2022,retail,80.0000,11,2,Soybeans
+MZ,Mozambique,sweet_potato,MZN,2013,retail,12.7500,79,22,Sweet potatoes
+MZ,Mozambique,sweet_potato,MZN,2021,retail,46.6700,372,42,Sweet potatoes
+MZ,Mozambique,sweet_potato,MZN,2022,retail,50.0000,233,43,Sweet potatoes
+MZ,Mozambique,sweet_potato,MZN,2023,retail,50.0000,68,40,Sweet potatoes
+MZ,Mozambique,sweet_potato,MZN,2024,retail,50.0000,114,37,Sweet potatoes
+MZ,Mozambique,sweet_potato,MZN,2025,retail,42.5000,84,38,Sweet potatoes
+ZM,Zambia,dry_beans,ZMW,2012,retail,10.1700,512,69,Beans (dry)
+ZM,Zambia,dry_beans,ZMW,2013,retail,10.7150,768,67,Beans (dry)
+ZM,Zambia,dry_beans,ZMW,2014,retail,11.1100,773,67,Beans (dry)
+ZM,Zambia,dry_beans,ZMW,2015,retail,13.3900,779,67,Beans (dry)
+ZM,Zambia,dry_beans,ZMW,2016,retail,17.4400,658,67,Beans (dry)
+ZM,Zambia,dry_beans,ZMW,2017,retail,16.7800,777,67,Beans (dry)
+ZM,Zambia,dry_beans,ZMW,2018,retail,16.3000,782,67,Beans (dry)
+ZM,Zambia,dry_beans,ZMW,2019,retail,16.6700,794,67,Beans (dry)
+ZM,Zambia,dry_beans,ZMW,2020,retail,20.0750,784,67,Beans (dry)
+ZM,Zambia,dry_beans,ZMW,2021,retail,31.2500,665,66,Beans (dry)
+ZM,Zambia,dry_beans,ZMW,2022,retail,30.0000,177,63,Beans (dry)
+ZM,Zambia,dry_beans,ZMW,2023,retail,31.0000,129,66,Beans
+ZM,Zambia,dry_beans,ZMW,2024,retail,40.0000,1427,199,Beans
+ZM,Zambia,dry_beans,ZMW,2025,retail,46.0000,695,191,Beans
+ZM,Zambia,maize,ZMW,2003,retail,0.6700,449,38,Maize (white)
+ZM,Zambia,maize,ZMW,2004,retail,0.6200,452,38,Maize (white)
+ZM,Zambia,maize,ZMW,2005,retail,0.8300,458,39,Maize (white)
+ZM,Zambia,maize,ZMW,2006,retail,0.7400,463,39,Maize (white)
+ZM,Zambia,maize,ZMW,2007,retail,0.7800,473,40,Maize (white)
+ZM,Zambia,maize,ZMW,2008,retail,1.0600,464,39,Maize (white)
+ZM,Zambia,maize,ZMW,2009,retail,1.3600,427,39,Maize (white)
+ZM,Zambia,maize,ZMW,2010,retail,1.1450,324,39,Maize (white)
+ZM,Zambia,maize,ZMW,2011,retail,1.1100,318,40,Maize (white)
+ZM,Zambia,maize,ZMW,2012,retail,1.0700,559,66,Maize (white)
+ZM,Zambia,maize,ZMW,2013,retail,1.4800,662,63,Maize (white)
+ZM,Zambia,maize,ZMW,2014,retail,1.6700,703,64,Maize (white)
+ZM,Zambia,maize,ZMW,2015,retail,1.6700,712,64,Maize (white)
+ZM,Zambia,maize,ZMW,2016,retail,2.2200,682,65,Maize (white)
+ZM,Zambia,maize,ZMW,2017,retail,1.7800,718,64,Maize (white)
+ZM,Zambia,maize,ZMW,2018,retail,1.6700,706,63,Maize (white)
+ZM,Zambia,maize,ZMW,2019,retail,2.7800,726,64,Maize (white)
+ZM,Zambia,maize,ZMW,2020,retail,3.3300,743,64,Maize (white)
+ZM,Zambia,maize,ZMW,2021,retail,3.1100,683,65,Maize (white)
+ZM,Zambia,maize,ZMW,2022,retail,3.6000,176,60,Maize (white)
+ZM,Zambia,maize,ZMW,2024,retail,8.3500,44,44,Maize (white)
+ZM,Zambia,millet,ZMW,2012,retail,1.8000,149,23,Millet
+ZM,Zambia,millet,ZMW,2013,retail,2.4000,193,21,Millet
+ZM,Zambia,millet,ZMW,2014,retail,3.0000,192,22,Millet
+ZM,Zambia,millet,ZMW,2015,retail,3.0000,89,21,Millet
+ZM,Zambia,millet,ZMW,2016,retail,3.0000,17,17,Millet
+ZM,Zambia,sorghum,ZMW,2012,retail,2.4000,43,11,Sorghum
+ZM,Zambia,sorghum,ZMW,2013,retail,3.0000,75,11,Sorghum
+ZM,Zambia,sorghum,ZMW,2014,retail,4.0000,72,11,Sorghum
+ZM,Zambia,sorghum,ZMW,2015,retail,4.0000,37,10,Sorghum
+ZM,Zambia,sweet_potato,ZMW,2012,retail,1.4600,146,47,Sweet potatoes
+BD,Bangladesh,chickpea,BDT,2024,retail,125.5000,16,4,Chickpeas
+BD,Bangladesh,chickpea,BDT,2025,retail,101.6500,40,4,Chickpeas
+BD,Bangladesh,lentil,BDT,2006,retail,52.0000,45,5,Lentils (masur)
+BD,Bangladesh,lentil,BDT,2007,retail,57.0000,67,6,Lentils (masur)
+BD,Bangladesh,lentil,BDT,2008,retail,82.5000,70,6,Lentils (masur)
+BD,Bangladesh,lentil,BDT,2009,retail,86.0000,69,6,Lentils (masur)
+BD,Bangladesh,lentil,BDT,2010,retail,84.5600,67,6,Lentils (masur)
+BD,Bangladesh,lentil,BDT,2011,retail,75.1400,69,6,Lentils (masur)
+BD,Bangladesh,lentil,BDT,2012,retail,81.9400,72,6,Lentils (masur)
+BD,Bangladesh,lentil,BDT,2013,retail,82.9400,72,6,Lentils (masur)
+BD,Bangladesh,lentil,BDT,2014,retail,82.1800,72,6,Lentils (masur)
+BD,Bangladesh,lentil,BDT,2015,retail,96.1550,72,6,Lentils (masur)
+BD,Bangladesh,lentil,BDT,2016,retail,105.2500,72,6,Lentils (masur)
+BD,Bangladesh,lentil,BDT,2017,retail,82.0650,70,6,Lentils (masur)
+BD,Bangladesh,lentil,BDT,2018,retail,62.3500,72,6,Lentils (masur)
+BD,Bangladesh,lentil,BDT,2019,retail,60.1600,61,6,Lentils (masur)
+BD,Bangladesh,lentil,BDT,2020,retail,71.1900,253,43,Lentils (masur)
+BD,Bangladesh,lentil,BDT,2021,retail,75.0000,402,37,Lentils (masur)
+BD,Bangladesh,lentil,BDT,2022,retail,98.7600,416,37,Lentils (masur)
+BD,Bangladesh,lentil,BDT,2023,retail,102.5000,551,65,Lentils (masur)
+BD,Bangladesh,lentil,BDT,2024,retail,110.0000,727,69,Lentils (masur)
+BD,Bangladesh,lentil,BDT,2025,retail,105.0000,470,50,Lentils (masur)
+BD,Bangladesh,potato,BDT,2024,retail,58.2500,162,50,"Potatoes (Holland, white)"
+BD,Bangladesh,potato,BDT,2025,retail,24.5000,143,27,"Potatoes (Holland, white)"
+BD,Bangladesh,wheat_all,BDT,1998,wholesale,10.4718,6,1,Wheat
+BD,Bangladesh,wheat_all,BDT,1999,wholesale,9.1263,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2000,wholesale,9.7500,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2001,wholesale,9.7375,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2002,wholesale,9.2500,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2003,wholesale,8.8417,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2004,wholesale,11.2500,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2005,wholesale,14.2050,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2006,wholesale,14.7438,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2007,wholesale,21.8225,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2008,retail,31.6200,9,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2008,wholesale,28.4105,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2009,retail,18.5450,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2009,wholesale,16.1840,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2010,retail,20.8950,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2010,wholesale,17.8025,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2011,retail,25.5650,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2011,wholesale,23.5550,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2012,retail,27.7650,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2012,wholesale,25.1950,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2013,retail,31.9750,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2013,wholesale,28.0103,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2014,retail,33.6350,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2014,wholesale,27.5930,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2015,retail,31.6700,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2015,wholesale,25.0487,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2016,retail,28.7450,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2016,wholesale,20.7250,12,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2017,retail,30.2500,11,1,Wheat
+BD,Bangladesh,wheat_all,BDT,2017,wholesale,21.5000,11,1,Wheat
+PK,Pakistan,dry_beans,PKR,2014,retail,149.0800,55,5,Beans(mash)
+PK,Pakistan,dry_beans,PKR,2015,retail,202.8600,40,5,Beans(mash)
+PK,Pakistan,dry_beans,PKR,2016,retail,261.1450,60,5,Beans(mash)
+PK,Pakistan,dry_beans,PKR,2017,retail,176.5850,60,5,Beans(mash)
+PK,Pakistan,dry_beans,PKR,2018,retail,134.3750,60,5,Beans(mash)
+PK,Pakistan,dry_beans,PKR,2019,retail,174.4850,60,5,Beans(mash)
+PK,Pakistan,dry_beans,PKR,2020,retail,235.7850,60,5,Beans(mash)
+PK,Pakistan,dry_beans,PKR,2021,retail,256.7400,60,5,Beans(mash)
+PK,Pakistan,dry_beans,PKR,2022,retail,336.2100,60,5,Beans(mash)
+PK,Pakistan,dry_beans,PKR,2023,retail,481.6000,60,5,Beans(mash)
+PK,Pakistan,dry_beans,PKR,2024,retail,559.7300,60,5,Beans(mash)
+PK,Pakistan,dry_beans,PKR,2025,retail,458.5200,60,5,Beans(mash)
+PK,Pakistan,lentil,PKR,2014,retail,128.0000,20,5,Lentils (masur)
+PK,Pakistan,lentil,PKR,2015,retail,147.5000,105,5,Lentils (masur); Lentils (moong)
+PK,Pakistan,lentil,PKR,2016,retail,149.0850,120,5,Lentils (masur); Lentils (moong)
+PK,Pakistan,lentil,PKR,2017,retail,116.9950,120,5,Lentils (masur); Lentils (moong)
+PK,Pakistan,lentil,PKR,2018,retail,116.3400,120,5,Lentils (masur); Lentils (moong)
+PK,Pakistan,lentil,PKR,2019,retail,134.5850,120,5,Lentils (masur); Lentils (moong)
+PK,Pakistan,lentil,PKR,2020,retail,180.7850,120,5,Lentils (masur); Lentils (moong)
+PK,Pakistan,lentil,PKR,2021,retail,179.3450,120,5,Lentils (masur); Lentils (moong)
+PK,Pakistan,lentil,PKR,2022,retail,230.0050,120,5,Lentils (masur); Lentils (moong)
+PK,Pakistan,lentil,PKR,2023,retail,279.9800,120,5,Lentils (masur); Lentils (moong)
+PK,Pakistan,lentil,PKR,2024,retail,328.0250,120,5,Lentils (masur); Lentils (moong)
+PK,Pakistan,lentil,PKR,2025,retail,350.7250,120,5,Lentils (masur); Lentils (moong)
+PK,Pakistan,wheat_all,PKR,2006,retail,12.0000,48,4,Wheat
+PK,Pakistan,wheat_all,PKR,2007,retail,13.0050,48,4,Wheat
+PK,Pakistan,wheat_all,PKR,2008,retail,20.8150,48,4,Wheat
+PK,Pakistan,wheat_all,PKR,2009,retail,25.1200,48,4,Wheat
+PK,Pakistan,wheat_all,PKR,2010,retail,25.9000,48,4,Wheat
+PK,Pakistan,wheat_all,PKR,2011,retail,26.5200,48,4,Wheat
+PK,Pakistan,wheat_all,PKR,2012,retail,28.5500,48,4,Wheat
+PK,Pakistan,wheat_all,PKR,2013,retail,34.6000,49,5,Wheat
+PK,Pakistan,wheat_all,PKR,2014,retail,35.8150,52,5,Wheat
+PK,Pakistan,wheat_all,PKR,2015,retail,35.0000,60,5,Wheat
+PK,Pakistan,wheat_all,PKR,2016,retail,34.6200,60,5,Wheat
+PK,Pakistan,wheat_all,PKR,2017,retail,35.0000,60,5,Wheat
+PK,Pakistan,wheat_all,PKR,2018,retail,35.0000,60,5,Wheat
+PK,Pakistan,wheat_all,PKR,2019,retail,36.9000,60,5,Wheat
+PK,Pakistan,wheat_all,PKR,2020,retail,50.2050,60,5,Wheat
+PK,Pakistan,wheat_all,PKR,2021,retail,57.0000,60,5,Wheat
+PK,Pakistan,wheat_all,PKR,2022,retail,70.3500,60,5,Wheat
+PK,Pakistan,wheat_all,PKR,2023,retail,122.5000,60,5,Wheat
+PK,Pakistan,wheat_all,PKR,2024,retail,86.0000,60,5,Wheat
+PK,Pakistan,wheat_all,PKR,2025,retail,79.5000,60,5,Wheat
+NP,Nepal,chickpea,NPR,2019,retail,120.0000,223,25,Chickpeas
+NP,Nepal,chickpea,NPR,2020,retail,120.0000,293,25,Chickpeas
+NP,Nepal,chickpea,NPR,2021,retail,130.0000,284,25,Chickpeas
+NP,Nepal,chickpea,NPR,2022,retail,140.0000,289,25,Chickpeas
+NP,Nepal,chickpea,NPR,2023,retail,130.0000,293,25,Chickpeas
+NP,Nepal,chickpea,NPR,2024,retail,145.0000,241,25,Chickpeas
+NP,Nepal,chickpea,NPR,2025,retail,160.0000,290,25,Chickpeas
+NP,Nepal,dry_beans,NPR,2019,retail,130.0000,220,25,Beans (black)
+NP,Nepal,dry_beans,NPR,2020,retail,150.0000,241,25,Beans (black)
+NP,Nepal,dry_beans,NPR,2021,retail,160.0000,284,25,Beans (black)
+NP,Nepal,dry_beans,NPR,2022,retail,170.0000,289,25,Beans (black)
+NP,Nepal,dry_beans,NPR,2023,retail,180.0000,293,25,Beans (black)
+NP,Nepal,dry_beans,NPR,2024,retail,200.0000,241,25,Beans (black)
+NP,Nepal,dry_beans,NPR,2025,retail,220.0000,290,25,Beans (black)
+NP,Nepal,potato,NPR,2019,retail,40.0000,204,24,Potatoes (red)
+NP,Nepal,potato,NPR,2020,retail,50.5000,270,25,Potatoes (red)
+NP,Nepal,potato,NPR,2021,retail,50.0000,253,25,Potatoes (red)
+NP,Nepal,potato,NPR,2022,retail,50.0000,254,25,Potatoes (red)
+NP,Nepal,potato,NPR,2023,retail,50.0000,293,25,Potatoes (red)
+NP,Nepal,potato,NPR,2024,retail,60.0000,241,25,Potatoes (red)
+NP,Nepal,potato,NPR,2025,retail,50.0000,290,25,Potatoes (red)
+SN,Senegal,cowpea,XOF,2020,retail,568.3350,296,49,Beans (niebe)
+SN,Senegal,cowpea,XOF,2021,retail,550.0000,399,48,Beans (niebe)
+SN,Senegal,cowpea,XOF,2022,retail,1083.0000,285,46,Beans (niebe)
+SN,Senegal,cowpea,XOF,2023,retail,1000.0000,489,43,Beans (niebe)
+SN,Senegal,cowpea,XOF,2024,retail,850.0000,477,45,Beans (niebe)
+SN,Senegal,cowpea,XOF,2025,retail,885.4150,406,45,Beans (niebe)
+SN,Senegal,groundnut,XOF,2020,retail,275.0000,13,13,Groundnuts (unshelled)
+SN,Senegal,groundnut,XOF,2021,retail,308.0000,25,13,Groundnuts (unshelled)
+SN,Senegal,groundnut,XOF,2022,retail,425.0000,270,45,Groundnuts (unshelled)
+SN,Senegal,groundnut,XOF,2023,retail,475.0000,457,43,Groundnuts (unshelled)
+SN,Senegal,groundnut,XOF,2024,retail,400.0000,408,44,Groundnuts (unshelled)
+SN,Senegal,groundnut,XOF,2025,retail,384.1650,302,45,Groundnuts (unshelled)
+SN,Senegal,maize,XOF,2007,retail,170.0000,375,44,Maize (local)
+SN,Senegal,maize,XOF,2008,retail,190.0000,318,47,Maize (local)
+SN,Senegal,maize,XOF,2009,retail,190.0000,413,43,Maize (local)
+SN,Senegal,maize,XOF,2010,retail,185.0000,419,47,Maize (local)
+SN,Senegal,maize,XOF,2011,retail,195.0000,429,52,Maize (local)
+SN,Senegal,maize,XOF,2012,retail,225.0000,400,50,Maize (local)
+SN,Senegal,maize,XOF,2013,retail,225.0000,427,49,Maize (local)
+SN,Senegal,maize,XOF,2014,retail,201.2500,450,46,Maize (local)
+SN,Senegal,maize,XOF,2015,retail,200.0000,385,46,Maize (local)
+SN,Senegal,maize,XOF,2016,retail,200.0000,428,49,Maize (local)
+SN,Senegal,maize,XOF,2017,retail,220.0000,444,47,Maize (local)
+SN,Senegal,maize,XOF,2018,retail,203.0000,397,46,Maize (local)
+SN,Senegal,maize,XOF,2019,retail,210.0000,407,44,Maize (local)
+SN,Senegal,maize,XOF,2020,retail,218.3350,322,51,Maize (local)
+SN,Senegal,maize,XOF,2021,retail,246.0000,309,42,Maize (local)
+SN,Senegal,maize,XOF,2022,retail,350.0000,221,37,Maize (local)
+SN,Senegal,maize,XOF,2023,retail,350.0000,394,40,Maize (local)
+SN,Senegal,maize,XOF,2024,retail,300.0000,456,44,Maize (local)
+SN,Senegal,maize,XOF,2025,retail,300.0000,414,45,Maize (local)
+SN,Senegal,millet,XOF,2000,retail,125.9350,12,1,Millet
+SN,Senegal,millet,XOF,2001,retail,142.9650,12,1,Millet
+SN,Senegal,millet,XOF,2002,retail,233.0550,10,1,Millet
+SN,Senegal,millet,XOF,2003,retail,172.3350,12,1,Millet
+SN,Senegal,millet,XOF,2004,retail,144.2500,12,1,Millet
+SN,Senegal,millet,XOF,2005,retail,200.0000,12,1,Millet
+SN,Senegal,millet,XOF,2006,retail,171.5000,12,1,Millet
+SN,Senegal,millet,XOF,2007,retail,175.6250,580,52,Millet
+SN,Senegal,millet,XOF,2008,retail,210.0000,512,50,Millet
+SN,Senegal,millet,XOF,2009,retail,200.0000,516,47,Millet
+SN,Senegal,millet,XOF,2010,retail,175.0000,533,50,Millet
+SN,Senegal,millet,XOF,2011,retail,187.5000,535,54,Millet
+SN,Senegal,millet,XOF,2012,retail,225.0000,590,56,Millet
+SN,Senegal,millet,XOF,2013,retail,230.0000,540,54,Millet
+SN,Senegal,millet,XOF,2014,retail,226.2900,500,52,Millet
+SN,Senegal,millet,XOF,2015,retail,209.1650,484,52,Millet
+SN,Senegal,millet,XOF,2016,retail,200.0000,546,52,Millet
+SN,Senegal,millet,XOF,2017,retail,235.0000,565,51,Millet
+SN,Senegal,millet,XOF,2018,retail,211.0000,514,51,Millet
+SN,Senegal,millet,XOF,2019,retail,225.0000,512,47,Millet
+SN,Senegal,millet,XOF,2020,retail,263.7500,441,53,Millet
+SN,Senegal,millet,XOF,2021,retail,250.0000,426,49,Millet
+SN,Senegal,millet,XOF,2022,retail,400.0000,317,46,Millet
+SN,Senegal,millet,XOF,2023,retail,425.0000,491,43,Millet
+SN,Senegal,millet,XOF,2024,retail,325.0000,504,44,Millet
+SN,Senegal,millet,XOF,2025,retail,300.0000,441,45,Millet
+SN,Senegal,sorghum,XOF,2000,retail,126.4600,12,1,Sorghum
+SN,Senegal,sorghum,XOF,2001,retail,157.0000,12,1,Sorghum
+SN,Senegal,sorghum,XOF,2002,retail,230.0000,7,1,Sorghum
+SN,Senegal,sorghum,XOF,2003,retail,189.6900,12,1,Sorghum
+SN,Senegal,sorghum,XOF,2004,retail,144.4700,12,1,Sorghum
+SN,Senegal,sorghum,XOF,2005,retail,200.0000,12,1,Sorghum
+SN,Senegal,sorghum,XOF,2006,retail,175.0000,12,1,Sorghum
+SN,Senegal,sorghum,XOF,2007,retail,180.0000,427,48,Sorghum
+SN,Senegal,sorghum,XOF,2008,retail,200.0000,365,46,Sorghum
+SN,Senegal,sorghum,XOF,2009,retail,197.5000,409,46,Sorghum
+SN,Senegal,sorghum,XOF,2010,retail,180.0000,407,46,Sorghum
+SN,Senegal,sorghum,XOF,2011,retail,195.0000,402,49,Sorghum
+SN,Senegal,sorghum,XOF,2012,retail,228.0000,383,53,Sorghum
+SN,Senegal,sorghum,XOF,2013,retail,225.0000,392,51,Sorghum
+SN,Senegal,sorghum,XOF,2014,retail,225.0000,432,49,Sorghum
+SN,Senegal,sorghum,XOF,2015,retail,225.0000,351,47,Sorghum
+SN,Senegal,sorghum,XOF,2016,retail,225.0000,385,51,Sorghum
+SN,Senegal,sorghum,XOF,2017,retail,250.0000,342,46,Sorghum
+SN,Senegal,sorghum,XOF,2018,retail,250.0000,315,41,Sorghum
+SN,Senegal,sorghum,XOF,2019,retail,250.0000,292,39,Sorghum
+SN,Senegal,sorghum,XOF,2020,retail,250.0000,249,43,Sorghum
+SN,Senegal,sorghum,XOF,2021,retail,250.0000,266,43,Sorghum
+SN,Senegal,sorghum,XOF,2022,retail,400.0000,197,37,Sorghum
+SN,Senegal,sorghum,XOF,2023,retail,400.0000,301,37,Sorghum
+SN,Senegal,sorghum,XOF,2024,retail,368.5000,388,39,Sorghum
+SN,Senegal,sorghum,XOF,2025,retail,350.0000,306,40,Sorghum
+ML,Mali,cassava,XOF,2021,retail,425.0000,69,25,Cassava
+ML,Mali,cassava,XOF,2022,retail,425.0000,85,26,Cassava
+ML,Mali,cassava,XOF,2023,retail,360.0000,53,18,Cassava
+ML,Mali,cassava,XOF,2024,retail,370.0000,67,30,Cassava
+ML,Mali,cassava,XOF,2025,retail,415.0000,69,29,Cassava
+ML,Mali,cowpea,XOF,2011,retail,500.0000,9,9,Beans (niebe)
+ML,Mali,cowpea,XOF,2012,retail,500.0000,27,9,Beans (niebe)
+ML,Mali,cowpea,XOF,2015,retail,375.0000,821,71,Beans (niebe)
+ML,Mali,cowpea,XOF,2016,retail,400.0000,846,71,Beans (niebe)
+ML,Mali,cowpea,XOF,2017,retail,438.0000,1033,98,Beans (niebe)
+ML,Mali,cowpea,XOF,2018,retail,477.0000,970,102,Beans (niebe)
+ML,Mali,cowpea,XOF,2019,retail,440.0000,838,101,Beans (niebe)
+ML,Mali,cowpea,XOF,2020,retail,400.0000,1067,108,Beans (niebe)
+ML,Mali,cowpea,XOF,2021,retail,500.0000,826,99,Beans (niebe)
+ML,Mali,cowpea,XOF,2022,retail,650.0000,717,66,Beans (niebe)
+ML,Mali,cowpea,XOF,2023,retail,491.0000,395,66,Beans (niebe)
+ML,Mali,cowpea,XOF,2024,retail,638.0000,724,66,Beans (niebe)
+ML,Mali,cowpea,XOF,2025,retail,680.0000,731,91,Beans (niebe)
+ML,Mali,dry_beans,XOF,2021,retail,512.0000,277,46,Beans (haricot)
+ML,Mali,dry_beans,XOF,2022,retail,685.0000,276,37,Beans (haricot)
+ML,Mali,dry_beans,XOF,2023,retail,640.0000,279,38,Beans (haricot)
+ML,Mali,dry_beans,XOF,2024,retail,705.0000,215,45,Beans (haricot)
+ML,Mali,dry_beans,XOF,2025,retail,697.5000,130,42,Beans (haricot)
+ML,Mali,maize,XOF,2003,retail,146.4250,96,8,Maize
+ML,Mali,maize,XOF,2004,retail,100.0000,89,8,Maize
+ML,Mali,maize,XOF,2005,retail,154.3800,94,8,Maize
+ML,Mali,maize,XOF,2006,retail,131.1600,96,8,Maize
+ML,Mali,maize,XOF,2007,retail,125.0000,492,46,Maize
+ML,Mali,maize,XOF,2008,retail,150.0000,489,47,Maize
+ML,Mali,maize,XOF,2009,retail,175.0000,496,48,Maize
+ML,Mali,maize,XOF,2010,retail,160.0000,483,46,Maize
+ML,Mali,maize,XOF,2011,retail,170.0000,443,48,Maize
+ML,Mali,maize,XOF,2012,retail,238.0000,350,53,Maize
+ML,Mali,maize,XOF,2013,retail,175.0000,394,45,Maize
+ML,Mali,maize,XOF,2014,retail,175.0000,587,54,Maize
+ML,Mali,maize,XOF,2015,retail,164.0000,611,60,Maize
+ML,Mali,maize,XOF,2016,retail,170.0000,706,59,Maize
+ML,Mali,maize,XOF,2017,retail,175.0000,746,79,Maize
+ML,Mali,maize,XOF,2018,retail,200.0000,667,71,Maize
+ML,Mali,maize,XOF,2019,retail,162.5000,565,71,Maize
+ML,Mali,maize,XOF,2020,retail,165.0000,758,82,Maize
+ML,Mali,maize,XOF,2021,retail,205.0000,789,83,Maize
+ML,Mali,maize,XOF,2022,retail,300.0000,749,78,Maize
+ML,Mali,maize,XOF,2023,retail,250.0000,603,72,Maize
+ML,Mali,maize,XOF,2024,retail,275.0000,709,78,Maize
+ML,Mali,maize,XOF,2025,retail,250.0000,681,84,Maize
+ML,Mali,millet,XOF,2003,retail,173.6500,96,8,Millet
+ML,Mali,millet,XOF,2004,retail,105.0000,89,8,Millet
+ML,Mali,millet,XOF,2005,retail,181.9250,94,8,Millet
+ML,Mali,millet,XOF,2006,retail,152.2100,96,8,Millet
+ML,Mali,millet,XOF,2007,retail,127.5000,675,57,Millet
+ML,Mali,millet,XOF,2008,retail,151.2500,671,58,Millet
+ML,Mali,millet,XOF,2009,retail,175.0000,647,57,Millet
+ML,Mali,millet,XOF,2010,retail,172.5000,643,57,Millet
+ML,Mali,millet,XOF,2011,retail,165.3100,593,63,Millet
+ML,Mali,millet,XOF,2012,retail,288.0000,377,58,Millet
+ML,Mali,millet,XOF,2013,retail,218.2500,460,56,Millet
+ML,Mali,millet,XOF,2014,retail,200.0000,697,61,Millet
+ML,Mali,millet,XOF,2015,retail,200.0000,711,68,Millet
+ML,Mali,millet,XOF,2016,retail,192.0000,821,70,Millet
+ML,Mali,millet,XOF,2017,retail,225.0000,1063,101,Millet
+ML,Mali,millet,XOF,2018,retail,250.0000,1069,101,Millet
+ML,Mali,millet,XOF,2019,retail,200.0000,989,100,Millet
+ML,Mali,millet,XOF,2020,retail,200.0000,1179,116,Millet
+ML,Mali,millet,XOF,2021,retail,218.0000,1138,111,Millet
+ML,Mali,millet,XOF,2022,retail,380.0000,1073,106,Millet
+ML,Mali,millet,XOF,2023,retail,313.1650,862,96,Millet
+ML,Mali,millet,XOF,2024,retail,340.0000,821,92,Millet
+ML,Mali,millet,XOF,2025,retail,320.0000,756,97,Millet
+ML,Mali,potato,XOF,2021,retail,300.0000,134,36,Potatoes (red)
+ML,Mali,potato,XOF,2022,retail,325.0000,151,34,Potatoes (red)
+ML,Mali,potato,XOF,2023,retail,300.0000,128,32,Potatoes (red)
+ML,Mali,potato,XOF,2024,retail,300.0000,142,41,Potatoes (red)
+ML,Mali,potato,XOF,2025,retail,270.0000,119,45,Potatoes (red)
+ML,Mali,rice,XOF,2007,retail,144.8000,130,14,Rice (paddy)
+ML,Mali,rice,XOF,2008,retail,162.1650,108,13,Rice (paddy)
+ML,Mali,rice,XOF,2009,retail,166.0000,102,16,Rice (paddy)
+ML,Mali,rice,XOF,2010,retail,162.5450,90,12,Rice (paddy)
+ML,Mali,rice,XOF,2011,retail,154.0000,86,14,Rice (paddy)
+ML,Mali,rice,XOF,2015,retail,153.0000,49,7,Rice (paddy)
+ML,Mali,rice,XOF,2016,retail,160.0000,99,11,Rice (paddy)
+ML,Mali,rice,XOF,2018,retail,145.2500,14,14,Rice (paddy)
+ML,Mali,rice,XOF,2020,retail,132.5000,153,30,Rice (paddy)
+ML,Mali,rice,XOF,2021,retail,170.0000,223,34,Rice (paddy)
+ML,Mali,rice,XOF,2022,retail,195.0000,147,27,Rice (paddy)
+ML,Mali,rice,XOF,2023,retail,214.0000,157,37,Rice (paddy)
+ML,Mali,rice,XOF,2024,retail,300.0000,87,25,Rice (paddy)
+ML,Mali,rice,XOF,2025,retail,360.0000,75,33,Rice (paddy)
+ML,Mali,sorghum,XOF,2003,retail,166.7750,96,8,Sorghum
+ML,Mali,sorghum,XOF,2004,retail,100.0000,89,8,Sorghum
+ML,Mali,sorghum,XOF,2005,retail,175.1700,93,8,Sorghum
+ML,Mali,sorghum,XOF,2006,retail,141.1050,92,8,Sorghum
+ML,Mali,sorghum,XOF,2007,retail,125.0000,659,56,Sorghum
+ML,Mali,sorghum,XOF,2008,retail,150.0000,656,56,Sorghum
+ML,Mali,sorghum,XOF,2009,retail,168.7500,647,56,Sorghum
+ML,Mali,sorghum,XOF,2010,retail,152.2500,632,56,Sorghum
+ML,Mali,sorghum,XOF,2011,retail,151.6250,580,62,Sorghum
+ML,Mali,sorghum,XOF,2012,retail,263.5750,366,56,Sorghum
+ML,Mali,sorghum,XOF,2013,retail,180.0000,460,56,Sorghum
+ML,Mali,sorghum,XOF,2014,retail,177.0000,695,60,Sorghum
+ML,Mali,sorghum,XOF,2015,retail,175.0000,686,66,Sorghum
+ML,Mali,sorghum,XOF,2016,retail,175.0000,785,66,Sorghum
+ML,Mali,sorghum,XOF,2017,retail,200.0000,886,83,Sorghum
+ML,Mali,sorghum,XOF,2018,retail,230.0000,814,86,Sorghum
+ML,Mali,sorghum,XOF,2019,retail,200.0000,725,87,Sorghum
+ML,Mali,sorghum,XOF,2020,retail,193.0000,901,97,Sorghum
+ML,Mali,sorghum,XOF,2021,retail,200.0000,868,93,Sorghum
+ML,Mali,sorghum,XOF,2022,retail,350.0000,851,86,Sorghum
+ML,Mali,sorghum,XOF,2023,retail,300.0000,671,82,Sorghum
+ML,Mali,sorghum,XOF,2024,retail,300.0000,727,83,Sorghum
+ML,Mali,sorghum,XOF,2025,retail,265.0000,720,89,Sorghum
+ML,Mali,sweet_potato,XOF,2021,retail,350.0000,196,43,Sweet potatoes
+ML,Mali,sweet_potato,XOF,2022,retail,300.0000,223,36,Sweet potatoes
+ML,Mali,sweet_potato,XOF,2023,retail,350.0000,215,40,Sweet potatoes
+ML,Mali,sweet_potato,XOF,2024,retail,300.0000,134,39,Sweet potatoes
+ML,Mali,sweet_potato,XOF,2025,retail,295.0000,115,45,Sweet potatoes
+ML,Mali,wheat_all,XOF,2021,retail,350.0000,56,23,Wheat
+ML,Mali,wheat_all,XOF,2022,retail,430.5000,64,19,Wheat
+ML,Mali,wheat_all,XOF,2023,retail,369.7500,40,7,Wheat
+ML,Mali,wheat_all,XOF,2024,retail,500.0000,61,21,Wheat
+ML,Mali,wheat_all,XOF,2025,retail,500.0000,54,28,Wheat
+BF,Burkina Faso,cowpea,XOF,2012,retail,298.8250,8,2,Beans (niebe)
+BF,Burkina Faso,cowpea,XOF,2013,retail,290.4550,24,2,Beans (niebe)
+BF,Burkina Faso,cowpea,XOF,2014,retail,251.2000,24,2,Beans (niebe)
+BF,Burkina Faso,cowpea,XOF,2015,retail,281.0000,623,59,Beans (niebe)
+BF,Burkina Faso,cowpea,XOF,2016,retail,314.0000,674,59,Beans (niebe)
+BF,Burkina Faso,cowpea,XOF,2017,retail,330.0000,717,60,Beans (niebe)
+BF,Burkina Faso,cowpea,XOF,2018,retail,356.0000,719,60,Beans (niebe)
+BF,Burkina Faso,cowpea,XOF,2019,retail,277.0000,719,60,Beans (niebe)
+BF,Burkina Faso,cowpea,XOF,2020,retail,312.0000,736,63,Beans (niebe)
+BF,Burkina Faso,cowpea,XOF,2021,retail,412.0000,753,63,Beans (niebe)
+BF,Burkina Faso,cowpea,XOF,2022,retail,512.0000,752,63,Beans (niebe)
+BF,Burkina Faso,cowpea,XOF,2023,retail,337.0000,741,63,Beans (niebe)
+BF,Burkina Faso,cowpea,XOF,2024,retail,511.5000,724,62,Beans (niebe)
+BF,Burkina Faso,cowpea,XOF,2025,retail,571.0000,731,62,Beans (niebe)
+BF,Burkina Faso,groundnut,XOF,2017,retail,252.0000,397,35,Groundnuts (unshelled)
+BF,Burkina Faso,groundnut,XOF,2018,retail,299.0000,420,36,Groundnuts (unshelled)
+BF,Burkina Faso,groundnut,XOF,2019,retail,338.0000,434,37,Groundnuts (unshelled)
+BF,Burkina Faso,groundnut,XOF,2020,retail,345.0000,572,53,Groundnuts (unshelled)
+BF,Burkina Faso,groundnut,XOF,2021,retail,338.0000,618,53,Groundnuts (unshelled)
+BF,Burkina Faso,groundnut,XOF,2022,retail,423.0000,618,55,Groundnuts (unshelled)
+BF,Burkina Faso,groundnut,XOF,2023,retail,506.0000,634,55,Groundnuts (unshelled)
+BF,Burkina Faso,groundnut,XOF,2024,retail,446.0000,629,57,Groundnuts (unshelled)
+BF,Burkina Faso,groundnut,XOF,2025,retail,442.0000,637,56,Groundnuts (unshelled)
+BF,Burkina Faso,maize,XOF,2003,retail,107.0600,120,10,Maize (white)
+BF,Burkina Faso,maize,XOF,2003,wholesale,109.3350,12,1,Maize
+BF,Burkina Faso,maize,XOF,2004,retail,96.4600,119,10,Maize (white)
+BF,Burkina Faso,maize,XOF,2005,retail,160.6250,116,10,Maize (white)
+BF,Burkina Faso,maize,XOF,2005,wholesale,140.4150,12,1,Maize
+BF,Burkina Faso,maize,XOF,2006,retail,119.0450,120,10,Maize (white)
+BF,Burkina Faso,maize,XOF,2007,retail,101.5750,120,10,Maize (white)
+BF,Burkina Faso,maize,XOF,2008,retail,146.0000,120,10,Maize (white)
+BF,Burkina Faso,maize,XOF,2009,retail,154.8800,120,10,Maize (white)
+BF,Burkina Faso,maize,XOF,2009,wholesale,128.3350,8,1,Maize
+BF,Burkina Faso,maize,XOF,2010,retail,140.0000,120,10,Maize (white)
+BF,Burkina Faso,maize,XOF,2010,wholesale,103.0000,11,1,Maize
+BF,Burkina Faso,maize,XOF,2011,retail,159.0000,120,10,Maize (white)
+BF,Burkina Faso,maize,XOF,2011,wholesale,123.5900,11,1,Maize
+BF,Burkina Faso,maize,XOF,2012,retail,196.0000,142,15,Maize (white)
+BF,Burkina Faso,maize,XOF,2013,retail,158.0000,169,15,Maize (white)
+BF,Burkina Faso,maize,XOF,2014,retail,144.0000,144,14,Maize (white)
+BF,Burkina Faso,maize,XOF,2015,retail,147.0000,622,54,Maize (white)
+BF,Burkina Faso,maize,XOF,2016,retail,156.0000,644,54,Maize (white)
+BF,Burkina Faso,maize,XOF,2017,retail,157.0000,646,54,Maize (white)
+BF,Burkina Faso,maize,XOF,2018,retail,171.0000,648,54,Maize (white)
+BF,Burkina Faso,maize,XOF,2019,retail,135.0000,648,54,Maize (white)
+BF,Burkina Faso,maize,XOF,2020,retail,139.0000,643,55,Maize (white)
+BF,Burkina Faso,maize,XOF,2021,retail,190.0000,647,54,Maize (white)
+BF,Burkina Faso,maize,XOF,2022,retail,255.0000,647,55,Maize (white)
+BF,Burkina Faso,maize,XOF,2023,retail,241.0000,636,54,Maize (white)
+BF,Burkina Faso,maize,XOF,2024,retail,249.0000,630,55,Maize (white)
+BF,Burkina Faso,maize,XOF,2025,retail,247.0000,634,55,Maize (white)
+BF,Burkina Faso,millet,XOF,1992,retail,77.6750,132,11,Millet
+BF,Burkina Faso,millet,XOF,1993,retail,69.1250,132,11,Millet
+BF,Burkina Faso,millet,XOF,1994,retail,69.2750,130,11,Millet
+BF,Burkina Faso,millet,XOF,1995,retail,90.0000,127,11,Millet
+BF,Burkina Faso,millet,XOF,1996,retail,128.8750,128,11,Millet
+BF,Burkina Faso,millet,XOF,1997,retail,127.6350,132,11,Millet
+BF,Burkina Faso,millet,XOF,1998,retail,159.7550,132,11,Millet
+BF,Burkina Faso,millet,XOF,1999,retail,118.7900,132,11,Millet
+BF,Burkina Faso,millet,XOF,2000,retail,98.0600,132,11,Millet
+BF,Burkina Faso,millet,XOF,2001,retail,152.2000,132,11,Millet
+BF,Burkina Faso,millet,XOF,2002,retail,163.0000,132,11,Millet
+BF,Burkina Faso,millet,XOF,2003,retail,126.3850,132,11,Millet
+BF,Burkina Faso,millet,XOF,2003,wholesale,109.6250,12,1,Millet
+BF,Burkina Faso,millet,XOF,2004,retail,110.0400,144,13,Millet
+BF,Burkina Faso,millet,XOF,2005,retail,187.2500,152,13,Millet
+BF,Burkina Faso,millet,XOF,2005,wholesale,156.5000,12,1,Millet
+BF,Burkina Faso,millet,XOF,2006,retail,127.5000,155,13,Millet
+BF,Burkina Faso,millet,XOF,2006,wholesale,140.0000,29,3,Millet
+BF,Burkina Faso,millet,XOF,2007,retail,117.3450,156,13,Millet
+BF,Burkina Faso,millet,XOF,2007,wholesale,123.7500,24,2,Millet
+BF,Burkina Faso,millet,XOF,2008,retail,158.0400,156,13,Millet
+BF,Burkina Faso,millet,XOF,2008,wholesale,145.0000,84,7,Millet
+BF,Burkina Faso,millet,XOF,2009,retail,164.8300,156,13,Millet
+BF,Burkina Faso,millet,XOF,2009,wholesale,160.0000,91,9,Millet
+BF,Burkina Faso,millet,XOF,2010,retail,167.0000,156,13,Millet
+BF,Burkina Faso,millet,XOF,2010,wholesale,151.0000,104,9,Millet
+BF,Burkina Faso,millet,XOF,2011,retail,167.0000,155,13,Millet
+BF,Burkina Faso,millet,XOF,2011,wholesale,150.0000,107,9,Millet
+BF,Burkina Faso,millet,XOF,2012,retail,249.5000,160,15,Millet
+BF,Burkina Faso,millet,XOF,2012,wholesale,240.0000,98,9,Millet
+BF,Burkina Faso,millet,XOF,2013,retail,196.2600,166,15,Millet
+BF,Burkina Faso,millet,XOF,2013,wholesale,195.0000,96,8,Millet
+BF,Burkina Faso,millet,XOF,2014,retail,193.0000,152,15,Millet
+BF,Burkina Faso,millet,XOF,2014,wholesale,175.0000,96,8,Millet
+BF,Burkina Faso,millet,XOF,2015,retail,184.0000,698,60,Millet
+BF,Burkina Faso,millet,XOF,2015,wholesale,175.0000,96,8,Millet
+BF,Burkina Faso,millet,XOF,2016,retail,183.0000,715,60,Millet
+BF,Burkina Faso,millet,XOF,2016,wholesale,170.0000,96,8,Millet
+BF,Burkina Faso,millet,XOF,2017,retail,214.0000,730,61,Millet
+BF,Burkina Faso,millet,XOF,2017,wholesale,202.5000,96,8,Millet
+BF,Burkina Faso,millet,XOF,2018,retail,235.5000,732,61,Millet
+BF,Burkina Faso,millet,XOF,2018,wholesale,220.0000,96,8,Millet
+BF,Burkina Faso,millet,XOF,2019,retail,174.0000,741,62,Millet
+BF,Burkina Faso,millet,XOF,2019,wholesale,170.0000,96,8,Millet
+BF,Burkina Faso,millet,XOF,2020,retail,194.0000,734,62,Millet
+BF,Burkina Faso,millet,XOF,2020,wholesale,182.5000,96,8,Millet
+BF,Burkina Faso,millet,XOF,2021,retail,232.5000,742,62,Millet
+BF,Burkina Faso,millet,XOF,2021,wholesale,205.0000,96,8,Millet
+BF,Burkina Faso,millet,XOF,2022,retail,354.0000,740,62,Millet
+BF,Burkina Faso,millet,XOF,2022,wholesale,302.5000,48,8,Millet
+BF,Burkina Faso,millet,XOF,2023,retail,307.0000,723,61,Millet
+BF,Burkina Faso,millet,XOF,2024,retail,342.0000,701,61,Millet
+BF,Burkina Faso,millet,XOF,2025,retail,348.0000,709,61,Millet
+BF,Burkina Faso,sorghum,XOF,2003,retail,120.9250,120,10,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2003,wholesale,105.1250,12,1,Sorghum
+BF,Burkina Faso,sorghum,XOF,2004,retail,99.5800,126,11,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2005,retail,171.5900,128,11,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2005,wholesale,155.7500,12,1,Sorghum
+BF,Burkina Faso,sorghum,XOF,2006,retail,119.0500,132,11,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2006,wholesale,125.0000,29,3,Sorghum; Sorghum (local)
+BF,Burkina Faso,sorghum,XOF,2007,retail,108.3200,132,11,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2007,wholesale,120.0000,24,2,Sorghum (local)
+BF,Burkina Faso,sorghum,XOF,2008,retail,135.4000,131,11,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2008,wholesale,140.0000,84,7,Sorghum (local)
+BF,Burkina Faso,sorghum,XOF,2009,retail,151.1600,80,11,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2009,wholesale,150.0000,93,9,Sorghum; Sorghum (local)
+BF,Burkina Faso,sorghum,XOF,2010,retail,143.0000,132,11,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2010,wholesale,135.0000,107,9,Sorghum; Sorghum (local)
+BF,Burkina Faso,sorghum,XOF,2011,retail,151.0000,131,11,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2011,wholesale,135.0000,107,9,Sorghum; Sorghum (local)
+BF,Burkina Faso,sorghum,XOF,2012,retail,208.5000,144,15,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2012,wholesale,192.5000,98,9,Sorghum; Sorghum (local)
+BF,Burkina Faso,sorghum,XOF,2013,retail,170.5500,180,15,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2013,wholesale,150.0000,96,8,Sorghum (local)
+BF,Burkina Faso,sorghum,XOF,2014,retail,167.8450,154,15,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2014,wholesale,150.0000,96,8,Sorghum (local)
+BF,Burkina Faso,sorghum,XOF,2015,retail,154.0000,681,60,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2015,wholesale,150.0000,96,8,Sorghum (local)
+BF,Burkina Faso,sorghum,XOF,2016,retail,154.0000,681,58,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2016,wholesale,150.0000,96,8,Sorghum (local)
+BF,Burkina Faso,sorghum,XOF,2017,retail,170.0000,695,59,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2017,wholesale,165.0000,96,8,Sorghum (local)
+BF,Burkina Faso,sorghum,XOF,2018,retail,193.0000,696,58,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2018,wholesale,185.0000,96,8,Sorghum (local)
+BF,Burkina Faso,sorghum,XOF,2019,retail,143.0000,708,60,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2019,wholesale,130.0000,96,8,Sorghum (local)
+BF,Burkina Faso,sorghum,XOF,2020,retail,148.0000,715,61,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2020,wholesale,135.0000,96,8,Sorghum (local)
+BF,Burkina Faso,sorghum,XOF,2021,retail,184.0000,731,62,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2021,wholesale,175.0000,96,8,Sorghum (local)
+BF,Burkina Faso,sorghum,XOF,2022,retail,282.0000,729,61,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2022,wholesale,262.5000,48,8,Sorghum (local)
+BF,Burkina Faso,sorghum,XOF,2023,retail,251.0000,717,60,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2024,retail,279.5000,694,60,Sorghum (white)
+BF,Burkina Faso,sorghum,XOF,2025,retail,271.0000,705,61,Sorghum (white)
+NE,Niger,cowpea,XOF,1994,retail,171.0000,311,28,Beans (niebe)
+NE,Niger,cowpea,XOF,1995,retail,112.0000,321,28,Beans (niebe)
+NE,Niger,cowpea,XOF,1996,retail,213.0000,316,28,Beans (niebe)
+NE,Niger,cowpea,XOF,1997,retail,205.0000,321,28,Beans (niebe)
+NE,Niger,cowpea,XOF,1998,retail,214.0000,331,28,Beans (niebe)
+NE,Niger,cowpea,XOF,1999,retail,195.0000,314,28,Beans (niebe)
+NE,Niger,cowpea,XOF,2002,retail,242.0000,319,29,Beans (niebe)
+NE,Niger,cowpea,XOF,2003,retail,164.5000,340,29,Beans (niebe)
+NE,Niger,cowpea,XOF,2004,retail,185.2200,335,29,Beans (niebe)
+NE,Niger,cowpea,XOF,2005,retail,285.8700,341,29,Beans (niebe)
+NE,Niger,cowpea,XOF,2006,retail,201.7400,346,29,Beans (niebe)
+NE,Niger,cowpea,XOF,2007,retail,183.2250,336,29,Beans (niebe)
+NE,Niger,cowpea,XOF,2008,retail,277.0000,349,31,Beans (niebe)
+NE,Niger,cowpea,XOF,2009,retail,294.1200,729,75,Beans (niebe)
+NE,Niger,cowpea,XOF,2010,retail,353.4150,656,75,Beans (niebe)
+NE,Niger,cowpea,XOF,2011,retail,234.3600,605,66,Beans (niebe)
+NE,Niger,cowpea,XOF,2012,retail,448.7200,479,67,Beans (niebe)
+NE,Niger,cowpea,XOF,2013,retail,407.9600,658,67,Beans (niebe)
+NE,Niger,cowpea,XOF,2014,retail,356.0250,62,62,Beans (niebe)
+NE,Niger,cowpea,XOF,2025,retail,341.0000,364,52,Beans (niebe)
+NE,Niger,maize,XOF,1994,retail,77.0000,88,8,Maize
+NE,Niger,maize,XOF,1995,retail,95.0000,92,8,Maize
+NE,Niger,maize,XOF,1996,retail,121.0000,85,8,Maize
+NE,Niger,maize,XOF,1997,retail,160.0000,83,8,Maize
+NE,Niger,maize,XOF,1998,retail,173.5000,86,8,Maize
+NE,Niger,maize,XOF,1999,retail,118.5000,84,7,Maize
+NE,Niger,maize,XOF,2000,retail,126.0000,138,12,Maize
+NE,Niger,maize,XOF,2001,retail,168.0300,129,12,Maize
+NE,Niger,maize,XOF,2002,retail,192.7500,130,11,Maize
+NE,Niger,maize,XOF,2003,retail,132.8150,142,12,Maize
+NE,Niger,maize,XOF,2004,retail,143.5900,141,12,Maize
+NE,Niger,maize,XOF,2005,retail,204.3700,141,12,Maize
+NE,Niger,maize,XOF,2006,retail,165.4300,143,12,Maize
+NE,Niger,maize,XOF,2007,retail,142.7600,134,12,Maize
+NE,Niger,maize,XOF,2008,retail,221.0000,151,14,Maize
+NE,Niger,maize,XOF,2009,retail,227.0000,670,65,Maize
+NE,Niger,maize,XOF,2010,retail,205.7600,671,74,Maize
+NE,Niger,maize,XOF,2011,retail,213.5400,609,66,Maize
+NE,Niger,maize,XOF,2012,retail,244.9500,484,65,Maize
+NE,Niger,maize,XOF,2013,retail,245.5500,665,66,Maize
+NE,Niger,maize,XOF,2014,retail,214.1000,676,66,Maize
+NE,Niger,maize,XOF,2015,retail,201.0000,655,64,Maize
+NE,Niger,maize,XOF,2016,retail,217.0000,610,62,Maize
+NE,Niger,maize,XOF,2017,retail,235.0000,626,63,Maize
+NE,Niger,maize,XOF,2018,retail,213.0000,639,63,Maize
+NE,Niger,maize,XOF,2019,retail,194.0000,704,67,Maize
+NE,Niger,maize,XOF,2020,retail,216.0000,620,61,Maize
+NE,Niger,maize,XOF,2021,retail,262.0000,583,53,Maize
+NE,Niger,maize,XOF,2022,retail,283.0000,567,53,Maize
+NE,Niger,maize,XOF,2023,retail,294.0000,555,51,Maize
+NE,Niger,maize,XOF,2024,retail,348.0000,617,52,Maize
+NE,Niger,maize,XOF,2025,retail,271.0000,615,52,Maize
+NE,Niger,millet,XOF,1990,retail,65.0000,58,5,Millet
+NE,Niger,millet,XOF,1991,retail,70.5000,56,5,Millet
+NE,Niger,millet,XOF,1992,retail,66.2500,60,5,Millet
+NE,Niger,millet,XOF,1993,retail,62.5000,60,5,Millet
+NE,Niger,millet,XOF,1994,retail,71.7500,334,30,Millet
+NE,Niger,millet,XOF,1995,retail,75.0000,342,30,Millet
+NE,Niger,millet,XOF,1996,retail,106.0000,344,30,Millet
+NE,Niger,millet,XOF,1997,retail,146.0000,348,30,Millet
+NE,Niger,millet,XOF,1998,retail,170.0000,356,30,Millet
+NE,Niger,millet,XOF,1999,retail,103.0000,339,30,Millet
+NE,Niger,millet,XOF,2000,retail,118.0000,355,31,Millet
+NE,Niger,millet,XOF,2001,retail,162.1650,336,31,Millet
+NE,Niger,millet,XOF,2002,retail,182.0000,359,31,Millet
+NE,Niger,millet,XOF,2003,retail,129.9250,366,31,Millet
+NE,Niger,millet,XOF,2004,retail,135.8700,363,31,Millet
+NE,Niger,millet,XOF,2005,retail,191.3650,364,31,Millet
+NE,Niger,millet,XOF,2006,retail,167.8400,370,31,Millet
+NE,Niger,millet,XOF,2006,wholesale,160.0000,72,6,Millet
+NE,Niger,millet,XOF,2007,retail,144.8650,366,31,Millet
+NE,Niger,millet,XOF,2007,wholesale,140.0000,72,6,Millet
+NE,Niger,millet,XOF,2008,retail,183.0000,379,33,Millet
+NE,Niger,millet,XOF,2008,wholesale,172.5000,72,6,Millet
+NE,Niger,millet,XOF,2009,retail,196.4600,860,77,Millet
+NE,Niger,millet,XOF,2009,wholesale,195.0000,72,6,Millet
+NE,Niger,millet,XOF,2010,retail,206.4500,781,79,Millet
+NE,Niger,millet,XOF,2010,wholesale,200.0000,72,6,Millet
+NE,Niger,millet,XOF,2011,retail,188.4150,708,68,Millet
+NE,Niger,millet,XOF,2011,wholesale,180.0000,72,6,Millet
+NE,Niger,millet,XOF,2012,retail,257.0300,592,68,Millet
+NE,Niger,millet,XOF,2012,wholesale,250.0000,72,6,Millet
+NE,Niger,millet,XOF,2013,retail,263.3700,727,68,Millet
+NE,Niger,millet,XOF,2013,wholesale,260.0000,72,6,Millet
+NE,Niger,millet,XOF,2014,retail,237.1500,715,68,Millet
+NE,Niger,millet,XOF,2014,wholesale,222.5000,72,6,Millet
+NE,Niger,millet,XOF,2015,retail,200.0000,713,68,Millet
+NE,Niger,millet,XOF,2015,wholesale,177.5000,72,6,Millet
+NE,Niger,millet,XOF,2016,retail,210.0000,670,66,Millet
+NE,Niger,millet,XOF,2016,wholesale,190.0000,72,6,Millet
+NE,Niger,millet,XOF,2017,retail,255.0000,677,66,Millet
+NE,Niger,millet,XOF,2017,wholesale,250.0000,72,6,Millet
+NE,Niger,millet,XOF,2018,retail,234.0000,697,65,Millet
+NE,Niger,millet,XOF,2018,wholesale,230.0000,72,6,Millet
+NE,Niger,millet,XOF,2019,retail,198.0000,747,67,Millet
+NE,Niger,millet,XOF,2019,wholesale,190.0000,72,6,Millet
+NE,Niger,millet,XOF,2020,retail,236.0000,667,62,Millet
+NE,Niger,millet,XOF,2020,wholesale,220.0000,72,6,Millet
+NE,Niger,millet,XOF,2021,retail,270.0000,629,55,Millet
+NE,Niger,millet,XOF,2021,wholesale,260.0000,72,6,Millet
+NE,Niger,millet,XOF,2022,retail,298.0000,605,53,Millet
+NE,Niger,millet,XOF,2022,wholesale,300.0000,36,6,Millet
+NE,Niger,millet,XOF,2023,retail,288.5000,604,53,Millet
+NE,Niger,millet,XOF,2024,retail,330.0000,635,53,Millet
+NE,Niger,millet,XOF,2025,retail,285.0000,634,53,Millet
+NE,Niger,sorghum,XOF,1990,retail,54.0000,46,4,Sorghum
+NE,Niger,sorghum,XOF,1991,retail,67.5000,44,4,Sorghum
+NE,Niger,sorghum,XOF,1992,retail,61.5000,48,4,Sorghum
+NE,Niger,sorghum,XOF,1993,retail,58.5000,42,4,Sorghum
+NE,Niger,sorghum,XOF,1994,retail,64.0000,44,4,Sorghum
+NE,Niger,sorghum,XOF,1995,retail,71.0000,48,4,Sorghum
+NE,Niger,sorghum,XOF,1996,retail,100.0000,48,4,Sorghum
+NE,Niger,sorghum,XOF,1997,retail,139.5000,48,4,Sorghum
+NE,Niger,sorghum,XOF,1998,retail,163.0000,45,4,Sorghum
+NE,Niger,sorghum,XOF,1999,retail,95.0000,45,4,Sorghum
+NE,Niger,sorghum,XOF,2000,retail,118.0000,60,5,Sorghum
+NE,Niger,sorghum,XOF,2001,retail,167.0000,121,11,Sorghum
+NE,Niger,sorghum,XOF,2002,retail,187.8350,128,11,Sorghum
+NE,Niger,sorghum,XOF,2003,retail,129.1000,143,12,Sorghum
+NE,Niger,sorghum,XOF,2004,retail,132.6100,139,12,Sorghum
+NE,Niger,sorghum,XOF,2005,retail,208.5500,141,12,Sorghum
+NE,Niger,sorghum,XOF,2006,retail,155.1150,144,12,Sorghum
+NE,Niger,sorghum,XOF,2006,wholesale,140.0000,24,2,Sorghum (local)
+NE,Niger,sorghum,XOF,2007,retail,137.9900,144,12,Sorghum
+NE,Niger,sorghum,XOF,2007,wholesale,115.0000,24,2,Sorghum (local)
+NE,Niger,sorghum,XOF,2008,retail,184.8050,164,14,Sorghum
+NE,Niger,sorghum,XOF,2008,wholesale,170.0000,66,6,Sorghum (local)
+NE,Niger,sorghum,XOF,2009,retail,190.6700,765,75,Sorghum
+NE,Niger,sorghum,XOF,2009,wholesale,185.0000,70,6,Sorghum (local)
+NE,Niger,sorghum,XOF,2010,retail,199.6250,686,75,Sorghum
+NE,Niger,sorghum,XOF,2010,wholesale,182.5000,72,6,Sorghum (local)
+NE,Niger,sorghum,XOF,2011,retail,173.0000,621,65,Sorghum
+NE,Niger,sorghum,XOF,2011,wholesale,165.0000,72,6,Sorghum (local)
+NE,Niger,sorghum,XOF,2012,retail,238.8900,496,68,Sorghum
+NE,Niger,sorghum,XOF,2012,wholesale,225.0000,72,6,Sorghum (local)
+NE,Niger,sorghum,XOF,2013,retail,242.8500,651,66,Sorghum
+NE,Niger,sorghum,XOF,2013,wholesale,230.0000,72,6,Sorghum (local)
+NE,Niger,sorghum,XOF,2014,retail,221.3400,669,67,Sorghum
+NE,Niger,sorghum,XOF,2014,wholesale,200.0000,72,6,Sorghum (local)
+NE,Niger,sorghum,XOF,2015,retail,188.2900,687,67,Sorghum
+NE,Niger,sorghum,XOF,2015,wholesale,170.0000,71,6,Sorghum (local)
+NE,Niger,sorghum,XOF,2016,retail,203.0000,632,65,Sorghum
+NE,Niger,sorghum,XOF,2016,wholesale,190.0000,72,6,Sorghum (local)
+NE,Niger,sorghum,XOF,2017,retail,243.0000,601,65,Sorghum
+NE,Niger,sorghum,XOF,2017,wholesale,227.5000,72,6,Sorghum (local)
+NE,Niger,sorghum,XOF,2018,retail,221.5000,642,64,Sorghum
+NE,Niger,sorghum,XOF,2018,wholesale,210.0000,72,6,Sorghum (local)
+NE,Niger,sorghum,XOF,2019,retail,185.0000,702,66,Sorghum
+NE,Niger,sorghum,XOF,2019,wholesale,175.0000,72,6,Sorghum (local)
+NE,Niger,sorghum,XOF,2020,retail,222.0000,620,62,Sorghum
+NE,Niger,sorghum,XOF,2020,wholesale,200.0000,72,6,Sorghum (local)
+NE,Niger,sorghum,XOF,2021,retail,257.0000,580,54,Sorghum
+NE,Niger,sorghum,XOF,2021,wholesale,240.0000,72,6,Sorghum (local)
+NE,Niger,sorghum,XOF,2022,retail,280.0000,572,53,Sorghum
+NE,Niger,sorghum,XOF,2022,wholesale,275.0000,36,6,Sorghum (local)
+NE,Niger,sorghum,XOF,2023,retail,280.0000,550,52,Sorghum
+NE,Niger,sorghum,XOF,2024,retail,331.0000,588,51,Sorghum
+NE,Niger,sorghum,XOF,2025,retail,261.0000,597,51,Sorghum
+NE,Niger,wheat_all,XOF,2009,retail,328.7500,15,15,Wheat
+CM,Cameroon,cowpea,XAF,2011,wholesale,319.4444,48,5,Beans (niebe)
+CM,Cameroon,cowpea,XAF,2012,wholesale,422.2222,41,4,Beans (niebe)
+CM,Cameroon,cowpea,XAF,2013,wholesale,388.8889,77,16,Beans (niebe)
+CM,Cameroon,cowpea,XAF,2014,wholesale,333.3333,170,16,Beans (niebe)
+CM,Cameroon,cowpea,XAF,2015,wholesale,291.6667,184,20,Beans (niebe)
+CM,Cameroon,cowpea,XAF,2016,wholesale,277.7778,137,20,Beans (niebe); Cowpeas (Red)
+CM,Cameroon,cowpea,XAF,2017,wholesale,350.0000,91,8,Beans (niebe); Cowpeas (Red)
+CM,Cameroon,cowpea,XAF,2018,wholesale,388.8889,129,18,Beans (niebe); Cowpeas (Red)
+CM,Cameroon,cowpea,XAF,2019,wholesale,290.0000,142,18,Beans (niebe); Cowpeas (Red)
+CM,Cameroon,cowpea,XAF,2020,retail,500.0000,25,14,Beans (niebe)
+CM,Cameroon,cowpea,XAF,2020,wholesale,291.2500,152,20,Beans (niebe); Cowpeas (Red)
+CM,Cameroon,cowpea,XAF,2021,retail,616.6700,204,36,Beans (niebe)
+CM,Cameroon,cowpea,XAF,2021,wholesale,404.3750,72,6,Beans (niebe); Cowpeas (Red)
+CM,Cameroon,cowpea,XAF,2022,retail,600.0000,535,62,Beans (niebe)
+CM,Cameroon,cowpea,XAF,2022,wholesale,436.2500,72,6,Beans (niebe); Cowpeas (Red)
+CM,Cameroon,cowpea,XAF,2023,retail,614.0000,579,60,Beans (niebe)
+CM,Cameroon,cowpea,XAF,2023,wholesale,328.7500,66,6,Beans (niebe); Cowpeas (Red)
+CM,Cameroon,cowpea,XAF,2024,retail,800.0000,357,53,Beans (niebe)
+CM,Cameroon,cowpea,XAF,2024,wholesale,570.0000,53,6,Beans (niebe); Cowpeas (Red)
+CM,Cameroon,cowpea,XAF,2025,retail,768.5000,362,41,Beans (niebe)
+CM,Cameroon,dry_beans,XAF,2019,wholesale,350.0000,62,9,Beans (red)
+CM,Cameroon,dry_beans,XAF,2020,retail,698.9000,33,4,Beans (red)
+CM,Cameroon,dry_beans,XAF,2020,wholesale,478.1250,90,9,Beans (red)
+CM,Cameroon,dry_beans,XAF,2021,retail,616.6700,110,36,Beans (red)
+CM,Cameroon,dry_beans,XAF,2021,wholesale,425.0000,105,10,Beans (red)
+CM,Cameroon,dry_beans,XAF,2022,retail,600.0000,380,45,Beans (red)
+CM,Cameroon,dry_beans,XAF,2022,wholesale,430.0000,107,9,Beans (red)
+CM,Cameroon,dry_beans,XAF,2023,retail,704.0000,422,42,Beans (red)
+CM,Cameroon,dry_beans,XAF,2023,wholesale,540.0000,99,9,Beans (red)
+CM,Cameroon,dry_beans,XAF,2024,retail,1000.0000,265,36,Beans (red)
+CM,Cameroon,dry_beans,XAF,2024,wholesale,712.5000,81,9,Beans (red)
+CM,Cameroon,dry_beans,XAF,2025,retail,865.0000,238,27,Beans (red)
+CM,Cameroon,groundnut,XAF,2018,wholesale,177.7778,20,4,Groundnuts (unshelled)
+CM,Cameroon,groundnut,XAF,2019,wholesale,222.2222,44,4,Groundnuts (unshelled)
+CM,Cameroon,groundnut,XAF,2020,wholesale,233.3333,24,4,Groundnuts (unshelled)
+CM,Cameroon,maize,XAF,2005,retail,205.6000,120,5,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2006,retail,211.5400,120,5,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2007,retail,192.7950,120,5,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2008,retail,197.5650,120,5,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2009,retail,267.3100,120,5,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2010,retail,214.3750,120,5,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2011,retail,267.3150,120,5,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2011,wholesale,177.7778,126,6,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2012,retail,304.1000,120,5,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2012,wholesale,208.3333,108,5,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2013,retail,276.5500,120,5,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2013,wholesale,188.8889,161,16,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2014,retail,265.6500,120,5,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2014,wholesale,177.7778,312,16,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2015,retail,257.7600,120,5,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2015,wholesale,155.5556,380,22,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2016,retail,261.8150,120,5,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2016,wholesale,160.0000,220,21,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2017,retail,288.7350,120,5,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2017,wholesale,205.0000,150,9,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2018,wholesale,194.4444,382,24,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2019,wholesale,166.6667,446,31,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2020,retail,308.2000,150,26,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2020,wholesale,194.4444,554,39,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2021,retail,300.0000,410,36,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2021,wholesale,227.2500,450,22,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2022,retail,250.0000,545,66,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2022,wholesale,262.1146,454,22,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2023,retail,316.8350,598,62,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2023,wholesale,333.3333,418,22,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2024,retail,303.0000,395,56,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2024,wholesale,305.3333,342,22,Maize (white); Maize (yellow)
+CM,Cameroon,maize,XAF,2025,retail,269.2300,395,44,Maize (white); Maize (yellow)
+CM,Cameroon,millet,XAF,2021,retail,291.3850,50,10,Millet
+CM,Cameroon,millet,XAF,2022,retail,300.0000,17,9,Millet
+CM,Cameroon,potato,XAF,2020,retail,389.2000,51,16,Potatoes
+CM,Cameroon,potato,XAF,2021,retail,400.0000,218,31,Potatoes; Potatoes (Irish)
+CM,Cameroon,potato,XAF,2022,retail,300.0000,656,56,Potatoes; Potatoes (Irish)
+CM,Cameroon,potato,XAF,2023,retail,345.0000,789,51,Potatoes; Potatoes (Irish)
+CM,Cameroon,potato,XAF,2024,retail,320.0000,566,46,Potatoes; Potatoes (Irish)
+CM,Cameroon,potato,XAF,2025,retail,400.0000,571,39,Potatoes; Potatoes (Irish)
+CM,Cameroon,sesame,XAF,2011,wholesale,361.1111,23,2,Sesame
+CM,Cameroon,sesame,XAF,2012,wholesale,377.7778,12,1,Sesame
+CM,Cameroon,sesame,XAF,2013,wholesale,461.1111,38,13,Sesame
+CM,Cameroon,sesame,XAF,2014,wholesale,533.3333,134,13,Sesame
+CM,Cameroon,sesame,XAF,2015,wholesale,511.1111,93,13,Sesame
+CM,Cameroon,sesame,XAF,2016,wholesale,533.3333,18,11,Sesame
+CM,Cameroon,sesame,XAF,2018,wholesale,500.0000,16,7,Sesame
+CM,Cameroon,sesame,XAF,2019,wholesale,533.3333,26,6,Sesame
+CM,Cameroon,sesame,XAF,2020,wholesale,416.6667,11,5,Sesame
+CM,Cameroon,sorghum,XAF,2011,wholesale,155.5556,89,4,Sorghum (red); Sorghum (white)
+CM,Cameroon,sorghum,XAF,2012,wholesale,202.7778,66,3,Sorghum (red); Sorghum (white)
+CM,Cameroon,sorghum,XAF,2013,wholesale,172.2222,111,15,Sorghum (red); Sorghum (white)
+CM,Cameroon,sorghum,XAF,2014,wholesale,177.7778,280,15,Sorghum (red); Sorghum (white)
+CM,Cameroon,sorghum,XAF,2015,wholesale,160.0000,362,21,Sorghum (red); Sorghum (white)
+CM,Cameroon,sorghum,XAF,2016,wholesale,150.0000,229,20,Sorghum (red); Sorghum (white)
+CM,Cameroon,sorghum,XAF,2017,wholesale,180.0000,166,8,Sorghum (red); Sorghum (white)
+CM,Cameroon,sorghum,XAF,2018,wholesale,194.4444,163,8,Sorghum (red); Sorghum (white)
+CM,Cameroon,sorghum,XAF,2019,wholesale,119.0000,189,8,Sorghum (red); Sorghum (white)
+CM,Cameroon,sorghum,XAF,2020,retail,258.3300,17,6,Sorghum (red); Sorghum (white)
+CM,Cameroon,sorghum,XAF,2020,wholesale,160.0000,168,12,Sorghum (red); Sorghum (white)
+CM,Cameroon,sorghum,XAF,2021,retail,283.1650,114,11,Sorghum (red); Sorghum (white)
+CM,Cameroon,sorghum,XAF,2021,wholesale,207.5000,144,6,Sorghum (red); Sorghum (white)
+CM,Cameroon,sorghum,XAF,2022,retail,236.0200,481,32,Sorghum (red); Sorghum (white)
+CM,Cameroon,sorghum,XAF,2022,wholesale,231.7500,144,6,Sorghum (red); Sorghum (white)
+CM,Cameroon,sorghum,XAF,2023,retail,300.0000,487,29,Sorghum (red); Sorghum (white)
+CM,Cameroon,sorghum,XAF,2023,wholesale,277.5000,131,6,Sorghum (red); Sorghum (white)
+CM,Cameroon,sorghum,XAF,2024,retail,310.0000,315,25,Sorghum (red); Sorghum (white)
+CM,Cameroon,sorghum,XAF,2024,wholesale,321.0000,108,6,Sorghum (red); Sorghum (white)
+CM,Cameroon,sorghum,XAF,2025,retail,248.1900,392,21,Sorghum (red); Sorghum (white)
+CM,Cameroon,soybean,XAF,2013,wholesale,222.2222,26,13,Soybeans
+CM,Cameroon,soybean,XAF,2014,wholesale,172.2222,132,13,Soybeans
+CM,Cameroon,soybean,XAF,2015,wholesale,277.7778,116,13,Soybeans
+CM,Cameroon,soybean,XAF,2016,wholesale,277.7778,28,12,Soybeans
+CM,Cameroon,soybean,XAF,2018,wholesale,311.1111,6,2,Soybeans
+CM,Cameroon,soybean,XAF,2019,wholesale,388.8889,7,3,Soybeans
+CM,Cameroon,soybean,XAF,2020,wholesale,222.2222,15,5,Soybeans
+CM,Cameroon,soybean,XAF,2022,retail,444.9000,109,13,Soybeans
+CM,Cameroon,soybean,XAF,2023,retail,345.0000,103,13,Soybeans
+CM,Cameroon,soybean,XAF,2024,retail,333.0000,47,11,Soybeans
+CM,Cameroon,yam,XAF,2021,retail,500.0000,115,31,Yam
+CM,Cameroon,yam,XAF,2022,retail,700.0000,209,37,Yam
+CM,Cameroon,yam,XAF,2023,retail,665.0000,274,34,Yam
+CM,Cameroon,yam,XAF,2024,retail,745.0000,164,26,Yam
+CM,Cameroon,yam,XAF,2025,retail,807.0000,184,24,Yam

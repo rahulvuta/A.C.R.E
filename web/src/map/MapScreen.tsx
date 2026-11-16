@@ -3,11 +3,13 @@ import * as maplibregl from "maplibre-gl";
 import type { Map as MlMap } from "maplibre-gl";
 import type { GeoHit, LatLon } from "../api/model";
 import { Segmented } from "../ui/components";
-import { BASEMAPS, type Basemap } from "./basemap";
+import { BASEMAPS, BASEMAP_KEYS, FIRST_BASEMAP, type Basemap } from "./basemap";
+import { Greenness } from "./Greenness";
 import type { GeoApi } from "./geoApi";
 import { roundCoord } from "./geoApi";
 import { LocationCard, type Pick } from "./LocationCard";
 import { MapView } from "./MapView";
+import { suggestUnits } from "../ui/units";
 import "./map.css";
 
 /*
@@ -31,11 +33,13 @@ export interface MapScreenProps {
 }
 
 export function MapScreen({ api, onPick, pickAction, children, onMapReady, onMapClick }: MapScreenProps) {
-  const [basemap, setBasemap] = useState<Basemap>("satellite");
+  const [basemap, setBasemap] = useState<Basemap>(FIRST_BASEMAP);
   const [query, setQuery] = useState("");
-  const [search, setSearch] = useState<{ state: "idle" } | { state: "loading" } | { state: "error"; message: string } | { state: "ready"; hits: GeoHit[]; coords: boolean }>({ state: "idle" });
+  const [search, setSearch] = useState<{ state: "idle" } | { state: "loading" } | { state: "error"; message: string } | { state: "ready"; hits: GeoHit[]; coords: boolean; credit?: { text: string; url: string | null } | null }>({ state: "idle" });
   const [pick, setPick] = useState<Pick | null>(null);
   const mapRef = useRef<MlMap | null>(null);
+  // The same map as state, for the parts drawn beside it (the greenness switch).
+  const [liveMap, setLiveMap] = useState<MlMap | null>(null);
   const pinRef = useRef<maplibregl.Marker | null>(null);
   const searchAbort = useRef<AbortController | null>(null);
   const pickAbort = useRef<AbortController | null>(null);
@@ -79,7 +83,11 @@ export function MapScreen({ api, onPick, pickAction, children, onMapReady, onMap
         setPick(current);
         if (current.place.state !== "loading" && current.caps.state !== "loading") onPickRef.current?.(current);
       };
-      void api.reverse(point.latitude, point.longitude, ctl.signal).then((r) => update({ place: r.ok ? { state: "ready", data: r.data } : { state: "error", message: r.message } }));
+      void api.reverse(point.latitude, point.longitude, ctl.signal).then((r) => {
+        // The place a grower searches for or pins sets the units (hectares or acres, and so on) until they choose their own.
+        if (r.ok && !ctl.signal.aborted) suggestUnits(r.data.country);
+        update({ place: r.ok ? { state: "ready", data: r.data } : { state: "error", message: r.message } });
+      });
       void api.capabilities(point.latitude, point.longitude, ctl.signal).then((r) => update({ caps: r.ok ? { state: "ready", data: r.data } : { state: "error", message: r.message } }));
     },
     [api, showPin],
@@ -114,7 +122,7 @@ export function MapScreen({ api, onPick, pickAction, children, onMapReady, onMap
     const r = await api.search(q, ctl.signal);
     if (ctl.signal.aborted) return;
     if (!r.ok) return setSearch({ state: "error", message: r.message });
-    setSearch({ state: "ready", hits: r.data.hits, coords: r.data.queryKind === "coordinates" });
+    setSearch({ state: "ready", hits: r.data.hits, coords: r.data.queryKind === "coordinates", credit: r.data.credit });
     // Typed coordinates are a point, not a question: go straight there.
     if (r.data.queryKind === "coordinates" && r.data.hits.length === 1) choose(r.data.hits[0]!);
   };
@@ -134,6 +142,7 @@ export function MapScreen({ api, onPick, pickAction, children, onMapReady, onMap
   const ready = useCallback(
     (map: MlMap) => {
       mapRef.current = map;
+      setLiveMap(map);
       onMapReady?.(map);
       const hit = pendingHit.current;
       pendingHit.current = null;
@@ -174,21 +183,35 @@ export function MapScreen({ api, onPick, pickAction, children, onMapReady, onMap
           <ul className="mp-results" aria-label="Search results">
             {search.hits.map((h, i) => (
               <li key={`${h.label}-${i}`}>
-                <button type="button" className="mp-result" onClick={() => choose(h)}>
+                <button type="button" className="mp-result" translate="no" onClick={() => choose(h)}>
                   {h.label}
                 </button>
               </li>
             ))}
           </ul>
         ) : null}
+        {search.state === "ready" && search.hits.length > 0 && search.credit ? (
+          <p className="mp-credit">
+            {search.credit.url ? (
+              <a href={search.credit.url} target="_blank" rel="noreferrer">
+                {search.credit.text}
+              </a>
+            ) : (
+              search.credit.text
+            )}
+          </p>
+        ) : null}
         {pick ? <LocationCard pick={pick} action={pickAction?.(pick)} /> : <p className="mp-quiet">Search, or click the map to drop a pin.</p>}
         {children}
       </aside>
       <div className="mp-stage">
         <MapView basemap={basemap} onClick={mapClick} onReady={ready} label="Farm map" />
-        <div className="mp-layer-switch">
-          <Segmented label="Basemap" value={basemap} onChange={setBasemap} options={(Object.keys(BASEMAPS) as Basemap[]).map((k) => ({ value: k, label: BASEMAPS[k].label }))} />
-        </div>
+        {BASEMAP_KEYS.length > 1 ? (
+          <div className="mp-layer-switch">
+            <Segmented label="Basemap" value={basemap} onChange={setBasemap} options={BASEMAP_KEYS.map((k) => ({ value: k, label: BASEMAPS[k]!.label }))} />
+          </div>
+        ) : null}
+        <Greenness map={liveMap} />
       </div>
     </div>
   );

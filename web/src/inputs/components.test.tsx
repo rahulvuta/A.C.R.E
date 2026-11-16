@@ -186,14 +186,16 @@ describe("farmer inputs", () => {
     render(<Log />);
     expect(screen.getByRole("img")).toHaveAccessibleName(/Soil moisture readings/);
     fireEvent.change(screen.getByLabelText("Date"), { target: { value: "2026-04-15" } });
-    fireEvent.change(screen.getByRole("combobox", { name: "Reading type" }), { target: { value: "rainfall_mm" } });
+    // Rain is the first choice, already picked: a reading is the amount and one press.
+    expect(screen.getByRole("button", { name: "Rain I measured" })).toHaveAttribute("aria-pressed", "true");
     fireEvent.change(screen.getByRole("spinbutton", { name: "Rainfall (mm)" }), { target: { value: "0" } });
     fireEvent.click(screen.getByRole("button", { name: "Add reading" }));
     expect(screen.getByRole("img")).toHaveAccessibleName(/Rainfall readings/);
     const list = screen.getByRole("list", { name: "Recorded readings" }); expect(within(list).getAllByText("Rainfall: 0 mm")).toHaveLength(2);
-    fireEvent.change(screen.getByRole("combobox", { name: "Reading type" }), { target: { value: "note" } });
+    fireEvent.click(screen.getByRole("button", { name: "A note" }));
     fireEvent.change(screen.getByRole("textbox", { name: "Note" }), { target: { value: "Standing water near the gate" } });
-    fireEvent.click(screen.getByRole("button", { name: "Add reading" })); expect(screen.getByText("Field note: Standing water near the gate")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Add reading" })); // The grower's own words sit in their own element, marked so they are never sent for translation.
+    expect(screen.getByText("Standing water near the gate")).toHaveAttribute("translate", "no");
     fireEvent.click(screen.getByRole("button", { name: "Remove rainfall on 2026-04-15" })); expect(within(list).getAllByText("Rainfall: 0 mm")).toHaveLength(1);
   });
   it("rejects a blank numeric reading instead of recording zero and renders supplied null as unavailable", () => {

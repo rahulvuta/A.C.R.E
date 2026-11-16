@@ -512,3 +512,49 @@ harvest dates use the local SAGE calendar. Unsourced cover spacing is labelled `
 `GET /v1/vocab/priorities` returns the priority list, now including `profit`, with plain labels and one-line explanations for the UI.
 
 **Shipped (A):** `{meta, status, priorities: [{priority_id, label, explanation, weights: {min: 0, max: 3}, used_by: ["simulate", "recommend"?]}]}`. `profit` is used by simulate only. Example: `vocab_priorities`.
+
+## 17. Translate on-screen text (card 18, shipped)
+
+`POST /v1/translate` with `{"language": "Swahili", "texts": ["Plant maize", "About {0} of rain a year"]}` (1 to 60 texts, 1,600 characters each, 12,000 in all). The page takes every number, money amount and unit out first and sends a placeholder (`{0}`, `{1}`) in its place.
+
+**Shipped:** `{meta, status, language, translations: [str | null], origin: "ai_suggested", model, code, reason_text}`. `status` is `complete`, `partial` (`code: translation_rejected`: some items are `null` and stay in English) or `unavailable` (`translate_not_configured`, `translate_daily_limit`, or a research error code). A translation is returned only if it holds exactly the placeholders of its source. Each sentence is saved in `$ACRE_CACHE_DIR/translations.sqlite` and translated once. Settings: `OPENROUTER_API_KEY`, `ACRE_TRANSLATE_MODEL` (default `google/gemini-2.5-flash`), `ACRE_TRANSLATE_DAILY_CHARS` (default 400000). No place, field or grower text is sent.
+
+## 18. Units the money inputs accept (cards 16 and 24)
+
+A price is `CURRENCY/quantity`, a yield `quantity/area`, a cost `CURRENCY/area`. Quantities of mass: `t`, `kg`, `lb`, `cwt`, `q` (a quintal, 100 kg) and a bag named by its weight, written `<kilos>kg` (`KES/90kg`). Any two of these convert exactly; a bushel does not. The same units are accepted in `overrides` of §11 and §12 and returned by `POST /v1/economics/research` (prompt version `e2`: prices and costs in the currency the source prints). Suggestions in §12 carry the unit in this spelling (`birr/quintal` with currency `ETB` is returned as `ETB/q`); a price or cost whose currency is still a word is returned with the note that it cannot be used as it stands. Research limits: 12 lookups an hour per client (`ACRE_RATE_RESEARCH_PER_HOUR`), 20 new lookups a day for all clients (`ACRE_RESEARCH_DAILY_LIMIT`).
+
+## 19. Plain-words explanation of a result (card 26, shipped)
+
+`POST /v1/explain` with `{"facts": {"years": "10", "dry_years": "2", "dry_low": "0", "dry_high": "4", "rain_bare": "725 mm", "heavy_days": "4.5", "money_year": "KES 331,552", "money_total": "KES 3,315,515", "money_low": "...", "money_high": "..."}, "flags": ["money_uses_loss_estimate" | "money_flat" | "no_money" | "two_crops_a_year"], "crops": ["maize"]}`. Every fact is the figure as the page shows it (a number with an optional currency or unit; anything else is `invalid_input`); only the listed keys are read.
+
+**Shipped:** `{meta, status, text: str | null, origin: "ai_suggested", model, numbers_allowed: [str], code, reason_text}`. `text` is non-null only when it passed the code check: every number in it is in `numbers_allowed`, no number is spelled out or implied, no advice or prediction, at most 110 words. Otherwise `status: "unavailable"` with `code` `explanation_rejected`, `explain_not_configured`, `explain_daily_limit` or a research error code; the page keeps its own sentences. Settings: `OPENROUTER_API_KEY`, `ACRE_EXPLAIN_MODEL`, `ACRE_EXPLAIN_DAILY`.
+
+## 20. Town-market prices and the grower's currency (card 29, shipped)
+
+`POST /v1/economics/estimate` takes an optional `currency` (ISO code). Each crop then carries:
+
+- `price.converted` when the sourced price is in another currency and both have a rate: `{low, typical, high, unit, currency, origin: "calculation", rate: {value, from, to, year}, source, note}`. The original `price` is unchanged.
+- `market_price` (also without `currency`): `{low, typical, high, unit, currency, origin, source, price_type: "wholesale" | "retail", years, markets, note, converted?}` from WFP food prices. It is a reference beside `price`; it never becomes `price` and never enters `revenue_per_area`. Winter and spring wheat and barley fall back to the market's `wheat_all` / `barley_all` for this field only.
+- top level `display_currency: {currency, rates_known}`.
+
+Data: `backend/data/economics/market_prices.csv` and `exchange_rates.csv`, built by `import_market.py` (see the README there).
+
+## 21. Finer rainfall beside the 50 km record (card 30, shipped)
+
+`POST /v1/weather/fine-rain` with `{"latitude", "longitude"}`. The point is turned into its 0.1-degree square; NASA POWER is asked for the square's centre (`IMERG_PRECTOT` and `PRECTOTCORR`, UTC days, from 1998) and the point is not echoed or logged.
+
+**Shipped:** `{meta, status, reason, reason_text, fine: {source, parameter, origin: "nasa_measured", about_km: 10, size_deg, center}, coarse: {source, parameter, origin: "nasa_modeled", about_km: 50, size_deg, cell_id, from: "stored_record" | "power_same_cell" | null, note}, years: [{year, fine_mm, coarse_mm | null}], summary: {years, first_year, last_year, fine_mean_mm, coarse_mean_mm, difference_pct, years_fine_lower, origin: "calculation"}, note, retrieved_at}`. A year needs at least 360 valid days; the unfinished year is left out. `status` is `complete`, `partial` (`no_coarse_record`), `insufficient_data` or `unavailable` (`offline`, `power_unreachable`). It is a comparison: nothing in it feeds `/v1/scenarios/simulate`.
+
+## 22. Crops grown together and long-lived crops (card 21, shipped)
+
+`POST /v1/scenarios/simulate`: each scenario may carry `systems`, an object keyed by a `plan_id` of its rotation: `{ "companions": ["dry_beans"], "ground": "yearly" | "permanent", "sold": true }`. Up to 3 companions; a permanent leg has the same crop before and after and no in-between crop, and takes no companions. Codes: `unknown_plan`, `permanent_leg_shape`, `permanent_with_companions`, `duplicate_companion`, `companion_is_the_crop`. A request without `systems` behaves and is cached exactly as before.
+
+Each scenario result gains `system_notes: [{ kind: "grown_together" | "permanent_ground", crop_id, text }]`, timeline rows gain `companions` and `ground`, and a plan nothing is sold from has `money_status: "unavailable"` with a `money_gaps` entry whose `reason` is `nothing_sold`. For a permanent leg the monthly block spreads the year's costs over its twelve months and puts the sale in the harvest month (`timing_text` says so).
+
+## 23. Soil moisture from SMAP (card 31, shipped, web only)
+
+No backend endpoint. The page reads NASA GIBS directly: `DescribeDomains` for the days available and one zoom-6 tile of `SMAP_L4_Analyzed_Root_Zone_Soil_Moisture` per day read. The value is the colour of the field's dot looked up in NASA's colour table (`web/src/soil/smapColors.json`). It is shown beside the results and feeds no calculation.
+
+## 24. Map and search settings (card 32, shipped)
+
+`GET /v1/geo/search` gains `attribution: { text, url } | null`, the credit to show with results. Tile sources and the place search service are settings; the full list and what each provider asks is in `docs/global/map-and-search-terms.md`.

@@ -1,5 +1,4 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { dateValue, setDate } from "../../inputs/testDates";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createFarmStore } from "../../farm/store";
 import { farmActions, resetFarmStoreForTests } from "../../farm/hooks";
@@ -53,7 +52,7 @@ describe("dashboard", () => {
     render(<Dashboard />);
     const card = within(screen.getByRole("list", { name: "Your fields" })).getByRole("listitem");
     expect(within(card).getByRole("heading", { name: "East" })).toBeInTheDocument();
-    expect(within(card).getByText("Acreage")).toBeInTheDocument();
+    expect(within(card).getByText("Size")).toBeInTheDocument();
     expect(card.textContent).toMatch(/Location\s*(Looking up…|40\.00\d, 1\.00\d)/);
     expect(within(card).getByText("Needs a rotation")).toBeInTheDocument();
     expect(within(card).getByRole("button", { name: "Open East" })).toBeInTheDocument();
@@ -69,7 +68,7 @@ describe("dashboard", () => {
   });
 });
 
-it("keeps rotation edits on the field and returns Done to its overview", async () => {
+it("a field page is one summary: outline, plan in one line, the six steps, and a way back into each", async () => {
   window.scrollTo = () => {};
   const farm = farmActions.createFarm("My farm", { latitude: 40, longitude: 1 });
   const field = farmActions.addField(farm.farm_id, square(1), "Rotation test");
@@ -79,12 +78,15 @@ it("keeps rotation edits on the field and returns Done to its overview", async (
   updateSimField(field.field_id, { rotation: [{ plan_id: "synthetic", previous_crop_id: "field_corn", prev_harvest: "09-20", winter: { kind: "none" }, next_crop_id: "soybean", next_plant: "05-10" }] });
   render(<Dashboard />);
   fireEvent.click(screen.getByRole("button", { name: "Open Rotation test" }));
-  fireEvent.click(screen.getByRole("button", { name: "Edit crop rotation" }));
-  setDate("Next planting", "05-11");
-  fireEvent.click(screen.getByRole("button", { name: "Done, back to field" }));
-  expect(screen.getByRole("tab", { name: "Overview" })).toHaveAttribute("aria-selected", "true");
   expect(window.location.hash).toBe(`#d=f/${field.field_id}/overview`);
-  expect(screen.queryByRole("heading", { name: "Where is your field?" })).toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: "Edit crop rotation" }));
-  expect(dateValue("Next planting")).toBe("05-11");
+  // No tabs: the steps own every screen.
+  expect(screen.queryByRole("tab")).toBeNull();
+  expect(screen.getByRole("img", { name: "Outline of Rotation test" })).toBeInTheDocument();
+  const details = screen.getByRole("region", { name: "Field details" });
+  expect(details.textContent).toMatch(/What you grow: .*corn.*→.*Soybean/i);
+  expect(within(details).getByRole("link", { name: "Change crops and dates" })).toHaveAttribute("href", "?view=app#u=now&p=crops");
+  const steps = screen.getByRole("region", { name: "Where you are in the six steps" });
+  expect(within(steps).getAllByRole("listitem")).toHaveLength(6);
+  expect(within(steps).getByRole("link", { name: /^Continue: / })).toHaveAttribute("href", expect.stringMatching(/^\?view=app#u=/));
+  expect(screen.getByRole("region", { name: "Readings and local conditions" })).toBeInTheDocument();
 });

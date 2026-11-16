@@ -6,6 +6,7 @@ import { EconomicsEditor, PlanEditor, createEconomicsValue, createPlanEditorValu
 import { createExampleInputsApi, exampleCrops, exampleEconomics, exampleLocation } from "./examples";
 import { createInputsApi, type InputsApi } from "./api";
 import { economicsResponseSchema, type CropEconomics } from "./schema";
+import { resetUnitsForTests } from "../ui/units";
 
 const base = createExampleInputsApi();
 const meta = { example: true };
@@ -36,6 +37,60 @@ function Econ({ api, crops = ["soybean"], initial = createEconomicsValue(), onCh
   return <EconomicsEditor show="prices" location={exampleLocation} crops={crops} area={{ value: 16.2, unit: "ha" }} value={value} onChange={next => { setValue(next); onChange?.(next); }} api={api} />;
 }
 const typical = () => screen.getByRole("spinbutton", { name: "Price · typical value" });
+
+describe("local currency and town market prices (card 29)", () => {
+  const wb = { title: "World Bank, official exchange rate (yearly average)", url: "https://data.worldbank.org/indicator/PA.NUS.FCRF" };
+  const maize: CropEconomics = { ...blank("maize"), status: "partial", economics_research: { researched_at: "2026-01-01T00:00:00Z", status: "partial" },
+    price: { low: 273.9, typical: 437.4, high: 465.9, unit: "USD/t", origin: "verified_source", source: { title: "FAOSTAT Producer Prices", url: "https://example.invalid/fao" },
+      converted: { low: 35416, typical: 56557.13, high: 60242, unit: "KES/t", currency: "KES", rate: { value: 129.303, from: "USD", to: "KES", year: 2025 }, source: wb, note: "Converted from USD at the 2025 average exchange rate." } },
+    yield: { value: 1.67, unit: "t/ha", origin: "verified_source", source: checkedSource },
+    market_price: { low: 40000, typical: 50000, high: 55000, unit: "KES/t", origin: "verified_source", price_type: "wholesale", years: "2023,2024,2025", markets: 4, source: { title: "WFP food prices, wholesale (town markets, not farm-gate)", url: "https://data.humdata.org/dataset/x" }, note: "What traders pay in town markets. The price at your farm gate is usually lower." } };
+
+  it("asks for prices in the grower's currency and shows the converted price with its rate and source", async () => {
+    resetUnitsForTests({ currency: "KES", area: "ha" });
+    const api = econApi({ crops: { maize } });
+    render(<Econ api={api} crops={["maize"]} />);
+    await tick(10);
+    expect(api.estimate.mock.calls[0]![0]).toMatchObject({ currency: "KES" });
+    const row = typical().closest("tr")!;
+    expect(row).toHaveTextContent("437.4 USD/t"); // the published figure is still there, unchanged
+    expect(row).toHaveTextContent("About 56,557 KES/t (56.6 KES a kilo) in your currency");
+    expect(row).toHaveTextContent("At 129.3 KES for 1 USD, the 2025 average.");
+    expect(within(row).getByRole("link", { name: wb.title })).toHaveAttribute("href", wb.url);
+    // nothing is used until the grower takes it
+    expect(typical()).toHaveValue(437.4);
+    fireEvent.click(within(row).getByRole("button", { name: "Use the converted price for maize" }));
+    expect(typical()).toHaveValue(56557); // the figure as shown, not a longer one
+    expect(screen.getByRole("combobox", { name: "Price · typical unit" })).toHaveValue("KES/t");
+    resetUnitsForTests();
+  });
+
+  it("shows what town markets pay, says it is not the farm-gate price, and uses it only on request", async () => {
+    resetUnitsForTests({ currency: "KES", area: "ha" });
+    const onChange = vi.fn();
+    render(<Econ api={econApi({ crops: { maize } })} crops={["maize"]} onChange={onChange} />);
+    await tick(10);
+    const row = typical().closest("tr")!;
+    expect(row).toHaveTextContent("Town markets: 50,000 KES/t (50 KES a kilo), wholesale");
+    expect(row).toHaveTextContent("The price at your farm gate is usually lower.");
+    expect(row).toHaveTextContent("Years: 2023, 2024, 2025.");
+    expect(onChange).not.toHaveBeenCalled();
+    fireEvent.click(within(row).getByRole("button", { name: "Use the town market price for maize" }));
+    expect(onChange.mock.calls.at(-1)![0].overrides.maize.price.typical).toMatchObject({ value: 50000, unit: "KES/t", origin: "grower" });
+    resetUnitsForTests();
+  });
+
+  it("sends no currency when the grower has not set one, and shows nothing extra when there is nothing", async () => {
+    resetUnitsForTests({ currency: null });
+    const api = econApi({ crops: { soybean: found("soybean") } });
+    render(<Econ api={api} />);
+    await tick(10);
+    expect(api.estimate.mock.calls[0]![0]).not.toHaveProperty("currency");
+    expect(screen.queryByText(/Town markets/)).toBeNull();
+    expect(screen.queryByText(/in your currency/)).toBeNull();
+    resetUnitsForTests();
+  });
+});
 
 describe("automatic price lookup", () => {
   it("looks up a crop with missing values once, sends only the crop and region, and shows what was found", async () => {

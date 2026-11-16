@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import type { GlobalClient, Result } from "../api/client";
 import type { SimulateRequest } from "../api/adapt";
 import type { Simulation } from "../api/simModel";
+import { loadResult, savedId, saveResult } from "./savedResults";
 
 /*
   Runs POST /v1/scenarios/simulate and keeps each answer for this page, keyed by the full
   request, so stepping Back and Next does not re-run a 200-run simulation. Nothing is
   computed here; the answer is the backend's.
 */
-export type SimState = { state: "idle" } | { state: "loading"; note?: string } | { state: "error"; message: string; detail: string | null } | { state: "ready"; data: Simulation };
+/** `saved` is set when the service could not be reached and the result shown is the last one kept on this device. */
+export type SimState = { state: "idle" } | { state: "loading"; note?: string } | { state: "error"; message: string; detail: string | null } | { state: "ready"; data: Simulation; saved?: { at: string; sameInputs: boolean } };
 
 const cache = new Map<string, SimState>();
 const listeners = new Set<() => void>();
@@ -40,7 +42,22 @@ export function runSimulation(client: GlobalClient, q: SimulateRequest): Promise
       set({ state: "loading", note: "Weather is ready. Running the simulation…" });
       r = await client.simulate(q);
     }
-    set(r.ok ? { state: "ready", data: r.data } : { state: "error", message: r.message, detail: "detail" in r ? (r.detail ?? null) : null });
+    const id = savedId(q.field.fieldId, q.scenarios.length);
+    if (r.ok) {
+      set({ state: "ready", data: r.data });
+      // A complete answer is kept on the device for a day with no connection (card 20).
+      if (r.data.scenarios.length) void saveResult(id, key, r.data);
+      return;
+    }
+    // No connection, or the service did not answer: show the last result kept for this field, marked as saved.
+    if (r.kind === "network" || r.kind === "timeout" || r.kind === "offline") {
+      const kept = await loadResult(id);
+      if (kept) {
+        set({ state: "ready", data: kept.data, saved: { at: kept.savedAt, sameInputs: kept.requestKey === key } });
+        return;
+      }
+    }
+    set({ state: "error", message: r.message, detail: "detail" in r ? (r.detail ?? null) : null });
   })();
 }
 

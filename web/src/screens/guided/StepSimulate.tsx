@@ -1,14 +1,21 @@
 import { ConfidenceBadge } from "../../ui/ConfidenceBadge";
+import type { ReactNode } from "react";
 import type { LossAssumptions, Simulation } from "../../api/simModel";
 import { updateSimField } from "../../state/simField";
 import { useSimulation, type SimState } from "../../state/useSimulation";
 import { Banner } from "../../ui/components";
 import { G } from "../../ui/Glossary";
-import { simulateRequest, type StepContext } from "./context";
+import { simCrops, simulateRequest, type StepContext } from "./context";
 import { MethodNote, ReadingsBeside, ScenarioSummary, YearTable } from "./SimViews";
 import { ScenarioResults, simulationResultSchema } from "../../sim";
 import { hasWinter } from "../../ui/cropNames";
 import { PlainAnswer } from "./PlainAnswer";
+import { cropName, FitCaution } from "./FarmFit";
+import { FineRain } from "./FineRain";
+import { SoilMoisture } from "./SoilMoisture";
+import { SavedNotice } from "../../ui/OfflineNote";
+import { StrategyView } from "../dashboard/StrategyBoxes";
+import type { StepId } from "./steps";
 
 /*
   Step 3: the current plan alone, through the next 10 years of this field's real past seasons in new orders (§11 with only the
@@ -74,7 +81,17 @@ function LossEditor({ ctx }: { ctx: StepContext }) {
   );
 }
 
-export function SimulationResult({ data, winter = true, onPrices }: { data: Simulation; winter?: boolean; onPrices?: () => void }) {
+/** Where the picture view's own buttons lead, now that it lives inside the steps. */
+export function pictureTab(ctx: StepContext): (tab: string) => void {
+  const to: Record<string, StepId> = { rotation: "now", recommendations: "try", overview: "simulate", future: "plan" };
+  return (tab) => {
+    if (tab === "financial") window.location.hash = "#u=now&p=prices";
+    else if (tab === "conditions" && ctx.field) window.location.assign(`./#d=f/${encodeURIComponent(ctx.field.field_id)}/overview`);
+    else ctx.go(to[tab] ?? "simulate");
+  };
+}
+
+export function SimulationResult({ data, winter = true, onPrices, pictures, explain }: { data: Simulation; winter?: boolean; onPrices?: () => void; pictures?: ReactNode; explain?: { crops: string[]; twoCropsAYear?: boolean } }) {
   // U2's view reads the response in the backend's shape; a response its stricter schema
   // rejects falls back to D's view of the adapted model, so the step never goes blank.
   const parsed = simulationResultSchema.safeParse(data.raw);
@@ -83,7 +100,8 @@ export function SimulationResult({ data, winter = true, onPrices }: { data: Simu
   if (!s) return <p className="gf-muted">The service returned no result for this plan.</p>;
   return (
     <>
-      <PlainAnswer s={s} winter={winter} onPrices={onPrices} />
+      <PlainAnswer s={s} winter={winter} onPrices={onPrices} explain={explain} />
+      {pictures}
       <details className="gf-all-numbers">
         <summary>See all the numbers</summary>
         <section className="db-card" aria-label="10-year result">
@@ -117,7 +135,11 @@ export function StepSimulate({ ctx }: { ctx: StepContext }) {
   return (
     <div className="gf-sim">
       <SimStatus sim={sim} onRetry={run} what="your current plan" />
-      {sim.state === "ready" ? <SimulationResult data={sim.data} winter={hasWinter(ctx.point?.latitude)} onPrices={() => { window.location.hash = "#u=now&p=prices"; }} /> : null}
+      <SavedNotice sim={sim} onRetry={run} />
+      {sim.state === "ready" ? <FitCaution ids={ctx.sim.fitNotes} notes={sim.data.scenarios[0]?.systemNotes} /> : null}
+      {sim.state === "ready" ? <SimulationResult data={sim.data} winter={hasWinter(ctx.point?.latitude)} onPrices={() => { window.location.hash = "#u=now&p=prices"; }} pictures={<StrategyView ctx={ctx} onTab={pictureTab(ctx)} mode="current" />} explain={ctx.api.source === "live" ? { crops: simCrops(ctx.sim), twoCropsAYear: ctx.sim.rotation.length === 1 && ctx.sim.rotation[0]!.winter.kind === "winter_grain" } : undefined} /> : null}
+      {sim.state === "ready" && ctx.point && ctx.api.source === "live" ? <FineRain point={ctx.point} /> : null}
+      {sim.state === "ready" && ctx.point && ctx.api.source === "live" ? <SoilMoisture point={ctx.point} rotation={ctx.sim.rotation} cropName={cropName} /> : null}
       <details className="gf-all-numbers">
         <summary>Change the loss estimate or the first year</summary>
         <LossEditor ctx={ctx} />

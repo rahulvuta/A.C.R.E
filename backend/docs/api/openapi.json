@@ -3427,6 +3427,30 @@
         "title": "FieldSimIn",
         "type": "object"
       },
+      "FineRainRequest": {
+        "additionalProperties": false,
+        "description": "A point. It is turned into its 0.1-degree square at once; POWER is asked for the square's\ncentre, and the point is neither logged nor echoed.",
+        "properties": {
+          "latitude": {
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude",
+            "type": "number"
+          },
+          "longitude": {
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude",
+            "type": "number"
+          }
+        },
+        "required": [
+          "latitude",
+          "longitude"
+        ],
+        "title": "FineRainRequest",
+        "type": "object"
+      },
       "GapPair": {
         "additionalProperties": false,
         "properties": {
@@ -3757,6 +3781,38 @@
           "heavy"
         ],
         "title": "KeyRainDay",
+        "type": "object"
+      },
+      "LegSystemIn": {
+        "additionalProperties": false,
+        "description": "How one season is farmed beyond \"one crop, then the next\" (card 21). ``companions`` are crops\ngrown in the same field at the same time as the season's crop; ``ground: \"permanent\"`` is a\ncrop that stays in the ground all year (trees, sugarcane, tea, pasture), with ``sold: false``\nwhen nothing is sold from it.",
+        "properties": {
+          "companions": {
+            "items": {
+              "maxLength": 64,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 3,
+            "title": "Companions",
+            "type": "array"
+          },
+          "ground": {
+            "default": "yearly",
+            "enum": [
+              "yearly",
+              "permanent"
+            ],
+            "title": "Ground",
+            "type": "string"
+          },
+          "sold": {
+            "default": true,
+            "title": "Sold",
+            "type": "boolean"
+          }
+        },
+        "title": "LegSystemIn",
         "type": "object"
       },
       "LocationIn": {
@@ -6269,6 +6325,14 @@
             "minLength": 1,
             "title": "Scenario Id",
             "type": "string"
+          },
+          "systems": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/LegSystemIn"
+            },
+            "maxProperties": 60,
+            "title": "Systems",
+            "type": "object"
           },
           "zone_rotations": {
             "additionalProperties": {
@@ -9806,7 +9870,7 @@
     },
     "/v1/economics/estimate": {
       "post": {
-        "description": "Body: ``{location, crops, area?, equipment?, overrides?, loss_assumptions?}``.",
+        "description": "Body: ``{location, crops, area?, equipment?, overrides?, loss_assumptions?, currency?}``.\n``currency`` (ISO code) asks for sourced prices to be given in that currency too.",
         "operationId": "post_estimate_v1_economics_estimate_post",
         "responses": {
           "200": {
@@ -9940,6 +10004,45 @@
         "tags": [
           "field",
           "economics"
+        ]
+      }
+    },
+    "/v1/explain": {
+      "post": {
+        "operationId": "explain_v1_explain_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Explain",
+        "tags": [
+          "explain"
         ]
       }
     },
@@ -11822,6 +11925,45 @@
         ]
       }
     },
+    "/v1/translate": {
+      "post": {
+        "operationId": "translate_v1_translate_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Translate",
+        "tags": [
+          "translate"
+        ]
+      }
+    },
     "/v1/vocab/equipment": {
       "get": {
         "description": "Contract \u00a714: the equipment vocabulary with labels (plus ``other:<text>``).",
@@ -11944,6 +12086,58 @@
         "summary": "Get Vocab Readings",
         "tags": [
           "field"
+        ]
+      }
+    },
+    "/v1/weather/fine-rain": {
+      "post": {
+        "description": "Yearly rain of the 10 km NASA GPM IMERG square that holds the point, beside the 50 km\nrecord the simulation uses. A comparison only; it changes no result.",
+        "operationId": "fine_rain_compare_v1_weather_fine_rain_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FineRainRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Fine Rain Compare V1 Weather Fine Rain Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Fine Rain Compare",
+        "tags": [
+          "weather"
         ]
       }
     },

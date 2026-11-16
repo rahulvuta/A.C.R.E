@@ -30,6 +30,10 @@ export interface FieldPlan {
   next_crop_id: string;
   prev_harvest: string; // MM-DD
   next_plant: string; // MM-DD
+  /** Crops grown in the same field at the same time as the season's crop, and harvested with it (card 21). */
+  companions?: string[];
+  /** Set when the crop stays in the ground all year (trees, sugarcane, tea, pasture): nothing is planted, and `sold` says whether a harvest is sold each year. */
+  permanent?: { sold: boolean };
   winter:
     | { kind: "none" }
     | { kind: "cover"; crop_id: string; seed: string; terminate: string }
@@ -57,6 +61,8 @@ export interface Field {
   geometry: FieldGeometry;
   /** Display-only measurements made in the browser (turf). The backend recomputes them. */
   display_area_ha?: number;
+  /** True when the outline is a square made from a typed size around a pin, not a traced edge. Cleared when the shape is edited. */
+  approx_shape?: boolean;
   plan: FieldPlan | null;
   notes?: string;
   /** Equipment ids from the §14 vocabulary (`other:<text>` allowed). */

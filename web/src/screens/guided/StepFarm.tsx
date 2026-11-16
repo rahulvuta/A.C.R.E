@@ -1,3 +1,4 @@
+import { useFarms } from "../../farm/hooks";
 import { FarmMap } from "../../map/FarmMap";
 import { Banner } from "../../ui/components";
 import type { StepContext } from "./context";
@@ -9,15 +10,18 @@ const exposeMapForTests = (m: unknown) => {
 };
 
 const DEMOS = [
-  { id: "union" as const, name: "Union County, North Carolina", blurb: "Corn and soybean fields in the NC Piedmont, where NC State guidance applies." },
-  { id: "pergamino" as const, name: "Pergamino, Buenos Aires", blurb: "Soybean, maize and wheat in the Argentine Pampas, with southern-hemisphere seasons." },
+  { id: "union" as const, name: "United States: Union County, North Carolina", blurb: "Maize and soybean fields, with a winter between the crops." },
+  { id: "pergamino" as const, name: "Argentina: Pergamino, Buenos Aires", blurb: "Soybean, maize and wheat, with southern-hemisphere seasons." },
 ];
 
 export function DemoPicker({ ctx }: { ctx: StepContext }) {
   const { demo, load } = useDemoLoader(ctx.api, () => ctx.go("now"));
+  const { farms } = useFarms();
+  // A grower who has a field of their own is past the examples: other countries' farms are not put in front of them (card 23).
+  if (farms.some((f) => !f.demo && f.fields.length > 0)) return null;
   return (
-    <section className="db-card gf-demo gf-demo-slim" aria-label="Try a demo farm">
-      <h2>Try a demo farm</h2>
+    <section className="db-card gf-demo gf-demo-slim" aria-label="Try an example farm">
+      <h2>Try an example farm</h2>
       <div className="gf-demo-row">
         {DEMOS.map((d) => (
           <button key={d.id} type="button" className="gf-demo-btn" title={d.blurb} onClick={() => void load(d.id)} disabled={demo.state === "loading"}>
@@ -36,8 +40,8 @@ export function StepFarm({ ctx }: { ctx: StepContext }) {
     <div className="gf-farm">
       <ol className="gf-howto" aria-label="How to add your field">
         <li>Search for your town or village</li>
-        <li>Zoom in on your field and press Draw my field here</li>
-        <li>Click each corner, then the first corner again</li>
+        <li>Press Draw my field here and click each corner</li>
+        <li>Or type the field's size and skip the drawing</li>
       </ol>
       <DemoPicker ctx={ctx} />
       <div className="ws-map gf-map">

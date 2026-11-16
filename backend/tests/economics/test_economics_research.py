@@ -277,6 +277,24 @@ def test_unit_normalising():
     assert n("price", "$/bu") is None and n("price", "USD") is None
 
 
+def test_bag_and_quintal_prices_are_kept_in_the_unit_the_market_quotes():
+    """Found on a live Kenya lookup: every maize price came back as KES per 90 kg bag and was
+    dropped as an unknown unit, so the grower was told nothing was found."""
+    n = research.normalise_unit
+    assert n("price", "KES/90kg") == ("KES/90kg", "KES")
+    assert n("price", "KES/90 kg bag") == ("KES/90kg", "KES")
+    assert n("price", "KES/100-kg bag") == ("KES/100kg", "KES")
+    assert n("price", "INR/quintal") == ("INR/q", "INR") and n("price", "INR/qtl") == ("INR/q", "INR")
+    assert n("yield", "q/ha") == ("q/ha", "")
+    # Not a weight: a bag of unknown size, a zero or absurd weight.
+    assert n("price", "KES/bag") == ("KES/bag", "KES")  # passes the shape check; has no weight
+    assert n("price", "KES/0kg") is None and n("price", "KES/99999kg") is None
+    from acre.economics.estimate import _qty_factor, mass_kg
+    assert mass_kg("90kg") == 90 and mass_kg("q") == 100 and mass_kg("bag") is None
+    assert mass_kg("bu") is None  # a bushel has no fixed weight
+    assert _qty_factor("t", "90kg") == pytest.approx(1000 / 90)
+
+
 # --------------------------------------------------------------------------- shared budget
 
 
@@ -530,3 +548,27 @@ def test_a_database_file_with_the_old_schema_keeps_working():
     library.reset()
     assert library.get_crop("sorghum", "US-NC") is not None  # a second open is fine too
     assert Path(path).exists()
+
+
+def test_found_units_are_shown_in_one_spelling_and_looking_again_keeps_other_kinds(api):
+    """Found on an Ethiopia walk: a teff price came back as "birr/quintal", and a second search
+    that found only a yield wiped the price the grower had just been shown."""
+    from acre.economics.estimate import tidy_unit
+    assert tidy_unit("price", "birr/quintal", "ETB") == "ETB/q"
+    assert tidy_unit("price", "KES/90 kg bag") == "KES/90kg"
+    assert tidy_unit("yield", "quintal/hectare") == "q/ha"
+    assert tidy_unit("cost", "KES/acres") == "KES/acre"
+    assert tidy_unit("price", "birr/quintal") == "birr/q"  # no ISO code known: left as a word
+    src = {"title": "t", "url": "https://example.org/a", "evidence_quote": "q"}
+    library.store_economics(crop_id="soybean", region_key="ET-OR", status="partial",
+                            found={"price": 1}, cache_key="k1",
+                            refs=[{"kind": "price", "value": 10000.0, "unit": "birr/quintal",
+                                   "currency": "ETB", "year": 2024, "origin": "ai_suggested",
+                                   "source": src, "item": None}])  # fmt: skip
+    library.store_economics(crop_id="soybean", region_key="ET-OR", status="partial",
+                            found={"yield": 1}, cache_key="k2",
+                            refs=[{"kind": "yield", "value": 17.17, "unit": "q/ha",
+                                   "currency": None, "year": 2017, "origin": "ai_suggested",
+                                   "source": src, "item": None}])  # fmt: skip
+    kinds = sorted(r["kind"] for r in library.researched_refs("soybean", ["ET-OR"]))
+    assert kinds == ["price", "yield"]

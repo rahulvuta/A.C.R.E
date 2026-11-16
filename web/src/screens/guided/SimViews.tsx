@@ -1,6 +1,7 @@
 import type { Comparison, Dist, ScenarioResult, Simulation } from "../../api/simModel";
 import { OriginBadge } from "../../ui/OriginBadge";
 import { BADGE_LABEL, cropLabel, indicatorLabel, isDist, isOdds, money, NA, num, pct, range } from "./format";
+import { rainText } from "../../ui/units";
 
 /*
   D's own views of a simulation (used until U2's components in web/src/sim are merged).
@@ -248,5 +249,88 @@ export function CompareColumns({ sim, chosenId, onChoose }: { sim: Simulation; c
       </div>
       <p className="gf-caveat">{c?.caveat}</p>
     </div>
+  );
+}
+
+const asDist = (x: unknown): Dist | null => (isDist(x as Dist) ? (x as Dist) : null);
+
+/**
+ * Step 5 at a glance (card 12): one row per plan with the three things a grower weighs (money,
+ * dry planting seasons, rain on bare ground) and one button. Every figure is the service's
+ * median for that plan, with where it came from; nothing is ranked here.
+ */
+export function CompareRows({ sim, baselineId, chosenId, onChoose }: { sim: Simulation; baselineId: string; chosenId: string | null; onChoose: (id: string) => void }) {
+  return (
+    <section className="db-card gf-rows" aria-label="Your plans side by side">
+      <div className="gf-scroll">
+        <table className="gf-table gf-rows-table">
+          <caption className="sr-only">Each plan under the same weather: money, dry planting seasons and rain on bare ground</caption>
+          <thead>
+            <tr>
+              <th scope="col">Plan</th>
+              <th scope="col">Money left a year</th>
+              <th scope="col">Planting time too dry</th>
+              <th scope="col">Rain on bare ground</th>
+              <td />
+            </tr>
+          </thead>
+          <tbody>
+            {sim.scenarios.map((s) => {
+              const years = s.yearly.length || 10;
+              const margin = asDist(s.totals["margin_10y"]);
+              const dry = asDist(s.totals["dry_springs"]);
+              const rain = asDist(s.totals["rain_on_bare_soil_mm_per_year"]);
+              const chosen = chosenId === s.scenarioId;
+              return (
+                <tr key={s.scenarioId} data-chosen={chosen ? "yes" : "no"}>
+                  <th scope="row">
+                    {s.label}
+                    {s.scenarioId === baselineId && !/what i do now/i.test(s.label) ? <span className="gf-block gf-muted">What you do now</span> : null}
+                  </th>
+                  <td data-label="Money left a year">
+                    {margin?.median != null ? (
+                      <>
+                        <strong className="gf-big">{money(margin.median / years, margin.currency)}</strong>{" "}
+                        {/* A margin that folds in the grower's own loss estimate says so, in place of the bare "Guess" label. */}
+                        {margin.includesAssumption ? <span className="ob ob-assumed" data-origin={margin.origin}>Uses your loss estimate</span> : <OriginBadge origin={margin.origin} />}
+                      </>
+                    ) : (
+                      <span className="gf-muted">No money result yet</span>
+                    )}
+                  </td>
+                  <td data-label="Planting time too dry">
+                    {dry?.median != null ? (
+                      <>
+                        <strong className="gf-big">
+                          {num(dry.median)} of {years} years
+                        </strong>{" "}
+                        <OriginBadge origin={dry.origin} />
+                      </>
+                    ) : (
+                      <span className="gf-muted">{NA}</span>
+                    )}
+                  </td>
+                  <td data-label="Rain on bare ground">
+                    {rain?.median != null ? (
+                      <>
+                        <strong className="gf-big">{rainText(rain.median)} a year</strong> <OriginBadge origin={rain.origin} />
+                      </>
+                    ) : (
+                      <span className="gf-muted">{NA}</span>
+                    )}
+                  </td>
+                  <td>
+                    <button type="button" className={chosen ? "btn btn-primary" : "btn btn-secondary"} aria-pressed={chosen} aria-label={`${chosen ? "Chosen" : "Choose"} ${s.label}`} onClick={() => onChoose(s.scenarioId)}>
+                      {chosen ? "Chosen" : "Choose this plan"}
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p className="gf-muted">Each plan was run through the same years of this field's real past weather. These are typical results, not a forecast.</p>
+    </section>
   );
 }

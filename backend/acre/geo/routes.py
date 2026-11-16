@@ -15,7 +15,7 @@ from fastapi.responses import JSONResponse
 
 from acre.geo.capabilities import capabilities_from
 from acre.geo.locate import Description, describe, valid_point
-from acre.geo.nominatim import REASON_TEXT, GeoError, get_client
+from acre.geo.nominatim import REASON_TEXT, GeoError, attribution, get_client
 from acre.geo.parse import CoordinateError, looks_like_coordinates, parse_coordinates
 from acre.report.http import invalid, issue
 from acre.report.meta import response_meta
@@ -136,6 +136,8 @@ def get_search(q: str | None = None, limit: str | None = None) -> Any:
         "reason": None if results else "no_results",
         "reason_text": None if results else "No place matched. Try a nearby town or coordinates.",
         "results": results,
+        # the credit the place search asks to be shown with its results
+        "attribution": attribution() if results else None,
     }
 
 

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { CropPicker } from "./CropPicker";
 import { inputsApi, type InputsApi } from "./api";
 import { dateFields, monthDaySchema, type AutofillRequest, type CalendarResearchEntry, type Crop, type DateField, type InputLocation, type PlanDraft, type PlanEditorValue } from "./schema";
-import { ErrorNotice, OriginLabel, SourceLabel, errorText, pauseFor } from "./shared";
+import { ErrorNotice, LookupProgress, OriginLabel, SourceLabel, errorText, pauseFor } from "./shared";
 import { hasWinter, plainIds, tidyCropName, worldCropName } from "../ui/cropNames";
 
 /* Crop + region pairs a date lookup was started for in this page session; remounting the editor must not start them again. */
@@ -78,10 +78,13 @@ export function PlanEditor({ location, value, onChange, regionKey = value.plan.r
   const lookupController = useRef<AbortController>();
   const runningKey = useRef<string | null>(null);
   const controller = useRef<AbortController>();
+  // Which crop choice the dates-only view has already filled; cleared whenever a fill is cut short, so it runs again.
+  const autoFilled = useRef<string>();
   const latest = useRef(value); latest.current = value;
   const cropKey = JSON.stringify([location, value.plan.previous_crop_id, value.plan.winter.kind, value.plan.winter.crop_id, value.plan.next_crop_id]);
   useEffect(() => {
     controller.current?.abort(); setLoading(false); setError(undefined); setGaps([]); setInfo(null); setPhases(previous => Object.keys(previous).length ? {} : previous);
+    autoFilled.current = undefined;
     return () => {
       controller.current?.abort();
       // A lookup cut short by a change of crops or by leaving the page may start again; a finished, failed or stopped one may not.
@@ -176,7 +179,6 @@ export function PlanEditor({ location, value, onChange, regionKey = value.plan.r
     return relevant && !getPlanDate(value.plan, field);
   });
   // On the dates-only view, fill blank dates once per crop choice; dates already there (and the farmer's own) are kept.
-  const autoFilled = useRef<string>();
   useEffect(() => {
     if (show !== "dates" || !anyCrop || !blankDate || autoFilled.current === cropKey) return;
     autoFilled.current = cropKey;
@@ -187,9 +189,13 @@ export function PlanEditor({ location, value, onChange, regionKey = value.plan.r
   const name = (id: string | null | undefined) => { const c = selected(id); return c ? tidyCropName(c.name) : "Not chosen"; };
   const cropName = (id: string) => { const c = selected(id); return c ? tidyCropName(c.name) : worldCropName(id); };
   const lookupEntries = (info?.entries ?? []).filter((entry, index, all) => all.findIndex(other => other.crop_id === entry.crop_id) === index);
-  const noneFound = lookupEntries.filter(entry => phases[entry.crop_id]?.state === "finished" && entry.missing);
+  // A lookup that finished now, or on an earlier visit, and found no dates: said once, in plain words.
+  const noneFound = lookupEntries.filter(entry => entry.missing && (phases[entry.crop_id]?.state === "finished" || (!!entry.researched_at && !phases[entry.crop_id])));
   // The service's gap text for a crop whose lookup found nothing is replaced by the sentence above.
-  const shownGaps = gaps.filter(gap => !noneFound.some(entry => [cropName(entry.crop_id), entry.crop_id, entry.crop_id.replaceAll("_", " ")].some(term => gap.toLowerCase().includes(term.toLowerCase()))));
+  const shownGaps = gaps.filter(gap => !noneFound.some(entry => [cropName(entry.crop_id), entry.crop_id, entry.crop_id.replaceAll("_", " ")].some(term => gap.toLowerCase().includes(term.toLowerCase()))))
+    // The service words the crop in between as a cover crop; that advice does not apply to a crop that is harvested.
+    .filter(gap => value.plan.winter.kind === "cover" || !/cover (seeding|termination)/i.test(gap))
+    .map(gap => gap.replace(/ in this SAGE cell; enter the field's own date\.?$/i, " here. Pick the date you use."));
   const aiDates = value.dates.some(date => date.value !== null && (date.origin === "ai_suggested" || date.origin === "source_checked"));
   return <section className="acre-inputs acre-input-card" aria-label={show === "dates" ? "Crop dates" : "Crop plan"}>
     {show === "all" && <h2>What do you grow?</h2>}
@@ -207,7 +213,7 @@ export function PlanEditor({ location, value, onChange, regionKey = value.plan.r
         {dates && <>{show === "dates" && <h3>{name(value.plan.next_crop_id)}</h3>}<DateInput field="next_plant" label={show === "dates" ? "Planting date" : "Next planting"} value={value} onChange={onChange} /></>}</div>
     </div>
     {dates && <><button type="button" className={show === "dates" ? undefined : "acre-input-primary"} disabled={loading || !anyCrop} onClick={() => void fill()}>{show === "dates" ? "Refill blank dates with typical ones" : "Fill typical dates"}</button>
-    <p className="acre-input-help">{show === "dates" ? "We filled in typical dates for this location. Change any that differ on your farm; your dates stay yours." : "Typical dates come from the service for this location; dates you enter stay yours."}</p>
+    <p className="acre-input-help">{show === "dates" ? (value.dates.some(d => d.value !== null && d.origin !== "grower") ? "We filled in typical dates for this location. Change any that differ on your farm; your dates stay yours." : "Pick the dates you use. Where typical dates exist for this location they are filled in for you to check.") : "Typical dates come from the service for this location; dates you enter stay yours."}</p>
     {loading && !activeId && <p role="status">Looking up typical dates…</p>}{error && <ErrorNotice error={error} retry={() => void fill()} />}
     {lookupEntries.map(entry => {
       const phase = phases[entry.crop_id];
@@ -216,7 +222,7 @@ export function PlanEditor({ location, value, onChange, regionKey = value.plan.r
       const waiting = !running && !!activeId && wantsDateLookup(entry);
       const canRepeat = !!info && entry.missing && !running && !waiting && phase?.state !== "failed" && (!!entry.researched_at || startedDateLookups.has(`${entry.crop_id}|${info.regionKey}`));
       return <div key={entry.crop_id}>
-        {running && <div role="status" className="acre-input-research-status"><p>Looking up typical planting and harvest dates for {crop}… This usually takes under a minute.</p><button type="button" aria-label={`Stop looking up dates for ${crop}`} onClick={() => stopDateLookup(entry.crop_id)}>Stop</button></div>}
+        {running && <LookupProgress onStop={() => stopDateLookup(entry.crop_id)} stopLabel={`Stop looking up dates for ${crop}`}>Looking up typical planting and harvest dates for {crop}… This usually takes under a minute.</LookupProgress>}
         {waiting && <p role="status" className="acre-input-help">Waiting to look up dates for {crop}.</p>}
         {phase?.state === "failed" && <div className="acre-input-error" role="alert"><p>Typical dates for {crop} could not be looked up right now. Pick the dates you use, or try again later.</p><small>{phase.message}</small><button type="button" aria-label={`Try again to look up dates for ${crop}`} onClick={() => void startDateLookup(entry.crop_id)}>Try again</button></div>}
         {phase?.state === "stopped" && <p className="acre-input-help">The date lookup for {crop} was stopped.</p>}

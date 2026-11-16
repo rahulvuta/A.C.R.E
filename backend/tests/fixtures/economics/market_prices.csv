@@ -1,0 +1,2 @@
+region_key,crop_id,unit,currency,low,typical,high,years,price_type,markets,source_title,source_url,locator,retrieved,origin
+AR,soybean,ARS/kg,ARS,300,350,420,"2023,2024,2025",wholesale,3,SYNTHETIC fixture market prices,https://fixture.invalid/market-prices,table 9,2026-11-01,verified_source

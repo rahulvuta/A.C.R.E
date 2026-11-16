@@ -14,6 +14,13 @@ export function createInputsApi(base = import.meta.env.VITE_API_BASE ?? "http://
     });
     let payload: unknown;
     try { payload = JSON.parse(await response.text()); } catch { throw new InputsApiError("The service returned an unreadable response. Your entries are still here.", response.status); }
+    if (response.status === 429) {
+      // The service limits AI lookups per hour and per day; say when to come back, in minutes.
+      const text = z.object({ reason_text: z.string().nullable().optional() }).safeParse(payload);
+      const reason = text.success ? text.data.reason_text ?? "" : "";
+      const seconds = Number(/(\d+) seconds/.exec(reason)?.[1]);
+      throw new InputsApiError(/daily/i.test(reason) ? "Today's lookups are used up for everyone. Enter your own numbers, or try again tomorrow." : Number.isFinite(seconds) ? `Too many lookups in the last hour. Try again in about ${Math.max(1, Math.ceil(seconds / 60))} ${Math.ceil(seconds / 60) <= 1 ? "minute" : "minutes"}, or enter your own.` : "Too many lookups just now. Try again later, or enter your own.", 429);
+    }
     if (!response.ok) {
       const parsed = z.object({ reason_text: z.string().nullable().optional(), issues: z.array(z.object({ field: z.string(), message: z.string() })).optional() }).safeParse(payload);
       throw new InputsApiError(parsed.success ? parsed.data.issues?.map(i => `${i.field}: ${i.message}`).join(" ") || parsed.data.reason_text || `Service unavailable (${response.status}). Your entries are still here.` : `Service unavailable (${response.status}). Your entries are still here.`, response.status);

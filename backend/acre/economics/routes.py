@@ -18,7 +18,8 @@ router = APIRouter(tags=["economics"])
 
 @router.post("/economics/estimate")
 async def post_estimate(request: Request) -> Any:
-    """Body: ``{location, crops, area?, equipment?, overrides?, loss_assumptions?}``."""
+    """Body: ``{location, crops, area?, equipment?, overrides?, loss_assumptions?, currency?}``.
+    ``currency`` (ISO code) asks for sourced prices to be given in that currency too."""
     body, err = await read_object(request)
     if err is not None:
         return err
@@ -29,7 +30,8 @@ async def post_estimate(request: Request) -> Any:
     try:
         out = estimate_economics(loc, body.get("crops"), body.get("area"),  # type: ignore[arg-type]
                                  body.get("equipment") or [], body.get("overrides"),
-                                 loss_assumptions=body.get("loss_assumptions"))  # fmt: skip
+                                 loss_assumptions=body.get("loss_assumptions"),
+                                 currency=body.get("currency"))  # fmt: skip
     except EconomicsInputError as exc:
         return invalid([issue(exc.field, exc.code, str(exc))])
     return {"meta": response_meta(weather=False), **out}

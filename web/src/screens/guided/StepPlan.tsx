@@ -1,12 +1,22 @@
+import { useState } from "react";
 import { type ScenarioResult } from "../../api/simModel";
-import { FuturePlan, planSchema, type Plan } from "../../planning";
+import { FuturePlan, planSchema, seasonJobs, ThisSeasonList, type FutureResponse, type Plan } from "../../planning";
 import { baselineOf, BASELINE_ID, updateSimField } from "../../state/simField";
 import { useSimulation } from "../../state/useSimulation";
 import { farmActions } from "../../farm/hooks";
 import { ReadingsLog as U3ReadingsLog } from "../../inputs";
 import { simulateRequest, type StepContext } from "./context";
 import { cropLabel, NA } from "./format";
+import { cropsOf } from "./context";
+import { fitResults, yearLine } from "./farmSystem";
+import { cropName, FitCaution } from "./FarmFit";
+import { plainSentences } from "./PlainAnswer";
+import { buildShare } from "./share";
+import { SharePlan } from "./SharePlan";
+import { areaM2 } from "../../farm/geometry";
+import { areaText } from "../../ui/units";
 import { SimStatus } from "./StepSimulate";
+import { SavedNotice } from "../../ui/OfflineNote";
 import { TenYearTimeline, withRotations, type ScenarioResult as TimelineResult } from "../../timeline";
 
 /*
@@ -50,7 +60,16 @@ export function StepPlan({ ctx }: { ctx: StepContext }) {
     result.state === "ready" && req
       ? withRotations(result.data.raw as unknown as { scenarios: TimelineResult[] }, { scenarios: req.scenarios.map((x) => ({ scenario_id: x.scenarioId, rotation: x.rotation, is_baseline: x.isBaseline })) }).find((x) => x.scenario_id === scenario.scenarioId)
       : undefined;
-  const plans = scenario.rotation.map((p) => planSchema.safeParse(p)).flatMap((r) => (r.success ? [r.data as Plan] : []));
+  // Each season as the calendar reads it. A crop that stays in the ground keeps its mark, so only its harvest is listed.
+  const plans = scenario.rotation.flatMap((p) => {
+    const r = planSchema.safeParse(p);
+    return r.success ? [{ ...(r.data as Plan), ...(p.permanent ? { permanent: p.permanent } : {}) } as Plan] : [];
+  });
+  // The service's dated calendar is for seasons with a planting; long-lived crops are read from the plan's own date.
+  const yearlyOnly = scenario.rotation.every((p) => !p.permanent);
+  // The plan's own calendar, once the service has returned it: its next jobs open the step.
+  const [calendar, setCalendar] = useState<FutureResponse | null>(null);
+  const live = Boolean(point && plans.length && yearlyOnly && ctx.api.source === "live");
   if (!field) return null;
 
   const exportPlan = () => {
@@ -63,22 +82,37 @@ export function StepPlan({ ctx }: { ctx: StepContext }) {
     URL.revokeObjectURL(url);
   };
 
+  // What is shared (card 22): the plan, the next jobs and the result sentences, with no outline or place.
+  const share = buildShare({
+    fieldName: field.name,
+    size: areaText(areaM2(field.geometry)).main,
+    planLine: yearLine(scenario.rotation, cropName) ?? scenario.label,
+    jobs: plans.length ? seasonJobs(live ? calendar : null, { plans, startSeason: sim.startSeason }) : [],
+    sentences: res ? plainSentences(res).map((r) => r.text) : [],
+    rotation: scenario.rotation,
+    overrides: sim.overrides,
+    crops: cropsOf(scenario.rotation),
+    sourceYears: result.state === "ready" ? result.data.method.sourceYears : null,
+    runs: result.state === "ready" ? result.data.method.runs : null,
+    cautions: [...(res?.systemNotes ?? []).map((n) => n.text), ...fitResults(sim.fitNotes)],
+    today: new Date().toLocaleDateString("en-CA"),
+  });
+
   return (
     <div className="gf-plan">
+      {/* The next jobs open the step: from the service's calendar once it arrives, and from the plan's own dates until then or without it. */}
+      {plans.length ? <ThisSeasonList result={live ? calendar : null} own={{ plans, startSeason: sim.startSeason }} /> : null}
       <section className="db-card" aria-label="Your 10-year plan">
-        <div className="db-card-head">
+        <div className="db-card-head gf-plan-head">
           <h2>
-            {scenario.label} <span className="gf-muted">on {field.name}</span>
+            <span translate={scenario.from === "custom" ? "no" : undefined}>{scenario.label}</span>{" "}
+            <span className="gf-muted">
+              on <span translate="no">{field.name}</span>
+            </span>
           </h2>
-          <span className="gf-season-actions gf-no-print">
-            <button type="button" className="btn btn-secondary" onClick={() => window.print()}>
-              Print
-            </button>
-            <button type="button" className="btn btn-secondary" onClick={exportPlan}>
-              Export
-            </button>
-          </span>
+          <SharePlan share={share} onExport={exportPlan} />
         </div>
+        <FitCaution ids={sim.fitNotes} notes={res?.systemNotes} />
         {sim.chosenId == null ? (
           <p className="gf-muted">
             You have not chosen a plan in Compare, so this shows your current plan.{" "}
@@ -88,6 +122,7 @@ export function StepPlan({ ctx }: { ctx: StepContext }) {
           </p>
         ) : null}
         <SimStatus sim={result} onRetry={run} what="your chosen plan" />
+        <SavedNotice sim={result} onRetry={run} />
         {u4 && result.state === "ready" ? <TenYearTimeline scenario={u4} note={result.data.method.note} compact /> : res ? <TimelineTable s={res} /> : null}
       </section>
       {point && plans.length && ctx.api.source !== "live" ? (
@@ -98,12 +133,12 @@ export function StepPlan({ ctx }: { ctx: StepContext }) {
           <p className="gf-muted">Dated actions, decision deadlines and a backup plan come from the A.C.R.E service, which this sample mode does not call.</p>
         </section>
       ) : null}
-      {point && plans.length && ctx.api.source === "live" ? (
+      {point && plans.length && yearlyOnly && ctx.api.source === "live" ? (
         <section className="db-card" aria-label="Actions and deadlines">
           <div className="db-card-head">
-            <h2>Actions, deadlines and a backup</h2>
+            <h2>Every date in your plan</h2>
           </div>
-          <FuturePlan key={JSON.stringify(plans)} location={point} plans={plans} startSeason={sim.startSeason} seasons={plans.length} />
+          <FuturePlan key={JSON.stringify(plans)} location={point} plans={plans} startSeason={sim.startSeason} seasons={plans.length} onChange={setCalendar} />
         </section>
       ) : null}
       <ReadingsLog ctx={ctx} />

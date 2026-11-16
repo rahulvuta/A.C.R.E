@@ -27,7 +27,7 @@ test("farmer inputs work together using explicitly labelled examples", async ({ 
   await expect(price).toHaveValue("11.2");
   await page.getByRole("checkbox", { name: "Sprayer", exact: true }).check();
   await page.getByLabel("Date", { exact: true }).fill("2026-04-15");
-  await page.getByRole("combobox", { name: "Reading type" }).selectOption("rainfall_mm");
+  await page.getByRole("button", { name: "Rain I measured" }).click();
   await page.getByRole("spinbutton", { name: "Rainfall (mm)" }).fill("0");
   await page.getByRole("button", { name: "Add reading" }).click();
   await expect(page.getByRole("list", { name: "Recorded readings" }).getByText("Rainfall: 0 mm", { exact: true })).toHaveCount(2);

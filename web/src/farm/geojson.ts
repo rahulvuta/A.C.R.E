@@ -14,7 +14,7 @@ export interface FarmFeatureCollection {
   features: Array<{
     type: "Feature";
     geometry: FieldGeometry;
-    properties: { field_id: string; name: string; plan: FieldPlan | null; notes?: string };
+    properties: { field_id: string; name: string; plan: FieldPlan | null; notes?: string; approx_shape?: boolean };
   }>;
 }
 
@@ -25,7 +25,7 @@ export function exportFarm(farm: Farm): FarmFeatureCollection {
     features: farm.fields.map((f) => ({
       type: "Feature",
       geometry: f.geometry,
-      properties: { field_id: f.field_id, name: f.name, plan: f.plan, ...(f.notes ? { notes: f.notes } : {}) },
+      properties: { field_id: f.field_id, name: f.name, plan: f.plan, ...(f.notes ? { notes: f.notes } : {}), ...(f.approx_shape ? { approx_shape: true } : {}) },
     })),
   };
 }
@@ -82,6 +82,7 @@ export function importFarm(text: string, fallbackName = "Imported farm"): Import
       display_area_ha: areaHa(geometry),
       plan: isObj(props.plan) ? (props.plan as unknown as FieldPlan) : null,
       ...(typeof props.notes === "string" ? { notes: props.notes } : {}),
+      ...(props.approx_shape === true ? { approx_shape: true } : {}),
     });
   });
   if (problems.length) return { ok: false, problems };

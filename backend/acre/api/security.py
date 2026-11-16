@@ -50,7 +50,9 @@ REFRESH_PATHS = RESEARCH_PATHS | {"/v1/weather/prepare"}
 # GETs that compute or call an outside service; every other GET is cheap.
 _ANALYSIS_GET = re.compile(r"^/v1/(soil|live|locations/capabilities|seasons/[^/]+/replay"
                            r"|plans/[^/]+/note)$")  # fmt: skip
-_CHEAP_POST = frozenset({"/v1/years"})
+# Translation is asked for a screenful at a time, mostly answered from the saved store; its own
+# daily ceiling on new text (acre.translate.service) guards the model key.
+_CHEAP_POST = frozenset({"/v1/years", "/v1/translate"})
 
 
 def _env_int(name: str, default: int) -> int:
@@ -87,7 +89,10 @@ class Settings:
                 ANALYSIS: (_env_int("ACRE_RATE_ANALYSIS_PER_MIN", 30), 60.0),
                 GEO: (_env_int("ACRE_RATE_GEO_PER_MIN", 20), 60.0),
                 WEATHER: (_env_int("ACRE_RATE_WEATHER_PER_MIN", 10), 60.0),
-                RESEARCH: (_env_int("ACRE_RATE_RESEARCH_PER_HOUR", 3), 3600.0),
+                # One grower setting up one field asks for a crop, its dates and its prices for each crop:
+                # three lookups a crop. Twelve an hour covers a four-crop rotation; the daily budget
+                # below is what bounds the cost.
+                RESEARCH: (_env_int("ACRE_RATE_RESEARCH_PER_HOUR", 12), 3600.0),
             },
             research_daily=_env_int("ACRE_RESEARCH_DAILY_LIMIT", 20),
             max_body=_env_int("ACRE_MAX_BODY_BYTES", 1_048_576),
@@ -107,7 +112,7 @@ def route_class(method: str, path: str) -> str | None:
     if path in ("/v1/geo/search", "/v1/geo/reverse"):
         return GEO
     if method == "POST":
-        if path == "/v1/weather/prepare":
+        if path in ("/v1/weather/prepare", "/v1/weather/fine-rain"):
             return WEATHER
         if path == CONDITIONS_RESEARCH_PATH:
             return ANALYSIS  # field edits may check several variables in one session

@@ -22,12 +22,13 @@ from __future__ import annotations
 
 import logging
 import math
+import re
 import statistics
 from typing import Any
 from urllib.parse import urlparse
 
 from acre.catalogs import crop_ids
-from acre.economics import data
+from acre.economics import data, fx
 from acre.field.equipment import valid_equipment
 from acre.research import client
 
@@ -35,7 +36,10 @@ log = logging.getLogger(__name__)
 PRICE_YEARS = 5  # a researched price range uses the most recent years of one unit and source
 MAX_SUGGESTIONS = 6
 ACRES_PER_HA = 2.4710538146716534
-MASS_KG = {"t": 1000.0, "kg": 1.0, "lb": 0.45359237, "cwt": 45.359237}
+MASS_KG = {"t": 1000.0, "kg": 1.0, "lb": 0.45359237, "cwt": 45.359237, "q": 100.0}  # q: quintal
+# A bag named by its weight, the unit many markets quote in: "90kg", "50 kg", "100-kg bag".
+_BAG_KG = re.compile(r"^(\d+(?:\.\d+)?)\s*-?\s*kg(?:\s*(?:bag|bags|sack|sacks))?$")
+MAX_BAG_KG = 2000.0
 AREAS = {"acre": 1.0, "ha": ACRES_PER_HA}  # in acres
 CASES = ("low", "typical", "high")
 LOSS_KEYS = ("dry_spring_pct", "wet_spring_pct", "heavy_rain_pct")
@@ -66,12 +70,36 @@ def _area_factor(src: str, dst: str) -> float | None:
     return AREAS[dst] / AREAS[src]
 
 
+def mass_kg(unit: str | None) -> float | None:
+    """Kilograms in one ``unit`` of mass: t, kg, lb, cwt, q (a quintal) or a bag weight such as
+    ``90kg``. None for anything else (a bushel has no fixed weight across crops)."""
+    if not isinstance(unit, str):
+        return None
+    u = unit.strip().lower()
+    if u in MASS_KG:
+        return MASS_KG[u]
+    m = _BAG_KG.match(u)
+    if m:
+        n = float(m.group(1))
+        return n if 0 < n <= MAX_BAG_KG else None
+    return None
+
+
+def bag_unit(unit: str | None) -> str | None:
+    """A bag weight in its one spelling (``"90 kg bag"`` -> ``"90kg"``); None if it is not one."""
+    if not isinstance(unit, str) or unit.strip().lower() in MASS_KG:
+        return None
+    kg = mass_kg(unit)
+    return None if kg is None else f"{kg:g}kg"
+
+
 def _qty_factor(src: str, dst: str) -> float | None:
     """Multiply an amount in ``src`` by this to get it in ``dst`` (exact conversions only)."""
     if src == dst:
         return 1.0
-    if src in MASS_KG and dst in MASS_KG:
-        return MASS_KG[src] / MASS_KG[dst]
+    a, b = mass_kg(src), mass_kg(dst)
+    if a is not None and b is not None:
+        return a / b
     return None
 
 
@@ -208,7 +236,7 @@ def _pick(rows: list[dict[str, Any]], chain: list[str], **match: Any) -> list[di
 def _norm_price(p: dict[str, Any], us: bool) -> dict[str, Any]:
     """Price per quantity; outside the US a mass price is shown per tonne."""
     cur, qty = _split(p["unit"])  # type: ignore[misc]
-    if not us and qty in MASS_KG and qty != "t":
+    if not us and mass_kg(qty) is not None and qty != "t":
         f = 1 / _qty_factor(qty, "t")  # type: ignore[operator]
         return {**p, **{k: _r(p[k] * f) for k in CASES if p.get(k) is not None},
                 "unit": f"{cur}/t"}  # fmt: skip
@@ -220,7 +248,7 @@ def _norm_yield(y: dict[str, Any], area_unit: str, us: bool) -> dict[str, Any]:
     f = _area_factor(au, area_unit)
     if f is None:
         return {**y, "unit_note": f"area unit '{au}' was not converted"}
-    to = "t" if not us and qty in MASS_KG else qty
+    to = "t" if not us and mass_kg(qty) is not None else qty
     q = _qty_factor(qty, to) or 1.0
     return {**y, "value": _r(y["value"] * f * q, 3), "unit": f"{to}/{area_unit}"}
 
@@ -247,6 +275,40 @@ def _year(r: dict[str, Any]) -> int:
 
 def _url(r: dict[str, Any]) -> str:
     return str((r.get("source") or {}).get("url") or "")
+
+
+_QTY_WORDS = {"tonne": "t", "tonnes": "t", "metric ton": "t", "metric tons": "t", "mt": "t",
+              "ton": "t", "kilogram": "kg", "kilograms": "kg", "kgs": "kg", "pound": "lb",
+              "pounds": "lb", "lbs": "lb", "bushel": "bu", "bushels": "bu", "hundredweight": "cwt",
+              "quintal": "q", "quintals": "q", "qtl": "q", "qtls": "q"}  # fmt: skip
+_AREA_WORDS = {"ac": "acre", "acres": "acre", "hectare": "ha", "hectares": "ha"}
+
+
+def _iso(code: Any) -> str | None:
+    c = code.strip().upper() if isinstance(code, str) else ""
+    return c if len(c) == 3 and c.isascii() and c.isalpha() else None
+
+
+def tidy_unit(kind: str, unit: Any, currency: Any = None) -> Any:
+    """A found unit in the one spelling the estimate and the page use: ``birr/quintal`` with
+    currency ETB becomes ``ETB/q``, ``KES/90 kg bag`` becomes ``KES/90kg``. Only the words
+    change, never the value. A unit that cannot be read is returned as it was."""
+    sp = _split(unit)
+    if sp is None:
+        return unit
+    a, b = sp
+
+    def qty(x: str) -> str:
+        x = _QTY_WORDS.get(x.lower(), x.lower())
+        return bag_unit(x) or x
+
+    def area(x: str) -> str:
+        return _AREA_WORDS.get(x.lower(), x.lower())
+
+    if kind == "yield":
+        return f"{qty(a)}/{area(b)}"
+    cur = _iso(a) or _iso(currency) or a
+    return f"{cur}/{qty(b)}" if kind == "price" else f"{cur}/{area(b)}"
 
 
 def _ref_usable(kind: str, r: dict[str, Any]) -> bool:
@@ -342,12 +404,17 @@ def _suggestions(refs: list[dict[str, Any]]) -> list[dict[str, Any]]:
         usable = _ref_usable(kind, r)
         if r["origin"] == "source_checked" and usable:
             continue
+        # What the grower may take up is shown in the unit the page can use; a price or cost
+        # whose currency is still a word ("birr") cannot be used as it stands.
+        unit = tidy_unit(kind, r["unit"], r.get("currency"))
+        if kind != "yield" and _iso((_split(unit) or ("", ""))[0]) is None:
+            usable = False
         note = ("the unit could not be converted; check it before using this number" if not usable
                 else "AI-found: the quote was not confirmed on a page of an approved source")
         src = r.get("source") or {}
         out.append({"field": "costs" if kind == "cost" else kind,
                     **({"item": r.get("item") or "cost"} if kind == "cost" else {}),
-                    "value": r["value"], "unit": r["unit"], "currency": r.get("currency"),
+                    "value": r["value"], "unit": unit, "currency": r.get("currency"),
                     "year": _year(r) or None, "origin": r["origin"],
                     "region_key": r["region_key"],
                     "source": {"title": src.get("title"), "url": src.get("url"),
@@ -382,9 +449,58 @@ def _research_state(cid: str, chain: list[str]) -> dict[str, Any]:
     return out
 
 
+MARKET_NOTE = {
+    "wholesale": "What traders pay in town markets. The price at your farm gate is usually lower.",
+    "retail": "What shoppers pay in town markets. The price at your farm gate is lower.",
+}
+
+
+def _converted(price: dict[str, Any], currency: str | None) -> dict[str, Any] | None:
+    """A sourced price in the grower's currency, with the rate it was reached by. A calculation
+    offered beside the published figure; it replaces nothing."""
+    sp = _split(price.get("unit"))
+    cur = _iso(price.get("currency")) or (_iso(sp[0]) if sp else None)
+    to = _iso(currency)
+    if sp is None or cur is None or to is None or cur == to:
+        return None
+    r = fx.rate(cur, to)
+    if r is None:
+        return None
+    return {**{k: _r(price[k] * r["rate"]) if price.get(k) is not None else None for k in CASES},
+            "unit": f"{to}/{sp[1]}", "currency": to, "origin": "calculation",
+            "rate": {"value": float(f"{r['rate']:.6g}"), "from": cur, "to": to, "year": r["year"]},
+            "source": r["source"],
+            "note": f"Converted from {cur} at the {r['year']} average exchange rate. Exchange "
+                    "rates move; check it against what you are paid."}  # fmt: skip
+
+
+# A market sells "wheat" and "barley", whatever the season they were sown in. Only the town-market
+# reference uses this; producer prices and yields keep the season-specific crop (see the README).
+MARKET_ALIAS = {"winter_wheat": "wheat_all", "spring_wheat": "wheat_all", "winter_barley": "barley_all",
+                "barley": "barley_all"}  # fmt: skip
+
+
+def _market_price(t: data.Tables, chain: list[str], cid: str, us: bool,
+                  currency: str | None) -> dict[str, Any] | None:  # fmt: skip
+    rows = _pick(t.market_prices, chain, crop_id=cid)
+    if not rows and cid in MARKET_ALIAS:
+        rows = _pick(t.market_prices, chain, crop_id=MARKET_ALIAS[cid])
+    if not rows:
+        return None
+    r = rows[0]
+    mp = _norm_price({"low": r["low"], "typical": r["typical"], "high": r["high"], "unit": r["unit"],
+                      "currency": r["currency"] or _split(r["unit"])[0],  # type: ignore[index]
+                      "origin": r["origin"], "source": data.source_of(r)}, us)  # fmt: skip
+    out = {**mp, "price_type": r["price_type"], "years": r.get("years"),
+           "markets": int(float(r["markets"])) if str(r.get("markets") or "").strip() else None,
+           "note": MARKET_NOTE[r["price_type"]]}  # fmt: skip
+    conv = _converted(out, currency)
+    return {**out, **({"converted": conv} if conv else {})}
+
+
 def _crop(cid: str, chain: list[str], t: data.Tables, ov: dict[str, Any], area_unit: str,
           us: bool, area: tuple[float, str] | None,
-          refs: list[dict[str, Any]] = ()) -> dict[str, Any]:  # type: ignore[assignment]  # fmt: skip
+          refs: list[dict[str, Any]] = (), currency: str | None = None) -> dict[str, Any]:  # type: ignore[assignment]  # fmt: skip
     reasons: list[str] = []
     # price
     price: dict[str, Any] | None = None
@@ -406,6 +522,10 @@ def _crop(cid: str, chain: list[str], t: data.Tables, ov: dict[str, Any], area_u
             reasons.append("no sourced price for this region")
     if price is not None and _split(price["unit"]) is not None:
         price = _norm_price(price, us)
+        # A sourced price in another currency is also given in the grower's, beside the original.
+        conv = _converted(price, currency) if price["origin"] != "grower" else None
+        if conv:
+            price = {**price, "converted": conv}
     # yield
     yld: dict[str, Any] | None = None
     if "yield" in ov:
@@ -512,6 +632,7 @@ def _crop(cid: str, chain: list[str], t: data.Tables, ov: dict[str, Any], area_u
     crop_info = crop_ids.info(cid)
     out["aliases"] = list(crop_info.aliases) if crop_info else []
     out["suggestions"] = _suggestions(refs)
+    out["market_price"] = _market_price(t, chain, cid, us, currency)
     out["economics_research"] = _research_state(cid, chain)
     if area is not None and (revenue or margin or costs["total_per_area"]):
         n = area[0] * AREAS[area[1]] / AREAS[area_unit]  # the area in ``area_unit``
@@ -562,7 +683,8 @@ def _equipment_costs(equipment: list[str], chain: list[str], t: data.Tables, are
 def estimate_economics(location: dict[str, Any] | None, crops: list[str],
                        area: dict[str, Any] | None = None, equipment: list[str] = (),  # type: ignore[assignment]
                        overrides: dict[str, Any] | None = None, *,
-                       loss_assumptions: dict[str, Any] | None = None) -> dict[str, Any]:  # fmt: skip
+                       loss_assumptions: dict[str, Any] | None = None,
+                       currency: str | None = None) -> dict[str, Any]:  # fmt: skip
     """Contract §12 body without ``meta``. Raises :class:`EconomicsInputError` on bad input."""
     if not isinstance(crops, list | tuple) or not crops or len(crops) > 20:
         raise EconomicsInputError("crops", "invalid_crops", "send 1-20 crop ids")
@@ -589,8 +711,11 @@ def estimate_economics(location: dict[str, Any] | None, crops: list[str],
                     "your own numbers are used.")  # fmt: skip
     if not chain:
         gaps.append("No region is known for this location, so no regional reference applies.")
-    crop_out = [_crop(c, chain, t, ov.get(c, {}), area_unit, us, ar, _researched(c, chain))
-                for c in cids]
+    if currency is not None and _iso(currency) is None:
+        raise EconomicsInputError("currency", "invalid_currency",
+                                  "currency is a three-letter ISO code such as KES")  # fmt: skip
+    crop_out = [_crop(c, chain, t, ov.get(c, {}), area_unit, us, ar, _researched(c, chain),
+                      _iso(currency)) for c in cids]  # fmt: skip
     currencies = {x["margin_per_area"]["currency"] for x in crop_out if x["margin_per_area"]}
     currencies |= {x["price"]["currency"] for x in crop_out if x["price"]}
     statuses = {x["status"] for x in crop_out}
@@ -604,6 +729,8 @@ def estimate_economics(location: dict[str, Any] | None, crops: list[str],
         "region_keys": chain,
         "crops": crop_out,
         "research": {"available": client.configured(), "region_key": chain[0] if chain else None},
+        "display_currency": {"currency": _iso(currency), "rates_known": fx.known(_iso(currency))}
+        if currency else None,
         "equipment_costs": _equipment_costs(equipment, chain, t, area_unit, gaps),
         "equipment_note": PASS_NOTE,
         "loss_assumptions": losses,

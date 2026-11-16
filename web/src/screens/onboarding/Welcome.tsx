@@ -5,11 +5,12 @@ import { loadDemoFields } from "../../state/simField";
 import { useGlobalApi, type GlobalApi } from "../../state/useGlobal";
 import { Banner } from "../../ui/components";
 import { STEPS, type StepId } from "../guided/steps";
+import { LanguagePicker } from "../../i18n/LanguagePicker";
 
 /*
   The first screen a grower sees when this browser has no fields yet. It says what the app
   does in one line, lays out the six steps of the guided sequence in order, and starts it.
-  "See an example farm" loads the Union County demo farm (flagged as a demo, kept apart from
+  "See an example farm" offers the two demo farms and loads the one picked (flagged as a demo, kept apart from
   the grower's own fields) and opens the sequence with every step filled in.
 */
 
@@ -35,10 +36,12 @@ export function Welcome({ api: given, go = (url) => window.location.assign(url) 
   const fallback = useGlobalApi();
   const api = given ?? fallback;
   const [demo, setDemo] = useState<Demo>({ state: "idle" });
+  // The examples are two real places; the grower picks one, so no country is the default (card 23).
+  const [choosing, setChoosing] = useState(false);
 
-  const example = async () => {
+  const example = async (which: "union" | "pergamino") => {
     setDemo({ state: "loading" });
-    const r = await api.client.demoFarm("union");
+    const r = await api.client.demoFarm(which);
     if (!r.ok) return setDemo({ state: "error", message: r.message });
     putFarm({ ...r.data.farm, demo: r.data.label });
     loadDemoFields(r.data);
@@ -53,6 +56,7 @@ export function Welcome({ api: given, go = (url) => window.location.assign(url) 
           <span className="fb-mark" aria-hidden="true" />
           {APP_NAME}
         </span>
+        <LanguagePicker />
         <nav className="wl-links" aria-label="About">
           <a href="?view=methods">How it works</a>
           <a href="?view=privacy">Privacy</a>
@@ -72,11 +76,21 @@ export function Welcome({ api: given, go = (url) => window.location.assign(url) 
                   See an example farm
                 </a>
               ) : (
-                <button type="button" className="btn btn-secondary btn-large" onClick={() => void example()} disabled={demo.state === "loading"}>
+                <button type="button" className="btn btn-secondary btn-large" aria-expanded={choosing} onClick={() => setChoosing((c) => !c)} disabled={demo.state === "loading"}>
                   {demo.state === "loading" ? "Loading the example…" : "See an example farm"}
                 </button>
               )}
             </div>
+            {choosing && demo.state !== "loading" ? (
+              <div className="wl-examples" role="group" aria-label="Example farms">
+                <button type="button" className="btn btn-secondary" onClick={() => void example("union")}>
+                  United States: maize and soybean
+                </button>
+                <button type="button" className="btn btn-secondary" onClick={() => void example("pergamino")}>
+                  Argentina: soybean, maize and wheat
+                </button>
+              </div>
+            ) : null}
             {demo.state === "error" ? <Banner kind="error">{demo.message}</Banner> : null}
             <ul className="wl-facts" aria-label="Good to know">
               <li>About 5 minutes</li>

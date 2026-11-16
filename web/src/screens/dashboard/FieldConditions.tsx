@@ -7,6 +7,7 @@ import { cropsOf, simCrops, type StepContext } from "../guided/context";
 import { cropLabel } from "../guided/format";
 import { ReadingsLog } from "../guided/StepPlan";
 import { ResearchPanel } from "../workspace/ResearchPanel";
+import { qtyText, unitLabel } from "../../ui/units";
 
 const conditionRequest = ({ point, sim, regionKey }: StepContext) => ({
   location: point, readings: sim.readings.map(toBackendReading),
@@ -68,8 +69,8 @@ export function FieldConditions({ ctx }: { ctx: StepContext }) {
         <p className="dash-muted">Local dataset estimates fill conditions you leave blank. Your measurements take precedence.</p>
         {loading ? <p role="status">Loading local baselines…</p> : null}
         <dl className="fc-values">{data?.values.filter(v => v.kind !== "custom").map(v => <div key={v.key}>
-          <dt>{v.label}{v.kind === "soil_moisture_pct" ? <small>NASA baseline: surface saturation</small> : null}</dt>
-          <dd>{v.baseline?.value == null ? "Not available" : `${v.baseline.value} ${v.unit ?? ""}`}<small>{v.baseline?.source ? <a href={v.baseline.source.url} target="_blank" rel="noreferrer">{v.baseline.source.title}</a> : "No supported local estimate"}</small>{v.baseline ? <small>{v.baseline.note}</small> : null}</dd>
+          <dt>{unitLabel(v.label)}{v.kind === "soil_moisture_pct" ? <small>NASA baseline: surface saturation</small> : null}</dt>
+          <dd>{v.baseline?.value == null ? "Not available" : (qtyText(v.baseline.value, v.unit) ?? "Not available")}<small>{v.baseline?.source ? <a href={v.baseline.source.url} target="_blank" rel="noreferrer">{v.baseline.source.title}</a> : "No supported local estimate"}</small>{v.baseline ? <small>{v.baseline.note}</small> : null}</dd>
         </div>)}</dl>
       </section>
       {profile ? <ResearchPanel profile={profile} field={field} /> : <p className="dash-muted">Loading regional guidance…</p>}
@@ -79,8 +80,8 @@ export function FieldConditions({ ctx }: { ctx: StepContext }) {
         <div className="db-card-head"><h2>Conditions used for your field</h2></div>
         <p className="dash-muted">The latest dated measurement is used for each condition. Clear your entries to return to the baseline.</p>
         <dl className="fc-values">{data?.values.filter(v => v.value !== null).map(v => <div key={v.key}>
-          <dt>{v.label}<small>{v.origin === "grower" ? `You entered · ${v.date}${v.depth_cm != null ? ` · ${v.depth_cm} cm depth` : ""}` : "Local baseline"}{v.moisture_basis ? ` · ${v.moisture_basis.replace(/_/g, " ")}` : ""}</small></dt>
-          <dd><strong>{v.value} {v.unit}</strong>{v.origin === "grower" ? <button type="button" className="btn btn-small btn-quiet" onClick={() => reset(v.key)} aria-label={`Use baseline for ${v.label}`}>Use baseline</button> : null}</dd>
+          <dt>{unitLabel(v.label)}<small>{v.origin === "grower" ? `You entered · ${v.date}${v.depth_cm != null ? ` · ${v.depth_cm} cm depth` : ""}` : "Local baseline"}{v.moisture_basis ? ` · ${v.moisture_basis.replace(/_/g, " ")}` : ""}</small></dt>
+          <dd><strong>{qtyText(v.value, v.unit)}</strong>{v.origin === "grower" ? <button type="button" className="btn btn-small btn-quiet" onClick={() => reset(v.key)} aria-label={`Use baseline for ${v.label}`}>Use baseline</button> : null}</dd>
         </div>)}</dl>
         {data && !data.values.some(v => v.value !== null) ? <p>No local values available. Add your measurements below.</p> : null}
         <p className="fc-scope">Weather readings replace estimates on matching recorded dates. Soil pH, temperature and other conditions inform the crop assessment below.</p>
@@ -89,10 +90,10 @@ export function FieldConditions({ ctx }: { ctx: StepContext }) {
       <section className="db-card fc-impacts" aria-label="Crop condition assessment" aria-busy={assessing}>
         <div className="db-card-head"><h2>What this means for your crops</h2></div>
         {assessing ? <p role="status">AI is checking published crop ranges and growth effects…</p> : null}
-        {!request.crops.length ? <p>Select crops in Crop Rotation to assess these conditions.</p> : null}
+        {!request.crops.length ? <p>Pick your crops in step 2 to see what these readings mean for them.</p> : null}
         {assessment?.reason_text && !assessing ? <p className="dash-muted">{assessment.reason_text}</p> : null}
         {assessment?.impacts.map((impact, i) => <article key={`${impact.key}-${impact.crop_id}-${i}`} className="fc-impact" data-rating={impact.rating}>
-          <div className="fc-impact-head"><h3>{cropLabel(impact.crop_id)} · {data?.values.find(v => v.key === impact.key)?.label ?? impact.key}</h3><span className={`fc-rating fc-rating-${impact.rating}`}>{impact.rating === "normal" ? "Normal" : impact.rating === "abnormal" ? "Outside normal range" : "Not assessed"}</span></div>
+          <div className="fc-impact-head"><h3>{cropLabel(impact.crop_id)} · {unitLabel(data?.values.find(v => v.key === impact.key)?.label ?? impact.key)}</h3><span className={`fc-rating fc-rating-${impact.rating}`}>{impact.rating === "normal" ? "Normal" : impact.rating === "abnormal" ? "Outside normal range" : "Not assessed"}</span></div>
           {impact.normal_min !== null && impact.normal_max !== null ? <p className="fc-range">Published range: {impact.normal_min}–{impact.normal_max} {impact.unit}</p> : null}
           <p>{impact.effect}</p>{impact.context ? <p className="dash-muted">{impact.context}</p> : null}
           {impact.source ? <a href={impact.source.url} target="_blank" rel="noreferrer">{impact.source.title} · AI-found, quote checked</a> : null}
@@ -117,6 +118,6 @@ export function FieldConditionNotice({ ctx, onOpen }: { ctx: StepContext; onOpen
       {risk.source ? <> <a href={risk.source.url} target="_blank" rel="noreferrer">Source</a></> : null}
     </li>)}</ul>
     <p className="fc-scope">These crop-growth concerns are assessed separately from the weather replay. No numerical yield or margin penalty is assumed.</p>
-    <button type="button" className="btn btn-secondary" onClick={onOpen}>Review Field Conditions</button>
+    <button type="button" className="btn btn-secondary" onClick={onOpen}>See your readings</button>
   </section>;
 }

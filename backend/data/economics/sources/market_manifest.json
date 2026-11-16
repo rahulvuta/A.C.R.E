@@ -1,0 +1,135 @@
+{
+  "wfp_food_prices_ken.csv": {
+    "url": "https://data.humdata.org/dataset/e0d3fba6-f9a2-45d7-b949-140c455197ff/resource/517ee1bf-2437-4f8c-aa1b-cb9925b9d437/download/wfp_food_prices_ken.csv",
+    "sha256": "1d5bfdef809cce591a10e937fab59cdd38086ca62386eff1d1b368ce5d9d7305",
+    "bytes": 3793902,
+    "retrieved": "2026-11-16",
+    "license": "CC BY-IGO"
+  },
+  "wfp_food_prices_eth.csv": {
+    "url": "https://data.humdata.org/dataset/2e4f1922-e446-4b57-a98a-d0e2d5e34afa/resource/87bac18e-f3aa-4b29-8cf8-76763e823dc5/download/wfp_food_prices_eth.csv",
+    "sha256": "22df31f0f8feeb960baff7aa8addb97c349fe20568f997e12ae660780ae4fc5f",
+    "bytes": 7944760,
+    "retrieved": "2026-11-16",
+    "license": "CC BY-IGO"
+  },
+  "wfp_food_prices_nga.csv": {
+    "url": "https://data.humdata.org/dataset/42db041f-7aaf-4ab4-961f-2a12096861e7/resource/12b51155-0cd3-4806-9924-61ede4077591/download/wfp_food_prices_nga.csv",
+    "sha256": "63895c66a8362e138705df2fce98534d9ec63dcb8e23603a29180b3e3496c3af",
+    "bytes": 11128392,
+    "retrieved": "2026-11-16",
+    "license": "CC BY-IGO"
+  },
+  "wfp_food_prices_ind.csv": {
+    "url": "https://data.humdata.org/dataset/dc663585-4b6f-46ae-a6d6-b2f3e4ea32b5/resource/3b1ff071-6b01-4998-aa62-2f3efb5d4888/download/wfp_food_prices_ind.csv",
+    "sha256": "b9a197bc7cb5fa72342c960721057ecb308e0d8d1944cd616b2f8be1d2f06fe9",
+    "bytes": 25865442,
+    "retrieved": "2026-11-16",
+    "license": "CC BY-IGO"
+  },
+  "wfp_food_prices_tza.csv": {
+    "url": "https://data.humdata.org/dataset/5090d858-a300-49fe-a953-4ec4e3526fc2/resource/2ff38c1a-a8f7-45b2-9209-090200c859da/download/wfp_food_prices_tza.csv",
+    "sha256": "55324dfa1923f73b7e795d18c1ed45496ca2bc4be4d3e6ac98d17472a49fd489",
+    "bytes": 8675460,
+    "retrieved": "2026-11-16",
+    "license": "CC BY-IGO"
+  },
+  "wfp_food_prices_uga.csv": {
+    "url": "https://data.humdata.org/dataset/883929b1-521e-4834-97f5-0ccc2df75b89/resource/e082d683-cad5-4dcd-bf54-db76ae254d33/download/wfp_food_prices_uga.csv",
+    "sha256": "bc415a3610d3596029732a2517ef84e42efa5373c922cf89300c996a66de89bd",
+    "bytes": 4440382,
+    "retrieved": "2026-11-16",
+    "license": "CC BY-IGO"
+  },
+  "wfp_food_prices_gha.csv": {
+    "url": "https://data.humdata.org/dataset/626e809c-c4fc-467b-a60c-129acb5e9320/resource/e877350b-146f-4fa7-8690-db9605eea78c/download/wfp_food_prices_gha.csv",
+    "sha256": "74921b441ccba8254a61e238ea517129c70db480744e74ca7f78e4c89f38d2b1",
+    "bytes": 5209649,
+    "retrieved": "2026-11-16",
+    "license": "CC BY-IGO"
+  },
+  "wfp_food_prices_mwi.csv": {
+    "url": "https://data.humdata.org/dataset/75ecb747-717e-4ce5-b7af-0e13cc95ba63/resource/da3ed5da-d6ad-4a86-b4bc-b77e74d01ab7/download/wfp_food_prices_mwi.csv",
+    "sha256": "8b38dd84ab57b86d6b5863d12c05a2ed679fe349f86bb33419cea7ee3471f29d",
+    "bytes": 11560045,
+    "retrieved": "2026-11-16",
+    "license": "CC BY-IGO"
+  },
+  "wfp_food_prices_moz.csv": {
+    "url": "https://data.humdata.org/dataset/477a46ed-4c31-42e4-b591-a598f7ab5fe6/resource/e673f685-0ea4-440d-afee-76c0f1293fc0/download/wfp_food_prices_moz.csv",
+    "sha256": "159a8b01929fe432d6b56dbdc05157b007663ecec32f77db8dd82dc22343a712",
+    "bytes": 8715166,
+    "retrieved": "2026-11-16",
+    "license": "CC BY-IGO"
+  },
+  "wfp_food_prices_zmb.csv": {
+    "url": "https://data.humdata.org/dataset/3f74001c-3554-4c54-bd86-c66208563316/resource/d9a34dc4-ff1d-43bf-9592-03d12d027848/download/wfp_food_prices_zmb.csv",
+    "sha256": "773d59a7ea23c787b48e683bf32bda5eb9e7e69fd27fc3e6108f7c909bef21e9",
+    "bytes": 9518108,
+    "retrieved": "2026-11-16",
+    "license": "CC BY-IGO"
+  },
+  "wfp_food_prices_bgd.csv": {
+    "url": "https://data.humdata.org/dataset/c76eabb7-fdb5-43b7-a5c4-09091bb8acde/resource/966ab7ac-56d6-4dac-8eba-dfe815d59a52/download/wfp_food_prices_bgd.csv",
+    "sha256": "2f0090107e98beb11e09d423f9b8a1482e6f74b854e075fa36696ec7c818c0ce",
+    "bytes": 4519727,
+    "retrieved": "2026-11-16",
+    "license": "CC BY-IGO"
+  },
+  "wfp_food_prices_pak.csv": {
+    "url": "https://data.humdata.org/dataset/125455ff-c8a8-4f4b-9190-bf0e84559dc7/resource/8cf7a8a2-58a1-4c3f-bafe-f38af68d971b/download/wfp_food_prices_pak.csv",
+    "sha256": "0297b433b50e5642046a42e45d9c807b0510e45bef40ce7972116344c9bdef2a",
+    "bytes": 1713199,
+    "retrieved": "2026-11-16",
+    "license": "CC BY-IGO"
+  },
+  "wfp_food_prices_npl.csv": {
+    "url": "https://data.humdata.org/dataset/0e8b1b84-8e55-4aec-bc45-0c7d2c92d32e/resource/10bae3d7-82bf-4caf-a216-5fb4a8ff6e43/download/wfp_food_prices_npl.csv",
+    "sha256": "7270e1463d195ddea8e37b8497ed854164d976c7d8ad699937aa94246bcc257b",
+    "bytes": 6002552,
+    "retrieved": "2026-11-16",
+    "license": "CC BY-IGO"
+  },
+  "wfp_food_prices_sen.csv": {
+    "url": "https://data.humdata.org/dataset/77b76bc7-1edd-43f6-a5e4-784498ff6aca/resource/04ffc070-6d05-4653-a9f6-9f3f893a229e/download/wfp_food_prices_sen.csv",
+    "sha256": "32ac4d9f416272ac208ea13544a5391201f30d4f0586a441aee135e4fe0e9e37",
+    "bytes": 6724004,
+    "retrieved": "2026-11-16",
+    "license": "CC BY-IGO"
+  },
+  "wfp_food_prices_mli.csv": {
+    "url": "https://data.humdata.org/dataset/d73f8595-0b0b-4b64-91b3-986b1cad5ae6/resource/e7489e71-2c7b-48d4-8ae7-f378b735dcba/download/wfp_food_prices_mli.csv",
+    "sha256": "c27128bb553519d168cf7c0b4b2d1f82870f68d4cf76d0cce7a5c9095d4f5ea9",
+    "bytes": 16553011,
+    "retrieved": "2026-11-16",
+    "license": "CC BY-IGO"
+  },
+  "wfp_food_prices_bfa.csv": {
+    "url": "https://data.humdata.org/dataset/bfd82e1f-0296-48a8-ac28-c11e028be5ed/resource/0eca67d6-e297-4f5e-9132-7dc42891b749/download/wfp_food_prices_bfa.csv",
+    "sha256": "301f9d5d5b7a89311191ee401c777aefe7d25bd1f3e761e64a2ab5fe8f72b490",
+    "bytes": 7248204,
+    "retrieved": "2026-11-16",
+    "license": "CC BY-IGO"
+  },
+  "wfp_food_prices_ner.csv": {
+    "url": "https://data.humdata.org/dataset/9c2f8da3-c0a5-476d-9035-b9b59172b922/resource/87334563-5dae-4125-9bcc-e9418283a8c9/download/wfp_food_prices_ner.csv",
+    "sha256": "e7e87c5e9254a01b66140dc230ea1b06e048079c5f1741ff121e9c9031c95f87",
+    "bytes": 8172511,
+    "retrieved": "2026-11-16",
+    "license": "CC BY-IGO"
+  },
+  "wfp_food_prices_cmr.csv": {
+    "url": "https://data.humdata.org/dataset/f6ed9f06-36b9-43b2-97f3-fc0b8e16d155/resource/9deec824-1e42-4a91-b704-b73fd250ec5a/download/wfp_food_prices_cmr.csv",
+    "sha256": "d73be6d007a4f3225c9b4507eb7e08e42119e31a3402f7412b00cba31472391b",
+    "bytes": 9711885,
+    "retrieved": "2026-11-16",
+    "license": "CC BY-IGO"
+  },
+  "worldbank_fx.json": {
+    "url": "https://api.worldbank.org/v2/country/all/indicator/PA.NUS.FCRF?format=json&date=2020:2025&per_page=20000",
+    "sha256": "c7a0b49df411c2a929108329d27e8df8d38020d326ce571f6c8e43e31c33129b",
+    "bytes": 382190,
+    "retrieved": "2026-11-16",
+    "license": "CC BY 4.0"
+  }
+}

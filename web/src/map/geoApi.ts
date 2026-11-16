@@ -72,7 +72,11 @@ export function parseSearch(body: unknown): GeoResult<GeoSearch> {
     const bb = Array.isArray(r.bbox) && r.bbox.length === 4 && r.bbox.every((x) => num(x) !== null) ? (r.bbox as [number, number, number, number]) : null;
     hits.push({ label: str(r.label) ?? `${lat}, ${lon}`, point: { latitude: lat, longitude: lon }, bbox: bb, kind: str(r.kind) ?? "place" });
   }
-  return { ok: true, data: { queryKind: b.query_kind === "coordinates" ? "coordinates" : "text", hits } };
+  const a = obj(b.attribution);
+  const text = str(a?.text);
+  const url = str(a?.url);
+  const credit = text ? { text, url: url && /^https:\/\//.test(url) ? url : null } : null;
+  return { ok: true, data: { queryKind: b.query_kind === "coordinates" ? "coordinates" : "text", hits, credit } };
 }
 
 export function parseReverse(body: unknown): GeoResult<PlaceInfo> {

@@ -11,7 +11,7 @@ import type { GlobalApi } from "../../state/useGlobal";
 import { clearSimulationsForTests } from "../../state/useSimulation";
 import type { StepContext } from "../guided/context";
 import { HORIZON_YEARS, outlookBasis, StrategyView } from "./StrategyBoxes";
-import { climateAdjustmentOf } from "./StrategySim";
+import { climateAdjustmentOf, lastingState } from "./StrategySim";
 import request from "../../timeline/fixtures/simulate-union.request.json";
 
 // SYNTHETIC FIXTURES: the Union County sample request and the repo's simulate fixture, used only to test rendering.
@@ -118,4 +118,13 @@ it("waits until the overview is visible before starting a simulation", async () 
   const rotation = ctx.sim.rotation.map((p) => ({ ...p, next_plant: "05-11" }));
   rerender(<StrategyView ctx={{ ...ctx, active: false, sim: { ...ctx.sim, rotation } }} onTab={() => {}} />);
   expect(bodies).toHaveLength(1);
+});
+
+describe("a crop that stays in the ground, in the animated field (card 21)", () => {
+  it("is living cover all year: no residue, no seedlings, no planting window", () => {
+    const bare = { corn: { show: true, h: 1, mature: true }, soy: { show: true, h: 0.2, mature: false }, wheat: { show: false, h: 0, ripe: 0 }, cover: { show: false, h: 0, ended: false }, residue: 1, inSpringWindow: true, label: "Crop residue, no living cover; crop planted" };
+    const s = lastingState(bare, "Coffee");
+    expect(s.label).toBe("Coffee in the ground all year");
+    expect(s).toMatchObject({ residue: 0, inSpringWindow: false, cover: { show: true, h: 1, ended: false }, corn: { show: false }, soy: { show: false } });
+  });
 });

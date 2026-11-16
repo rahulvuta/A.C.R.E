@@ -11,6 +11,11 @@ reported, never guessed):
   source_url, locator, retrieved
 * ``custom_rates.csv``: region_key, operation, equipment, value, unit, currency, year,
   source_title, source_url, locator, retrieved
+* ``market_prices.csv``: region_key, crop_id, unit, currency, low, typical, high, years,
+  price_type (wholesale or retail), markets, source_title, source_url, locator, retrieved.
+  Prices paid in town markets (WFP), in local currency. They are shown beside the producer
+  price and are never used as the crop's price unless the grower takes them.
+* ``exchange_rates.csv`` is read by :mod:`acre.economics.fx`.
 
 An optional ``origin`` column may say ``verified_source`` (default) or ``dataset_estimate``.
 Yield and cost rows may add ``area_basis``: ``harvested``, ``planted`` or ``unknown``.
@@ -38,6 +43,9 @@ FILES: dict[str, tuple[str, ...]] = {
     "yields": ("region_key", "crop_id", "value", "unit", "year"),
     "costs": ("region_key", "crop_id", "item", "value", "unit", "currency", "year"),
     "custom_rates": ("region_key", "operation", "equipment", "value", "unit", "currency", "year"),
+    # Prices paid in town markets (WFP), kept apart from producer prices: card 29.
+    "market_prices": ("region_key", "crop_id", "unit", "currency", "low", "typical", "high", "years",
+                      "price_type", "markets"),
 }
 NUMERIC = {"low", "typical", "high", "value"}
 
@@ -53,6 +61,7 @@ class Tables:
     yields: list[dict[str, Any]] = field(default_factory=list)
     costs: list[dict[str, Any]] = field(default_factory=list)
     custom_rates: list[dict[str, Any]] = field(default_factory=list)
+    market_prices: list[dict[str, Any]] = field(default_factory=list)
     issues: list[dict[str, Any]] = field(default_factory=list)
     present: dict[str, bool] = field(default_factory=dict)
 
@@ -102,7 +111,10 @@ def _row(name: str, n: int, raw: dict[str, str], t: Tables) -> dict[str, Any] | 
             bad("area_basis must be harvested, planted or unknown; row dropped")
             return None
         out["area_basis"] = basis
-    if name == "prices":
+    if name in {"prices", "market_prices"}:
+        if name == "market_prices" and out.get("price_type") not in {"wholesale", "retail"}:
+            bad("price_type must be wholesale or retail; row dropped")
+            return None
         vals = [out[k] for k in ("low", "typical", "high")]
         if out["typical"] is None:
             bad("typical price is required; row dropped")

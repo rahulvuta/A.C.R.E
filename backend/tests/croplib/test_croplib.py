@@ -103,6 +103,20 @@ def test_the_library_is_a_seeded_sqlite_file(api):
     assert api.get("/v1/crops/nope_crop").status_code == 400
 
 
+def test_crops_that_stay_in_the_ground_can_be_picked_without_a_lookup(api):
+    # card 21: pasture, tea, bananas and the like are found by name or by an everyday word
+    for q, cid in (("pasture", "pasture"), ("grazing", "pasture"), ("tea", "tea"),
+                   ("plantain", "banana"), ("cacao", "cocoa"), ("mango", "fruit_trees"),
+                   ("lucerne", "alfalfa"), ("vineyard", "grapes")):  # fmt: skip
+        found = {c["crop_id"]: c for c in api.get("/v1/crops/search", params={"q": q}).json()["results"]}
+        assert cid in found, q
+        # a name from A.C.R.E's own list: no source is claimed, and no dates or prices
+        assert found[cid]["origin"] == "assumed" and found[cid]["researched"] is False
+        assert found[cid]["has_economics"] is False
+    # and the simulator accepts them as crop ids
+    assert crop_ids.is_known("pasture") and crop_ids.is_known("fruit_trees")
+
+
 def test_research_an_unknown_crop_and_cache_it_for_everyone(api):
     seen = calls_to(answer())
     r = api.post("/v1/crops/research", json={"name": "Okra", "region_key": "US-NC",

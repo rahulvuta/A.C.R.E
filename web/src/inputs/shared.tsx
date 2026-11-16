@@ -17,6 +17,27 @@ export function SourceLabel({ source }: { source?: Source | null }) {
 export function ErrorNotice({ error, retry }: { error: string; retry?: () => void }) {
   return <div className="acre-input-error" role="alert"><p>{error}</p>{retry && <button type="button" onClick={retry}>Try again</button>}</div>;
 }
+/**
+ * A lookup that takes about a minute (cards 24 and 25): what is being looked up, how long it
+ * has run against the usual time, and a way to stop. The bar fills over the usual time and
+ * then keeps moving, so a slow lookup never looks stuck or finished. It is a clock, not a
+ * report from the service: the sentence above it is the only statement of what is happening.
+ */
+export function LookupProgress({ children, usualSeconds = 60, onStop, stopLabel = "Stop" }: { children: React.ReactNode; usualSeconds?: number; onStop?: () => void; stopLabel?: string }) {
+  const [seconds, setSeconds] = useState(0);
+  useEffect(() => {
+    const started = Date.now();
+    const timer = setInterval(() => setSeconds(Math.floor((Date.now() - started) / 1000)), 1000);
+    return () => clearInterval(timer);
+  }, []);
+  const over = seconds > usualSeconds;
+  return <div role="status" className="acre-input-research-status">
+    <p>{children}</p>
+    {onStop && <button type="button" aria-label={stopLabel} onClick={onStop}>Stop</button>}
+    <div className="acre-input-lookup-meter" data-over={over ? "yes" : "no"} aria-hidden="true"><i style={{ width: `${over ? 100 : Math.max(4, Math.round((seconds / usualSeconds) * 100))}%` }} /></div>
+    <small className="acre-input-lookup-time">{over ? `${seconds} seconds so far. This one is taking longer than usual; it is still looking.` : `${seconds} seconds so far. Usually about ${usualSeconds < 90 ? "a minute" : `${Math.round(usualSeconds / 60)} minutes`}.`}</small>
+  </div>;
+}
 /** Wait `ms`, rejecting with an AbortError as soon as `signal` aborts (used between checks on a running lookup). */
 export function pauseFor(signal: AbortSignal, ms: number) {
   return new Promise<void>((resolve, reject) => {

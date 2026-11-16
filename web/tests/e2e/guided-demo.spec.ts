@@ -49,10 +49,8 @@ test.describe("guided live demo farms", () => {
       await expect(page.getByRole("region", { name: "Prices, yields and costs", exact: true })).toBeVisible();
       await next(page, "Weather losses");
 
-      const readingTools = page.locator("details.gf-reading-tools");
-      await readingTools.getByText("Log a field reading", { exact: true }).click();
-      await expect(readingTools.getByRole("region", { name: "Field readings", exact: true })).toBeVisible();
-      await readingTools.getByText("Log a field reading", { exact: true }).click();
+      // The readings form lives on the field page and in step 6 only (card 14).
+      await expect(page.locator("details.gf-reading-tools")).toHaveCount(0);
 
       const baseline = page.waitForResponse(response => simulation(response, 1));
       await next(page, "Simulate current plan");
@@ -63,9 +61,10 @@ test.describe("guided live demo farms", () => {
       await expect(page.getByRole("region", { name: "10-year result", exact: true })).toBeVisible();
 
       await next(page, "Try other plans");
-      const priorities = page.getByRole("region", { name: "Your priorities", exact: true });
-      const resilience = priorities.getByRole("combobox", { name: /weather/i });
-      if (await resilience.inputValue() !== "0") await resilience.selectOption("0");
+      // "Pick up to three things that matter most": picture buttons, not weights (card 11).
+      const priorities = page.getByRole("region", { name: "What matters most to you", exact: true });
+      const resilience = priorities.getByRole("button", { name: "Cope with dry and wet years", exact: true });
+      if ((await resilience.getAttribute("aria-pressed")) === "true") await resilience.click();
       const add = page.getByRole("button", { name: "Add to compare", exact: true }).first();
       await expect(add).toBeEnabled({ timeout: 120_000 });
       await add.click();
@@ -102,6 +101,7 @@ test.describe("guided live demo farms", () => {
 
       const readings = page.getByRole("region", { name: "Field readings", exact: true });
       await readings.getByLabel("Date", { exact: true }).fill("2026-04-02");
+      await readings.getByText("From a lab report or a sensor", { exact: true }).click();
       await readings.getByLabel("Reading type", { exact: true }).selectOption("soil_moisture_vwc");
       await readings.getByRole("spinbutton", { name: "Volumetric soil moisture (m³/m³)", exact: true }).fill("0");
       await readings.getByLabel("Depth (cm, optional)", { exact: true }).fill("10");

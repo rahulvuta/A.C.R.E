@@ -13,6 +13,37 @@ export const DATA_CREDITS = [
     note: "These data were obtained from the NASA Langley Research Center (LaRC) POWER Project funded through the NASA Earth Science/Applied Science Program.",
   },
   {
+    name: "GPM IMERG satellite rain, through NASA POWER",
+    owner: "NASA Goddard Space Flight Center and NASA Langley Research Center",
+    url: "https://gpm.nasa.gov/data/imerg",
+    used: "Yearly rain on squares about 10 km across, shown beside the 50 km record on the results. It changes no result.",
+  },
+  {
+    name: "NASA GIBS map pictures: MODIS Terra vegetation index and SMAP soil moisture",
+    owner: "NASA Earth Science Data and Information System",
+    url: "https://www.earthdata.nasa.gov/engage/open-data-services-software/earthdata-developer-portal/gibs-api",
+    used: "The greenness and soil moisture layers on the map, and the soil moisture at planting time on the results: SMAP Level 4 root-zone soil moisture (satellite readings combined with NASA's land model, about 9 km), read from the published picture with NASA's own colour table. It changes no result.",
+    note: "Imagery provided by services from NASA's Global Imagery Browse Services (GIBS).",
+  },
+  {
+    name: "OpenStreetMap: street map and place search (Nominatim)",
+    owner: "OpenStreetMap contributors",
+    url: "https://www.openstreetmap.org/copyright",
+    used: "The street map, and finding a town or village by name. Data © OpenStreetMap contributors, under the Open Database License.",
+  },
+  {
+    name: "World Imagery",
+    owner: "Esri, Vantor, Earthstar Geographics, and the GIS User Community",
+    url: "https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9",
+    used: "The satellite photo a field is drawn on.",
+  },
+  {
+    name: "WFP food prices and World Bank official exchange rates",
+    owner: "UN World Food Programme (through the Humanitarian Data Exchange); World Bank",
+    url: "https://data.humdata.org/organization/wfp",
+    used: "Wholesale market prices for the countries where no farm price is published, and the yearly exchange rates used to show a price in the grower's currency.",
+  },
+  {
     name: "NC Soybean Production Guide, chapters 4 and 5",
     owner: "NC State Extension",
     url: "https://content.ces.ncsu.edu/north-carolina-soybean-production-guide",

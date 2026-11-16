@@ -69,21 +69,21 @@ describe("strategy boxes", () => {
     expect(document.querySelector(".sb-detail")?.textContent).toMatch(/May 2027.*Plant soybean/);
   });
 
-  it("an empty box prompts for a suggested plan and opens Recommendations", () => {
+  it("an empty box prompts for a suggested plan and opens Try other plans", () => {
     const onTab = vi.fn();
     render(<StrategyBox box={boxes[2]!} badges={[]} highlight={false} waiting={false} onTab={onTab} />);
     expect(screen.getByText("Pick a suggested plan to compare.")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Open Recommendations" }));
+    fireEvent.click(screen.getByRole("button", { name: "Try other plans" }));
     expect(onTab).toHaveBeenCalledWith("recommendations");
   });
 
-  it("shows the gap text and a Financial Analysis button, no numbers, when money is not complete", () => {
+  it("shows the gap text and an Add prices and costs button, no numbers, when money is not complete", () => {
     const onTab = vi.fn();
     render(<StrategyBox box={boxes[1]!} badges={[]} highlight={false} waiting={false} onTab={onTab} />);
     expect(screen.getByText("No price for soybean yet.")).toBeInTheDocument();
     expect(screen.queryByText("Spent")).toBeNull();
     expect(screen.queryByText(/\$0\b/)).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Open Financial Analysis" }));
+    fireEvent.click(screen.getByRole("button", { name: "Add prices and costs" }));
     expect(onTab).toHaveBeenCalledWith("financial");
   });
 

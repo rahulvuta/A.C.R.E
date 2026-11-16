@@ -779,12 +779,15 @@
       ],
       "scenario_id": "current",
       "status": "complete",
+      "system_notes": [],
       "timeline": [
         {
+          "companions": [],
           "crop_sequence": [
             "field_corn",
             "soybean"
           ],
+          "ground": "yearly",
           "next_plant": "05-12",
           "plan_id": "nc_bare",
           "prev_harvest": "10-15",
@@ -793,10 +796,12 @@
           "year": 2027
         },
         {
+          "companions": [],
           "crop_sequence": [
             "soybean",
             "field_corn"
           ],
+          "ground": "yearly",
           "next_plant": "04-20",
           "plan_id": "nc_soy_corn_bare",
           "prev_harvest": "10-20",
@@ -805,10 +810,12 @@
           "year": 2028
         },
         {
+          "companions": [],
           "crop_sequence": [
             "field_corn",
             "soybean"
           ],
+          "ground": "yearly",
           "next_plant": "05-12",
           "plan_id": "nc_bare",
           "prev_harvest": "10-15",
@@ -817,10 +824,12 @@
           "year": 2029
         },
         {
+          "companions": [],
           "crop_sequence": [
             "soybean",
             "field_corn"
           ],
+          "ground": "yearly",
           "next_plant": "04-20",
           "plan_id": "nc_soy_corn_bare",
           "prev_harvest": "10-20",
@@ -829,10 +838,12 @@
           "year": 2030
         },
         {
+          "companions": [],
           "crop_sequence": [
             "field_corn",
             "soybean"
           ],
+          "ground": "yearly",
           "next_plant": "05-12",
           "plan_id": "nc_bare",
           "prev_harvest": "10-15",
@@ -1147,13 +1158,16 @@
       ],
       "scenario_id": "rye",
       "status": "complete",
+      "system_notes": [],
       "timeline": [
         {
+          "companions": [],
           "crop_sequence": [
             "field_corn",
             "cereal_rye",
             "soybean"
           ],
+          "ground": "yearly",
           "next_plant": "05-12",
           "plan_id": "nc_rye",
           "prev_harvest": "10-15",
@@ -1162,11 +1176,13 @@
           "year": 2027
         },
         {
+          "companions": [],
           "crop_sequence": [
             "soybean",
             "cereal_rye",
             "field_corn"
           ],
+          "ground": "yearly",
           "next_plant": "04-20",
           "plan_id": "nc_soy_corn_rye",
           "prev_harvest": "10-20",
@@ -1175,11 +1191,13 @@
           "year": 2028
         },
         {
+          "companions": [],
           "crop_sequence": [
             "field_corn",
             "cereal_rye",
             "soybean"
           ],
+          "ground": "yearly",
           "next_plant": "05-12",
           "plan_id": "nc_rye",
           "prev_harvest": "10-15",
@@ -1188,11 +1206,13 @@
           "year": 2029
         },
         {
+          "companions": [],
           "crop_sequence": [
             "soybean",
             "cereal_rye",
             "field_corn"
           ],
+          "ground": "yearly",
           "next_plant": "04-20",
           "plan_id": "nc_soy_corn_rye",
           "prev_harvest": "10-20",
@@ -1201,11 +1221,13 @@
           "year": 2030
         },
         {
+          "companions": [],
           "crop_sequence": [
             "field_corn",
             "cereal_rye",
             "soybean"
           ],
+          "ground": "yearly",
           "next_plant": "05-12",
           "plan_id": "nc_rye",
           "prev_harvest": "10-15",

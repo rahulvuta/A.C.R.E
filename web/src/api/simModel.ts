@@ -50,13 +50,17 @@ export interface ScenarioResult {
   label: string;
   status: Status;
   reasonText: string | null;
-  timeline: Array<{ year: number; season: string; cropSequence: string[]; planId: string | null }>;
+  timeline: Array<{ year: number; season: string; cropSequence: string[]; planId: string | null; companions?: string[]; ground?: string }>;
+  /** What the result does and does not cover for seasons with crops grown together or ground that stays planted (card 21). */
+  systemNotes?: Array<{ kind: string; text: string }>;
   yearly: YearResult[];
   /** Per-scenario totals as the backend gives them (e.g. margin_10y, crop_families). */
   totals: Record<string, Dist | number | null>;
   events: ScenarioEvent[];
   moneyStatus: Status;
   moneyGaps: string[];
+  /** Nothing is sold from the field in this plan (grazed pasture): there is no money result, and none is missing. */
+  nothingSold?: boolean;
   readingsContext: ReadingContext[];
 }
 

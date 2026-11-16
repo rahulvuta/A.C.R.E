@@ -58,4 +58,16 @@ describe("buildRows", () => {
     expect(formatMd("05-12")).toBe("May 12");
     expect(formatMd(null)).toBe("");
   });
+  it("names a crop grown together with the year's crop, and fills the year for a crop that stays in the ground (card 21)", () => {
+    const yearly = { plan_id: "a", label: "A", previous_crop_id: "dry_beans", prev_harvest: "07-15", winter: { kind: "none" as const }, next_crop_id: "maize", next_plant: "03-31" };
+    const mixed = buildRows([{ year: 2027, season: "2027", crop_sequence: ["dry_beans", "maize"], plan_id: "a", companions: ["dry_beans"], ground: "yearly" }], [yearly]);
+    expect(mixed[0]!.mainCrops).toEqual(["maize", "dry_beans"]);
+    const coffee = { plan_id: "a", label: "A", previous_crop_id: "coffee", prev_harvest: "11-15", winter: { kind: "none" as const }, next_crop_id: "coffee", next_plant: "11-15", permanent: { sold: true } };
+    const perm = buildRows([{ year: 2027, season: "2027", crop_sequence: ["coffee"], plan_id: "a", ground: "permanent" }], [coffee]);
+    expect(perm[0]!.mainCrops).toEqual(["coffee"]);
+    expect(perm[0]!.lasting).toBe(true);
+    expect(perm[0]!.bands).toEqual([{ kind: "cash", crop: "coffee", from: 0, to: 1, startMark: null, endMark: null, startDate: null, endDate: "11-15" }]);
+    const grazed = buildRows([{ year: 2027, season: "2027", crop_sequence: ["pasture"], plan_id: "a", ground: "permanent" }], [{ ...coffee, previous_crop_id: "pasture", next_crop_id: "pasture", prev_harvest: "12-31", next_plant: "12-31", permanent: { sold: false } }]);
+    expect(grazed[0]!.bands[0]).toMatchObject({ crop: "pasture", from: 0, to: 1, endDate: null });
+  });
 });

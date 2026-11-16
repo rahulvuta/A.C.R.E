@@ -150,3 +150,26 @@ export function addParcel(g: FieldGeometry, ring: Ring): { ok: true; geometry: F
   const problem = checkGeometry(next);
   return problem ? { ok: false, message: problem.message } : { ok: true, geometry: next };
 }
+
+/**
+ * A square of `m2` square metres centred on a point, for a field whose size is typed instead
+ * of traced (card 17). It stands in for the real outline: the size is right, the shape is not.
+ */
+export function squareAround(point: { latitude: number; longitude: number }, m2: number): FieldGeometry {
+  const M_PER_DEG = 111_320;
+  const ring = (side: number): Ring => {
+    const dLat = side / 2 / M_PER_DEG;
+    const dLon = side / 2 / (M_PER_DEG * Math.max(0.01, Math.cos((point.latitude * Math.PI) / 180)));
+    const [w, e, s, n] = [point.longitude - dLon, point.longitude + dLon, point.latitude - dLat, point.latitude + dLat];
+    return [[w, s], [e, s], [e, n], [w, n], [w, s]];
+  };
+  let side = Math.sqrt(m2);
+  let g: FieldGeometry = { type: "Polygon", coordinates: [ring(side)] };
+  // One correction so the measured area matches what was typed.
+  const measured = areaM2(g);
+  if (measured > 0) {
+    side *= Math.sqrt(m2 / measured);
+    g = { type: "Polygon", coordinates: [ring(side)] };
+  }
+  return g;
+}

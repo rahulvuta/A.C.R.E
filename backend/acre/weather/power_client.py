@@ -80,8 +80,11 @@ def build_params(
     start: str,
     end: str,
     parameters: list[str] | None = None,
+    time_standard: str | None = None,
 ) -> dict[str, str]:
-    """Query parameters for the point endpoint. ``start``/``end`` are ISO dates (YYYY-MM-DD)."""
+    """Query parameters for the point endpoint. ``start``/``end`` are ISO dates (YYYY-MM-DD).
+    ``time_standard`` is POWER's ``LST`` (the default here) or ``UTC``; the IMERG rain product is
+    served on UTC days only."""
     return {
         "parameters": ",".join(parameters or POWER_PARAMETERS),
         "community": POWER_COMMUNITY,
@@ -90,7 +93,7 @@ def build_params(
         "start": start.replace("-", ""),
         "end": end.replace("-", ""),
         "format": "JSON",
-        "time-standard": POWER_TIME_STANDARD,
+        "time-standard": time_standard or POWER_TIME_STANDARD,
     }
 
 
@@ -101,6 +104,7 @@ def fetch_daily(
     end: str,
     *,
     parameters: list[str] | None = None,
+    time_standard: str | None = None,
     client: httpx.Client | None = None,
     timeout_s: float = 120.0,
     retries: int = 3,
@@ -114,7 +118,7 @@ def fetch_daily(
     """
     if is_offline():
         raise OfflineError(f"{OFFLINE_ENV}=1: network fetches are disabled")
-    params = build_params(latitude, longitude, start, end, parameters)
+    params = build_params(latitude, longitude, start, end, parameters, time_standard)
     owns_client = client is None
     http = client or httpx.Client(timeout=timeout_s)
     last_error: str = "unknown"

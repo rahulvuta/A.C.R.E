@@ -144,3 +144,10 @@
 @media (max-width: 600px) { .pl-sidebar { display: none; } .pl-dashboard-main { margin: 0; width: 100%; } .pl-priority-grid, .pl-form-grid { grid-template-columns: 1fr; } .pl-steps button { padding: 10px; } .pl-card { padding: 18px; } .pl-topbar { padding: 16px 20px; } .pl-topbar span + span { display: none; } .pl-section-heading { flex-wrap: wrap; } }
 @media print { @page { margin: 12mm; } .pl-no-print, .pl-sidebar, .pl-topbar, .pl-page-heading, .pl-date-editor { display: none !important; } .pl-dashboard, .pl-dashboard-main, .pl-main { display: block; width: auto; margin: 0; padding: 0; background: #fff; } .pl-seasons { display: block; } .pl-season { break-before: page; border: 0; padding: 0; margin: 20px 0; } .pl-season:first-child { break-before: auto; } .pl-window, .pl-decision { break-inside: avoid; } .pl-origin { print-color-adjust: exact; -webkit-print-color-adjust: exact; } .pl details > :not(summary) { display: block !important; } .pl details { content-visibility: visible; } }
 @media (prefers-reduced-motion: reduce) { .pl * { transition: none !important; } }
+
+/* "This season": the next three jobs from the plan, as a short numbered list. */
+.pl-this-season h2 { margin: 0; }
+.pl-jobs { list-style: none; margin: 4px 0 10px; padding: 0; display: grid; gap: 10px; }
+.pl-jobs li { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; font-size: 18px; line-height: 1.35; }
+.pl-job-n { display: inline-grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: 50%; background: #004656; color: #fff; font-size: 15px; font-weight: 600; }
+.pl-job-text { flex: 1 1 260px; }

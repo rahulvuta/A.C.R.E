@@ -3,7 +3,7 @@ import * as maplibregl from "maplibre-gl";
 import type { Map as MlMap } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
-import { BASEMAPS, baseStyle, layerId, type Basemap } from "./basemap";
+import { BASEMAP_KEYS, baseStyle, layerId, type Basemap } from "./basemap";
 import type { LatLon } from "../api/model";
 
 /*
@@ -88,7 +88,7 @@ export function MapView({ initialCenter = { latitude: 20, longitude: 0 }, initia
     const map = mapRef.current;
     if (!map) return;
     const apply = () => {
-      for (const k of Object.keys(BASEMAPS) as Basemap[]) {
+      for (const k of BASEMAP_KEYS) {
         if (map.getLayer(layerId(k))) map.setLayoutProperty(layerId(k), "visibility", k === basemap ? "visible" : "none");
       }
     };

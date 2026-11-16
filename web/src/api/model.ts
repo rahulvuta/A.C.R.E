@@ -49,6 +49,8 @@ export interface GeoHit {
 export interface GeoSearch {
   queryKind: "text" | "coordinates";
   hits: GeoHit[];
+  /** The credit the place search asks to be shown with its results (card 32). */
+  credit?: { text: string; url: string | null } | null;
 }
 
 export interface Climate {

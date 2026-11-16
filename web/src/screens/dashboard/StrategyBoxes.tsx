@@ -1,4 +1,5 @@
 import { ConfidenceBadge } from "../../ui/ConfidenceBadge";
+import { LOCALE } from "../../ui/units";
 import { FieldConditionNotice } from "./FieldConditions";
 import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
@@ -120,12 +121,19 @@ const ASSUMPTION_LABEL: Record<string, string> = { dry_spring_pct: "dry-spring l
 const assumptionList = (v: string | string[] | null | undefined) => (v == null ? [] : Array.isArray(v) ? v : v.split("+"));
 
 export function MoneySummary({ result, monthly, raw, onFinancial, isBaseline = false, marginDelta = null }: { result: ScenarioResult; monthly: ScenarioMonthly | null; raw: Record<string, unknown> | null; onFinancial: () => void; isBaseline?: boolean; marginDelta?: { value: number | null; currency: string | null } | null }) {
+  if (result.nothingSold) {
+    return (
+      <div className="sb-money" role="group" aria-label="Money">
+        <p className="gf-muted">Nothing is sold from this field in the plan, so there is no money to show.</p>
+      </div>
+    );
+  }
   if (result.moneyStatus !== "complete") {
     return (
       <div className="sb-money" role="group" aria-label="Money">
         <p className="sb-gap-title">Money is not available for this plan yet.</p>
         {result.moneyGaps.length ? <ul className="sb-gaps">{result.moneyGaps.map((g, i) => <li key={i}>{g}</li>)}</ul> : <p className="gf-muted">Some money inputs are missing or still need checking.</p>}
-        <button type="button" className="btn btn-secondary" onClick={onFinancial}>Open Financial Analysis</button>
+        <button type="button" className="btn btn-secondary" onClick={onFinancial}>Add prices and costs</button>
       </div>
     );
   }
@@ -254,7 +262,7 @@ export function MoneyExplainer({ rotation, monthly, raw }: { rotation: FieldPlan
 // ------------------------------------------------------------------ month-by-month chart
 const monthName = (m: string, withYear = true) => {
   const [y, mo] = m.split("-").map(Number);
-  return new Intl.DateTimeFormat("en-US", { month: "short", ...(withYear ? { year: "numeric" } : {}), timeZone: "UTC" }).format(new Date(Date.UTC(y!, mo! - 1, 1)));
+  return new Intl.DateTimeFormat(LOCALE, { month: "short", ...(withYear ? { year: "numeric" } : {}), timeZone: "UTC" }).format(new Date(Date.UTC(y!, mo! - 1, 1)));
 };
 const OP_LABEL: Record<string, string> = { plant: "Plant", plant_grain: "Plant", harvest: "Harvest", harvest_grain: "Harvest", seed_cover: "Seed cover crop", end_cover: "End cover crop" };
 const opLabel = (o: { kind: string; crop_id?: string | null }) => `${OP_LABEL[o.kind] ?? readable(o.kind)}${o.crop_id ? ` ${cropLabel(o.crop_id).toLowerCase()}` : ""}`;
@@ -473,7 +481,7 @@ export function StrategyBox({ box, badges, highlight, waiting, onTab, onAdd, can
         ) : (
           <>
             <p className="gf-muted">Pick a suggested plan to compare.</p>
-            <button type="button" className="btn btn-secondary" onClick={() => onTab("recommendations")}>Open Recommendations</button>
+            <button type="button" className="btn btn-secondary" onClick={() => onTab("recommendations")}>Try other plans</button>
           </>
         )}
       </section>
@@ -507,8 +515,8 @@ export function StrategyBox({ box, badges, highlight, waiting, onTab, onAdd, can
         <p className="gf-muted" role="status">Running this plan through the next {HORIZON_YEARS} years…</p>
       ) : (
         <>
-          <p className="gf-muted">{rotationReady(box.scenario.rotation) ? "Results are not available for this plan yet." : `Finish this plan's crops and dates under ${box.slot === 0 ? "Crop Rotation" : "Recommendations"}.`}</p>
-          <button type="button" className="btn btn-secondary" onClick={() => onTab(box.slot === 0 ? "rotation" : "recommendations")}>{box.slot === 0 ? "Open Crop Rotation" : "Open Recommendations"}</button>
+          <p className="gf-muted">{rotationReady(box.scenario.rotation) ? "Results are not available for this plan yet." : `Finish this plan's crops and dates in ${box.slot === 0 ? "step 2" : "step 4"}.`}</p>
+          <button type="button" className="btn btn-secondary" onClick={() => onTab(box.slot === 0 ? "rotation" : "recommendations")}>{box.slot === 0 ? "Change crops and dates" : "Try other plans"}</button>
         </>
       )}
     </section>
@@ -637,7 +645,7 @@ export function outlookBasis(raw: Record<string, unknown> | null, runs: number |
     if (climate.text) lines.push(climate.text);
     else if (climate.applied != null) lines.push(climate.applied ? "Rain is adjusted for the trend observed in this field's record." : "Rain is used as recorded; no clear trend was found in this field's record.");
   }
-  lines.push("Prices, yields and costs are the ones you entered or that came from published sources, held at today's values (AI-found figures are used only when their quote was checked on the cited page). Weather changes the money only if you enter a loss estimate under Financial Analysis.");
+  lines.push("Prices, yields and costs are the ones you entered or that came from published sources, held at today's values (AI-found figures are used only when their quote was checked on the cited page). Weather changes the money only if you enter a loss estimate in step 2, under Weather losses.");
   lines.push("It shows what to plan for and which plan holds up better under these conditions; it cannot say what any single year will bring.");
   return lines;
 }
@@ -653,12 +661,13 @@ export function OutlookBasis({ raw, runs, sourceYears, notes = [] }: { raw: Reco
 }
 
 // ------------------------------------------------------------------ the whole view
-const timelineDate = (ym: string) => new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${ym}-01T00:00:00Z`));
+const timelineDate = (ym: string) => new Intl.DateTimeFormat(LOCALE, { month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${ym}-01T00:00:00Z`));
 
-export function StrategyView({ ctx, onTab }: { ctx: StepContext; onTab: (t: string) => void }) {
+export function StrategyView({ ctx, onTab, mode = "auto" }: { ctx: StepContext; onTab: (t: string) => void; mode?: "auto" | "current" | "chosen" }) {
   const { sim, field } = ctx;
-  const own = sim.scenarios.slice(0, SLOTS - 1);
-  const needMore = own.length < SLOTS - 1 && rotationReady(sim.rotation);
+  const own = mode === "current" ? [] : sim.scenarios.slice(0, SLOTS - 1);
+  // Inside the six steps the plans are the grower's own; only the old overview goes looking for more.
+  const needMore = mode === "auto" && own.length < SLOTS - 1 && rotationReady(sim.rotation);
   const rec = useShortlist(ctx, needMore && ctx.active !== false);
   const finding = needMore && (rec.state === "loading" || rec.state === "idle") && Boolean(ctx.point);
   // Suggestions the service could not put money on are passed over while the plan finder has another to offer.
@@ -669,7 +678,8 @@ export function StrategyView({ ctx, onTab }: { ctx: StepContext; onTab: (t: stri
   const suggested = Object.fromEntries(picks.map((p) => [p.scenario.scenarioId, p.origin]));
   const base = simulateRequest(ctx, alternatives);
   // Hold the request until the plan finder has answered, so the boxes are simulated once.
-  const req = base && !finding ? { ...base, years: HORIZON_YEARS } : null;
+  // In a step the request is the step's own, so the run it already made is reused.
+  const req = base && !finding ? (mode === "auto" ? { ...base, years: HORIZON_YEARS } : base) : null;
   const { sim: result, run } = useSimulation(ctx.api.client, req, ctx.active !== false);
   const data = result.state === "ready" ? result.data : null;
   const pickKey = picks.map((p) => p.scenario.scenarioId).join("|");
@@ -681,7 +691,7 @@ export function StrategyView({ ctx, onTab }: { ctx: StepContext; onTab: (t: stri
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, pickKey]);
   const baseline = base?.scenarios[0] ?? { scenarioId: "current", label: "What I do now", isBaseline: true, rotation: sim.rotation, from: "current" as const };
-  const boxes = buildBoxes(baseline, alternatives, data, suggested);
+  const boxes = buildBoxes(baseline, alternatives, data, suggested).filter((b) => mode === "auto" || b.scenario);
   const badgesFor = (id: string | undefined) => (id && data?.comparison ? data.comparison.badges.filter((b) => b.scenarioId === id).map((b) => ({ badge: badgeText(b.badge), why: b.why })) : []);
   const summary = data ? decisionSummary(boxes, data) : [];
   // One timeline for every box, so the strategies are compared at the same month.
@@ -715,18 +725,18 @@ export function StrategyView({ ctx, onTab }: { ctx: StepContext; onTab: (t: stri
   return (
     <section className="sb" aria-label="Your strategies">
       <div className="sb-head">
-        <h2>The next {HORIZON_YEARS} years, plan by plan</h2>
+        <h2>{mode === "current" ? "Your field through the years" : `The next ${HORIZON_YEARS} years, plan by plan`}</h2>
       </div>
       <FieldConditionNotice ctx={ctx} onOpen={() => onTab("conditions")} />
       {!rotationReady(sim.rotation) ? (
         <section className="db-card">
           <p className="gf-muted">Set a complete crop rotation to see what each plan spends and earns.</p>
-          <button type="button" className="btn btn-secondary" onClick={() => onTab("rotation")}>Open Crop Rotation</button>
+          <button type="button" className="btn btn-secondary" onClick={() => onTab("rotation")}>Change crops and dates</button>
         </section>
       ) : !base ? (
         <section className="db-card">
           <p className="gf-muted">Finish your prices and costs to see what each plan spends and earns.</p>
-          <button type="button" className="btn btn-secondary" onClick={() => onTab("financial")}>Open Financial Analysis</button>
+          <button type="button" className="btn btn-secondary" onClick={() => onTab("financial")}>Add prices and costs</button>
         </section>
       ) : (
         <>
@@ -741,13 +751,13 @@ export function StrategyView({ ctx, onTab }: { ctx: StepContext; onTab: (t: stri
               <ConditionsLine conditions={conditions} at={at} />
             </div>
           ) : null}
-          <div className="sb-grid">
+          <div className="sb-grid" data-count={boxes.length}>
             {boxes.map((b) => {
               const bs = badgesFor(b.scenario?.scenarioId);
               return <StrategyBox key={b.slot} box={b} badges={bs} highlight={bs.length > 0} waiting={!finding && (result.state === "loading" || result.state === "idle")} finding={finding} canAdd={sim.scenarios.length < MAX_ALTERNATIVES} onAdd={add} onTab={onTab} live={live} />;
             })}
           </div>
-          {data?.comparison ? (
+          {data?.comparison && boxes.length > 1 ? (
             <details className="sb-more sb-compare">
               <summary>How the plans compare, in words</summary>
               {summary.length ? <p className="sb-small">{summary.join(" ")} <OriginLabel origin="calculation" /></p> : null}

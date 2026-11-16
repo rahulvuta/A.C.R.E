@@ -31,6 +31,8 @@ export interface Row {
   datesKnown: boolean;
   /** The cash crop(s) whose growing season sits mostly in this row, for the row's label. */
   mainCrops: string[];
+  /** One crop stays in the ground all year: nothing is planted, so planting-time weather does not apply. */
+  lasting?: boolean;
 }
 
 const DAY = 86_400_000;
@@ -124,7 +126,18 @@ export function buildRows(entries: TimelineEntry[], rotation: FieldPlan[] = []):
     const fy = firstPlant ? new Date(firstPlant.start!).getUTCFullYear() : y0;
     if (fy !== y0) spans = walk(walked, plans, utc(y0 - 1 - (fy - y0), 1, 1) - 1);
   }
-  return entries.map((e, i) => (spans ? clipRow(spans, e) : evenRow(e, i)));
+  return entries.map((e, i) => withSystem(spans ? clipRow(spans, e) : evenRow(e, i), e, plans.get(e.plan_id)));
+}
+
+/** What the plan says beyond one crop after another: a crop grown together is named with the year's crop, and a crop that stays in the ground fills the whole year. */
+function withSystem(row: Row, e: TimelineEntry, plan: FieldPlan | undefined): Row {
+  if (e.ground === "permanent") {
+    const crop = plan?.next_crop_id ?? e.crop_sequence[e.crop_sequence.length - 1] ?? null;
+    const harvest = plan && /^\d{2}-\d{2}$/.test(plan.prev_harvest) && plan.permanent?.sold !== false ? plan.prev_harvest : null;
+    return { ...row, bands: [{ kind: "cash", crop, from: 0, to: 1, startMark: null, endMark: null, startDate: null, endDate: harvest }], mainCrops: crop ? [crop] : [], lasting: true };
+  }
+  const mates = (e.companions ?? []).filter(Boolean);
+  return mates.length ? { ...row, mainCrops: [...new Set([...row.mainCrops, ...mates])] } : row;
 }
 
 function clipRow(spans: Span[], e: TimelineEntry): Row {

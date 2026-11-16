@@ -36,6 +36,9 @@ describe("welcome screen", () => {
     const go = vi.fn();
     render(<Welcome api={api} go={go} />);
     fireEvent.click(screen.getByRole("button", { name: "See an example farm" }));
+    // Two real places are offered; no country is loaded by default.
+    expect(within(screen.getByRole("group", { name: "Example farms" })).getAllByRole("button")).toHaveLength(2);
+    fireEvent.click(screen.getByRole("button", { name: /Argentina/ }));
     await waitFor(() => expect(go).toHaveBeenCalledWith("?view=app#u=now&p=crops"));
     const state = store.get();
     const farm = state.farms.find((f) => f.fields.length > 0)!;

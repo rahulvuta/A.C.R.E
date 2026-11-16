@@ -23,6 +23,10 @@ export interface TimelineEntry {
   season: string;
   crop_sequence: string[];
   plan_id: string;
+  /** Crops grown in the same field at the same time as the season's crop (card 21). */
+  companions?: string[];
+  /** "permanent": one crop that stays in the ground all year, so no bare spell is drawn. */
+  ground?: string;
 }
 
 export interface YearResult {

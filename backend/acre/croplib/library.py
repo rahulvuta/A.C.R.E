@@ -142,10 +142,33 @@ def _economics_rows() -> list[dict[str, Any]]:
     return out
 
 
+#: Crops that stay in the ground for years (card 21). A name is all the plan needs from them:
+#: nothing is planted each season, and their yield, price and costs are the grower's own. They
+#: are listed so a grower can pick one without waiting for a lookup. (id, name, family, aliases)
+LASTING_CROPS: tuple[tuple[str, str, str | None, tuple[str, ...]], ...] = (
+    ("pasture", "Pasture (grazing land)", "Poaceae", ("grass", "grazing", "rangeland", "meadow")),
+    ("hay_grass", "Hay or fodder grass", "Poaceae", ("hay", "fodder", "napier grass")),
+    ("alfalfa", "Alfalfa (lucerne)", "Fabaceae", ("lucerne",)),
+    ("coffee", "Coffee", "Rubiaceae", ()),
+    ("tea", "Tea", "Theaceae", ()),
+    ("banana", "Banana or plantain", "Musaceae", ("plantain", "enset")),
+    ("cocoa", "Cocoa", "Malvaceae", ("cacao",)),
+    ("oil_palm", "Oil palm", "Arecaceae", ("palm oil",)),
+    ("coconut", "Coconut", "Arecaceae", ()),
+    ("rubber", "Rubber", "Euphorbiaceae", ()),
+    ("fruit_trees", "Fruit trees (mango, citrus, apple and others)", None,
+     ("orchard", "mango", "citrus", "orange", "apple", "avocado")),
+    ("nut_trees", "Nut trees (almond, walnut, cashew and others)", None,
+     ("almond", "walnut", "cashew", "pistachio")),
+    ("grapes", "Grapes", "Vitaceae", ("vineyard", "vines")),
+    ("olive", "Olive", "Oleaceae", ("olives",)),
+)  # fmt: skip
+
+
 def _seed_stamp() -> str:
     from acre.economics import data
 
-    parts = [SCHEMA_VERSION, sorted(c.crop_id for c in crop_ids.CROPS)]
+    parts = [SCHEMA_VERSION, sorted(c.crop_id for c in crop_ids.CROPS), LASTING_CROPS]
     d = data.data_dir()
     for name in data.FILES:
         p = d / f"{name}.csv"
@@ -178,6 +201,13 @@ def _seed(con: sqlite3.Connection, path: Path) -> None:
                 (c.crop_id, c.name, c.family, json.dumps(list(c.all_roles())),
                  json.dumps(list(c.aliases)), origin, json.dumps(src), int(c.crop_id in sg),
                  int(c.crop_id in cat), now))  # fmt: skip
+        for cid, name, family, aliases in LASTING_CROPS:
+            # never over a built-in crop or one a grower already looked up
+            con.execute(
+                "INSERT OR IGNORE INTO crops (crop_id, name, family, roles, aliases, origin, "
+                "sources, cached_at) VALUES (?,?,?,?,?,?,?,?)",
+                (cid, name, family, json.dumps(["cash_crop"]), json.dumps(list(aliases)),
+                 "assumed", json.dumps([{"title": "A.C.R.E crop list", "url": None}]), now))
         con.execute("DELETE FROM economics_refs WHERE from_research=0")
         for e in _economics_rows():
             con.execute(
@@ -439,13 +469,14 @@ def research_status(kind: str, crop_id: str, region_key: str) -> dict[str, Any] 
 
 def store_economics(*, crop_id: str, region_key: str, refs: list[dict[str, Any]], status: str,
                     found: dict[str, int], cache_key: str) -> None:  # fmt: skip
-    """Replace this crop+region's researched references (never the seeded ones) and record the
-    research. When nothing usable was found the earlier researched references are kept."""
+    """Replace this crop+region's researched references (never the seeded ones), one kind at a
+    time, and record the research. A kind the new search found nothing for keeps what an earlier
+    search found: looking again must never take away a price the grower was already shown."""
     rk = region_key.upper()
     with connect() as con:
-        if refs:
+        for kind in sorted({e["kind"] for e in refs}):
             con.execute("DELETE FROM economics_refs WHERE crop_id=? AND region_key=? AND "
-                        "from_research=1", (crop_id, rk))  # fmt: skip
+                        "from_research=1 AND kind=?", (crop_id, rk, kind))  # fmt: skip
         for e in refs:
             con.execute(
                 "INSERT INTO economics_refs (crop_id, region_key, kind, value, unit, currency, "
