@@ -90,7 +90,6 @@ export function Workspace({ api: given }: { api?: GlobalApi }) {
     <div className="db ws">
       <aside className="db-side">
         <a className="db-brand" href="./" aria-label={`${APP_NAME} home`}>
-          <span className="fb-mark" aria-hidden="true" />
           {APP_NAME}
         </a>
         <nav className="db-nav" aria-label="Pages">

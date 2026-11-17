@@ -162,7 +162,6 @@ export function Guided({ api: given }: { api?: GlobalApi }) {
     <div className="db ws gf">
       <aside className="db-side">
         <a className="db-brand" href="./" aria-label={`${APP_NAME} home`}>
-          <span className="fb-mark" aria-hidden="true" />
           {APP_NAME}
         </a>
         <nav className="gf-steps" aria-label="Steps">

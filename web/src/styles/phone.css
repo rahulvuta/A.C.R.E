@@ -9,7 +9,7 @@
   /* ---- the frame: brand bar, the page, then units and links at the foot */
   :root .db { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; }
   :root .db-side { display: contents; }
-  :root .db-brand { order: 0; padding: 12px 16px; background: var(--night); font-size: 18px; }
+  :root .db-brand { order: 0; padding: 12px 16px; background: var(--night); font-size: 22px; }
   :root .db-body { order: 1; }
   /* The six steps: the progress bar and the step name under it say where the grower is. */
   :root .db.gf:not(.dash) .db-side .gf-steps { display: none; }

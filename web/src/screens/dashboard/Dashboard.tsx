@@ -19,6 +19,11 @@ import { FieldWorkspace } from "./FieldWorkspace";
 import { nextStep } from "../guided/progress";
 export { nextStep } from "../guided/progress";
 import { navIcon } from "../planner/SideNav";
+import { FarmSpin } from "./FarmSpin";
+
+/** The start button's outline: a five-sided field, in the button's own 440 by 120 box. */
+const FIELD_CORNERS: ReadonlyArray<readonly [number, number]> = [[24, 34], [262, 14], [418, 40], [398, 100], [42, 104]];
+const FIELD_SHAPE = `M${FIELD_CORNERS.map((c) => c.join(" ")).join("L")}Z`;
 
 /*
   The front door of the app: an empty farm dashboard. Fields are cards; "Add field" opens the
@@ -129,7 +134,6 @@ export function Dashboard({ api: given }: { api?: GlobalApi }) {
       <div className="wl dh">
         <header className="wl-top">
           <a className="wl-brand dh-brand" href="?" aria-label={`${APP_NAME} start page`}>
-            <span className="fb-mark" aria-hidden="true" />
             {APP_NAME}
           </a>
           <LanguagePicker />
@@ -143,14 +147,30 @@ export function Dashboard({ api: given }: { api?: GlobalApi }) {
           <OfflineNote />
           {notice ? <Banner kind="info">{notice}</Banner> : null}
           <section className="dh-start" aria-label={myFields.length ? "Add a field" : "Create your farm"}>
+            {myFields.length ? null : <FarmSpin />}
             <button type="button" className="dh-create" onClick={startAdd}>
-              <svg viewBox="0 0 48 48" width="48" height="48" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M6 20l12-8 22 6-4 20-18 4-10-8z" />
-                <path d="M24 19v12M18 25h12" />
+              {/* The button is a field: five sides and five corner points, like the outline a grower draws on the map. */}
+              <svg className="dh-shape" viewBox="0 0 440 120" aria-hidden="true" focusable="false">
+                <path className="dh-shape-ring" d={FIELD_SHAPE} />
+                <path className="dh-shape-fill" d={FIELD_SHAPE} />
+                <path className="dh-shape-line" d={FIELD_SHAPE} />
+                {FIELD_CORNERS.map(([x, y]) => (
+                  <circle key={`${x}-${y}`} className="dh-shape-dot" cx={x} cy={y} r="4.5" />
+                ))}
               </svg>
+              {myFields.length ? (
+                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M8 3v10M3 8h10" />
+                </svg>
+              ) : null}
               <span>{myFields.length ? "Add a field" : "Create your farm"}</span>
             </button>
-            <p className="dh-fact">No account. Saved in this browser.</p>
+            {/* What the app is and does, for someone who has not used it yet. A grower with fields already knows. */}
+            {myFields.length ? null : (
+              <p className="dh-about">
+                Mark your field and say what you grow. {APP_NAME} replays your crop plan through 45 years of NASA weather for your spot, then shows how it holds up over the next 10 years.
+              </p>
+            )}
           </section>
           {myFields.length ? (
             <section className="dh-fields" aria-labelledby="dh-fields-title">
@@ -203,7 +223,6 @@ export function Dashboard({ api: given }: { api?: GlobalApi }) {
     <div className="db ws gf dash">
       <aside className="db-side">
         <a className="db-brand" href="?" aria-label={`${APP_NAME} dashboard`}>
-          <span className="fb-mark" aria-hidden="true" />
           {APP_NAME}
         </a>
         <nav className="gf-steps" aria-label="Main">

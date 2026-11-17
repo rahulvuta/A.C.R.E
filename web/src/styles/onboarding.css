@@ -3,8 +3,8 @@
    sequence. Desktop first: one hero row, then the six steps laid out in order. */
 .wl { min-height: 100vh; display: flex; flex-direction: column; background: var(--surface-2); color: var(--ink); }
 .wl-top { display: flex; align-items: center; justify-content: space-between; padding: 18px 40px; }
-.wl-brand { display: inline-flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
-.wl-brand .fb-mark { --mark-ink: var(--night); background: var(--accent); }
+/* The name is the mark: there is no logo, so it is set bold and a little larger on every page. */
+.wl-brand { display: inline-flex; align-items: center; font-size: 28px; font-weight: 800; letter-spacing: -0.01em; line-height: 1; }
 .wl-links { display: inline-flex; gap: 24px; font-size: 15px; }
 .wl-links a { color: var(--ink-muted); text-decoration: none; }
 .wl-links a:hover { color: var(--action); }

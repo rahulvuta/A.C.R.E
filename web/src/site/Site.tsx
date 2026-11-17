@@ -209,7 +209,6 @@ export function SiteNav({ current }: { current: SiteView }) {
       </a>
       <header className={`st-nav${stuck ? " is-stuck" : ""}`}>
         <a className="st-brand" href="./" aria-label={`${APP_NAME} home`}>
-          <span className="fb-mark" aria-hidden="true" />
           {APP_NAME}
         </a>
         <nav className="st-nav-links" aria-label="Site">
@@ -304,7 +303,7 @@ export function SiteFooter() {
       <div className="st-wrap st-foot-grid">
         <div className="st-foot-lead">
           <p>
-            <span className="fb-mark st-foot-mark" aria-hidden="true" /> {APP_NAME}
+            {APP_NAME}
           </p>
           <p className="st-foot-note">Crop rotations shaped by your field, your goals and the evidence. An evidence-based outlook, not a guarantee.</p>
         </div>

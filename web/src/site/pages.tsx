@@ -179,9 +179,7 @@ export function ResourcesPage() {
           <div className="st-rhero-grid">
             <a className="st-rlead" href="?view=methods">
               <span className="st-read-kind">Guide</span>
-              <span className="st-rlead-art" aria-hidden="true">
-                <span className="fb-mark" />
-              </span>
+              <span className="st-rlead-art" aria-hidden="true" />
               <strong>How {APP_NAME} builds its 10-year outlook and checks plans against the saved NC weather record</strong>
               <span className="st-link is-light">
                 Read more <i />

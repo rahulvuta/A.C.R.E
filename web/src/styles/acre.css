@@ -236,23 +236,6 @@
   letter-spacing: -0.03em;
   text-decoration: none;
 }
-.fb-mark {
-  position: relative;
-  display: inline-block;
-  flex: none;
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
-  background: var(--night);
-}
-.fb-mark::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--mark-ink, var(--accent));
-  -webkit-mask: var(--mark-wheat) center / 100% 100% no-repeat;
-  mask: var(--mark-wheat) center / 100% 100% no-repeat;
-}
 .fb-nav-links {
   display: flex;
   gap: var(--sp-5);
@@ -1167,17 +1150,13 @@
 .db-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
   padding: 0 10px;
   color: var(--surface);
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: -0.03em;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
   text-decoration: none;
-}
-.db-brand .fb-mark {
-  --mark-ink: var(--night);
-  background: var(--accent);
 }
 .db-nav {
   display: grid;

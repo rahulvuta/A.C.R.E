@@ -28,22 +28,6 @@
   align-items: center;
   gap: var(--sp-2);
 }
-.brand-mark {
-  position: relative;
-  flex: none;
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
-  background: var(--action);
-}
-.brand-mark::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--bg);
-  -webkit-mask: var(--mark-wheat) center / 100% 100% no-repeat;
-  mask: var(--mark-wheat) center / 100% 100% no-repeat;
-}
 .brand-name {
   font-family: var(--font-display);
   font-weight: 700;
@@ -1956,7 +1940,8 @@
   gap: 6px;
 }
 .xs-brand .brand-name {
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: 800;
 }
 .xs-head-main {
   flex: 1 1 auto;

@@ -217,31 +217,74 @@
 
 /* The start page: no sidebar. One big button, the grower's fields, example farms folded away. */
 .dh-brand { color: inherit; text-decoration: none; }
-.dh-main { flex: 1; width: 100%; max-width: 1080px; margin: 0 auto; padding: 8px 40px 40px; display: grid; gap: 32px; align-content: start; }
+/* The start page runs the full width of the window, edge to edge like its top bar, in larger type than the working pages. */
+.dh .wl-top { padding: 22px 48px; }
+.dh .wl-links { gap: 32px; font-size: 18px; }
+.dh .lang-label { font-size: 18px; }
+.dh .lang-label svg { width: 22px; height: 22px; }
+.dh .lang select { min-height: 46px; max-width: 260px; font-size: 17px; }
+.dh-main { flex: 1; width: 100%; padding: 8px 48px 44px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 36px; align-content: start; }
 .dh-main[data-empty="yes"] { align-content: center; grid-template-rows: 1fr auto; }
-.dh-main[data-empty="yes"] .dh-start { align-self: center; padding: 24px 0; }
-.dh-start { display: grid; gap: 12px; justify-items: center; }
-.dh-create { display: inline-flex; align-items: center; justify-content: center; gap: 18px; width: min(100%, 520px); min-height: 112px; padding: 20px 32px; border: 0; border-radius: 16px; background: var(--accent); color: var(--accent-ink); font: inherit; font-size: 28px; font-weight: 500; letter-spacing: -0.02em; cursor: pointer; box-shadow: 0 1px 0 rgb(0 0 0 / 0.04), 0 10px 28px rgb(0 70 86 / 0.14); transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), filter var(--dur) var(--ease); }
-.dh-create:hover { transform: translateY(-1px); filter: brightness(1.03); box-shadow: 0 1px 0 rgb(0 0 0 / 0.04), 0 14px 34px rgb(0 70 86 / 0.2); }
+.dh-main[data-empty="yes"] .dh-start { align-self: center; }
+.dh-start { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; justify-items: center; }
+.dh-main[data-empty="no"] .dh-start { justify-items: start; }
+/* Wide screens: the button on the left, the farm filling the right, so nothing is squeezed into the middle.
+   The farm takes all the height the window has left and runs out to the window's right edge.
+   Below 900 px (phones, small tablets) the same parts stack: farm, then button. */
+@media (min-width: 900px) {
+  .dh-main[data-empty="yes"] { gap: 24px; padding-top: 0; padding-bottom: 28px; }
+  .dh-main[data-empty="yes"] .dh-start:has(.dh-farm) { grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr); grid-template-rows: 1fr auto auto 1fr; grid-template-areas: ". farm" "go farm" "fact farm" ". farm"; column-gap: 32px; justify-items: start; }
+  .dh-start:has(.dh-farm) .dh-farm { grid-area: farm; justify-self: stretch; width: auto; height: clamp(340px, calc(100vh - 200px), 1000px); margin: -24px -48px -24px -32px; }
+  .dh-start:has(.dh-farm) .dh-create { grid-area: go; }
+  .dh-start:has(.dh-farm) .dh-about { grid-area: fact; padding-left: 6%; text-align: start; }
+}
+/* The turning farm above the button. Its space is kept from the start, so the button never jumps when it arrives. */
+.dh-farm { position: relative; width: 100%; min-width: 0; height: clamp(260px, 62vh, 760px); opacity: 0; pointer-events: none; transition: opacity 500ms var(--ease); }
+.dh-farm[data-on="yes"] { opacity: 1; }
+.dh-farm canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+/* The start button is drawn as a field: five sides, five corner points, in the app's accent colour. */
+.dh-create { position: relative; isolation: isolate; display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: min(100%, 560px); aspect-ratio: 440 / 120; padding: 0 0 2px; border: 0; background: none; color: var(--accent-ink); font: inherit; font-size: clamp(24px, 2.5vw, 36px); font-weight: 600; letter-spacing: -0.02em; cursor: pointer; outline: none; transition: transform var(--dur-fast) var(--ease); }
+.dh-shape { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 10px 16px rgb(0 70 86 / 0.16)); transition: filter var(--dur-fast) var(--ease); }
+.dh-shape-fill { fill: var(--accent); stroke: var(--accent); stroke-width: 22; stroke-linejoin: round; transition: fill var(--dur-fast) var(--ease), stroke var(--dur-fast) var(--ease); }
+.dh-shape-ring { fill: none; stroke: var(--focus); stroke-width: 32; stroke-linejoin: round; opacity: 0; }
+.dh-shape-line { fill: none; stroke: var(--action); stroke-width: 1.5; stroke-linejoin: round; opacity: 0.4; }
+.dh-shape-dot { fill: #fff; stroke: var(--action); stroke-width: 2; }
+.dh-create:hover { transform: translateY(-1px); }
+.dh-create:hover .dh-shape { filter: drop-shadow(0 14px 20px rgb(0 70 86 / 0.22)); }
+.dh-create:hover .dh-shape-fill { fill: color-mix(in srgb, var(--accent) 88%, #fff); stroke: color-mix(in srgb, var(--accent) 88%, #fff); }
 .dh-create:active { transform: none; }
-.dh-create svg { flex: none; }
-.dh-main[data-empty="no"] .dh-create { min-height: 84px; font-size: 22px; }
-.dh-main[data-empty="no"] .dh-create svg { width: 36px; height: 36px; }
-.dh-fact { margin: 0; font-size: 14px; color: var(--ink-muted); }
-.dh-fields { display: grid; gap: 14px; }
-.dh-fields h1 { margin: 0; font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
+.dh-create:focus-visible .dh-shape-ring { opacity: 1; }
+.dh-create > svg:not(.dh-shape) { flex: none; }
+.dh-main[data-empty="no"] .dh-create { width: min(100%, 320px); font-size: 20px; gap: 10px; }
+.dh-main[data-empty="no"] .dh-create > svg:not(.dh-shape) { width: 20px; height: 20px; }
+.dh-about { margin: 6px 0 0; max-width: 40ch; font-size: clamp(17px, 1.45vw, 21px); line-height: 1.5; color: var(--ink-muted); text-align: center; text-wrap: pretty; }
+.dh-fields { display: grid; gap: 18px; }
+.dh-fields h1 { margin: 0; font-size: 32px; font-weight: 600; letter-spacing: -0.02em; }
+/* Field cards on the start page: wider, with larger type. */
+.dh .dash-grid { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+.dh .dash-card { gap: 14px; padding: 22px; }
+.dh .dash-card-head h3 { font-size: 22px; }
+.dh .dash-meta { font-size: 16px; }
+.dh .dash-crops { font-size: 20px; }
+.dh .dash-steps i { height: 6px; border-radius: 3px; }
+.dh .dash-card .btn { min-height: 48px; font-size: 16px; }
 .dh-examples { border-top: 1px solid var(--line); padding-top: 14px; }
-.dh-examples > summary { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; cursor: pointer; list-style: none; font-size: 15px; color: var(--ink-muted); }
+.dh-examples > summary { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; cursor: pointer; list-style: none; font-size: 18px; color: var(--ink-muted); }
 .dh-examples > summary::-webkit-details-marker { display: none; }
 .dh-examples > summary::after { content: ""; width: 12px; height: 12px; background: var(--select-arrow) center / 12px 12px no-repeat; transition: transform var(--dur) var(--ease); }
 .dh-examples[open] > summary::after { transform: rotate(180deg); }
 .dh-examples > summary:hover { color: var(--action); }
-.dh-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--line); color: var(--ink); font-size: 13px; }
+.dh-count { display: inline-grid; place-items: center; min-width: 26px; height: 26px; padding: 0 7px; border-radius: 13px; background: var(--line); color: var(--ink); font-size: 15px; }
 .dh-examples-body { display: grid; gap: 14px; padding-top: 10px; }
 .dh-examples-body .gf-demo-row { margin-top: 0; }
 .dh-remove { justify-self: start; }
 @media (max-width: 760px) {
+  .dh .wl-top { padding: 14px 16px; }
+  .dh .wl-links { gap: 20px; font-size: 16px; }
+  .dh .lang select { min-height: 42px; font-size: 16px; }
   .dh-main { padding: 8px 16px 32px; gap: 24px; }
-  .dh-create { min-height: 96px; font-size: 24px; }
+  .dh-farm { height: clamp(210px, 36vh, 400px); }
+  .dh-fields h1 { font-size: 26px; }
+  .dh .dash-grid { grid-template-columns: minmax(0, 1fr); }
 }
 .dash-open { min-height: 36px; color: var(--ink-muted); }

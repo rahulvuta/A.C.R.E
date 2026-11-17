@@ -227,7 +227,6 @@ export function ExtensionSummary({
       <article className="xs-page" aria-labelledby="xs-title">
         <header className="xs-head">
           <div className="xs-brand">
-            <span className="brand-mark" aria-hidden="true" />
             <span className="brand-name">{APP_NAME}</span>
           </div>
           <div className="xs-head-main">
@@ -441,7 +440,6 @@ export function ExtensionSummary({
       <article className="xs-page xs-page-2" aria-labelledby="xs-details">
         <header className="xs-head">
           <div className="xs-brand">
-            <span className="brand-mark" aria-hidden="true" />
             <span className="brand-name">{APP_NAME}</span>
           </div>
           <div className="xs-head-main">

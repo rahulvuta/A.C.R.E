@@ -189,9 +189,7 @@ export function InputWheel() {
   const items = ["Corn harvest", "Rye seeding", "Rye end date", "Soybean planting", "Soybean harvest", "Corn planting", "Soil texture", "Moisture concern", "Irrigation", "Priorities", "Place", "Wheat dates"];
   return (
     <div className="st-wheel" aria-hidden="true">
-      <span className="st-wheel-hub">
-        <span className="fb-mark" />
-      </span>
+      <span className="st-wheel-hub" />
       <span className="st-wheel-track" />
       <div className="st-wheel-mask">
         <div className="st-wheel-ring">
@@ -306,7 +304,7 @@ export function AskRye({ n }: { n: Numbers }) {
       </p>
       <div className="st-ask-a">
         <p className="st-ask-lead">
-          <span className="fb-mark" aria-hidden="true" /> Replayed against {rye?.denominator ?? n.springs} past springs
+          Replayed against {rye?.denominator ?? n.springs} past springs
         </p>
         <ul>
           {rows.map(({ p, tag }, i) => (

@@ -53,7 +53,6 @@ export function Welcome({ api: given, go = (url) => window.location.assign(url) 
     <div className="wl">
       <header className="wl-top">
         <span className="wl-brand">
-          <span className="fb-mark" aria-hidden="true" />
           {APP_NAME}
         </span>
         <LanguagePicker />
