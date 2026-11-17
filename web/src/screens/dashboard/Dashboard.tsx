@@ -119,8 +119,85 @@ export function Dashboard({ api: given }: { api?: GlobalApi }) {
   const fieldId = route.page === "field" ? route.id : null;
   const current = fieldId ? farms.flatMap((f) => f.fields.map((x) => ({ farm: f, field: x }))).find((x) => x.field.field_id === fieldId) : null;
 
-  const title = route.page === "add" ? "Add a field" : current ? current.field.name : "Fields";
+  const title = route.page === "add" ? "Add a field" : current ? current.field.name : "Field";
   const onFieldPage = route.page === "field" && current;
+
+  // The start page has no sidebar: one big button to begin, the grower's fields under it, and
+  // the example farms folded away at the bottom. The sidebar starts once a field is open.
+  if (route.page === "fields") {
+    return (
+      <div className="wl dh">
+        <header className="wl-top">
+          <a className="wl-brand dh-brand" href="?" aria-label={`${APP_NAME} start page`}>
+            <span className="fb-mark" aria-hidden="true" />
+            {APP_NAME}
+          </a>
+          <LanguagePicker />
+          <nav className="wl-links" aria-label="About">
+            <a href="?view=methods">How it works</a>
+            <a href="?view=privacy">Privacy</a>
+          </nav>
+        </header>
+        <main className="dh-main" data-empty={myFields.length ? "no" : "yes"}>
+          <SourceBanner source={api.source} />
+          <OfflineNote />
+          {notice ? <Banner kind="info">{notice}</Banner> : null}
+          <section className="dh-start" aria-label={myFields.length ? "Add a field" : "Create your farm"}>
+            <button type="button" className="dh-create" onClick={startAdd}>
+              <svg viewBox="0 0 48 48" width="48" height="48" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 20l12-8 22 6-4 20-18 4-10-8z" />
+                <path d="M24 19v12M18 25h12" />
+              </svg>
+              <span>{myFields.length ? "Add a field" : "Create your farm"}</span>
+            </button>
+            <p className="dh-fact">No account. Saved in this browser.</p>
+          </section>
+          {myFields.length ? (
+            <section className="dh-fields" aria-labelledby="dh-fields-title">
+              <h1 id="dh-fields-title">Your fields</h1>
+              <ul className="dash-grid" aria-label="Your fields">
+                {myFields.map(({ farm, field }) => (
+                  <FieldCard key={field.field_id} api={api} farm={farm} field={field} onOpen={() => open(field.field_id)} />
+                ))}
+              </ul>
+            </section>
+          ) : null}
+          <details className="dh-examples">
+            <summary>
+              Example farms{demoFields.length ? <span className="dh-count">{demoFields.length}</span> : null}
+            </summary>
+            <div className="dh-examples-body" role="group" aria-label="Example farms">
+              {demoFields.length ? (
+                <ul className="dash-grid" aria-label="Demo fields">
+                  {demoFields.map(({ farm, field }) => (
+                    <FieldCard key={field.field_id} api={api} farm={farm} field={field} onOpen={() => open(field.field_id)} />
+                  ))}
+                </ul>
+              ) : null}
+              <div className="gf-demo-row">
+                {DEMOS.map((d) => {
+                  const loaded = demos.some((f) => f.demo && f.name.toLowerCase().includes(d.id === "union" ? "union" : "pergamino"));
+                  return (
+                    <button key={d.id} type="button" className="gf-demo-btn" onClick={() => void loadDemo(d.id)} disabled={demo.state === "loading"}>
+                      <strong>{demo.state === "loading" && demo.which === d.id ? "Loading…" : d.name}</strong>
+                      <span>{d.blurb}</span>
+                      {loaded ? <span>Load again (resets its example values)</span> : null}
+                    </button>
+                  );
+                })}
+              </div>
+              {demo.state === "error" ? <Banner kind="error">{demo.message}</Banner> : null}
+              {demos.length ? (
+                <button type="button" className="btn btn-quiet dh-remove" onClick={() => demos.forEach((f) => (f.fields.forEach((x) => removeSimField(x.field_id)), farmActions.deleteFarm(f.farm_id)))}>
+                  Remove example farms
+                </button>
+              ) : null}
+            </div>
+          </details>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="db ws gf dash">
@@ -132,7 +209,7 @@ export function Dashboard({ api: given }: { api?: GlobalApi }) {
         <nav className="gf-steps" aria-label="Main">
           <ol>
             <li>
-              <button type="button" aria-current={route.page === "fields" ? "step" : undefined} onClick={() => go({ page: "fields" })}>
+              <button type="button" onClick={() => go({ page: "fields" })}>
                 <span className="gf-dot" aria-hidden="true">{navIcon("M3 3h5v5H3zM10 3h5v5h-5zM3 10h5v5H3zM10 10h5v5h-5z")}</span>
                 <span>All fields</span>
               </button>
@@ -204,69 +281,6 @@ export function Dashboard({ api: given }: { api?: GlobalApi }) {
               </Banner>
             )
           ) : null}
-          {route.page === "fields" ? (
-            <>
-              <header className="gf-head">
-                <h2 className="gf-question">Your fields</h2>
-                <p className="gf-sentence">Saved in this browser. No account needed.</p>
-              </header>
-              {myFields.length === 0 ? (
-                <section className="db-card dash-empty" aria-label="No fields">
-                  <h2>No fields available</h2>
-                  <p>Add a field to begin managing your farm, planning crop rotations, and analyzing agricultural conditions.</p>
-                  <div className="dash-actions">
-                    <button type="button" className="btn btn-primary btn-large" onClick={startAdd}>
-                      Add Field
-                    </button>
-                    {demos.length === 0 ? (
-                      <button type="button" className="btn btn-secondary btn-large" onClick={() => void loadDemo("union")} disabled={demo.state === "loading"}>
-                        {demo.state === "loading" ? "Loading demo…" : "Explore Demo Farm"}
-                      </button>
-                    ) : null}
-                  </div>
-                </section>
-              ) : (
-                <ul className="dash-grid" aria-label="Your fields">
-                  {myFields.map(({ farm, field }) => (
-                    <FieldCard key={field.field_id} api={api} farm={farm} field={field} onOpen={() => open(field.field_id)} />
-                  ))}
-                </ul>
-              )}
-              <section className="db-card gf-demo dash-demos" aria-label="Demo farms">
-                <div className="db-card-head">
-                  <h2>Try an example farm</h2>
-                </div>
-                <p className="gf-muted">Example fields with sample plans, prices and readings, kept apart from your own fields. Copy a demo field to make it yours.</p>
-                {demoFields.length ? (
-                  <ul className="dash-grid" aria-label="Demo fields">
-                    {demoFields.map(({ farm, field }) => (
-                      <FieldCard key={field.field_id} api={api} farm={farm} field={field} onOpen={() => open(field.field_id)} />
-                    ))}
-                  </ul>
-                ) : null}
-                <div className="gf-demo-row">
-                  {DEMOS.map((d) => {
-                    const loaded = demos.some((f) => f.demo && f.name.toLowerCase().includes(d.id === "union" ? "union" : "pergamino"));
-                    return (
-                      <button key={d.id} type="button" className="gf-demo-btn" onClick={() => void loadDemo(d.id)} disabled={demo.state === "loading"}>
-                        <strong>{demo.state === "loading" && demo.which === d.id ? "Loading…" : d.name}</strong>
-                        <span>{d.blurb}</span>
-                        <span>{loaded ? "Load again (resets its example values)" : "Explore this demo farm"}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-                {demo.state === "error" ? <Banner kind="error">{demo.message}</Banner> : null}
-                {demos.length ? (
-                  <div>
-                    <button type="button" className="btn btn-quiet" onClick={() => demos.forEach((f) => (f.fields.forEach((x) => removeSimField(x.field_id)), farmActions.deleteFarm(f.farm_id)))}>
-                      Remove demo farms
-                    </button>
-                  </div>
-                ) : null}
-              </section>
-            </>
-          ) : null}
         </main>
       </div>
     </div>
@@ -307,8 +321,8 @@ function FieldCard({ api, farm, field, onOpen }: { api: GlobalApi; farm: Farm; f
         <a className="btn btn-primary" href={`?view=app#u=${step.id}`} onClick={() => selectField(field.field_id)} aria-label={`Continue ${field.name}: ${step.nav}`}>
           {step.id === "plan" ? "See your plan" : `Continue: ${step.nav}`}
         </a>
-        <button type="button" className="btn btn-secondary" onClick={onOpen} aria-label={`Open ${field.name}`}>
-          Open field
+        <button type="button" className="btn btn-quiet dash-open" onClick={onOpen} aria-label={`Open ${field.name}`}>
+          Field details
         </button>
       </div>
     </li>

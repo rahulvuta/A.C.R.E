@@ -19,12 +19,11 @@ describe("routes", () => {
     expect(screen.queryByText(/sign in|log in|sign up/i)).toBeNull();
   });
 
-  it("a link into the fields list opens the empty dashboard: Add Field and Explore Demo Farm", () => {
+  it("a link into the fields list opens the start page: one big button, example farms folded away", () => {
     go("/#d=fields");
     render(<App />);
-    expect(screen.getByRole("heading", { name: "No fields available" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Explore Demo Farm" })).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: /Add field/i }).length).toBeGreaterThan(0);
+    expect(screen.getByRole("button", { name: "Create your farm" })).toBeInTheDocument();
+    expect(screen.getByText("Example farms")).toBeInTheDocument();
     expect(screen.queryByText(/sign in|log in|sign up/i)).toBeNull();
   });
 

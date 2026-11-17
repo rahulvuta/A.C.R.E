@@ -22,27 +22,32 @@ describe("dashboard", () => {
     render(<Dashboard />);
     const mineList = screen.getByRole("list", { name: "Your fields" });
     expect(within(mineList).getAllByRole("listitem")).toHaveLength(3); // East, West and the un-flagged "Sample"
-    expect(screen.queryByRole("heading", { name: "No fields available" })).toBeNull();
+    // with fields, the big button adds another one
+    expect(screen.getByRole("button", { name: "Add a field" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Create your farm" })).toBeNull();
   });
 
-  it("a demo-only workspace still shows the empty fields state and keeps the demo separate", () => {
+  it("with only an example farm loaded, the start is still one button, and the example stays apart", () => {
     const demo = farmActions.createFarm("Demo", { latitude: 40, longitude: 5 });
     farmActions.addField(demo.farm_id, square(5), "Sample");
     farmActions.deleteFarm(demo.farm_id);
     farmActions.addFarm({ ...demo, demo: "Demo farm (example values)", fields: [{ field_id: "fld_d", name: "Sample", geometry: square(5), plan: null }] });
     render(<Dashboard />);
-    expect(screen.getByRole("heading", { name: "No fields available" })).toBeInTheDocument();
-    expect(within(screen.getByRole("list", { name: "Demo fields" })).getAllByRole("listitem")).toHaveLength(1);
+    expect(screen.getByRole("button", { name: "Create your farm" })).toBeInTheDocument();
+    expect(screen.queryByRole("list", { name: "Your fields" })).toBeNull();
+    // the example's field is under "Example farms", never among the grower's own
+    expect(within(screen.getByRole("group", { name: "Example farms", hidden: true })).getAllByRole("listitem", { hidden: true })).toHaveLength(1);
   });
 
-  it("shows the empty state wording with Add Field first and Explore Demo Farm second, and loads nothing by itself", () => {
+  it("starts with one big button and nothing else to choose: no sidebar, no second call to action, nothing loaded", () => {
     render(<Dashboard />);
-    expect(screen.getByRole("heading", { name: "No fields available" })).toBeInTheDocument();
-    expect(screen.getByText("Add a field to begin managing your farm, planning crop rotations, and analyzing agricultural conditions.")).toBeInTheDocument();
-    const empty = screen.getByRole("region", { name: "No fields" });
-    const buttons = within(empty).getAllByRole("button").map((b) => b.textContent);
-    expect(buttons).toEqual(["Add Field", "Explore Demo Farm"]);
-    expect(screen.queryByRole("list", { name: "Demo fields" })).toBeNull();
+    const start = screen.getByRole("region", { name: "Create your farm" });
+    expect(within(start).getAllByRole("button").map((b) => b.textContent)).toEqual(["Create your farm"]);
+    expect(screen.queryByRole("navigation", { name: "Main" })).toBeNull(); // the sidebar starts once a field is open
+    expect(screen.queryByRole("heading", { name: "No fields available" })).toBeNull();
+    // example farms are folded away, and none is loaded until asked for
+    expect(screen.getByText("Example farms").closest("details")).not.toHaveAttribute("open");
+    expect(screen.queryByRole("list", { name: "Demo fields", hidden: true })).toBeNull();
     expect(screen.queryByText(/log ?in|sign ?(in|up)|password/i)).toBeNull();
   });
 
