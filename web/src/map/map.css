@@ -437,3 +437,6 @@
 /* Card 32: the credit the place search asks for, shown with its results. */
 .mp-credit { margin: 4px 0 0; font-size: 12px; color: var(--ink-muted); }
 .mp-credit a { color: inherit; }
+
+/* Shown when the satellite provider refuses its tiles and the street map takes over. */
+.mp-photo-down { position: absolute; left: 50%; bottom: 44px; z-index: 2; transform: translateX(-50%); margin: 0; padding: 8px 14px; border-radius: 999px; background: var(--night); color: #fff; font-size: 14px; white-space: nowrap; max-width: calc(100% - 24px); overflow: hidden; text-overflow: ellipsis; }

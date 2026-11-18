@@ -61,6 +61,43 @@ export const FIRST_BASEMAP: Basemap = BASEMAPS.satellite ? "satellite" : "street
 
 export const layerId = (b: Basemap) => `basemap-${b}`;
 
+/** The web addresses (scheme and host) the base maps are fetched from. */
+export function tileHosts(maps: Partial<Record<Basemap, BasemapSource>> = BASEMAPS): string[] {
+  const hosts = new Set<string>();
+  for (const m of Object.values(maps)) {
+    for (const t of m?.tiles ?? []) {
+      try {
+        hosts.add(new URL(t.replace(/[{}]/g, "")).origin);
+      } catch {
+        // not an address: nothing to warm
+      }
+    }
+  }
+  return [...hosts];
+}
+
+/**
+ * Opens the connection to the map's tile hosts ahead of the first tile, which saves the
+ * handshake (a few hundred milliseconds on a slow line) when the map appears. It fetches
+ * nothing: no tile, no place. Called when a grower is about to open the map, and by the map.
+ */
+export function warmTileHosts(doc: Document | undefined = typeof document === "undefined" ? undefined : document): void {
+  warmHosts(tileHosts(), doc);
+}
+
+/** The same for any host the map draws pictures from (NASA's greenness and soil moisture pictures). */
+export function warmHosts(origins: string[], doc: Document | undefined = typeof document === "undefined" ? undefined : document): void {
+  if (!doc) return;
+  for (const origin of origins) {
+    if (doc.head.querySelector(`link[rel="preconnect"][href="${origin}"]`)) continue;
+    const link = doc.createElement("link");
+    link.rel = "preconnect";
+    link.href = origin;
+    link.crossOrigin = "anonymous";
+    doc.head.appendChild(link);
+  }
+}
+
 /** Both basemaps live in one style; switching only flips visibility, so drawn layers survive. */
 export function baseStyle(initial: Basemap, maps: Partial<Record<Basemap, BasemapSource>> = BASEMAPS): StyleSpecification {
   const keys = Object.keys(maps) as Basemap[];
@@ -72,7 +109,34 @@ export function baseStyle(initial: Basemap, maps: Partial<Record<Basemap, Basema
     ),
     layers: [
       { id: "background", type: "background", paint: { "background-color": "#e8ecee" } },
-      ...keys.map((k) => ({ id: layerId(k), type: "raster" as const, source: k, layout: { visibility: k === first ? ("visible" as const) : ("none" as const) } })),
+      // No fade: a tile is shown the moment it arrives.
+      ...keys.map((k) => ({ id: layerId(k), type: "raster" as const, source: k, layout: { visibility: k === first ? ("visible" as const) : ("none" as const) }, paint: { "raster-fade-duration": 0 } })),
     ],
+  };
+}
+
+/**
+ * A base map is reported as failed once this many of its tiles have failed and failures are
+ * more than twice the arrivals. (Not "none arrived": the browser may still hold a few tiles
+ * from an earlier visit, which arrive while every new one is refused.)
+ */
+export const FAILED_TILES = 4;
+
+/** Counts a base map's tiles as they arrive or fail, and says once when it is being refused. */
+export function tileWatch(report: (b: Basemap) => void) {
+  const seen: Partial<Record<Basemap, { ok: number; bad: number; told: boolean }>> = {};
+  const of = (b: Basemap) => (seen[b] ??= { ok: 0, bad: 0, told: false });
+  return {
+    arrived: (b: Basemap) => {
+      of(b).ok += 1;
+    },
+    failed: (b: Basemap) => {
+      const s = of(b);
+      s.bad += 1;
+      if (s.bad >= FAILED_TILES && s.bad > s.ok * 2 && !s.told) {
+        s.told = true;
+        report(b);
+      }
+    },
   };
 }

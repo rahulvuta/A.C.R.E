@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import * as maplibregl from "maplibre-gl";
 import type { Map as MlMap, MapGeoJSONFeature } from "maplibre-gl";
-import { addHole, addParcel, areaM2, bbox, centroid, checkGeometry, SQ_M_PER_AC, SQ_M_PER_HA, squareAround, type Ring } from "../farm/geometry";
+import { addHole, addParcel, areaM2, bbox, centroid, checkGeometry, farmBounds, SQ_M_PER_AC, SQ_M_PER_HA, squareAround, type Ring } from "../farm/geometry";
 import { areaText, useUnits } from "../ui/units";
 import { loadDemoFarm } from "../farm/demo";
 import { MiniTimeline, planCrops } from "../timeline/MiniTimeline";
@@ -15,6 +15,7 @@ import type { GeoApi } from "./geoApi";
 import type { Pick } from "./LocationCard";
 import { hasWinter } from "../ui/cropNames";
 import { MapScreen } from "./MapScreen";
+import type { Bounds } from "./MapView";
 
 /*
   The farm and field editor on the map (card C2). Draw fields, add separate parcels, cut
@@ -49,6 +50,8 @@ export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, 
   const { farms, selectedFarm: farm, selectedFieldId, persistence, notice } = useFarms();
   const units = useUnits();
   const [map, setMap] = useState<MlMap | null>(null);
+  // Where the map opens: on the saved farm, known before the map exists, so it never starts on the whole world and flies in.
+  const [openOn] = useState<Bounds | null>(() => farmBounds(farm));
   const drawing = useRef<Drawing | null>(null);
   const [tool, setTool] = useState<Tool>("idle");
   const [message, setMessage] = useState<{ kind: "error" | "info"; text: string } | null>(null);
@@ -148,15 +151,15 @@ export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, 
         pendingZoom.current = f;
         return;
       }
-      const bb = f.fields.map((x) => bbox(x.geometry));
-      const w = Math.min(...bb.map((b) => b[0])), s2 = Math.min(...bb.map((b) => b[1])), e = Math.max(...bb.map((b) => b[2])), n = Math.max(...bb.map((b) => b[3]));
-      map.fitBounds([[w, s2], [e, n]], { padding: 80, maxZoom: 16, duration: 1000 });
+      const [w, s2, e, n] = farmBounds(f)!;
+      // Straight there: a flight would fetch tiles all along the way before the farm's own.
+      map.fitBounds([[w, s2], [e, n]], { padding: 80, maxZoom: 16, duration: 0 });
     },
     [map],
   );
   // A grower who comes back to the map sees their own fields, not the whole world: the first
   // time the map is ready, it opens on the saved farm. Later edits never move the map.
-  const openedOnFarm = useRef(false);
+  const openedOnFarm = useRef(openOn !== null);
   useEffect(() => {
     if (!map || openedOnFarm.current) return;
     openedOnFarm.current = true;
@@ -262,7 +265,7 @@ export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, 
 
   const zoomTo = (f: Field) => {
     const [w, s, e, n] = bbox(f.geometry);
-    map?.fitBounds([[w, s], [e, n]], { padding: 60, maxZoom: 17, duration: 800 });
+    map?.fitBounds([[w, s], [e, n]], { padding: 60, maxZoom: 17, duration: 250 });
   };
 
   /** The second way in (card 17): a square of the typed size around the pin, marked as an approximate shape. */
@@ -272,7 +275,7 @@ export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, 
       const target = ensureFarm();
       const f = farmActions.addField(target.farm_id, g, undefined, true);
       const [w, s, e, n] = bbox(g);
-      map?.fitBounds([[w, s], [e, n]], { padding: 120, maxZoom: 17, duration: 600 });
+      map?.fitBounds([[w, s], [e, n]], { padding: 120, maxZoom: 17, duration: 250 });
       setMessage({ kind: "info", text: `${f.name} added as a square of ${areaText(m2).main} around your pin. Its shape is approximate: press Edit shape to trace the real edge whenever you like.` });
     } catch (e) {
       setMessage({ kind: "error", text: e instanceof Error ? e.message : "That field could not be added." });
@@ -302,7 +305,7 @@ export function FarmMap({ api, fieldStates, weatherCells, children, onMapReady, 
   );
 
   return (
-    <MapScreen api={api} onMapReady={ready} onMapClick={onMapClick} pickAction={pickAction ?? (drawOnPick ? drawAction : defaultAction)}>
+    <MapScreen api={api} onMapReady={ready} initialBounds={openOn} onMapClick={onMapClick} pickAction={pickAction ?? (drawOnPick ? drawAction : defaultAction)}>
       <FarmPanel
         farms={farms}
         farm={farm}

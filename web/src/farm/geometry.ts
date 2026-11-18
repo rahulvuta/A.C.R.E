@@ -1,7 +1,7 @@
 import turfArea from "@turf/area";
 import turfCentroid from "@turf/centroid";
 import kinks from "@turf/kinks";
-import type { FieldGeometry } from "./types";
+import type { Farm, FieldGeometry } from "./types";
 
 /*
   Display-only geometry for fields (plan C2): geodesic area with turf, a centroid for labels,
@@ -172,4 +172,11 @@ export function squareAround(point: { latitude: number; longitude: number }, m2:
     g = { type: "Polygon", coordinates: [ring(side)] };
   }
   return g;
+}
+
+/** The box around every field of a farm (west, south, east, north), or null for a farm with no field yet. */
+export function farmBounds(f: Farm | null | undefined): [number, number, number, number] | null {
+  if (!f || f.fields.length === 0) return null;
+  const bb = f.fields.map((x) => bbox(x.geometry));
+  return [Math.min(...bb.map((b) => b[0])), Math.min(...bb.map((b) => b[1])), Math.max(...bb.map((b) => b[2])), Math.max(...bb.map((b) => b[3]))];
 }

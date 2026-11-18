@@ -1,9 +1,13 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Map as MlMap } from "maplibre-gl";
 import { GREEN_ATTRIBUTION, GREEN_MAXZOOM, GREEN_SCALE, greenMonths, greenTiles, monthName } from "./greenLayer";
 import colors from "../soil/smapColors.json";
 import { newestDays, smapSpans, smapTiles, SMAP_ROOT, SMAP_ZOOM } from "../soil/smap";
 import { longDate } from "../ui/units";
+import { warmHosts } from "./basemap";
+
+/** Where NASA's pictures come from. */
+const NASA_HOST = "https://gibs.earthdata.nasa.gov";
 
 /*
   NASA's pictures of the land, drawn over the satellite photo and under the field outlines:
@@ -72,19 +76,38 @@ export function Greenness({ map }: { map: MlMap | null }) {
   const list = kind ? whens[kind] : [];
   const chosen = kind ? when[kind] : "";
 
+  // The list of months (or days) a picture exists for is asked for once. Reaching for a button
+  // asks ahead of the click, so the picture starts loading the moment it is pressed.
+  const asked = useRef<Partial<Record<Kind, boolean>>>({});
+  const alive = useRef(true);
   useEffect(() => {
-    if (!kind || whens[kind].length) return;
-    let alive = true;
-    void (kind === "green" ? greenMonths() : soilDays()).then((found) => {
-      if (!alive) return;
-      setWhens((w) => ({ ...w, [kind]: found }));
-      setWhen((w) => ({ ...w, [kind]: w[kind] || found[0] || "" }));
-    });
+    alive.current = true;
     return () => {
-      alive = false;
+      alive.current = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [kind]);
+  }, []);
+  const prime = useCallback((k: Kind) => {
+    if (asked.current[k]) return;
+    asked.current[k] = true;
+    void (k === "green" ? greenMonths() : soilDays())
+      .then((found) => {
+        if (!alive.current) return;
+        setWhens((w) => ({ ...w, [k]: found }));
+        setWhen((w) => ({ ...w, [k]: w[k] || found[0] || "" }));
+        // Nothing came back (the service did not answer): the next press asks again.
+        if (!found.length) asked.current[k] = false;
+      })
+      .catch(() => {
+        asked.current[k] = false;
+      });
+  }, []);
+  useEffect(() => {
+    if (kind) prime(kind);
+  }, [kind, prime]);
+  // The connection to NASA's picture service is opened as soon as the map is there.
+  useEffect(() => {
+    if (map) warmHosts([NASA_HOST]);
+  }, [map]);
 
   useEffect(() => {
     if (!map) return;
@@ -119,7 +142,7 @@ export function Greenness({ map }: { map: MlMap | null }) {
     <div className="mp-green" data-on={kind ? "yes" : "no"}>
       <div className="mp-green-row" role="group" aria-label="NASA pictures of the land">
         {(Object.keys(PICTURES) as Kind[]).map((k) => (
-          <button key={k} type="button" className="mp-green-toggle" aria-pressed={kind === k} onClick={() => setKind((v) => (v === k ? null : k))} disabled={!map}>
+          <button key={k} type="button" className="mp-green-toggle" aria-pressed={kind === k} onClick={() => setKind((v) => (v === k ? null : k))} onPointerEnter={() => prime(k)} onFocus={() => prime(k)} disabled={!map}>
             <span className={`mp-green-dot mp-dot-${k}`} aria-hidden="true" />
             {PICTURES[k].label}
           </button>

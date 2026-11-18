@@ -31,6 +31,15 @@ not permitted for a public launch until Esri's terms say otherwise.
 **What the app does.** Shows the credit line on the map at all times (never collapsed). Does not
 store tiles: the offline mode keeps the app's own files and saved results only, never map tiles.
 
+**Seen on 17 November 2026.** Esri's tile address answered every request with "403 Forbidden,
+Request blocked" (an error page from its CloudFront front end), from the development Mac's
+browser, from `curl`, and from a second network, on both `server.arcgisonline.com` and
+`services.arcgisonline.com`. Only tiles the browser had kept from earlier visits appeared, as a
+small patch on a grey map. Later the same day the same tiles came back normally (12 of 12, with the
+usual headers), so it was temporary: a rate limit on keyless use after heavy testing, or a
+fault on Esri's side; which one was not established. It can happen again. The app now notices it (several tiles refused, far more refused than arrived),
+switches to the street map by itself and says so in one line on the map.
+
 **What a public launch needs (your decision).** One of:
 
 1. Create an ArcGIS Location Platform account, make an API key for basemap tiles, and build with

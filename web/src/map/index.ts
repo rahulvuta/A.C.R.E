@@ -4,7 +4,7 @@
 */
 export { FarmMap, type FarmMapProps } from "./FarmMap";
 export { MapScreen, type MapScreenProps } from "./MapScreen";
-export { MapView, type MapViewProps } from "./MapView";
+export { MapView, type Bounds, type MapViewProps } from "./MapView";
 export { createFetchGeoApi, type GeoApi } from "./geoApi";
 export { STATE_COLOR, type FieldState } from "./fieldLayers";
 export { useFarms, useSelectedField, selectField, farmActions, updateFieldPlan, putFarm } from "../farm/hooks";

@@ -8,7 +8,7 @@ import { Greenness } from "./Greenness";
 import type { GeoApi } from "./geoApi";
 import { roundCoord } from "./geoApi";
 import { LocationCard, type Pick } from "./LocationCard";
-import { MapView } from "./MapView";
+import { MapView, type Bounds } from "./MapView";
 import { suggestUnits } from "../ui/units";
 import "./map.css";
 
@@ -25,6 +25,8 @@ export interface MapScreenProps {
   /** Extra panel content under the search (C2: the farm editor). */
   children?: ReactNode;
   onMapReady?: (map: MlMap) => void;
+  /** Open the map on this area (west, south, east, north) instead of the whole world. */
+  initialBounds?: Bounds | null;
   /**
    * Sees every map click first; return true when it handled the click (a drawing tool, a
    * click on a field), and the pin does not move.
@@ -32,8 +34,20 @@ export interface MapScreenProps {
   onMapClick?: (p: LatLon, screen: { x: number; y: number }) => boolean;
 }
 
-export function MapScreen({ api, onPick, pickAction, children, onMapReady, onMapClick }: MapScreenProps) {
+export function MapScreen({ api, onPick, pickAction, children, onMapReady, initialBounds, onMapClick }: MapScreenProps) {
   const [basemap, setBasemap] = useState<Basemap>(FIRST_BASEMAP);
+  // The satellite provider refused its tiles: the street map is shown instead, and the grower is told why.
+  const [photoDown, setPhotoDown] = useState(false);
+  // Reaching for the switch starts fetching the other base map, so the switch itself is instant;
+  // after that both are kept in step for the rest of the visit. Nothing is fetched ahead for a
+  // grower who never goes near it (the street map's rules forbid fetching tiles nobody asked for).
+  const [warm, setWarm] = useState(false);
+  const warmUp = useCallback(() => setWarm(true), []);
+  const basemapFailed = useCallback((b: Basemap) => {
+    if (b !== "satellite" || !BASEMAPS.streets) return;
+    setPhotoDown(true);
+    setBasemap((now) => (now === "satellite" ? "streets" : now));
+  }, []);
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState<{ state: "idle" } | { state: "loading" } | { state: "error"; message: string } | { state: "ready"; hits: GeoHit[]; coords: boolean; credit?: { text: string; url: string | null } | null }>({ state: "idle" });
   const [pick, setPick] = useState<Pick | null>(null);
@@ -99,8 +113,10 @@ export function MapScreen({ api, onPick, pickAction, children, onMapReady, onMap
       pendingHit.current = hit;
       return;
     }
-    if (hit.bbox) map.fitBounds([[hit.bbox[0], hit.bbox[1]], [hit.bbox[2], hit.bbox[3]]], { padding: 40, maxZoom: 15, duration: 1200 });
-    else map.flyTo({ center: [hit.point.longitude, hit.point.latitude], zoom: 15, duration: 1200 });
+    // Straight there, no flight: a flight across the world fetches tiles all along the way and
+    // the place itself only starts loading when it lands.
+    if (hit.bbox) map.fitBounds([[hit.bbox[0], hit.bbox[1]], [hit.bbox[2], hit.bbox[3]]], { padding: 40, maxZoom: 15, duration: 0 });
+    else map.jumpTo({ center: [hit.point.longitude, hit.point.latitude], zoom: 15 });
   }, []);
 
   const choose = useCallback(
@@ -205,13 +221,18 @@ export function MapScreen({ api, onPick, pickAction, children, onMapReady, onMap
         {children}
       </aside>
       <div className="mp-stage">
-        <MapView basemap={basemap} onClick={mapClick} onReady={ready} label="Farm map" />
+        <MapView basemap={basemap} warmOthers={warm} initialBounds={initialBounds} onClick={mapClick} onReady={ready} onBasemapFailed={basemapFailed} label="Farm map" />
         {BASEMAP_KEYS.length > 1 ? (
-          <div className="mp-layer-switch">
+          <div className="mp-layer-switch" onPointerEnter={warmUp} onPointerDown={warmUp} onFocus={warmUp}>
             <Segmented label="Basemap" value={basemap} onChange={setBasemap} options={BASEMAP_KEYS.map((k) => ({ value: k, label: BASEMAPS[k]!.label }))} />
           </div>
         ) : null}
         <Greenness map={liveMap} />
+        {photoDown ? (
+          <p className="mp-photo-down" role="status">
+            {basemap === "satellite" ? "Satellite photo is not loading." : "Satellite photo is not loading. Showing the street map."}
+          </p>
+        ) : null}
       </div>
     </div>
   );

@@ -20,6 +20,7 @@ import { nextStep } from "../guided/progress";
 export { nextStep } from "../guided/progress";
 import { navIcon } from "../planner/SideNav";
 import { FarmSpin } from "./FarmSpin";
+import { warmTileHosts } from "../../map/basemap";
 
 /** The start button's outline: a five-sided field, in the button's own 440 by 120 box. */
 const FIELD_CORNERS: ReadonlyArray<readonly [number, number]> = [[24, 34], [262, 14], [418, 40], [398, 100], [42, 104]];
@@ -148,7 +149,8 @@ export function Dashboard({ api: given }: { api?: GlobalApi }) {
           {notice ? <Banner kind="info">{notice}</Banner> : null}
           <section className="dh-start" aria-label={myFields.length ? "Add a field" : "Create your farm"}>
             {myFields.length ? null : <FarmSpin />}
-            <button type="button" className="dh-create" onClick={startAdd}>
+            {/* Reaching for the button opens the connection to the map's tile host, so the map's first tiles come sooner. */}
+            <button type="button" className="dh-create" onClick={startAdd} onPointerEnter={() => warmTileHosts()} onFocus={() => warmTileHosts()}>
               {/* The button is a field: five sides and five corner points, like the outline a grower draws on the map. */}
               <svg className="dh-shape" viewBox="0 0 440 120" aria-hidden="true" focusable="false">
                 <path className="dh-shape-ring" d={FIELD_SHAPE} />
